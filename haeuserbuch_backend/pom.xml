@@ -59,10 +59,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-spatial</artifactId>
-			<version>6.6.13.Final</version>
-			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>org.locationtech.jts</groupId>
