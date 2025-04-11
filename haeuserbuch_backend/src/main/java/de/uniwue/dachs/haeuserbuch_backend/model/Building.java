@@ -21,7 +21,4 @@ public class Building extends BaseEntity {
 
     @Column(columnDefinition = "geometry(Polygon,4326)")
     private Polygon shape;
-
-    // TODO: Use DTO in order to create a shape for each building
-    //  double[][] or List<double[]> should represent some polygon
 }

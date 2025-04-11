@@ -1,38 +1,39 @@
 package de.uniwue.dachs.haeuserbuch_backend.controller;
 
-import de.uniwue.dachs.haeuserbuch_backend.model.Building;
-import de.uniwue.dachs.haeuserbuch_backend.repository.BuildingRepository;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.BuildingDTO;
+import de.uniwue.dachs.haeuserbuch_backend.service.BuildingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/buildings")
 public class BuildingController {
-    private final BuildingRepository buildingRepository;
+    private final BuildingService buildingService;
 
-    public BuildingController(BuildingRepository buildingRepository) {
-        this.buildingRepository = buildingRepository;
+    public BuildingController(BuildingService buildingService) {
+        this.buildingService = buildingService;
     }
 
     @GetMapping
-    public ResponseEntity<Iterable<Building>> getBuildings() {
-        Iterable<Building> buildings = buildingRepository.findAll();
-        return ResponseEntity.ok(buildings);
+    public ResponseEntity<List<BuildingDTO>> getBuildings() {
+        List<BuildingDTO> buildingDTOs = buildingService.getAllBuildings();
+        return ResponseEntity.ok(buildingDTOs);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Building> getBuilding(@PathVariable long id) {
-        return buildingRepository.findById(id)
+    public ResponseEntity<BuildingDTO> getBuildingById(@PathVariable Long id) {
+        return buildingService.getBuildingById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.status(404).build());
     }
 
     @PostMapping
-    public ResponseEntity<Building> saveBuilding(@RequestBody Building building) {
-        Building savedBuilding = buildingRepository.save(building);
-        return ResponseEntity.status(201).body(savedBuilding);
+    public ResponseEntity<Void> saveBuilding(@RequestBody BuildingDTO buildingDTO) {
+        buildingService.createBuilding(buildingDTO);
+        return ResponseEntity.status(201).build();
     }
 
     // TODO: Implement other mapping and move functionality to service layer
-    // TODO: Consider the usage of DTO projections
 }
