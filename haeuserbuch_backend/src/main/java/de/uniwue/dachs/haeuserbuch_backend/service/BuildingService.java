@@ -3,6 +3,10 @@ package de.uniwue.dachs.haeuserbuch_backend.service;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.BuildingDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Building;
 import de.uniwue.dachs.haeuserbuch_backend.repository.BuildingRepository;
+import de.uniwue.dachs.haeuserbuch_backend.utils.GeoJSON.GeoJSONFeature;
+import de.uniwue.dachs.haeuserbuch_backend.utils.GeoJSON.GeoJSONFeatureCollection;
+import de.uniwue.dachs.haeuserbuch_backend.utils.GeoJSON.GeoJSONGeometry;
+import de.uniwue.dachs.haeuserbuch_backend.utils.GeoJSON.GeoJSONProperties;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
@@ -10,9 +14,7 @@ import org.locationtech.jts.geom.Polygon;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class BuildingService {
@@ -23,6 +25,7 @@ public class BuildingService {
         this.buildingRepository = buildingRepository;
     }
 
+    // Get all buildings
     public List<BuildingDTO> getAllBuildings() {
         List<Building> buildings = buildingRepository.findAll();
         List<BuildingDTO> buildingDTOs = new ArrayList<>();
@@ -38,6 +41,34 @@ public class BuildingService {
         return buildingDTOs;
     }
 
+    // Get all buildings as feature collection
+    public GeoJSONFeatureCollection getAllBuildingFeatures() {
+        List<Building> buildings = buildingRepository.findAll();
+        GeoJSONFeatureCollection featureCollection = new GeoJSONFeatureCollection();
+        List<GeoJSONFeature> features = new ArrayList<>();
+        for (Building building : buildings) {
+            GeoJSONFeature feature = new GeoJSONFeature();
+            GeoJSONProperties properties = new GeoJSONProperties();
+            GeoJSONGeometry geometry = new GeoJSONGeometry();
+
+            properties.setId(building.getId());
+            properties.setName(building.getName());
+            properties.setAddress(building.getAddress());
+            properties.setDescription(building.getDescription());
+            feature.setProperties(properties);
+
+            geometry.setType(GeoJSONGeometry.GeometryTypes.Polygon);
+            List<Double[][]> coordinates = new ArrayList<>();
+            coordinates.add(convertPolygon(building.getShape()));
+            geometry.setCoordinates(coordinates);
+            feature.setGeometry(geometry);
+            features.add(feature);
+        }
+        featureCollection.setFeatures(features);
+        return featureCollection;
+    }
+
+    // Get building by its id
     public Optional<BuildingDTO> getBuildingById(Long id) {
         return buildingRepository.findById(id).map(entity -> {
             BuildingDTO current_dto = new BuildingDTO();
@@ -50,6 +81,30 @@ public class BuildingService {
         });
     }
 
+    // Get building by its id (geojson)
+    public Optional<GeoJSONFeature> getBuildingFeatureById(Long id) {
+        return buildingRepository.findById(id).map(entity_feature -> {
+            GeoJSONFeature feature = new GeoJSONFeature();
+            GeoJSONGeometry geometry = new GeoJSONGeometry();
+            GeoJSONProperties properties = new GeoJSONProperties();
+
+            properties.setId(entity_feature.getId());
+            properties.setName(entity_feature.getName());
+            properties.setAddress(entity_feature.getAddress());
+            properties.setDescription(entity_feature.getDescription());
+            feature.setProperties(properties);
+
+            geometry.setType(GeoJSONGeometry.GeometryTypes.Polygon);
+            List<Double[][]> coordinates = new ArrayList<>();
+            coordinates.add(convertPolygon(entity_feature.getShape()));
+            geometry.setCoordinates(coordinates);
+            feature.setGeometry(geometry);
+
+            return feature;
+        });
+    }
+
+    // Create building
     @Transactional
     public Building createBuilding(BuildingDTO buildingDTO) {
         Building building = new Building();

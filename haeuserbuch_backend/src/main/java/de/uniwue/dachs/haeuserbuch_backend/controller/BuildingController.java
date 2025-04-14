@@ -5,8 +5,6 @@ import de.uniwue.dachs.haeuserbuch_backend.service.BuildingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/buildings")
 public class BuildingController {
@@ -17,16 +15,23 @@ public class BuildingController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BuildingDTO>> getBuildings() {
-        List<BuildingDTO> buildingDTOs = buildingService.getAllBuildings();
-        return ResponseEntity.ok(buildingDTOs);
+    public ResponseEntity<?> getBuildings(
+            @RequestParam(required = false, defaultValue = "json") String output) {
+        return output.equalsIgnoreCase("geojson")
+                ? ResponseEntity.ok(buildingService.getAllBuildingFeatures())
+                : ResponseEntity.ok(buildingService.getAllBuildings());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BuildingDTO> getBuildingById(@PathVariable Long id) {
-        return buildingService.getBuildingById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.status(404).build());
+    public ResponseEntity<?> getBuildingById(@PathVariable long id,
+                                             @RequestParam(required = false, defaultValue = "json") String output) {
+        return output.equalsIgnoreCase("geojson")
+                ? buildingService.getBuildingFeatureById(id)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.status(404).build())
+                : buildingService.getBuildingById(id)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.status(404).build());
     }
 
     @PostMapping
