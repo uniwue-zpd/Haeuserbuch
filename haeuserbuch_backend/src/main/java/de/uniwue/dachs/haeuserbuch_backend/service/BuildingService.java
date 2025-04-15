@@ -102,7 +102,7 @@ public class BuildingService {
         });
     }
 
-    // Create building
+    // Create building from JSON
     @Transactional
     public Building createBuilding(BuildingDTO buildingDTO) {
         Building building = new Building();
@@ -110,6 +110,20 @@ public class BuildingService {
         building.setAddress(buildingDTO.getAddress());
         building.setDescription(buildingDTO.getDescription());
         building.setShape(createPolygon(buildingDTO.getShape()));
+        return buildingRepository.save(building);
+    }
+
+    // Create building from GeoJSON
+    @Transactional
+    public Building createBuildingFromGeoJSON(GeoJSONFeature geoJSONFeature) {
+        Building building = new Building();
+        GeoJSONProperties properties = geoJSONFeature.getProperties();
+        GeoJSONGeometry geometry = geoJSONFeature.getGeometry();
+        building.setName(properties.getName());
+        building.setAddress(properties.getAddress());
+        building.setDescription(properties.getDescription());
+        Double[][] coordinates = geometry.getCoordinates().getFirst();
+        building.setShape(createPolygon(coordinates));
         return buildingRepository.save(building);
     }
 }
