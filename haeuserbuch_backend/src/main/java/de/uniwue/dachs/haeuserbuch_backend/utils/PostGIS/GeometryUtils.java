@@ -1,12 +1,32 @@
 package de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GeometryUtils {
     private static final GeometryFactory geometryFactory = new GeometryFactory();
+
+    // Converts the coordinates to a point
+    public static Point createPoint(List<Double> coordinates) {
+        if (coordinates == null || coordinates.size() != 2) {
+            return null;
+        }
+        Coordinate point = new Coordinate(coordinates.get(0), coordinates.get(1));
+        return geometryFactory.createPoint(point);
+    }
+
+    // Converts the point to coordinates list
+    public static List<Double> convertPoint(Point point) {
+        if (point == null) {
+            return null;
+        }
+        List<Double> coordinates = new ArrayList<Double>();
+        coordinates.add(point.getX());
+        coordinates.add(point.getY());
+        return coordinates;
+    }
 
     // Converts the shape to a polygon
     public static Polygon createPolygon(Double[][] polygon) {

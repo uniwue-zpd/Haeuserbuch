@@ -20,7 +20,7 @@ public class Place extends BaseEntity {
     private List<String> alt_names = new ArrayList<>();
 
     @Column(columnDefinition = "geometry(Point,4326)")
-    private Point location;
+    private Point coordinates;
 
     // TODO: Use DTO (latitude and longitude as separate fields) in order to create a point for each place
 }
