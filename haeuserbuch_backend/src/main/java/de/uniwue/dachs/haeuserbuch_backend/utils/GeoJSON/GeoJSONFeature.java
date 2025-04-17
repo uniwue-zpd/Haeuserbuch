@@ -11,5 +11,5 @@ import java.util.Map;
 public class GeoJSONFeature {
     private String type = "Feature";
     private Map<String, Object> properties = new HashMap<>();
-    private GeoJSONGeometry geometry;
+    private Map<String, Object> geometry = new HashMap<>();
 }

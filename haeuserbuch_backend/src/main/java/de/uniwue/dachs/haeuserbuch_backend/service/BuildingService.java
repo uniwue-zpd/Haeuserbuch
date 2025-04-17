@@ -5,7 +5,6 @@ import de.uniwue.dachs.haeuserbuch_backend.model.Building;
 import de.uniwue.dachs.haeuserbuch_backend.repository.BuildingRepository;
 import de.uniwue.dachs.haeuserbuch_backend.utils.GeoJSON.GeoJSONFeature;
 import de.uniwue.dachs.haeuserbuch_backend.utils.GeoJSON.GeoJSONFeatureCollection;
-import de.uniwue.dachs.haeuserbuch_backend.utils.GeoJSON.GeoJSONGeometry;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,18 +44,16 @@ public class BuildingService {
         List<GeoJSONFeature> features = new ArrayList<>();
         for (Building building : buildings) {
             GeoJSONFeature feature = new GeoJSONFeature();
-            GeoJSONGeometry geometry = new GeoJSONGeometry();
 
             feature.getProperties().put("id", building.getId());
             feature.getProperties().put("name", building.getName());
             feature.getProperties().put("address", building.getAddress());
             feature.getProperties().put("description", building.getDescription());
 
-            geometry.setType(GeoJSONGeometry.GeometryTypes.Polygon);
+            feature.getGeometry().put("type", "Polygon");
             List<Double[][]> coordinates = new ArrayList<>();
             coordinates.add(convertPolygon(building.getShape()));
-            geometry.setCoordinates(coordinates);
-            feature.setGeometry(geometry);
+            feature.getGeometry().put("coordinates", coordinates);
             features.add(feature);
         }
         featureCollection.setFeatures(features);
@@ -80,18 +77,16 @@ public class BuildingService {
     public Optional<GeoJSONFeature> getBuildingFeatureById(Long id) {
         return buildingRepository.findById(id).map(entity_feature -> {
             GeoJSONFeature feature = new GeoJSONFeature();
-            GeoJSONGeometry geometry = new GeoJSONGeometry();
 
             feature.getProperties().put("id", entity_feature.getId());
             feature.getProperties().put("name", entity_feature.getName());
             feature.getProperties().put("address", entity_feature.getAddress());
             feature.getProperties().put("description", entity_feature.getDescription());
 
-            geometry.setType(GeoJSONGeometry.GeometryTypes.Polygon);
+            feature.getGeometry().put("type", "Polygon");
             List<Double[][]> coordinates = new ArrayList<>();
             coordinates.add(convertPolygon(entity_feature.getShape()));
-            geometry.setCoordinates(coordinates);
-            feature.setGeometry(geometry);
+            feature.getGeometry().put("coordinates", coordinates);
 
             return feature;
         });
@@ -112,11 +107,13 @@ public class BuildingService {
     @Transactional
     public Building createBuildingFromGeoJSON(GeoJSONFeature geoJSONFeature) {
         Building building = new Building();
-        GeoJSONGeometry geometry = geoJSONFeature.getGeometry();
         building.setName((String) geoJSONFeature.getProperties().get("name"));
         building.setAddress((String) geoJSONFeature.getProperties().get("address"));
         building.setDescription((String) geoJSONFeature.getProperties().get("description"));
-        Double[][] coordinates = geometry.getCoordinates().getFirst();
+        List<List<List<Double>>> geometry_coords = (List<List<List<Double>>>) geoJSONFeature.getGeometry().get("coordinates");
+        Double[][] coordinates = geometry_coords.getFirst().stream()
+                .map(innerList -> innerList.toArray(new Double[0]))
+                .toArray(Double[][]::new);
         building.setShape(createPolygon(coordinates));
         return buildingRepository.save(building);
     }
