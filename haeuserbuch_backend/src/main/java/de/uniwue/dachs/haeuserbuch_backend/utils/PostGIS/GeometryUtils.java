@@ -22,30 +22,32 @@ public class GeometryUtils {
         if (point == null) {
             return null;
         }
-        List<Double> coordinates = new ArrayList<Double>();
+        List<Double> coordinates = new ArrayList<>();
         coordinates.add(point.getX());
         coordinates.add(point.getY());
         return coordinates;
     }
 
-    // Converts the shape to a polygon
-    public static Polygon createPolygon(Double[][] polygon) {
-        Coordinate[] coordinates = new Coordinate[polygon.length];
-        for (int i = 0; i < polygon.length; i++) {
-            coordinates[i] = new Coordinate(polygon[i][0], polygon[i][1]);
+    public static Polygon createPolygon(List<List<Double>> polygon) {
+        Coordinate[] coordinates = new Coordinate[polygon.size()];
+        for (int i = 0; i < polygon.size(); i++) {
+            List<Double> point = polygon.get(i);
+            coordinates[i] = new Coordinate(point.get(0), point.get(1));
         }
         LinearRing ring = geometryFactory.createLinearRing(coordinates);
         return geometryFactory.createPolygon(ring, null);
     }
 
     // Converts the polygon to a shape
-    public static Double[][] convertPolygon(Polygon polygon) {
+    public static List<List<Double>> convertPolygon(Polygon polygon) {
         Coordinate[] coordinates = polygon.getCoordinates();
-        Double[][] polygon_array = new Double[coordinates.length][2];
-        for (int i = 0; i < coordinates.length; i++) {
-            polygon_array[i][0] = coordinates[i].getX();
-            polygon_array[i][1] = coordinates[i].getY();
+        List<List<Double>> polygon_list = new ArrayList<>();
+        for (Coordinate coordinate : coordinates) {
+            List<Double> point = new ArrayList<>();
+            point.add(coordinate.getX());
+            point.add(coordinate.getY());
+            polygon_list.add(point);
         }
-        return polygon_array;
+        return polygon_list;
     }
 }

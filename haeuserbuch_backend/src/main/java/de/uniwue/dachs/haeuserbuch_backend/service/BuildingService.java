@@ -51,7 +51,7 @@ public class BuildingService {
             feature.getProperties().put("description", building.getDescription());
 
             feature.getGeometry().put("type", "Polygon");
-            List<Double[][]> coordinates = new ArrayList<>();
+            List<List<List<Double>>> coordinates = new ArrayList<>();
             coordinates.add(convertPolygon(building.getShape()));
             feature.getGeometry().put("coordinates", coordinates);
             features.add(feature);
@@ -84,7 +84,7 @@ public class BuildingService {
             feature.getProperties().put("description", entity_feature.getDescription());
 
             feature.getGeometry().put("type", "Polygon");
-            List<Double[][]> coordinates = new ArrayList<>();
+            List<List<List<Double>>> coordinates = new ArrayList<>();
             coordinates.add(convertPolygon(entity_feature.getShape()));
             feature.getGeometry().put("coordinates", coordinates);
 
@@ -111,9 +111,7 @@ public class BuildingService {
         building.setAddress((String) geoJSONFeature.getProperties().get("address"));
         building.setDescription((String) geoJSONFeature.getProperties().get("description"));
         List<List<List<Double>>> geometry_coords = (List<List<List<Double>>>) geoJSONFeature.getGeometry().get("coordinates");
-        Double[][] coordinates = geometry_coords.getFirst().stream()
-                .map(innerList -> innerList.toArray(new Double[0]))
-                .toArray(Double[][]::new);
+        List<List<Double>> coordinates = geometry_coords.getFirst();
         building.setShape(createPolygon(coordinates));
         return buildingRepository.save(building);
     }

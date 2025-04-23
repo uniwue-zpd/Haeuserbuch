@@ -3,6 +3,8 @@ package de.uniwue.dachs.haeuserbuch_backend.DTO;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class BuildingDTO {
@@ -11,5 +13,5 @@ public class BuildingDTO {
     private String address;
     private String description;
 
-    private Double[][] shape;
+    private List<List<Double>> shape;
 }
