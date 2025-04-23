@@ -1,36 +1,59 @@
 package de.uniwue.dachs.haeuserbuch_backend.controller;
 
-import de.uniwue.dachs.haeuserbuch_backend.model.Place;
-import de.uniwue.dachs.haeuserbuch_backend.repository.PlaceRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.PlaceDTO;
+import de.uniwue.dachs.haeuserbuch_backend.service.PlaceService;
+import de.uniwue.dachs.haeuserbuch_backend.utils.GeoJSON.GeoJSONFeature;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/places")
 public class PlaceController {
-    private final PlaceRepository placeRepository;
+    private final PlaceService placeService;
 
-    public PlaceController(PlaceRepository placeRepository) {
-        this.placeRepository = placeRepository;
+    public PlaceController(PlaceService placeService) {
+        this.placeService = placeService;
     }
 
     @GetMapping
-    public ResponseEntity<Iterable<Place>> getPlaces() {
-        Iterable<Place> places = placeRepository.findAll();
-        return ResponseEntity.ok(places);
+    public ResponseEntity<?> getPlaces(
+            @RequestParam(required = false, defaultValue = "json") String output) {
+        return output.equalsIgnoreCase("geojson")
+                ? ResponseEntity.ok(placeService.getAllPlaceFeatures())
+                : ResponseEntity.ok(placeService.getAllPlaces());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Place> getPlace(@PathVariable Long id) {
-        return placeRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.status(404).build());
+    public ResponseEntity<?> getPlaceById(@PathVariable Long id,
+                                          @RequestParam(required = false, defaultValue = "json") String output) {
+        return output.equalsIgnoreCase("geojson")
+                ? placeService.getPlaceFeatureById(id)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.status(404).build())
+                : placeService.getPlaceById(id)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.status(404).build());
     }
 
     @PostMapping
-    public ResponseEntity<Place> savePlace(@RequestBody Place place) {
-        Place savedPlace = placeRepository.save(place);
-        return ResponseEntity.status(201).body(savedPlace);
+    public ResponseEntity<Void> savePlace(
+            @RequestParam(required = false, defaultValue = "json") String input,
+            @RequestBody Map<String, Object> payload) {
+        try {
+            if (input.equalsIgnoreCase("geojson")) {
+                GeoJSONFeature geoJSONFeature = new ObjectMapper().convertValue(payload, GeoJSONFeature.class);
+                placeService.createPlaceFromGeoJSON(geoJSONFeature);
+            } else {
+                PlaceDTO placeDTO = new ObjectMapper().convertValue(payload, PlaceDTO.class);
+                placeService.createPlace(placeDTO);
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).build();
+        }
+        return ResponseEntity.status(201).build();
     }
 
     // TODO: Implement other mapping and move functionality to service layer
