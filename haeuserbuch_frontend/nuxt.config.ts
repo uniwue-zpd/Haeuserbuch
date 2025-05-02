@@ -1,5 +1,40 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import Aura from '@primeuix/themes/aura';
+
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
-  devtools: { enabled: true }
+  devtools: { enabled: true },
+  nitro: {
+    devProxy: {
+      '/api': {
+        target: process.env.API_BASE_URL || 'http://localhost:8080',
+        changeOrigin: true,
+        autoRewrite: true
+      }
+    }
+  },
+  modules: [
+      '@primevue/nuxt-module',
+      '@formkit/nuxt',
+      '@pinia/nuxt'
+  ],
+  primevue: {
+    options: {
+      theme: {
+        preset: Aura
+      }
+    },
+    autoImport: true
+  },
+  formkit: {
+    configFile: './formkit.config.ts',
+    autoImport: true
+  },
+  css: ['~/assets/css/main.css'],
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+    },
+  },
 })
