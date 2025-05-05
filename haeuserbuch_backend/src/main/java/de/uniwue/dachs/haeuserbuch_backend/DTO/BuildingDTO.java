@@ -12,6 +12,8 @@ public class BuildingDTO {
     private String name;
     private String address;
     private String description;
+    private String quarter;
+    private String district;
 
-    private List<List<Double>> shape;
+    private List<List<Double>> coordinates;
 }

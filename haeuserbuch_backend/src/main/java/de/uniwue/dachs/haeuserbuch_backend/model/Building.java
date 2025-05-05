@@ -19,6 +19,12 @@ public class Building extends BaseEntity {
 
     private String description;
 
-    @Column(columnDefinition = "geometry(Polygon,4326)")
-    private Polygon shape;
+    private String quarter;
+
+    private String district;
+
+    @Column(columnDefinition = "geometry(Polygon,25832)")
+    private Polygon coordinates;
 }
+
+// TODO: Add fields for the cadastral number, possibly the relation to the cadastre

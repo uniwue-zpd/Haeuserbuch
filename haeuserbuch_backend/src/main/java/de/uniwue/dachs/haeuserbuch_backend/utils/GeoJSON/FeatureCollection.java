@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class GeoJSONFeatureCollection {
+public class FeatureCollection {
     private String type = "FeatureCollection";
-    private List<GeoJSONFeature> features;
+    private List<Feature> features;
 }

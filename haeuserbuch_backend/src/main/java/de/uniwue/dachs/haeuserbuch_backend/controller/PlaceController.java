@@ -3,7 +3,7 @@ package de.uniwue.dachs.haeuserbuch_backend.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PlaceDTO;
 import de.uniwue.dachs.haeuserbuch_backend.service.PlaceService;
-import de.uniwue.dachs.haeuserbuch_backend.utils.GeoJSON.GeoJSONFeature;
+import de.uniwue.dachs.haeuserbuch_backend.utils.GeoJSON.Feature;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,7 +44,7 @@ public class PlaceController {
             @RequestBody Map<String, Object> payload) {
         try {
             if (input.equalsIgnoreCase("geojson")) {
-                GeoJSONFeature geoJSONFeature = new ObjectMapper().convertValue(payload, GeoJSONFeature.class);
+                Feature geoJSONFeature = new ObjectMapper().convertValue(payload, Feature.class);
                 placeService.createPlaceFromGeoJSON(geoJSONFeature);
             } else {
                 PlaceDTO placeDTO = new ObjectMapper().convertValue(payload, PlaceDTO.class);

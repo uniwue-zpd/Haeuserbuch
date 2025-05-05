@@ -3,8 +3,8 @@ package de.uniwue.dachs.haeuserbuch_backend.service;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PlaceDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Place;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PlaceRepository;
-import de.uniwue.dachs.haeuserbuch_backend.utils.GeoJSON.GeoJSONFeature;
-import de.uniwue.dachs.haeuserbuch_backend.utils.GeoJSON.GeoJSONFeatureCollection;
+import de.uniwue.dachs.haeuserbuch_backend.utils.GeoJSON.Feature;
+import de.uniwue.dachs.haeuserbuch_backend.utils.GeoJSON.FeatureCollection;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -38,12 +38,12 @@ public class PlaceService {
     }
 
     // Get all places as feature collection
-    public GeoJSONFeatureCollection getAllPlaceFeatures() {
+    public FeatureCollection getAllPlaceFeatures() {
         List<Place> places = placeRepository.findAll();
-        GeoJSONFeatureCollection featureCollection = new GeoJSONFeatureCollection();
-        List<GeoJSONFeature> features = new ArrayList<>();
+        FeatureCollection featureCollection = new FeatureCollection();
+        List<Feature> features = new ArrayList<>();
         for (Place place : places) {
-            GeoJSONFeature feature = new GeoJSONFeature();
+            Feature feature = new Feature();
 
             feature.getProperties().put("id", place.getId());
             feature.getProperties().put("real_name", place.getReal_name());
@@ -71,9 +71,9 @@ public class PlaceService {
     }
 
     // Get a place by its ID (geoJSON)
-    public Optional<GeoJSONFeature> getPlaceFeatureById(Long id) {
+    public Optional<Feature> getPlaceFeatureById(Long id) {
         return placeRepository.findById(id).map(entity_feature -> {
-            GeoJSONFeature feature = new GeoJSONFeature();
+            Feature feature = new Feature();
 
             feature.getProperties().put("id", entity_feature.getId());
             feature.getProperties().put("real_name", entity_feature.getReal_name());
@@ -87,21 +87,21 @@ public class PlaceService {
     }
 
     // Create new place
-    public Place createPlace(PlaceDTO placeDTO) {
+    public void createPlace(PlaceDTO placeDTO) {
         Place place = new Place();
         place.setReal_name(placeDTO.getReal_name());
         place.setAlt_names(placeDTO.getAlt_names());
         place.setCoordinates(createPoint(placeDTO.getCoordinates()));
-        return placeRepository.save(place);
+        placeRepository.save(place);
     }
 
     // Create new place from geoJSON
-    public Place createPlaceFromGeoJSON(GeoJSONFeature geoJSONFeature) {
+    public void createPlaceFromGeoJSON(Feature geoJSONFeature) {
         Place place = new Place();
         place.setReal_name((String) geoJSONFeature.getProperties().get("real_name"));
         place.setAlt_names((List<String>) geoJSONFeature.getProperties().get("alt_names"));
         List<Double> coordinates = (List<Double>) geoJSONFeature.getProperties().get("coordinates");
         place.setCoordinates(createPoint(coordinates));
-        return placeRepository.save(place);
+        placeRepository.save(place);
     }
 }
