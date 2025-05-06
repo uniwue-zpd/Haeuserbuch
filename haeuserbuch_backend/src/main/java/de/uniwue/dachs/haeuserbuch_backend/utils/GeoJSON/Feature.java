@@ -11,5 +11,5 @@ import java.util.Map;
 public class Feature {
     private String type = "Feature";
     private Map<String, Object> properties = new HashMap<>();
-    private Map<String, Object> geometry = new HashMap<>();
+    private Geometry geometry;
 }
