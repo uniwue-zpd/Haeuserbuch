@@ -5,6 +5,7 @@ import de.uniwue.dachs.haeuserbuch_backend.model.Place;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PlaceRepository;
 import de.uniwue.dachs.haeuserbuch_backend.utils.GeoJSON.Feature;
 import de.uniwue.dachs.haeuserbuch_backend.utils.GeoJSON.FeatureCollection;
+import de.uniwue.dachs.haeuserbuch_backend.utils.GeoJSON.PointGeometry;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,14 +27,7 @@ public class PlaceService {
     public List<PlaceDTO> getAllPlaces() {
         List<Place> places = placeRepository.findAll();
         List<PlaceDTO> placeDTOs = new ArrayList<>();
-        for (Place place : places) {
-            PlaceDTO currentDTO = new PlaceDTO();
-            currentDTO.setId(place.getId());
-            currentDTO.setReal_name(place.getReal_name());
-            currentDTO.setAlt_names(place.getAlt_names());
-            currentDTO.setCoordinates(convertPoint(place.getCoordinates()));
-            placeDTOs.add(currentDTO);
-        }
+        places.forEach(place -> placeDTOs.add(PlaceToDTO(place)));
         return placeDTOs;
     }
 
@@ -42,66 +36,80 @@ public class PlaceService {
         List<Place> places = placeRepository.findAll();
         FeatureCollection featureCollection = new FeatureCollection();
         List<Feature> features = new ArrayList<>();
-        for (Place place : places) {
-            Feature feature = new Feature();
-
-            feature.getProperties().put("id", place.getId());
-            feature.getProperties().put("real_name", place.getReal_name());
-            feature.getProperties().put("alt_names", place.getAlt_names());
-
-            feature.getGeometry().put("coordinates", convertPoint(place.getCoordinates()));
-            feature.getGeometry().put("type", "Point");
-
-            features.add(feature);
-        }
+        places.forEach(place -> features.add(PlaceToGeoJson(place)));
         featureCollection.setFeatures(features);
         return featureCollection;
     }
 
     // Get a place by its ID
     public Optional<PlaceDTO> getPlaceById(Long id) {
-        return placeRepository.findById(id).map(entity -> {
-            PlaceDTO placeDTO = new PlaceDTO();
-            placeDTO.setId(entity.getId());
-            placeDTO.setReal_name(entity.getReal_name());
-            placeDTO.setAlt_names(entity.getAlt_names());
-            placeDTO.setCoordinates(convertPoint(entity.getCoordinates()));
-            return placeDTO;
-        });
+        return placeRepository.findById(id).map(this::PlaceToDTO);
     }
 
-    // Get a place by its ID (geoJSON)
+    // Get a place by its ID (GeoJSON)
     public Optional<Feature> getPlaceFeatureById(Long id) {
-        return placeRepository.findById(id).map(entity_feature -> {
-            Feature feature = new Feature();
-
-            feature.getProperties().put("id", entity_feature.getId());
-            feature.getProperties().put("real_name", entity_feature.getReal_name());
-            feature.getProperties().put("alt_names", entity_feature.getAlt_names());
-
-            feature.getGeometry().put("type", "Point");
-            List<Double> coordinates = convertPoint(entity_feature.getCoordinates());
-            feature.getGeometry().put("coordinates", coordinates);
-            return feature;
-        });
+        return placeRepository.findById(id).map(this::PlaceToGeoJson);
     }
 
     // Create new place
     public void createPlace(PlaceDTO placeDTO) {
+        Place place = DtoToPlace(placeDTO);
+        placeRepository.save(place);
+    }
+
+    // Create new place from GeoJSON
+    public void createPlaceFromGeoJSON(Feature feature) {
+        Place place = GeoJsonToPlace(feature);
+        placeRepository.save(place);
+    }
+
+    // Helper methods
+    private Place DtoToPlace(PlaceDTO placeDTO) {
         Place place = new Place();
         place.setReal_name(placeDTO.getReal_name());
         place.setAlt_names(placeDTO.getAlt_names());
         place.setCoordinates(createPoint(placeDTO.getCoordinates()));
-        placeRepository.save(place);
+        return place;
     }
 
-    // Create new place from geoJSON
-    public void createPlaceFromGeoJSON(Feature geoJSONFeature) {
+    private Place GeoJsonToPlace(Feature feature) {
+        if (!(feature.getGeometry() instanceof PointGeometry geometry)) {
+            throw new IllegalArgumentException("Unsupported geometry type");
+        }
+        List<Double> coordinates = geometry.getCoordinates();
+        if (coordinates.size() != 2) {
+            throw new IllegalArgumentException("Invalid coordinates");
+        }
         Place place = new Place();
-        place.setReal_name((String) geoJSONFeature.getProperties().get("real_name"));
-        place.setAlt_names((List<String>) geoJSONFeature.getProperties().get("alt_names"));
-        List<Double> coordinates = (List<Double>) geoJSONFeature.getProperties().get("coordinates");
+        place.setReal_name((String) feature.getProperties().get("real_name"));
+        Object obj = feature.getProperties().get("alt_names");
+        if (obj instanceof List<?> list) {
+            List<String> alt_names = list.stream().filter(String.class::isInstance)
+                    .map(String.class::cast)
+                    .toList();
+            place.setAlt_names(alt_names);
+        }
         place.setCoordinates(createPoint(coordinates));
-        placeRepository.save(place);
+        return place;
+    }
+
+    private PlaceDTO PlaceToDTO(Place place) {
+        PlaceDTO placeDTO = new PlaceDTO();
+        placeDTO.setId(place.getId());
+        placeDTO.setReal_name(place.getReal_name());
+        placeDTO.setAlt_names(place.getAlt_names());
+        placeDTO.setCoordinates(convertPoint(place.getCoordinates()));
+        return placeDTO;
+    }
+
+    private Feature PlaceToGeoJson(Place place) {
+        Feature feature = new Feature();
+        feature.getProperties().put("id", place.getId());
+        feature.getProperties().put("real_name", place.getReal_name());
+        feature.getProperties().put("alt_names", place.getAlt_names());
+        PointGeometry geometry = new PointGeometry();
+        geometry.setCoordinates(convertPoint(place.getCoordinates()));
+        feature.setGeometry(geometry);
+        return feature;
     }
 }
