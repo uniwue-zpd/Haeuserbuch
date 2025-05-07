@@ -37,69 +37,25 @@ public class CitizenshipService {
         this.placeRepository = placeRepository;
     }
 
-    // GET all
+    // GET all citizenships
     public List<CitizenshipDTO> getAllCitizenships() {
         List<Citizenship> citizenships = citizenshipRepository.findAll();
         List<CitizenshipDTO> citizenshipDTOs = new ArrayList<>();
-        for (Citizenship citizenship : citizenships) {
-            CitizenshipDTO citizenshipDTO = new CitizenshipDTO();
-            citizenshipDTO.setId(citizenship.getId());
-            citizenshipDTO.setPerson(citizenship.getPerson());
-            citizenshipDTO.setTownBook(citizenship.getTownbook());
-
-            if (citizenship.getPlace() != null) {
-                PlaceDTO placeDTO = new PlaceDTO();
-                placeDTO.setId(citizenship.getPlace().getId());
-                placeDTO.setReal_name(citizenship.getPlace().getReal_name());
-                placeDTO.setAlt_names(citizenship.getPlace().getAlt_names());
-                placeDTO.setCoordinates(convertPoint(citizenship.getPlace().getCoordinates()));
-                citizenshipDTO.setPlace(placeDTO);
-            }
-
-            citizenshipDTO.setNumber(citizenship.getNumber());
-            citizenshipDTO.setDate(citizenship.getDate());
-            citizenshipDTO.setEntry_text(citizenship.getEntry_text());
-            citizenshipDTO.setAddendum(citizenship.getAddendum());
-
-            citizenshipDTOs.add(citizenshipDTO);
-        }
+        citizenships.forEach(citizenship ->
+                citizenshipDTOs.add(CitizenshipToDto(citizenship))
+        );
         return citizenshipDTOs;
     }
 
     public Optional<CitizenshipDTO> getCitizenshipById(Long id) {
         return citizenshipRepository.findById(id)
-                .map(citizenship -> {
-                    CitizenshipDTO citizenshipDTO = new CitizenshipDTO();
-                    citizenshipDTO.setId(citizenship.getId());
-                    citizenshipDTO.setPerson(citizenship.getPerson());
-                    citizenshipDTO.setTownBook(citizenship.getTownbook());
-                    if (citizenship.getPlace() != null) {
-                        PlaceDTO placeDTO = new PlaceDTO();
-                        placeDTO.setId(citizenship.getPlace().getId());
-                        placeDTO.setReal_name(citizenship.getPlace().getReal_name());
-                        placeDTO.setAlt_names(citizenship.getPlace().getAlt_names());
-                        placeDTO.setCoordinates(convertPoint(citizenship.getPlace().getCoordinates()));
-                        citizenshipDTO.setPlace(placeDTO);
-                    }
-                    citizenshipDTO.setNumber(citizenship.getNumber());
-                    citizenshipDTO.setDate(citizenship.getDate());
-                    citizenshipDTO.setEntry_text(citizenship.getEntry_text());
-                    citizenshipDTO.setAddendum(citizenship.getAddendum());
-                    return citizenshipDTO;
-                });
+                .map(this::CitizenshipToDto);
     }
 
     // POST
     @Transactional
     public void createCitizenship(CitizenshipDTO citizenshipDTO) {
-        Citizenship citizenship = new Citizenship();
-        citizenship.setPerson(getOrSavePerson(citizenshipDTO.getPerson()));
-        citizenship.setTownbook(getOrSaveTownBook(citizenshipDTO.getTownBook()));
-        citizenship.setPlace(getOrSavePlaceDTO(citizenshipDTO.getPlace()));
-        citizenship.setNumber(citizenshipDTO.getNumber());
-        citizenship.setDate(citizenshipDTO.getDate());
-        citizenship.setEntry_text(citizenshipDTO.getEntry_text());
-        citizenship.setAddendum(citizenshipDTO.getAddendum());
+        Citizenship citizenship = DtoToCitizenship(citizenshipDTO);
         citizenshipRepository.save(citizenship);
     }
 
@@ -113,6 +69,42 @@ public class CitizenshipService {
     }
 
     // Helper methods
+    private Citizenship DtoToCitizenship(CitizenshipDTO citizenshipDTO) {
+        Citizenship citizenship = new Citizenship();
+        citizenship.setPerson(getOrSavePerson(citizenshipDTO.getPerson()));
+        citizenship.setTownbook(getOrSaveTownBook(citizenshipDTO.getTownBook()));
+        citizenship.setPlace(getOrSavePlaceDTO(citizenshipDTO.getPlace()));
+        citizenship.setNumber(citizenshipDTO.getNumber());
+        citizenship.setDate(citizenshipDTO.getDate());
+        citizenship.setEntry_text(citizenshipDTO.getEntry_text());
+        citizenship.setAddendum(citizenshipDTO.getAddendum());
+        return citizenship;
+    }
+
+    private CitizenshipDTO CitizenshipToDto(Citizenship citizenship) {
+        CitizenshipDTO citizenshipDTO = new CitizenshipDTO();
+        citizenshipDTO.setId(citizenship.getId());
+        citizenshipDTO.setPerson(citizenship.getPerson());
+        citizenshipDTO.setTownBook(citizenship.getTownbook());
+        if (citizenship.getPlace() != null) {
+            citizenshipDTO.setPlace(PlaceToDto(citizenship.getPlace()));
+        }
+        citizenshipDTO.setNumber(citizenship.getNumber());
+        citizenshipDTO.setDate(citizenship.getDate());
+        citizenshipDTO.setEntry_text(citizenship.getEntry_text());
+        citizenshipDTO.setAddendum(citizenship.getAddendum());
+        return citizenshipDTO;
+    }
+
+    private PlaceDTO PlaceToDto(Place place) {
+        PlaceDTO placeDTO = new PlaceDTO();
+        placeDTO.setId(place.getId());
+        placeDTO.setReal_name(place.getReal_name());
+        placeDTO.setAlt_names(place.getAlt_names());
+        placeDTO.setCoordinates(convertPoint(place.getCoordinates()));
+        return placeDTO;
+    }
+
     private Person getOrSavePerson(Person person) {
         if (person.getId() != null) {
             return personRepository.findById(person.getId()).orElse(null);
@@ -128,6 +120,9 @@ public class CitizenshipService {
     }
 
     private Place getOrSavePlaceDTO(PlaceDTO placeDTO) {
+        if (placeDTO == null) {
+            return null;
+        }
         if (placeDTO.getId() != null) {
             return placeRepository.findById(placeDTO.getId()).orElse(null);
         }
@@ -140,4 +135,3 @@ public class CitizenshipService {
 }
 
 // TODO: PUT/PATCH
-// TODO: Static methods for Entity-DTO-Transformations
