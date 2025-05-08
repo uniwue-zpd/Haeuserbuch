@@ -4,16 +4,28 @@ export interface Feature {
     properties: {
         [key: string]: string | number | boolean | null;
     };
-    geometry: Geometry;
+    geometry: GeometryType;
 }
 
 // GeoJSON geometry types
-export type GeometryType = 'Point' | 'LineString' | 'Polygon';
+export type GeometryType = Point | Polygon | LineString;
 
-// GeoJSON geometry object
-export interface Geometry {
-    type: GeometryType;
-    coordinates: number[] | number[][] | number[][][];
+// GeoJSON Point
+export interface Point {
+    type: 'Point';
+    coordinates: [number, number];
+}
+
+// GeoJSON Polygon
+export interface Polygon {
+    type: 'Polygon';
+    coordinates: [number, number][][];
+}
+
+// GeoJSON LineString
+export interface LineString {
+    type: 'LineString';
+    coordinates: [number, number][];
 }
 
 // GeoJSON collection of features
