@@ -12,7 +12,7 @@ const buildings_geojson = ref<FeatureCollection>({} as FeatureCollection);
 onMounted(async ()=> {
   const map = new maplibregl.Map({
     container: 'map',
-    zoom: 18,
+    zoom: 16,
     center:  [center.value.lng, center.value.lat],
     style: {
       version: 8,
@@ -45,7 +45,43 @@ onMounted(async ()=> {
     buildings_geojson.value = response.data;
     data_fetched.value = true;
 
-    // TODO: Draw polygons from GeoJSON FeatureCollection
+    center.value = new LngLat(
+        (buildings_geojson.value.features[0].geometry as Polygon).coordinates[0][0][0],
+        (buildings_geojson.value.features[0].geometry as Polygon).coordinates[0][0][1]
+    )
+    map.setCenter([center.value.lng, center.value.lat]);
+    map.on('load', () => {
+      map.addSource('buildings', {
+        type: 'geojson',
+        // @ts-ignore
+        data: buildings_geojson.value,
+      });
+      map.addLayer({
+        'id': 'buildings',
+        'type': 'fill',
+        'source': 'buildings',
+        'layout': {},
+        'paint': {
+          'fill-color': '#176363',
+          'fill-opacity': 0.5
+        }
+      });
+    });
+    map.on('click', 'buildings', (e) => {
+      if (!e.features || e.features.length === 0) {
+        console.warn('No features found');
+        return;
+      }
+      const geometry = e.features[0].geometry as Polygon;
+      const coordinates = new LngLat(
+          (geometry.coordinates[0][1][0]),
+          (geometry.coordinates[0][1][1])
+      );
+      new maplibregl.Popup()
+          .setLngLat(coordinates)
+          .setHTML(`<a href="/buildings/${e.features[0].properties?.id}">${(e.features[0].properties?.name)}</a>`)
+          .addTo(map);
+    });
   } catch (error) {
     console.log(error);
   }
@@ -54,7 +90,7 @@ onMounted(async ()=> {
 
 <template v-show="data_fetched">
   <div class="flex flex-col gap-2">
-    <h1 class="text-3xl font-bold">Die Gebäude</h1>
+    <h1 class="text-3xl font-bold">Die Häuser im Überblick</h1>
     <div id="map" class="h-[500px] w-full rounded-md"/>
   </div>
 </template>
