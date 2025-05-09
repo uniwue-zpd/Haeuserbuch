@@ -9,12 +9,14 @@ const route = useRoute();
 const building_id = route.params.id;
 
 const building_geojson = ref<Feature>({} as Feature);
+const center = ref<LngLat>(new LngLat(9.969929, 49.786181));
 const data_fetched = ref(false);
 
 onMounted(async () => {
   const map = new maplibregl.Map({
     container: 'map',
     zoom: 18,
+    center:  [center.value.lng, center.value.lat],
     style: {
       version: 8,
       sources: {
@@ -34,17 +36,23 @@ onMounted(async () => {
       ]
     }
   });
+  map.addControl(new maplibregl.NavigationControl({
+    showCompass: true,
+    showZoom: true,
+    visualizePitch: true,
+    visualizeRoll: true
+  }));
 
   try {
     const response = await apiClient.get(`buildings/${building_id}?output=geojson`);
     building_geojson.value = response.data;
     data_fetched.value = true;
 
-    const center = new LngLat(
+    center.value = new LngLat(
         (building_geojson.value.geometry as Polygon).coordinates[0][0][0],
         (building_geojson.value.geometry as Polygon).coordinates[0][0][1]
     );
-    map.setCenter(center);
+    map.setCenter(center.value);
     map.on('load', () => {
       map.addSource('building', {
         type: 'geojson',
