@@ -4,13 +4,24 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { ref, onMounted } from 'vue';
 import apiClient from "~/service/api";
 import type {Feature, Polygon} from "~/utils/GeoJsonTypes";
+import { MaplibreTerradrawControl } from '@watergis/maplibre-gl-terradraw';
+import '@watergis/maplibre-gl-terradraw/dist/maplibre-gl-terradraw.css';
 
+// Page title
 const route = useRoute();
 const building_id = route.params.id;
 
+// Put fetched data into a ref
 const building_geojson = ref<Feature>({} as Feature);
 const center = ref<LngLat>(new LngLat(9.969929, 49.786181));
 const data_fetched = ref(false);
+
+// Initialize drawing panel for the map
+const draw = new MaplibreTerradrawControl({
+  modes: ['render','point','linestring','polygon','select','delete-selection','delete','download'],
+  open: true,
+});
+// TODO: Define the function for fetching the data from the objects drawn on the map
 
 onMounted(async () => {
   const map = new maplibregl.Map({
@@ -42,6 +53,7 @@ onMounted(async () => {
     visualizePitch: true,
     visualizeRoll: true
   }));
+  map.addControl(draw, "top-left");
 
   try {
     const response = await apiClient.get(`buildings/${building_id}?output=geojson`);
