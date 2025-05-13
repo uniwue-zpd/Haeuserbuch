@@ -7,16 +7,16 @@ const toggle = (event: any) => op.value.toggle(event)
 </script>
 
 <template>
-  <header class="bg-[#ADA587]">
+  <header class="bg-[#2C3E50]">
     <div class="flex flex-row justify-between items-center max-w-[1140px] mx-auto p-3">
       <NuxtLink to="/">
-        <div class="text-xl montserrat-headline font-bold">Häuserbuch-Logo</div>
+        <div class="text-xl montserrat-headline font-bold text-white">Häuserbuch-Logo</div>
       </NuxtLink>
       <div class="flex flex-row items-center space-x-2">
-        <NuxtLink to="/project" class="text-black roboto-plain">Projekt</NuxtLink>
-        <NuxtLink to="/contact" class="text-black roboto-plain">Kontakt</NuxtLink>
-        <div class="card flex justify-center align-middle text-black">
-          <Button type="button" icon="pi pi-user" rounded aria-label="User" variant="link" class="text-black" @click="toggle"/>
+        <NuxtLink to="/project" class="text-white roboto-plain">Projekt</NuxtLink>
+        <NuxtLink to="/contact" class="text-white roboto-plain">Kontakt</NuxtLink>
+        <div class="card flex justify-center align-middle text-white">
+          <Button type="button" icon="pi pi-user" rounded aria-label="User" variant="link" class="text-white" @click="toggle"/>
           <Popover ref="op">
             <div class="card flex justify-center">
               <div>Hier entsteht der Anmeldebereich</div>
@@ -30,10 +30,10 @@ const toggle = (event: any) => op.value.toggle(event)
 
 <style scoped>
 .p-button-link {
-  color: black;
+  color: white;
 }
 
 .p-button-link:not(:disabled):hover {
-  color: black;
+  color: white;
 }
 </style>

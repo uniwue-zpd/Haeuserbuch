@@ -14,22 +14,22 @@ function copy_to_clipboard(copy_item: string) {
 
 <template>
   <footer class="flex flex-col">
-    <div class="bg-[#ADA587]">
+    <div class="bg-[#2C3E50]">
       <div class="flex flex-col gap-2 md:flex-row md:justify-between max-w-[1140px] text-black p-3 mx-auto">
         <div class="flex flex-row justify-between md:space-x-10">
           <div class="flex flex-col gap-2">
-            <p class="text-xl montserrat-headline font-bold">Häuserbuch</p>
-            <NuxtLink to="/project" class="text-black roboto-plain">Projekt</NuxtLink>
-            <NuxtLink to="/faq" class="text-black roboto-plain">FAQ</NuxtLink>
+            <p class="text-xl montserrat-headline font-bold text-white">Häuserbuch</p>
+            <NuxtLink to="/project" class="text-white roboto-plain">Projekt</NuxtLink>
+            <NuxtLink to="/faq" class="text-white roboto-plain">FAQ</NuxtLink>
           </div>
           <div class="flex flex-col gap-2">
-            <p class="text-xl montserrat-headline font-bold">Kontakt</p>
+            <p class="text-xl montserrat-headline font-bold text-white">Kontakt</p>
             <div class="space-x-2">
               <Toast />
-              <a v-bind:href="'mailto:' + email" class="text-black roboto-plain">{{ email }}</a>
-              <i class="pi pi-clone hover:cursor-pointer" @click="copy_to_clipboard(email)"></i>
+              <a v-bind:href="'mailto:' + email" class="text-white roboto-plain">{{ email }}</a>
+              <i class="pi pi-clone hover:cursor-pointer text-white" @click="copy_to_clipboard(email)"></i>
             </div>
-            <NuxtLink to="/contact" class="text-black roboto-plain">Kontaktformular</NuxtLink>
+            <NuxtLink to="/contact" class="text-white roboto-plain">Kontaktformular</NuxtLink>
           </div>
         </div>
         <div class="flex flex-row justify-between md:space-x-10 md:justify-end">
