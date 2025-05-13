@@ -18,18 +18,18 @@ function copy_to_clipboard(copy_item: string) {
       <div class="flex flex-col gap-2 md:flex-row md:justify-between max-w-[1140px] text-black p-3 mx-auto">
         <div class="flex flex-row justify-between md:space-x-10">
           <div class="flex flex-col gap-2">
-            <p class="text-xl">Häuserbuch</p>
-            <NuxtLink to="/project" class="text-black">Projekt</NuxtLink>
-            <NuxtLink to="/faq" class="text-black">FAQ</NuxtLink>
+            <p class="text-xl montserrat-headline font-bold">Häuserbuch</p>
+            <NuxtLink to="/project" class="text-black roboto-plain">Projekt</NuxtLink>
+            <NuxtLink to="/faq" class="text-black roboto-plain">FAQ</NuxtLink>
           </div>
           <div class="flex flex-col gap-2">
-            <p class="text-xl">Kontakt</p>
+            <p class="text-xl montserrat-headline font-bold">Kontakt</p>
             <div class="space-x-2">
               <Toast />
-              <a v-bind:href="'mailto:' + email" class="text-black">{{ email }}</a>
+              <a v-bind:href="'mailto:' + email" class="text-black roboto-plain">{{ email }}</a>
               <i class="pi pi-clone hover:cursor-pointer" @click="copy_to_clipboard(email)"></i>
             </div>
-            <NuxtLink to="/contact" class="text-black">Kontaktformular</NuxtLink>
+            <NuxtLink to="/contact" class="text-black roboto-plain">Kontaktformular</NuxtLink>
           </div>
         </div>
         <div class="flex flex-row justify-between md:space-x-10 md:justify-end">
@@ -49,10 +49,10 @@ function copy_to_clipboard(copy_item: string) {
     <div class="bg-[#F1F2F2]">
       <div class="flex flex-row max-w-[1140px] justify-between px-3 py-1 mx-auto">
         <div class="flex flex-row space-x-2">
-          <div>&copy;</div>
-          <div>{{ date }}</div>
+          <div class="roboto-plain">&copy;</div>
+          <div class="roboto-plain">{{ date }}</div>
         </div>
-        <div class="flex space-x-2">
+        <div class="flex space-x-2 roboto-plain">
           <NuxtLink to="/impressum">Impressum</NuxtLink>
           <div>|</div>
           <NuxtLink to="/data-protection">Datenschutz</NuxtLink>

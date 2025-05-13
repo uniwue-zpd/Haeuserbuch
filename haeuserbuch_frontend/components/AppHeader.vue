@@ -10,11 +10,11 @@ const toggle = (event: any) => op.value.toggle(event)
   <header class="bg-[#ADA587]">
     <div class="flex flex-row justify-between items-center max-w-[1140px] mx-auto p-3">
       <NuxtLink to="/">
-        <div class="text-xl font-bold">Häuserbuch-Logo</div>
+        <div class="text-xl montserrat-headline font-bold">Häuserbuch-Logo</div>
       </NuxtLink>
       <div class="flex flex-row items-center space-x-2">
-        <NuxtLink to="/project" class="text-black">Projekt</NuxtLink>
-        <NuxtLink to="/contact" class="text-black">Kontakt</NuxtLink>
+        <NuxtLink to="/project" class="text-black roboto-plain">Projekt</NuxtLink>
+        <NuxtLink to="/contact" class="text-black roboto-plain">Kontakt</NuxtLink>
         <div class="card flex justify-center align-middle text-black">
           <Button type="button" icon="pi pi-user" rounded aria-label="User" variant="link" class="text-black" @click="toggle"/>
           <Popover ref="op">

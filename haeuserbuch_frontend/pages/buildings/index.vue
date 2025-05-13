@@ -90,7 +90,7 @@ onMounted(async ()=> {
 
 <template v-show="data_fetched">
   <div class="flex flex-col gap-2">
-    <h1 class="text-3xl font-bold">Die Häuser im Überblick</h1>
+    <h1 class="text-3xl montserrat-headline font-bold">Die Häuser im Überblick</h1>
     <div id="map" class="h-[500px] w-full rounded-md"/>
   </div>
 </template>

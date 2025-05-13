@@ -90,7 +90,7 @@ onMounted(async () => {
 
 <template v-if="data_fetched">
   <div class="flex flex-col gap-2">
-    <h1 class="text-3xl font-bold">{{ building_geojson.properties?.name }}</h1>
+    <h1 class="text-3xl montserrat-headline font-bold">{{ building_geojson.properties?.name }}</h1>
     <div id="map" class="h-[500px] w-full rounded-md"/>
   </div>
 </template>

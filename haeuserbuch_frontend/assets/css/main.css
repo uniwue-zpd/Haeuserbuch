@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,4 +8,19 @@
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+}
+
+.montserrat-headline {
+    font-family: 'Montserrat', sans-serif;
+    font-style: normal;
+}
+
+.roboto-plain {
+    font-family: 'Roboto', sans-serif;
+    font-style: normal;
+}
+
+.roboto-italic {
+    font-family: 'Roboto', sans-serif;
+    font-style: italic;
 }
