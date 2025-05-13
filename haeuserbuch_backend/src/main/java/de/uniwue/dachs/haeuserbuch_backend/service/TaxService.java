@@ -87,6 +87,8 @@ public class TaxService {
         taxDTO.setPlan_number(tax.getPlan_number());
         taxDTO.setEntry_text(tax.getEntry_text());
         taxDTO.setBuilding(buildingToDto(tax.getBuilding()));
+        taxDTO.setPerson(tax.getPerson());
+        taxDTO.setTaxBook(tax.getTaxbook());
         return taxDTO;
     }
 

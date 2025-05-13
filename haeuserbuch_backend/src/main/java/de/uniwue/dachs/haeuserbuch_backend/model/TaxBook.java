@@ -13,5 +13,3 @@ public class TaxBook extends BaseEntity {
     private String title;
     private String signature;
 }
-
-// TODO: Needs clarification
