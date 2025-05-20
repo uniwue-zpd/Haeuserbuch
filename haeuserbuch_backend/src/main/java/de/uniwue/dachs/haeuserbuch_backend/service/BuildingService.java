@@ -74,10 +74,13 @@ public class BuildingService {
     private Building DtoToBuilding(BuildingDTO buildingDTO) {
         Building building = new Building();
         building.setName(buildingDTO.getName());
-        building.setAddress(buildingDTO.getAddress());
-        building.setDescription(buildingDTO.getDescription());
+        building.setHouse_number(buildingDTO.getHouse_number());
+        building.setPart_type(buildingDTO.getPart_type());
+        building.setSpecial_status(buildingDTO.getSpecial_status());
         building.setQuarter(buildingDTO.getQuarter());
         building.setDistrict(buildingDTO.getDistrict());
+        building.setSource(buildingDTO.getSource());
+        building.setNote(buildingDTO.getNote());
         building.setCoordinates(createPolygon(buildingDTO.getCoordinates()));
         return building;
     }
@@ -93,10 +96,13 @@ public class BuildingService {
         List<List<Double>> coordinates = geometry_coords.getFirst();
         Building building = new Building();
         building.setName((String) feature.getProperties().get("name"));
-        building.setAddress((String) feature.getProperties().get("address"));
-        building.setDescription((String) feature.getProperties().get("description"));
+        building.setHouse_number((String) feature.getProperties().get("house_number"));
+        building.setPart_type((String) feature.getProperties().get("part_type"));
+        building.setSpecial_status((String) feature.getProperties().get("special_status"));
         building.setQuarter((String) feature.getProperties().get("quarter"));
         building.setDistrict((String) feature.getProperties().get("district"));
+        building.setSource((String) feature.getProperties().get("source"));
+        building.setNote((String) feature.getProperties().get("note"));
         building.setCoordinates(createPolygon(coordinates));
         return building;
     }
@@ -105,10 +111,13 @@ public class BuildingService {
         BuildingDTO buildingDTO = new BuildingDTO();
         buildingDTO.setId(building.getId());
         buildingDTO.setName(building.getName());
-        buildingDTO.setAddress(building.getAddress());
-        buildingDTO.setDescription(building.getDescription());
+        buildingDTO.setHouse_number(building.getHouse_number());
+        buildingDTO.setPart_type(building.getPart_type());
+        buildingDTO.setSpecial_status(building.getSpecial_status());
         buildingDTO.setQuarter(building.getQuarter());
         buildingDTO.setDistrict(building.getDistrict());
+        buildingDTO.setSource(building.getSource());
+        buildingDTO.setNote(building.getNote());
         buildingDTO.setCoordinates(convertPolygon(building.getCoordinates()));
         return buildingDTO;
     }
@@ -117,10 +126,13 @@ public class BuildingService {
         Feature feature = new Feature();
         feature.getProperties().put("id", building.getId());
         feature.getProperties().put("name", building.getName());
-        feature.getProperties().put("address", building.getAddress());
-        feature.getProperties().put("description", building.getDescription());
+        feature.getProperties().put("house_number", building.getHouse_number());
+        feature.getProperties().put("part_type", building.getPart_type());
+        feature.getProperties().put("special_status", building.getSpecial_status());
         feature.getProperties().put("quarter", building.getQuarter());
         feature.getProperties().put("district", building.getDistrict());
+        feature.getProperties().put("source", building.getSource());
+        feature.getProperties().put("note", building.getNote());
         PolygonGeometry geometry = new PolygonGeometry();
         List<List<List<Double>>> coordinates = new ArrayList<>();
         coordinates.add(convertPolygon(building.getCoordinates()));

@@ -15,13 +15,19 @@ public class Building extends BaseEntity {
 
     private String name;
 
-    private String address;
+    private String house_number;
 
-    private String description;
+    private String part_type;
+
+    private String special_status;
 
     private String quarter;
 
     private String district;
+
+    private String source;
+
+    private String note;
 
     @Column(columnDefinition = "geometry(Polygon,25832)")
     private Polygon coordinates;

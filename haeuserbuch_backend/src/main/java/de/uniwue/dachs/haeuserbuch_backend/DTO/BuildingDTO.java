@@ -10,10 +10,13 @@ import java.util.List;
 public class BuildingDTO {
     private Long id;
     private String name;
-    private String address;
-    private String description;
+    private String house_number;
+    private String part_type;
+    private String special_status;
     private String quarter;
     private String district;
+    private String source;
+    private String note;
 
     private List<List<Double>> coordinates;
 }

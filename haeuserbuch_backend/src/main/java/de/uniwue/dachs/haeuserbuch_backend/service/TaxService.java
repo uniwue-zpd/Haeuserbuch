@@ -86,20 +86,23 @@ public class TaxService {
         taxDTO.setTax_number(tax.getTax_number());
         taxDTO.setPlan_number(tax.getPlan_number());
         taxDTO.setEntry_text(tax.getEntry_text());
-        taxDTO.setBuilding(buildingToDto(tax.getBuilding()));
+        taxDTO.setBuilding(BuildingToDTO(tax.getBuilding()));
         taxDTO.setPerson(tax.getPerson());
         taxDTO.setTaxBook(tax.getTaxbook());
         return taxDTO;
     }
 
-    private BuildingDTO buildingToDto(Building building) {
+    private BuildingDTO BuildingToDTO(Building building) {
         BuildingDTO buildingDTO = new BuildingDTO();
         buildingDTO.setId(building.getId());
         buildingDTO.setName(building.getName());
-        buildingDTO.setAddress(building.getAddress());
-        buildingDTO.setDescription(building.getDescription());
+        buildingDTO.setHouse_number(building.getHouse_number());
+        buildingDTO.setPart_type(building.getPart_type());
+        buildingDTO.setSpecial_status(building.getSpecial_status());
         buildingDTO.setQuarter(building.getQuarter());
         buildingDTO.setDistrict(building.getDistrict());
+        buildingDTO.setSource(building.getSource());
+        buildingDTO.setNote(building.getNote());
         buildingDTO.setCoordinates(convertPolygon(building.getCoordinates()));
         return buildingDTO;
     }
@@ -113,10 +116,13 @@ public class TaxService {
         }
         Building building = new Building();
         building.setName(buildingDTO.getName());
-        building.setAddress(buildingDTO.getAddress());
-        building.setDescription(buildingDTO.getDescription());
+        building.setHouse_number(buildingDTO.getHouse_number());
+        building.setPart_type(buildingDTO.getPart_type());
+        building.setSpecial_status(buildingDTO.getSpecial_status());
         building.setQuarter(buildingDTO.getQuarter());
         building.setDistrict(buildingDTO.getDistrict());
+        building.setSource(buildingDTO.getSource());
+        building.setNote(buildingDTO.getNote());
         building.setCoordinates(createPolygon(buildingDTO.getCoordinates()));
         return buildingRepository.save(building);
     }
