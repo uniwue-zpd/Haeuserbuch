@@ -18,5 +18,5 @@ public class BuildingDTO {
     private String source;
     private String note;
 
-    private List<List<Double>> coordinates;
+    private List<List<List<Double>>> coordinates;
 }

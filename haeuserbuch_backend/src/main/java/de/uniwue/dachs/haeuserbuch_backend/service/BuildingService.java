@@ -90,10 +90,9 @@ public class BuildingService {
             throw new IllegalArgumentException("Unsupported geometry type");
         }
         List<List<List<Double>>> geometry_coords = geometry.getCoordinates();
-        if (geometry_coords.size() != 1 || geometry_coords.getFirst().size() < 3) {
+        if (geometry_coords.isEmpty()) {
             throw new IllegalArgumentException("Invalid coordinates");
         }
-        List<List<Double>> coordinates = geometry_coords.getFirst();
         Building building = new Building();
         building.setName((String) feature.getProperties().get("name"));
         building.setHouse_number((String) feature.getProperties().get("house_number"));
@@ -103,7 +102,7 @@ public class BuildingService {
         building.setDistrict((String) feature.getProperties().get("district"));
         building.setSource((String) feature.getProperties().get("source"));
         building.setNote((String) feature.getProperties().get("note"));
-        building.setCoordinates(createPolygon(coordinates));
+        building.setCoordinates(createPolygon(geometry_coords));
         return building;
     }
 
@@ -134,8 +133,7 @@ public class BuildingService {
         feature.getProperties().put("source", building.getSource());
         feature.getProperties().put("note", building.getNote());
         PolygonGeometry geometry = new PolygonGeometry();
-        List<List<List<Double>>> coordinates = new ArrayList<>();
-        coordinates.add(convertPolygon(building.getCoordinates()));
+        List<List<List<Double>>> coordinates = convertPolygon(building.getCoordinates());
         geometry.setCoordinates(coordinates);
         feature.setGeometry(geometry);
         return feature;
