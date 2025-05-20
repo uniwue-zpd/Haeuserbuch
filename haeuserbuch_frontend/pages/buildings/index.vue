@@ -10,41 +10,40 @@ const center = ref<LngLat>(new LngLat(9.969929, 49.786181));
 const buildings_geojson = ref<FeatureCollection>({} as FeatureCollection);
 
 onMounted(async ()=> {
-  const map = new maplibregl.Map({
-    container: 'map',
-    zoom: 16,
-    center:  [center.value.lng, center.value.lat],
-    style: {
-      version: 8,
-      sources: {
-        osm: {
-          type: "raster",
-          tiles: ["https://tile.openstreetmap.de/{z}/{x}/{y}.png"],
-          tileSize: 256,
-          attribution: "&copy; OpenStreetMap Contributors"
-        }
-      },
-      layers: [
-        {
-          id: "osm-layer",
-          type: "raster",
-          source: "osm"
-        }
-      ]
-    }
-  });
-  map.addControl(new maplibregl.NavigationControl({
-    showCompass: true,
-    showZoom: true,
-    visualizePitch: true,
-    visualizeRoll: true
-  }));
-
   try {
     const response = await apiClient.get('buildings?output=geojson');
     buildings_geojson.value = response.data;
     data_fetched.value = true;
 
+    const map = new maplibregl.Map({
+      container: 'map',
+      zoom: 14,
+      center:  [center.value.lng, center.value.lat],
+      style: {
+        version: 8,
+        sources: {
+          osm: {
+            type: "raster",
+            tiles: ["https://tile.openstreetmap.de/{z}/{x}/{y}.png"],
+            tileSize: 256,
+            attribution: "&copy; OpenStreetMap Contributors"
+          }
+        },
+        layers: [
+          {
+            id: "osm-layer",
+            type: "raster",
+            source: "osm"
+          }
+        ]
+      }
+    });
+    map.addControl(new maplibregl.NavigationControl({
+      showCompass: true,
+      showZoom: true,
+      visualizePitch: true,
+      visualizeRoll: true
+    }));
     center.value = new LngLat(
         (buildings_geojson.value.features[0].geometry as Polygon).coordinates[0][0][0],
         (buildings_geojson.value.features[0].geometry as Polygon).coordinates[0][0][1]
@@ -81,6 +80,16 @@ onMounted(async ()=> {
           .setLngLat(coordinates)
           .setHTML(`<a href="/buildings/${e.features[0].properties?.id}">${(e.features[0].properties?.name)}</a>`)
           .addTo(map);
+      map.flyTo({
+        center: coordinates,
+        zoom: 17
+      });
+    });
+    map.on('mouseenter', 'buildings', () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+    map.on('mouseleave', 'buildings', () => {
+      map.getCanvas().style.cursor = '';
     });
   } catch (error) {
     console.log(error);
