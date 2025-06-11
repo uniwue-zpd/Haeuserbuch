@@ -18,8 +18,8 @@ public class Citizenship extends BaseEntity {
     private Person person;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "townbook_id", nullable = false)
-    private TownBook townbook;
+    @JoinColumn(name = "source_id", nullable = false)
+    private Source source;
 
     @ManyToOne
     @JoinColumn(name = "place_id")

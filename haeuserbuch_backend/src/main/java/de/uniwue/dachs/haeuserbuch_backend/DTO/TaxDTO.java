@@ -1,7 +1,7 @@
 package de.uniwue.dachs.haeuserbuch_backend.DTO;
 
 import de.uniwue.dachs.haeuserbuch_backend.model.Person;
-import de.uniwue.dachs.haeuserbuch_backend.model.TaxBook;
+import de.uniwue.dachs.haeuserbuch_backend.model.Source;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,5 +14,5 @@ public class TaxDTO {
     private String entry_text;
     private BuildingDTO building;
     private Person person;
-    private TaxBook taxBook;
+    private Source source;
 }

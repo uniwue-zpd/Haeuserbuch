@@ -27,6 +27,6 @@ public class Tax extends BaseEntity {
     private Person person;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "taxbook_id")
-    private TaxBook taxbook;
+    @JoinColumn(name = "source_id")
+    private Source source;
 }

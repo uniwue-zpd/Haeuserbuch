@@ -1,7 +1,7 @@
 package de.uniwue.dachs.haeuserbuch_backend.DTO;
 
 import de.uniwue.dachs.haeuserbuch_backend.model.Person;
-import de.uniwue.dachs.haeuserbuch_backend.model.TownBook;
+import de.uniwue.dachs.haeuserbuch_backend.model.Source;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +10,7 @@ import lombok.Setter;
 public class CitizenshipDTO {
     private Long id;
     private Person person;
-    private TownBook townBook;
+    private Source source;
     private PlaceDTO place;
     private Long number;
     private String date;

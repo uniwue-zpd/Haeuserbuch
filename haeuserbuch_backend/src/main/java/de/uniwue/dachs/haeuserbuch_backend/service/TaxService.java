@@ -4,11 +4,11 @@ import de.uniwue.dachs.haeuserbuch_backend.DTO.BuildingDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.TaxDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Building;
 import de.uniwue.dachs.haeuserbuch_backend.model.Person;
+import de.uniwue.dachs.haeuserbuch_backend.model.Source;
 import de.uniwue.dachs.haeuserbuch_backend.model.Tax;
-import de.uniwue.dachs.haeuserbuch_backend.model.TaxBook;
 import de.uniwue.dachs.haeuserbuch_backend.repository.BuildingRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PersonRepository;
-import de.uniwue.dachs.haeuserbuch_backend.repository.TaxBookRepository;
+import de.uniwue.dachs.haeuserbuch_backend.repository.SourceRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.TaxRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,16 +23,16 @@ import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.*;
 public class TaxService {
     private final BuildingRepository buildingRepository;
     private final PersonRepository personRepository;
-    private final TaxBookRepository taxBookRepository;
+    private final SourceRepository sourceRepository;
     private final TaxRepository taxRepository;
 
     public TaxService(BuildingRepository buildingRepository,
                       PersonRepository personRepository,
-                      TaxBookRepository taxBookRepository,
+                      SourceRepository sourceRepository,
                       TaxRepository taxRepository) {
         this.buildingRepository = buildingRepository;
         this.personRepository = personRepository;
-        this.taxBookRepository = taxBookRepository;
+        this.sourceRepository = sourceRepository;
         this.taxRepository = taxRepository;
     }
 
@@ -76,7 +76,7 @@ public class TaxService {
         tax.setEntry_text(taxDTO.getEntry_text());
         tax.setBuilding(getOrSaveBuildingDTO(taxDTO.getBuilding()));
         tax.setPerson(getOrSavePerson(taxDTO.getPerson()));
-        tax.setTaxbook(getOrSaveTaxBook(taxDTO.getTaxBook()));
+        tax.setSource(getOrSaveSource(taxDTO.getSource()));
         return tax;
     }
 
@@ -88,7 +88,7 @@ public class TaxService {
         taxDTO.setEntry_text(tax.getEntry_text());
         taxDTO.setBuilding(BuildingToDTO(tax.getBuilding()));
         taxDTO.setPerson(tax.getPerson());
-        taxDTO.setTaxBook(tax.getTaxbook());
+        taxDTO.setSource(tax.getSource());
         return taxDTO;
     }
 
@@ -134,10 +134,10 @@ public class TaxService {
         return personRepository.save(person);
     }
 
-    private TaxBook getOrSaveTaxBook(TaxBook taxBook) {
-        if (taxBook.getId() != null) {
-            return taxBookRepository.findById(taxBook.getId()).orElse(null);
+    private Source getOrSaveSource(Source source) {
+        if (source.getId() != null) {
+            return sourceRepository.findById(source.getId()).orElse(null);
         }
-        return taxBookRepository.save(taxBook);
+        return sourceRepository.save(source);
     }
 }

@@ -5,11 +5,11 @@ import de.uniwue.dachs.haeuserbuch_backend.DTO.PlaceDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Citizenship;
 import de.uniwue.dachs.haeuserbuch_backend.model.Person;
 import de.uniwue.dachs.haeuserbuch_backend.model.Place;
-import de.uniwue.dachs.haeuserbuch_backend.model.TownBook;
+import de.uniwue.dachs.haeuserbuch_backend.model.Source;
 import de.uniwue.dachs.haeuserbuch_backend.repository.CitizenshipRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PersonRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PlaceRepository;
-import de.uniwue.dachs.haeuserbuch_backend.repository.TownBookRepository;
+import de.uniwue.dachs.haeuserbuch_backend.repository.SourceRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,16 +24,16 @@ import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.cr
 public class CitizenshipService {
     private final CitizenshipRepository citizenshipRepository;
     private final PersonRepository personRepository;
-    private final TownBookRepository townBookRepository;
+    private final SourceRepository sourceRepository;
     private final PlaceRepository placeRepository;
 
     public CitizenshipService(CitizenshipRepository citizenshipRepository,
                               PersonRepository personRepository,
-                              TownBookRepository townBookRepository,
+                              SourceRepository sourceRepository,
                               PlaceRepository placeRepository) {
         this.citizenshipRepository = citizenshipRepository;
         this.personRepository = personRepository;
-        this.townBookRepository = townBookRepository;
+        this.sourceRepository = sourceRepository;
         this.placeRepository = placeRepository;
     }
 
@@ -72,7 +72,7 @@ public class CitizenshipService {
     private Citizenship DtoToCitizenship(CitizenshipDTO citizenshipDTO) {
         Citizenship citizenship = new Citizenship();
         citizenship.setPerson(getOrSavePerson(citizenshipDTO.getPerson()));
-        citizenship.setTownbook(getOrSaveTownBook(citizenshipDTO.getTownBook()));
+        citizenship.setSource(getOrSaveSource(citizenshipDTO.getSource()));
         citizenship.setPlace(getOrSavePlaceDTO(citizenshipDTO.getPlace()));
         citizenship.setNumber(citizenshipDTO.getNumber());
         citizenship.setDate(citizenshipDTO.getDate());
@@ -85,7 +85,7 @@ public class CitizenshipService {
         CitizenshipDTO citizenshipDTO = new CitizenshipDTO();
         citizenshipDTO.setId(citizenship.getId());
         citizenshipDTO.setPerson(citizenship.getPerson());
-        citizenshipDTO.setTownBook(citizenship.getTownbook());
+        citizenshipDTO.setSource(citizenship.getSource());
         if (citizenship.getPlace() != null) {
             citizenshipDTO.setPlace(PlaceToDto(citizenship.getPlace()));
         }
@@ -112,11 +112,11 @@ public class CitizenshipService {
         return personRepository.save(person);
     }
 
-    private TownBook getOrSaveTownBook(TownBook townBook) {
-        if (townBook.getId() != null) {
-            return townBookRepository.findById(townBook.getId()).orElse(null);
+    private Source getOrSaveSource(Source source) {
+        if (source.getId() != null) {
+            return sourceRepository.findById(source.getId()).orElse(null);
         }
-        return townBookRepository.save(townBook);
+        return sourceRepository.save(source);
     }
 
     private Place getOrSavePlaceDTO(PlaceDTO placeDTO) {
