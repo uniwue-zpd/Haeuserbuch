@@ -1,38 +1,57 @@
 package de.uniwue.dachs.haeuserbuch_backend.controller;
 
 import de.uniwue.dachs.haeuserbuch_backend.model.Person;
-import de.uniwue.dachs.haeuserbuch_backend.repository.PersonRepository;
+import de.uniwue.dachs.haeuserbuch_backend.service.PersonService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/persons")
 public class PersonController {
-    private final PersonRepository personRepository;
+    private final PersonService personService;
 
-    public PersonController(PersonRepository personRepository) {
-        this.personRepository = personRepository;
+    public PersonController(PersonService personService) {
+        this.personService = personService;
     }
 
     @GetMapping
-    public ResponseEntity<Iterable<Person>> getPersons() {
-        Iterable<Person> persons = personRepository.findAll();
+    public ResponseEntity<List<Person>> getPersons() {
+        List<Person> persons = personService.getAllPersons();
         return ResponseEntity.ok(persons);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Person> getPerson(@PathVariable Long id) {
-        return personRepository.findById(id)
+    public ResponseEntity<Person> getPersonById(@PathVariable Long id) {
+        return personService.getPersonById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.status(404).build());
     }
 
     @PostMapping
-    public ResponseEntity<Person> savePerson(@RequestBody Person person) {
-        Person savedPerson = personRepository.save(person);
-        return ResponseEntity.status(201).body(savedPerson);
+    public ResponseEntity<Person> createPerson(@RequestBody Person person) {
+        Person createdPerson = personService.createPerson(person);
+        return ResponseEntity.status(201).body(createdPerson);
     }
 
-    // TODO: Implement other mappings and move functionality to service layer
-    // TODO: Check also DTO approach
+    @PutMapping("/{id}")
+    public ResponseEntity<Person> updatePerson(@PathVariable Long id, @RequestBody Person updatedPerson) {
+        Person person = personService.updatePerson(id, updatedPerson);
+        if (person != null) {
+            return ResponseEntity.status(201).body(person);
+        } else {
+            return ResponseEntity.status(404).build();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePerson(@PathVariable Long id) {
+        try {
+            personService.deletePerson(id);
+            return ResponseEntity.status(204).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(404).build();
+        }
+    }
 }

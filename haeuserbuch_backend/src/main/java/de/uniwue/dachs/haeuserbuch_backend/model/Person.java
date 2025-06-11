@@ -25,5 +25,7 @@ public class Person extends BaseEntity{
 
     private String confession;
 
+    private String notes;
+
     // TODO: Add column for places (Set/List)
 }
