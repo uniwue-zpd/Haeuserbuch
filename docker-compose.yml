@@ -67,6 +67,18 @@ services:
       - haeuserbuch_network
     restart: unless-stopped
 
+  tileserver:
+    image: maptiler/tileserver-gl:latest
+    container_name: tileserver
+    ports:
+      - "8090:8080"
+    volumes:
+      - ./tiles:/data
+    networks:
+      - haeuserbuch_network
+    command: --public_url /api/tiles/
+    restart: unless-stopped
+
 networks:
   haeuserbuch_network:
     driver: bridge
