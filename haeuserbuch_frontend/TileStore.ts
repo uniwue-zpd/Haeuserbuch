@@ -2,10 +2,25 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import apiClient from '~/service/api';
 import type { Tile } from '~/utils/types';
-import type {RasterSourceSpecification} from "maplibre-gl";
+import type { RasterLayerSpecification, RasterSourceSpecification} from "maplibre-gl";
 
 export const useTileStore = defineStore('tile', () => {
     const tiles = ref<Tile[]>([] as Tile[]);
+    const sources = ref<Record<string, RasterSourceSpecification>>({
+        osm: {
+            type: 'raster',
+            tiles: ['https://tile.openstreetmap.de/{z}/{x}/{y}.png'],
+            tileSize: 256,
+            attribution: '&copy; OpenStreetMap Contributors'
+        }
+    });
+    const layers = ref<RasterLayerSpecification[]>([
+        {
+            id: 'osm-layer',
+            type: 'raster',
+            source: 'osm'
+        }
+    ] as RasterLayerSpecification[]);
 
     const isLoaded = computed(() => tiles.value.length > 0);
 
@@ -15,28 +30,33 @@ export const useTileStore = defineStore('tile', () => {
                 const response = await apiClient.get('/tiles/index.json');
                 tiles.value = response.data;
             } catch (error) {
-                console.log('Error fetching tiles:', error);
+                console.warn('Error fetching tiles:', error, 'Setting OSM as default tile');
+            } finally {
+                getMaplibreSources();
             }
         }
     }
 
-    function getMaplibreSources(): Record<string, Partial<RasterSourceSpecification>> {
-        const sources: Record<string, Partial<RasterSourceSpecification>> = {};
+    function getMaplibreSources(): void {
         tiles.value.forEach(tile => {
-            sources[tile.id] = {
+            sources.value[tile.id] = {
                 type: 'raster',
                 tiles: tile.tiles,
                 tileSize: 256,
                 attribution: '&copy;'
-            }
-        })
-        return sources;
+            };
+            layers.value.push({
+                id: `${tile.id}-layer`,
+                type: 'raster',
+                source: tile.id
+            });
+        });
     }
 
     return {
         tiles,
-        isLoaded,
-        fetchTiles,
-        getMaplibreSources
+        sources,
+        layers,
+        fetchTiles
     };
-})
+});
