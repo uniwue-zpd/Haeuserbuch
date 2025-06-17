@@ -81,18 +81,13 @@ public class BuildingService {
         building.setDistrict(buildingDTO.getDistrict());
         building.setSource(buildingDTO.getSource());
         building.setNote(buildingDTO.getNote());
-        building.setCoordinates(createPolygon(buildingDTO.getCoordinates()));
+        if (buildingDTO.getCoordinates() != null) {
+            building.setCoordinates(createPolygon(buildingDTO.getCoordinates()));
+        }
         return building;
     }
 
     private Building GeoJsonToBuilding(Feature feature) {
-        if (!(feature.getGeometry() instanceof PolygonGeometry geometry)) {
-            throw new IllegalArgumentException("Unsupported geometry type");
-        }
-        List<List<List<Double>>> geometry_coords = geometry.getCoordinates();
-        if (geometry_coords.isEmpty()) {
-            throw new IllegalArgumentException("Invalid coordinates");
-        }
         Building building = new Building();
         building.setName((String) feature.getProperties().get("name"));
         building.setHouse_number((String) feature.getProperties().get("house_number"));
@@ -102,7 +97,17 @@ public class BuildingService {
         building.setDistrict((String) feature.getProperties().get("district"));
         building.setSource((String) feature.getProperties().get("source"));
         building.setNote((String) feature.getProperties().get("note"));
-        building.setCoordinates(createPolygon(geometry_coords));
+        if (feature.getGeometry() != null) {
+            if (feature.getGeometry() instanceof PolygonGeometry geometry) {
+                List<List<List<Double>>> geometry_coords = geometry.getCoordinates();
+                if (geometry_coords.isEmpty()) {
+                    throw new IllegalArgumentException("Invalid coordinates");
+                }
+                building.setCoordinates(createPolygon(geometry_coords));
+            } else {
+                throw new IllegalArgumentException("Unsupported geometry type");
+            }
+        }
         return building;
     }
 
@@ -117,7 +122,9 @@ public class BuildingService {
         buildingDTO.setDistrict(building.getDistrict());
         buildingDTO.setSource(building.getSource());
         buildingDTO.setNote(building.getNote());
-        buildingDTO.setCoordinates(convertPolygon(building.getCoordinates()));
+        if (building.getCoordinates() != null) {
+            buildingDTO.setCoordinates(convertPolygon(building.getCoordinates()));
+        }
         return buildingDTO;
     }
 
@@ -132,10 +139,12 @@ public class BuildingService {
         feature.getProperties().put("district", building.getDistrict());
         feature.getProperties().put("source", building.getSource());
         feature.getProperties().put("note", building.getNote());
-        PolygonGeometry geometry = new PolygonGeometry();
-        List<List<List<Double>>> coordinates = convertPolygon(building.getCoordinates());
-        geometry.setCoordinates(coordinates);
-        feature.setGeometry(geometry);
+        if (building.getCoordinates() != null) {
+            PolygonGeometry geometry = new PolygonGeometry();
+            List<List<List<Double>>> coordinates = convertPolygon(building.getCoordinates());
+            geometry.setCoordinates(coordinates);
+            feature.setGeometry(geometry);
+        }
         return feature;
     }
 }
