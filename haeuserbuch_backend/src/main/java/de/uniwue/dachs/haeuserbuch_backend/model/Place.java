@@ -22,5 +22,7 @@ public class Place extends BaseEntity {
     @Column(columnDefinition = "geometry(Point,25832)")
     private Point coordinates;
 
+    private String notes;
+
     // TODO: Use DTO (latitude and longitude as separate fields) in order to create a point for each place
 }

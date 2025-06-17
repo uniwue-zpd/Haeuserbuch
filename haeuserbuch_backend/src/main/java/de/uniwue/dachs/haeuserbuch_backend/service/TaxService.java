@@ -77,6 +77,7 @@ public class TaxService {
         tax.setBuilding(getOrSaveBuildingDTO(taxDTO.getBuilding()));
         tax.setPerson(getOrSavePerson(taxDTO.getPerson()));
         tax.setSource(getOrSaveSource(taxDTO.getSource()));
+        tax.setNotes(taxDTO.getNotes());
         return tax;
     }
 
@@ -89,6 +90,7 @@ public class TaxService {
         taxDTO.setBuilding(BuildingToDTO(tax.getBuilding()));
         taxDTO.setPerson(tax.getPerson());
         taxDTO.setSource(tax.getSource());
+        taxDTO.setNotes(tax.getNotes());
         return taxDTO;
     }
 

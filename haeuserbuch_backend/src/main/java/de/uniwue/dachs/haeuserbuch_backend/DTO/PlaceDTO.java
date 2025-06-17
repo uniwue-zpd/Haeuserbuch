@@ -13,4 +13,5 @@ public class PlaceDTO {
     private String real_name;
     private List<String> alt_names = new ArrayList<>();
     private List<Double> coordinates = new ArrayList<>();
+    private String notes;
 }

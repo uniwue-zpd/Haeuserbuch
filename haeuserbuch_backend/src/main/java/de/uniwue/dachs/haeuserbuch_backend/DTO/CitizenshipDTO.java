@@ -16,4 +16,5 @@ public class CitizenshipDTO {
     private String date;
     private String entry_text;
     private String addendum;
+    private String notes;
 }

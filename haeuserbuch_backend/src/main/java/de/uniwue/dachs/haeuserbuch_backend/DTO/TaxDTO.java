@@ -15,4 +15,5 @@ public class TaxDTO {
     private BuildingDTO building;
     private Person person;
     private Source source;
+    private String notes;
 }

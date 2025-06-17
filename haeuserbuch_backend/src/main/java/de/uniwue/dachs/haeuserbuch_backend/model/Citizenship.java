@@ -32,6 +32,8 @@ public class Citizenship extends BaseEntity {
     private String entry_text;
 
     private String addendum;
+
+    private String notes;
 }
 
 // TODO: Check whether a more precise representation of the dates is possible

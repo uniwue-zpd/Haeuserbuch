@@ -69,6 +69,7 @@ public class PlaceService {
         place.setReal_name(placeDTO.getReal_name());
         place.setAlt_names(placeDTO.getAlt_names());
         place.setCoordinates(createPoint(placeDTO.getCoordinates()));
+        place.setNotes(placeDTO.getNotes());
         return place;
     }
 
@@ -90,6 +91,7 @@ public class PlaceService {
             place.setAlt_names(alt_names);
         }
         place.setCoordinates(createPoint(coordinates));
+        place.setNotes((String) feature.getProperties().get("notes"));
         return place;
     }
 
@@ -99,6 +101,7 @@ public class PlaceService {
         placeDTO.setReal_name(place.getReal_name());
         placeDTO.setAlt_names(place.getAlt_names());
         placeDTO.setCoordinates(convertPoint(place.getCoordinates()));
+        placeDTO.setNotes(place.getNotes());
         return placeDTO;
     }
 
@@ -107,6 +110,7 @@ public class PlaceService {
         feature.getProperties().put("id", place.getId());
         feature.getProperties().put("real_name", place.getReal_name());
         feature.getProperties().put("alt_names", place.getAlt_names());
+        feature.getProperties().put("notes", place.getNotes());
         PointGeometry geometry = new PointGeometry();
         geometry.setCoordinates(convertPoint(place.getCoordinates()));
         feature.setGeometry(geometry);
