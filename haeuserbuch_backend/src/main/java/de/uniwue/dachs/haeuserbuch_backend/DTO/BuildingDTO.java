@@ -15,6 +15,7 @@ public class BuildingDTO {
     private String special_status;
     private String quarter;
     private String district;
+    private String district_house_number;
     private String source;
     private String note;
 

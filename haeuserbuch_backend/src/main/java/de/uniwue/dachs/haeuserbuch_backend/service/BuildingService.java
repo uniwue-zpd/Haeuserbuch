@@ -79,6 +79,7 @@ public class BuildingService {
         building.setSpecial_status(buildingDTO.getSpecial_status());
         building.setQuarter(buildingDTO.getQuarter());
         building.setDistrict(buildingDTO.getDistrict());
+        building.setDistrict_house_number(buildingDTO.getDistrict_house_number());
         building.setSource(buildingDTO.getSource());
         building.setNote(buildingDTO.getNote());
         if (buildingDTO.getCoordinates() != null) {
@@ -95,6 +96,7 @@ public class BuildingService {
         building.setSpecial_status((String) feature.getProperties().get("special_status"));
         building.setQuarter((String) feature.getProperties().get("quarter"));
         building.setDistrict((String) feature.getProperties().get("district"));
+        building.setDistrict_house_number((String) feature.getProperties().get("district_house_number"));
         building.setSource((String) feature.getProperties().get("source"));
         building.setNote((String) feature.getProperties().get("note"));
         if (feature.getGeometry() != null) {
@@ -120,6 +122,7 @@ public class BuildingService {
         buildingDTO.setSpecial_status(building.getSpecial_status());
         buildingDTO.setQuarter(building.getQuarter());
         buildingDTO.setDistrict(building.getDistrict());
+        buildingDTO.setDistrict_house_number(building.getDistrict_house_number());
         buildingDTO.setSource(building.getSource());
         buildingDTO.setNote(building.getNote());
         if (building.getCoordinates() != null) {
@@ -137,6 +140,7 @@ public class BuildingService {
         feature.getProperties().put("special_status", building.getSpecial_status());
         feature.getProperties().put("quarter", building.getQuarter());
         feature.getProperties().put("district", building.getDistrict());
+        feature.getProperties().put("district_house_number", building.getDistrict_house_number());
         feature.getProperties().put("source", building.getSource());
         feature.getProperties().put("note", building.getNote());
         if (building.getCoordinates() != null) {

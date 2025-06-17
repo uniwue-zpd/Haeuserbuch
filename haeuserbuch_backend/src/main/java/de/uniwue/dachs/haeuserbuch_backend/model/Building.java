@@ -25,6 +25,8 @@ public class Building extends BaseEntity {
 
     private String district;
 
+    private String district_house_number;
+
     private String source;
 
     private String note;

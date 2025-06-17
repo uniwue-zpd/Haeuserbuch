@@ -4,7 +4,7 @@ export interface Feature {
     properties: {
         [key: string]: string | number | boolean | null;
     };
-    geometry: GeometryType;
+    geometry: GeometryType | null;
 }
 
 // GeoJSON geometry types
