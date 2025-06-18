@@ -22,7 +22,7 @@ public class BuildingService {
         this.buildingRepository = buildingRepository;
     }
 
-    // Get all buildings
+    // GET all buildings
     public List<BuildingDTO> getAllBuildings() {
         List<Building> buildings = buildingRepository.findAll();
         List<BuildingDTO> buildingDTOs = new ArrayList<>();
@@ -33,7 +33,7 @@ public class BuildingService {
         return buildingDTOs;
     }
 
-    // Get all buildings as feature collection
+    // GET all buildings as feature collection
     public FeatureCollection getAllBuildingFeatures() {
         List<Building> buildings = buildingRepository.findAll();
         FeatureCollection featureCollection = new FeatureCollection();
@@ -46,28 +46,76 @@ public class BuildingService {
         return featureCollection;
     }
 
-    // Get building by its ID
+    // GET building by its ID
     public Optional<BuildingDTO> getBuildingById(Long id) {
         return buildingRepository.findById(id).map(this::BuildingToDTO);
     }
 
-    // Get building by its ID (GeoJSON)
+    // GET building by its ID (GeoJSON)
     public Optional<Feature> getBuildingFeatureById(Long id) {
         return buildingRepository.findById(id).map(this::BuildingToGeoJson);
     }
 
-    // Create new building
+    // POST Create new building
     @Transactional
     public void createBuilding(BuildingDTO buildingDTO) {
         Building building = DtoToBuilding(buildingDTO);
         buildingRepository.save(building);
     }
 
-    // Create new building from GeoJSON
+    // POST Create new building from GeoJSON
     @Transactional
     public void createBuildingFromGeoJSON(Feature feature) {
         Building building = GeoJsonToBuilding(feature);
         buildingRepository.save(building);
+    }
+
+    // PUT Update existing building
+    @Transactional
+    public Building updateBuilding(Long id, BuildingDTO updatedBuildingDTO) {
+        return buildingRepository.findById(id).map(entity -> {
+            entity.setName(updatedBuildingDTO.getName());
+            entity.setHouse_number(updatedBuildingDTO.getHouse_number());
+            entity.setPart_type(updatedBuildingDTO.getPart_type());
+            entity.setSpecial_status(updatedBuildingDTO.getSpecial_status());
+            entity.setQuarter(updatedBuildingDTO.getQuarter());
+            entity.setDistrict(updatedBuildingDTO.getDistrict());
+            entity.setDistrict_house_number(updatedBuildingDTO.getDistrict_house_number());
+            entity.setSource(updatedBuildingDTO.getSource());
+            entity.setNote(updatedBuildingDTO.getNote());
+            entity.setCoordinates((updatedBuildingDTO.getCoordinates() != null)
+                    ? createPolygon(updatedBuildingDTO.getCoordinates())
+                    : null);
+            return buildingRepository.save(entity);
+        }).orElseThrow(() -> new NoSuchElementException("Building with ID " + id + " does not exist"));
+    }
+
+    // PUT Update existing building from GeoJSON
+    @Transactional
+    public Building updateBuildingFromGeoJSON(Long id, Feature updatedFeature) {
+        Building updatedBuilding = GeoJsonToBuilding(updatedFeature);
+        return buildingRepository.findById(id).map(entity -> {
+            entity.setName(updatedBuilding.getName());
+            entity.setHouse_number(updatedBuilding.getHouse_number());
+            entity.setPart_type(updatedBuilding.getPart_type());
+            entity.setSpecial_status(updatedBuilding.getSpecial_status());
+            entity.setQuarter(updatedBuilding.getQuarter());
+            entity.setDistrict(updatedBuilding.getDistrict());
+            entity.setDistrict_house_number(updatedBuilding.getDistrict_house_number());
+            entity.setSource(updatedBuilding.getSource());
+            entity.setNote(updatedBuilding.getNote());
+            entity.setCoordinates(updatedBuilding.getCoordinates());
+            return buildingRepository.save(entity);
+        }).orElseThrow(() -> new NoSuchElementException("Building with ID " + id + " does not exist"));
+    }
+
+    // DELETE building by ID
+    @Transactional
+    public void deleteBuilding(Long id) {
+        if (!buildingRepository.existsById(id)) {
+            throw new RuntimeException("Building with id '" + id + "' does not exist");
+        }
+        buildingRepository.deleteById(id);
     }
 
     // Helper methods

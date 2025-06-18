@@ -56,5 +56,32 @@ public class BuildingController {
         return ResponseEntity.status(201).build();
     }
 
-    // TODO: Implement other mapping and move functionality to service layer
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateBuilding(
+            @RequestParam(required = false, defaultValue = "json") String input,
+            @PathVariable Long id,
+            @RequestBody Map<String, Object> payload) {
+        try {
+            if (input.equalsIgnoreCase("geojson")) {
+                Feature geoJSONFeature = new ObjectMapper().convertValue(payload, Feature.class);
+                buildingService.updateBuildingFromGeoJSON(id, geoJSONFeature);
+            } else {
+                BuildingDTO buildingDTO = new ObjectMapper().convertValue(payload, BuildingDTO.class);
+                buildingService.updateBuilding(id, buildingDTO);
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).build();
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBuilding(@PathVariable Long id) {
+        try {
+            buildingService.deleteBuilding(id);
+            return ResponseEntity.status(204).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(404).build();
+        }
+    }
 }
