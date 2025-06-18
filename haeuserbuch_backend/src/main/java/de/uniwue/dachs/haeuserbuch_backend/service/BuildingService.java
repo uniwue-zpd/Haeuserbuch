@@ -72,8 +72,8 @@ public class BuildingService {
 
     // PUT Update existing building
     @Transactional
-    public Building updateBuilding(Long id, BuildingDTO updatedBuildingDTO) {
-        return buildingRepository.findById(id).map(entity -> {
+    public void updateBuilding(Long id, BuildingDTO updatedBuildingDTO) {
+        buildingRepository.findById(id).map(entity -> {
             entity.setName(updatedBuildingDTO.getName());
             entity.setHouse_number(updatedBuildingDTO.getHouse_number());
             entity.setPart_type(updatedBuildingDTO.getPart_type());
@@ -92,9 +92,9 @@ public class BuildingService {
 
     // PUT Update existing building from GeoJSON
     @Transactional
-    public Building updateBuildingFromGeoJSON(Long id, Feature updatedFeature) {
+    public void updateBuildingFromGeoJSON(Long id, Feature updatedFeature) {
         Building updatedBuilding = GeoJsonToBuilding(updatedFeature);
-        return buildingRepository.findById(id).map(entity -> {
+        buildingRepository.findById(id).map(entity -> {
             entity.setName(updatedBuilding.getName());
             entity.setHouse_number(updatedBuilding.getHouse_number());
             entity.setPart_type(updatedBuilding.getPart_type());
