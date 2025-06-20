@@ -56,6 +56,32 @@ public class PlaceController {
         return ResponseEntity.status(201).build();
     }
 
-    // TODO: Implement other mapping and move functionality to service layer
-    // TODO: Consider the usage of DTO projections
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updatePlace(
+            @RequestParam(required = false, defaultValue = "json") String input,
+            @PathVariable Long id,
+            @RequestBody Map<String, Object> payload) {
+        try {
+            if (input.equalsIgnoreCase("geojson")) {
+                Feature geoJSONFeature = new ObjectMapper().convertValue(payload, Feature.class);
+                placeService.updatePlaceFromGeoJSON(id, geoJSONFeature);
+            } else {
+                PlaceDTO placeDTO = new ObjectMapper().convertValue(payload, PlaceDTO.class);
+                placeService.updatePlace(id, placeDTO);
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).build();
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePlace(@PathVariable Long id) {
+        try {
+            placeService.deletePlace(id);
+            return ResponseEntity.status(204).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(404).build();
+        }
+    }
 }

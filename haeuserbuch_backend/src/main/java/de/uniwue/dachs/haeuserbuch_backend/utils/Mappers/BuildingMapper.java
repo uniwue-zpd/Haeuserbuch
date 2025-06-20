@@ -11,7 +11,6 @@ import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.co
 import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.createPolygon;
 
 public class BuildingMapper {
-
     public static BuildingDTO BuildingToDTO(Building building) {
         BuildingDTO buildingDTO = new BuildingDTO();
         buildingDTO.setId(building.getId());

@@ -5,15 +5,20 @@ import de.uniwue.dachs.haeuserbuch_backend.model.Place;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PlaceRepository;
 import de.uniwue.dachs.haeuserbuch_backend.utils.GeoJSON.Feature;
 import de.uniwue.dachs.haeuserbuch_backend.utils.GeoJSON.FeatureCollection;
-import de.uniwue.dachs.haeuserbuch_backend.utils.GeoJSON.PointGeometry;
+import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PlaceMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.createPoint;
-import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.convertPoint;
+import static de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PlaceMapper.PlaceToDTO;
+import static de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PlaceMapper.DtoToPlace;
+import static de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PlaceMapper.PlaceToGeoJson;
+import static de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PlaceMapper.GeoJsonToPlace;
+import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.*;
 
 @Service
 public class PlaceService {
@@ -23,7 +28,7 @@ public class PlaceService {
         this.placeRepository = placeRepository;
     }
 
-    // Get all places
+    // GET all places
     public List<PlaceDTO> getAllPlaces() {
         List<Place> places = placeRepository.findAll();
         List<PlaceDTO> placeDTOs = new ArrayList<>();
@@ -31,7 +36,7 @@ public class PlaceService {
         return placeDTOs;
     }
 
-    // Get all places as feature collection
+    // GET all places as feature collection
     public FeatureCollection getAllPlaceFeatures() {
         List<Place> places = placeRepository.findAll();
         FeatureCollection featureCollection = new FeatureCollection();
@@ -41,79 +46,63 @@ public class PlaceService {
         return featureCollection;
     }
 
-    // Get a place by its ID
+    // GET a place by its ID
     public Optional<PlaceDTO> getPlaceById(Long id) {
-        return placeRepository.findById(id).map(this::PlaceToDTO);
+        return placeRepository.findById(id).map(PlaceMapper::PlaceToDTO);
     }
 
-    // Get a place by its ID (GeoJSON)
+    // GET a place by its ID (GeoJSON)
     public Optional<Feature> getPlaceFeatureById(Long id) {
-        return placeRepository.findById(id).map(this::PlaceToGeoJson);
+        return placeRepository.findById(id).map(PlaceMapper::PlaceToGeoJson);
     }
 
-    // Create new place
+    // POST Create new place
+    @Transactional
     public void createPlace(PlaceDTO placeDTO) {
         Place place = DtoToPlace(placeDTO);
         placeRepository.save(place);
     }
 
-    // Create new place from GeoJSON
+    // POST Create new place from GeoJSON
+    @Transactional
     public void createPlaceFromGeoJSON(Feature feature) {
         Place place = GeoJsonToPlace(feature);
         placeRepository.save(place);
     }
 
-    // Helper methods
-    private Place DtoToPlace(PlaceDTO placeDTO) {
-        Place place = new Place();
-        place.setReal_name(placeDTO.getReal_name());
-        place.setAlt_names(placeDTO.getAlt_names());
-        place.setCoordinates(createPoint(placeDTO.getCoordinates()));
-        place.setNotes(placeDTO.getNotes());
-        return place;
+    // PUT Update existing place
+    @Transactional
+    public void updatePlace(Long id, PlaceDTO updatedPlaceDTO) {
+        placeRepository.findById(id).map(entity -> {
+            entity.setReal_name(updatedPlaceDTO.getReal_name());
+            entity.setAlt_names(updatedPlaceDTO.getAlt_names());
+            entity.setCoordinates((updatedPlaceDTO.getCoordinates() != null)
+                    ? createPoint(updatedPlaceDTO.getCoordinates())
+                    : null);
+            entity.setNotes(updatedPlaceDTO.getNotes());
+            return placeRepository.save(entity);
+        }).orElseThrow(() -> new NoSuchElementException("Place with ID " + id + " does not exist"));
     }
 
-    private Place GeoJsonToPlace(Feature feature) {
-        if (!(feature.getGeometry() instanceof PointGeometry geometry)) {
-            throw new IllegalArgumentException("Unsupported geometry type");
-        }
-        List<Double> coordinates = geometry.getCoordinates();
-        if (coordinates.size() != 2) {
-            throw new IllegalArgumentException("Invalid coordinates");
-        }
-        Place place = new Place();
-        place.setReal_name((String) feature.getProperties().get("real_name"));
-        Object obj = feature.getProperties().get("alt_names");
-        if (obj instanceof List<?> list) {
-            List<String> alt_names = list.stream().filter(String.class::isInstance)
-                    .map(String.class::cast)
-                    .toList();
-            place.setAlt_names(alt_names);
-        }
-        place.setCoordinates(createPoint(coordinates));
-        place.setNotes((String) feature.getProperties().get("notes"));
-        return place;
+    // PUT Update existing place from GeoJSON
+    @Transactional
+    public void updatePlaceFromGeoJSON(Long id, Feature updatedFeature) {
+        Place updatedPlace = GeoJsonToPlace(updatedFeature);
+        placeRepository.findById(id).map(entity -> {
+            entity.setReal_name(updatedPlace.getReal_name());
+            entity.setAlt_names(updatedPlace.getAlt_names());
+            entity.setCoordinates(updatedPlace.getCoordinates());
+            entity.setNotes(updatedPlace.getNotes());
+            return placeRepository.save(entity);
+        }).orElseThrow(() -> new NoSuchElementException("Place with ID " + id + " does not exist"));
     }
 
-    private PlaceDTO PlaceToDTO(Place place) {
-        PlaceDTO placeDTO = new PlaceDTO();
-        placeDTO.setId(place.getId());
-        placeDTO.setReal_name(place.getReal_name());
-        placeDTO.setAlt_names(place.getAlt_names());
-        placeDTO.setCoordinates(convertPoint(place.getCoordinates()));
-        placeDTO.setNotes(place.getNotes());
-        return placeDTO;
-    }
-
-    private Feature PlaceToGeoJson(Place place) {
-        Feature feature = new Feature();
-        feature.getProperties().put("id", place.getId());
-        feature.getProperties().put("real_name", place.getReal_name());
-        feature.getProperties().put("alt_names", place.getAlt_names());
-        feature.getProperties().put("notes", place.getNotes());
-        PointGeometry geometry = new PointGeometry();
-        geometry.setCoordinates(convertPoint(place.getCoordinates()));
-        feature.setGeometry(geometry);
-        return feature;
+    // DELETE place by ID
+    @Transactional
+    public void deletePlace(Long id) {
+        if (!placeRepository.existsById(id)) {
+            throw new RuntimeException("Place with id '" + id + "' does not exist");
+        }
+        placeRepository.deleteById(id);
     }
 }
