@@ -19,6 +19,8 @@ public class Person extends BaseEntity{
 
     private String full_name;
 
+    private String sex;
+
     private String occupation;
 
     private Boolean is_citizen;
