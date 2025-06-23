@@ -1,15 +1,18 @@
 <script setup lang="ts">
-import maplibregl, {LngLat} from 'maplibre-gl';
+import maplibregl, {LngLat, type RasterLayerSpecification} from 'maplibre-gl';
 import "maplibre-gl/dist/maplibre-gl.css";
 import { ref, onMounted } from 'vue';
 import type { FeatureCollection } from "~/utils/GeoJsonTypes";
 import apiClient from "~/service/api";
+import { useTileStore } from "~/TileStore";
 
 const data_fetched = ref(false);
 const center = ref<LngLat>(new LngLat(9.969929, 49.786181));
 const buildings_geojson = ref<FeatureCollection>({} as FeatureCollection);
+const tilestore = useTileStore();
 
-onMounted(async ()=> {
+onMounted(async () => {
+  await tilestore.fetchTiles();
   try {
     const response = await apiClient.get('buildings?output=geojson');
     buildings_geojson.value = response.data;
@@ -17,25 +20,12 @@ onMounted(async ()=> {
 
     const map = new maplibregl.Map({
       container: 'map',
-      zoom: 14,
+      zoom: 12,
       center:  [center.value.lng, center.value.lat],
       style: {
         version: 8,
-        sources: {
-          osm: {
-            type: "raster",
-            tiles: ["https://tile.openstreetmap.de/{z}/{x}/{y}.png"],
-            tileSize: 256,
-            attribution: "&copy; OpenStreetMap Contributors"
-          }
-        },
-        layers: [
-          {
-            id: "osm-layer",
-            type: "raster",
-            source: "osm"
-          }
-        ]
+        sources: tilestore.sources as Record<string, maplibregl.SourceSpecification>,
+        layers: tilestore.layers as RasterLayerSpecification[],
       }
     });
     map.addControl(new maplibregl.NavigationControl({
