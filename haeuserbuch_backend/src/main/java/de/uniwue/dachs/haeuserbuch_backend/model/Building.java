@@ -5,7 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.Geometry;
 
 @Entity
 @Table(name = "BUILDING")
@@ -31,8 +31,8 @@ public class Building extends BaseEntity {
 
     private String note;
 
-    @Column(columnDefinition = "geometry(Polygon,25832)")
-    private Polygon coordinates;
+    @Column(columnDefinition = "geometry(Geometry,25832)")
+    private Geometry coordinates;
 }
 
 // TODO: Add fields for the cadastral number, possibly the relation to the cadastre

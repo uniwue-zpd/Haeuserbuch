@@ -1,13 +1,11 @@
 package de.uniwue.dachs.haeuserbuch_backend.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import de.uniwue.dachs.haeuserbuch_backend.DTO.BuildingDTO;
 import de.uniwue.dachs.haeuserbuch_backend.service.BuildingService;
-import de.uniwue.dachs.haeuserbuch_backend.utils.GeoJSON.Feature;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.FeatureCollection;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 @RestController
 @RequestMapping("/buildings")
@@ -19,37 +17,21 @@ public class BuildingController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getBuildings(
-            @RequestParam(required = false, defaultValue = "json") String output) {
-        return output.equalsIgnoreCase("geojson")
-                ? ResponseEntity.ok(buildingService.getAllBuildingFeatures())
-                : ResponseEntity.ok(buildingService.getAllBuildings());
+    public ResponseEntity<FeatureCollection> getBuildings() {
+        return ResponseEntity.ok(buildingService.getAllBuildings());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getBuildingById(@PathVariable long id,
-                                             @RequestParam(required = false, defaultValue = "json") String output) {
-        return output.equalsIgnoreCase("geojson")
-                ? buildingService.getBuildingFeatureById(id)
-                    .map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.status(404).build())
-                : buildingService.getBuildingById(id)
-                    .map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.status(404).build());
+    public ResponseEntity<Feature> getBuildingById(@PathVariable Long id) {
+        return buildingService.getBuildingById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.status(404).build());
     }
 
     @PostMapping
-    public ResponseEntity<Void> saveBuilding(
-            @RequestParam(required = false, defaultValue = "json") String input,
-            @RequestBody Map<String, Object> payload) {
+    public ResponseEntity<Void> createBuilding(@RequestBody Feature feature) {
         try {
-            if (input.equalsIgnoreCase("geojson")) {
-                Feature geoJSONFeature = new ObjectMapper().convertValue(payload, Feature.class);
-                buildingService.createBuildingFromGeoJSON(geoJSONFeature);
-            } else {
-                BuildingDTO buildingDTO = new ObjectMapper().convertValue(payload, BuildingDTO.class);
-                buildingService.createBuilding(buildingDTO);
-            }
+            buildingService.createBuilding(feature);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(400).build();
         }
@@ -57,18 +39,9 @@ public class BuildingController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateBuilding(
-            @RequestParam(required = false, defaultValue = "json") String input,
-            @PathVariable Long id,
-            @RequestBody Map<String, Object> payload) {
+    public ResponseEntity<Void> updateBuilding(@PathVariable Long id, @RequestBody Feature feature) {
         try {
-            if (input.equalsIgnoreCase("geojson")) {
-                Feature geoJSONFeature = new ObjectMapper().convertValue(payload, Feature.class);
-                buildingService.updateBuildingFromGeoJSON(id, geoJSONFeature);
-            } else {
-                BuildingDTO buildingDTO = new ObjectMapper().convertValue(payload, BuildingDTO.class);
-                buildingService.updateBuilding(id, buildingDTO);
-            }
+            buildingService.updateBuilding(id, feature);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(404).build();
         }

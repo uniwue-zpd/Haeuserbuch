@@ -1,4 +1,4 @@
-package de.uniwue.dachs.haeuserbuch_backend.utils.GeoJSON;
+package de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO;
 
 import lombok.Getter;
 import lombok.Setter;

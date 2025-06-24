@@ -18,9 +18,9 @@ public class GeometryUtils {
     }
 
     // Converts the point to coordinates list
-    public static List<Double> convertPoint(Point point) {
-        if (point == null) {
-            return null;
+    public static List<Double> convertPoint(Geometry geometry) {
+        if (!(geometry instanceof Point point)) {
+            throw new IllegalArgumentException("Geometry must be a Point");
         }
         List<Double> coordinates = new ArrayList<>();
         coordinates.add(point.getX());
@@ -28,7 +28,10 @@ public class GeometryUtils {
         return coordinates;
     }
 
-    public static List<List<List<Double>>> convertPolygon(Polygon polygon) {
+    public static List<List<List<Double>>> convertPolygon(Geometry geometry) {
+        if (!(geometry instanceof Polygon polygon)) {
+            throw new IllegalArgumentException("Geometry must be a Polygon");
+        }
         List<List<List<Double>>> coordinates = new ArrayList<>();
         List<List<Double>> outer_coordinates = convertCoordinates(polygon.getExteriorRing().getCoordinates());
         coordinates.add(outer_coordinates);
