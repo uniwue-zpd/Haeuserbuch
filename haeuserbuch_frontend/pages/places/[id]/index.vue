@@ -1,18 +1,25 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import maplibregl, {LngLat} from 'maplibre-gl';
+import maplibregl from 'maplibre-gl';
 import "maplibre-gl/dist/maplibre-gl.css";
+import { usePlaceStore } from "~/stores/PlaceStore";
+import { DEFAULT_MAP_CENTER } from "~/utils/constant_values";
 
+const router = useRoute();
+const place_id = Number(router.params.id);
 const store = usePlaceStore();
-const places = computed(() => store.places);
+const place_item = computed(() => store.currentPlace);
+const geometry = computed(() => place_item.value?.geometry as Point | null);
+const properties = computed(() => place_item.value?.properties as PlaceProperties | null);
 
-onMounted(async ()=> {
-  await store.fetchPlaces();
+onMounted(async () => {
+  await store.fetchPlaceById(place_id);
+  const center = (geometry.value) ? geometry.value.coordinates : DEFAULT_MAP_CENTER;
 
   const map = new maplibregl.Map({
     container: 'map',
-    zoom: 10,
-    center:  DEFAULT_MAP_CENTER,
+    zoom: 12,
+    center: center,
     style: {
       version: 8,
       sources: {
@@ -30,27 +37,25 @@ onMounted(async ()=> {
           source: "osm"
         }
       ]
-    }
+    },
   });
-
   map.addControl(new maplibregl.NavigationControl({
     showCompass: true,
     showZoom: true,
     visualizePitch: true,
     visualizeRoll: true
   }));
-
   map.on('load', () => {
-    if (!places.value) return;
-    map.addSource('places', {
+    if (!place_item.value) return;
+    map.addSource('place', {
       type: 'geojson',
       // @ts-ignore
-      data: places.value
+      data: place_item.value,
     });
     map.addLayer({
-      id: 'places',
+      id: 'place',
       type: 'circle',
-      source: 'places',
+      source: 'place',
       paint: {
         'circle-radius': 8,
         'circle-color': '#3254a8',
@@ -58,36 +63,12 @@ onMounted(async ()=> {
       },
     });
   });
-  map.on('click', 'places', (e) => {
-    if (!e.features) {
-      return;
-    }
-    const geometry = e.features[0].geometry as Point;
-    const coordinates = new LngLat(
-        (geometry.coordinates[0]),
-        (geometry.coordinates[1])
-    );
-    new maplibregl.Popup()
-        .setLngLat(coordinates)
-        .setHTML(`<a href="/places/${e.features[0].id}">${(e.features[0].properties?.real_name)}</a>`)
-        .addTo(map);
-    map.flyTo({
-      center: coordinates,
-      zoom: 14
-    });
-  });
-  map.on('mouseenter', 'places', () => {
-    map.getCanvas().style.cursor = 'pointer';
-  });
-  map.on('mouseleave', 'places', () => {
-    map.getCanvas().style.cursor = '';
-  });
 });
 </script>
 
 <template>
   <div class="flex flex-col gap-2">
-    <h1 class="text-3xl montserrat-headline font-bold">Die Orte im Überblick</h1>
+    <h1 class="text-3xl montserrat-headline font-bold">{{ properties?.real_name }}</h1>
     <div id="map" class="h-[500px] w-full rounded-md"/>
   </div>
 </template>
