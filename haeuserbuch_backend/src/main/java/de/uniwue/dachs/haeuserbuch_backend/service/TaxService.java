@@ -1,6 +1,5 @@
 package de.uniwue.dachs.haeuserbuch_backend.service;
 
-import de.uniwue.dachs.haeuserbuch_backend.DTO.BuildingDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.TaxDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Building;
 import de.uniwue.dachs.haeuserbuch_backend.model.Person;
@@ -10,6 +9,8 @@ import de.uniwue.dachs.haeuserbuch_backend.repository.BuildingRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PersonRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.SourceRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.TaxRepository;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.BuildingProperties;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.*;
+import static de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.BuildingMapper.BuildingToFeature;
 
 @Service
 public class TaxService {
@@ -74,7 +75,7 @@ public class TaxService {
         tax.setTax_number(taxDTO.getTax_number());
         tax.setPlan_number(taxDTO.getPlan_number());
         tax.setEntry_text(taxDTO.getEntry_text());
-        tax.setBuilding(getOrSaveBuildingDTO(taxDTO.getBuilding()));
+        tax.setBuilding(getBuilding(taxDTO.getBuilding()));
         tax.setPerson(getOrSavePerson(taxDTO.getPerson()));
         tax.setSource(getOrSaveSource(taxDTO.getSource()));
         tax.setNotes(taxDTO.getNotes());
@@ -87,46 +88,18 @@ public class TaxService {
         taxDTO.setTax_number(tax.getTax_number());
         taxDTO.setPlan_number(tax.getPlan_number());
         taxDTO.setEntry_text(tax.getEntry_text());
-        taxDTO.setBuilding(BuildingToDTO(tax.getBuilding()));
+        taxDTO.setBuilding(BuildingToFeature(tax.getBuilding()));
         taxDTO.setPerson(tax.getPerson());
         taxDTO.setSource(tax.getSource());
         taxDTO.setNotes(tax.getNotes());
         return taxDTO;
     }
 
-    private BuildingDTO BuildingToDTO(Building building) {
-        BuildingDTO buildingDTO = new BuildingDTO();
-        buildingDTO.setId(building.getId());
-        buildingDTO.setName(building.getName());
-        buildingDTO.setHouse_number(building.getHouse_number());
-        buildingDTO.setPart_type(building.getPart_type());
-        buildingDTO.setSpecial_status(building.getSpecial_status());
-        buildingDTO.setQuarter(building.getQuarter());
-        buildingDTO.setDistrict(building.getDistrict());
-        buildingDTO.setSource(building.getSource());
-        buildingDTO.setNote(building.getNote());
-        buildingDTO.setCoordinates(convertPolygon(building.getCoordinates()));
-        return buildingDTO;
-    }
-
-    private Building getOrSaveBuildingDTO(BuildingDTO buildingDTO) {
-        if (buildingDTO == null) {
-            return null;
+    private Building getBuilding(Feature feature) {
+        if (feature != null && feature.getProperties() instanceof BuildingProperties) {
+            return buildingRepository.findById(feature.getId()).orElse(null);
         }
-        if (buildingDTO.getId() != null) {
-            return buildingRepository.findById(buildingDTO.getId()).orElse(null);
-        }
-        Building building = new Building();
-        building.setName(buildingDTO.getName());
-        building.setHouse_number(buildingDTO.getHouse_number());
-        building.setPart_type(buildingDTO.getPart_type());
-        building.setSpecial_status(buildingDTO.getSpecial_status());
-        building.setQuarter(buildingDTO.getQuarter());
-        building.setDistrict(buildingDTO.getDistrict());
-        building.setSource(buildingDTO.getSource());
-        building.setNote(buildingDTO.getNote());
-        building.setCoordinates(createPolygon(buildingDTO.getCoordinates()));
-        return buildingRepository.save(building);
+        return null;
     }
 
     private Person getOrSavePerson(Person person) {

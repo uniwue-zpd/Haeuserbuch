@@ -3,7 +3,7 @@ package de.uniwue.dachs.haeuserbuch_backend.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Geometry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +19,8 @@ public class Place extends BaseEntity {
     @CollectionTable(name = "place_alt_names", joinColumns = @JoinColumn(name = "place_id"))
     private List<String> alt_names = new ArrayList<>();
 
-    @Column(columnDefinition = "geometry(Point,25832)")
-    private Point coordinates;
+    @Column(columnDefinition = "geometry(Geometry,25832)")
+    private Geometry coordinates;
 
     private String notes;
 

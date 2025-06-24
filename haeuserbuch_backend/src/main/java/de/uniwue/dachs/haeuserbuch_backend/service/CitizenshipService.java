@@ -1,15 +1,12 @@
 package de.uniwue.dachs.haeuserbuch_backend.service;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.CitizenshipDTO;
-import de.uniwue.dachs.haeuserbuch_backend.DTO.PlaceDTO;
-import de.uniwue.dachs.haeuserbuch_backend.model.Citizenship;
-import de.uniwue.dachs.haeuserbuch_backend.model.Person;
-import de.uniwue.dachs.haeuserbuch_backend.model.Place;
-import de.uniwue.dachs.haeuserbuch_backend.model.Source;
+import de.uniwue.dachs.haeuserbuch_backend.model.*;
 import de.uniwue.dachs.haeuserbuch_backend.repository.CitizenshipRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PersonRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PlaceRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.SourceRepository;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,8 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.convertPoint;
-import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.createPoint;
+import static de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PlaceMapper.PlaceToFeature;
 
 @Service
 public class CitizenshipService {
@@ -73,7 +69,7 @@ public class CitizenshipService {
         Citizenship citizenship = new Citizenship();
         citizenship.setPerson(getOrSavePerson(citizenshipDTO.getPerson()));
         citizenship.setSource(getOrSaveSource(citizenshipDTO.getSource()));
-        citizenship.setPlace(getOrSavePlaceDTO(citizenshipDTO.getPlace()));
+        citizenship.setPlace(getPlace(citizenshipDTO.getPlace()));
         citizenship.setNumber(citizenshipDTO.getNumber());
         citizenship.setDate(citizenshipDTO.getDate());
         citizenship.setEntry_text(citizenshipDTO.getEntry_text());
@@ -87,24 +83,13 @@ public class CitizenshipService {
         citizenshipDTO.setId(citizenship.getId());
         citizenshipDTO.setPerson(citizenship.getPerson());
         citizenshipDTO.setSource(citizenship.getSource());
-        if (citizenship.getPlace() != null) {
-            citizenshipDTO.setPlace(PlaceToDto(citizenship.getPlace()));
-        }
+        citizenshipDTO.setPlace(citizenship.getPlace() != null ? PlaceToFeature(citizenship.getPlace()) : null);
         citizenshipDTO.setNumber(citizenship.getNumber());
         citizenshipDTO.setDate(citizenship.getDate());
         citizenshipDTO.setEntry_text(citizenship.getEntry_text());
         citizenshipDTO.setAddendum(citizenship.getAddendum());
         citizenshipDTO.setNotes(citizenship.getNotes());
         return citizenshipDTO;
-    }
-
-    private PlaceDTO PlaceToDto(Place place) {
-        PlaceDTO placeDTO = new PlaceDTO();
-        placeDTO.setId(place.getId());
-        placeDTO.setReal_name(place.getReal_name());
-        placeDTO.setAlt_names(place.getAlt_names());
-        placeDTO.setCoordinates(convertPoint(place.getCoordinates()));
-        return placeDTO;
     }
 
     private Person getOrSavePerson(Person person) {
@@ -121,18 +106,11 @@ public class CitizenshipService {
         return sourceRepository.save(source);
     }
 
-    private Place getOrSavePlaceDTO(PlaceDTO placeDTO) {
-        if (placeDTO == null) {
-            return null;
+    private Place getPlace(Feature feature) {
+        if (feature != null) {
+            return placeRepository.findById(feature.getId()).orElse(null);
         }
-        if (placeDTO.getId() != null) {
-            return placeRepository.findById(placeDTO.getId()).orElse(null);
-        }
-        Place place = new Place();
-        place.setReal_name(placeDTO.getReal_name());
-        place.setAlt_names(placeDTO.getAlt_names());
-        place.setCoordinates(createPoint(placeDTO.getCoordinates()));
-        return placeRepository.save(place);
+        return null;
     }
 }
 

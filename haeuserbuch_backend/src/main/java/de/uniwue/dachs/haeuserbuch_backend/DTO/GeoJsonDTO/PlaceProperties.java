@@ -1,4 +1,4 @@
-package de.uniwue.dachs.haeuserbuch_backend.DTO;
+package de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,10 +8,8 @@ import java.util.List;
 
 @Getter
 @Setter
-public class PlaceDTO {
-    private Long id;
+public class PlaceProperties extends Properties {
     private String real_name;
     private List<String> alt_names = new ArrayList<>();
-    private List<Double> coordinates = new ArrayList<>();
     private String notes;
 }
