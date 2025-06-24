@@ -1,14 +1,16 @@
 // GeoJSON single feature
 export interface Feature {
     type: 'Feature';
-    properties: {
-        [key: string]: string | number | boolean | null;
-    };
+    id?: number;
+    properties: PropertiesType | null;
     geometry: GeometryType | null;
 }
 
 // GeoJSON geometry types
 export type GeometryType = Point | Polygon | LineString;
+
+// GeoJSON properties types
+export type PropertiesType = BuildingProperties | PlaceProperties;
 
 // GeoJSON Point
 export interface Point {
@@ -32,4 +34,22 @@ export interface LineString {
 export interface FeatureCollection {
     type: 'FeatureCollection';
     features: Feature[];
+}
+
+export interface BuildingProperties {
+    name?: string;
+    house_number?: string;
+    part_type?: string;
+    special_status?: string;
+    quarter?: string;
+    district?: string;
+    district_house_number?: string;
+    source?: string;
+    notes?: string;
+}
+
+export interface PlaceProperties {
+    real_name?: string;
+    alt_names?: string[];
+    notes?: string;
 }
