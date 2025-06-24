@@ -37,6 +37,7 @@ export interface FeatureCollection {
 }
 
 export interface BuildingProperties {
+    type?: string;
     name?: string;
     house_number?: string;
     part_type?: string;
@@ -49,6 +50,7 @@ export interface BuildingProperties {
 }
 
 export interface PlaceProperties {
+    type?: string;
     real_name?: string;
     alt_names?: string[];
     notes?: string;

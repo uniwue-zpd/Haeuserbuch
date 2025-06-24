@@ -59,7 +59,7 @@ public class BuildingService {
             entity.setDistrict(properties != null ? properties.getDistrict() : null);
             entity.setDistrict_house_number(properties != null ? properties.getDistrict_house_number() : null);
             entity.setSource(properties != null ? properties.getSource() : null);
-            entity.setNote(properties != null ? properties.getNote() : null);
+            entity.setNotes(properties != null ? properties.getNotes() : null);
             if (updatedFeature.getGeometry() != null) {
                 if (updatedFeature.getGeometry() instanceof PointGeometry pointGeometry) {
                     entity.setCoordinates(createPoint(pointGeometry.getCoordinates()));

@@ -14,5 +14,5 @@ public class BuildingProperties extends Properties {
     private String district;
     private String district_house_number;
     private String source;
-    private String note;
+    private String notes;
 }

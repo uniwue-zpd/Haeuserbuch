@@ -29,7 +29,7 @@ public class Building extends BaseEntity {
 
     private String source;
 
-    private String note;
+    private String notes;
 
     @Column(columnDefinition = "geometry(Geometry,25832)")
     private Geometry coordinates;
