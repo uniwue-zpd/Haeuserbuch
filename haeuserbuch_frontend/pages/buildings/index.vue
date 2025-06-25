@@ -4,7 +4,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { ref, onMounted } from 'vue';
 import type { FeatureCollection } from "~/utils/GeoJsonTypes";
 import apiClient from "~/service/api";
-import { useTileStore } from "~/TileStore";
+import { useTileStore } from "~/stores/TileStore";
 
 const data_fetched = ref(false);
 const center = ref<LngLat>(new LngLat(9.969929, 49.786181));
