@@ -13,9 +13,7 @@ export function initMap(
         center: center,
         style: {
             version: 8,
-            //@ts-ignore
             sources: sources,
-            //@ts-ignore
             layers: layers
         }
     })
