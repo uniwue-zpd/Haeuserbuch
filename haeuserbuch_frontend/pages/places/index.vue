@@ -12,9 +12,6 @@ const layers = computed(() => tile_store.layers);
 let map: maplibregl.Map | null = null;
 
 onMounted(async ()=> {
-  await place_store.fetchPlaces();
-  await tile_store.fetchTiles();
-
   map = initMap(
       'map',
       DEFAULT_MAP_CENTER,
