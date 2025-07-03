@@ -6,7 +6,7 @@ import type { Feature, FeatureCollection } from "~/utils/GeoJsonTypes";
 export const usePlaceStore = defineStore("place", () => {
     // State
     const places = ref<FeatureCollection | null>(null);
-    const currentPlace = ref<Feature | null>(null);
+    const current_place = ref<Feature | null>(null);
 
     // Getters
     const isLoaded = computed(() => places.value !== null);
@@ -26,14 +26,14 @@ export const usePlaceStore = defineStore("place", () => {
 
         // Fetch place by ID
     async function fetchPlaceById(id: number) {
-        if (!currentPlace.value || currentPlace.value.id !== id) {
+        if (!current_place.value || current_place.value.id !== id) {
             const cachedPlace = places.value?.features.find(feature => feature.id === id);
             if (cachedPlace) {
-                currentPlace.value = cachedPlace;
+                current_place.value = cachedPlace;
             } else {
                 try {
                     const response = await apiClient.get<Feature>(`/places/${id}`);
-                    currentPlace.value = response.data;
+                    current_place.value = response.data;
                 } catch (error) {
                     console.error("Error fetching place by ID:", error);
                 }
@@ -65,8 +65,8 @@ export const usePlaceStore = defineStore("place", () => {
             if (index !== -1) {
                 places.value.features[index] = response.data;
             }
-            if (currentPlace.value?.id === id) {
-                currentPlace.value = response.data;
+            if (current_place.value?.id === id) {
+                current_place.value = response.data;
             }
             return response.data;
         } catch (error) {
@@ -75,19 +75,37 @@ export const usePlaceStore = defineStore("place", () => {
         }
     }
 
+        // Delete place by ID
+    async function deletePlace(id: number) {
+        try {
+            if (!places.value) {
+                console.error("Places data is not loaded");
+                return;
+            }
+            await apiClient.delete(`/places/${id}`);
+            places.value.features = places.value.features.filter(p => p.id !== id);
+            if (current_place.value?.id === id) {
+                current_place.value = null;
+            }
+        } catch (error) {
+            console.log('Error deleting building:', error);
+            throw error;
+        }
+    }
+
         // Clear current place
     function clearCurrentPlace() {
-        currentPlace.value = null;
+        current_place.value = null;
     }
 
     return {
         places,
-        currentPlace,
-        isLoaded,
+        current_place,
         fetchPlaces,
         fetchPlaceById,
         createPlace,
         updatePlace,
+        deletePlace,
         clearCurrentPlace
     }
 });

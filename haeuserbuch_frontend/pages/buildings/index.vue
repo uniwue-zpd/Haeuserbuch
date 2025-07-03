@@ -4,7 +4,6 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { ref, onMounted } from 'vue';
 import type { FeatureCollection } from "~/utils/GeoJsonTypes";
 import apiClient from "~/service/api";
-import { useTileStore } from "~/stores/TileStore";
 
 const data_fetched = ref(false);
 const center = ref<LngLat>(new LngLat(9.969929, 49.786181));
@@ -12,7 +11,6 @@ const buildings_geojson = ref<FeatureCollection>({} as FeatureCollection);
 const tilestore = useTileStore();
 
 onMounted(async () => {
-  await tilestore.fetchTiles();
   try {
     const response = await apiClient.get('buildings?output=geojson');
     buildings_geojson.value = response.data;
