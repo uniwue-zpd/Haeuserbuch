@@ -20,36 +20,36 @@ export const useTileStore = defineStore('tile', () => {
             type: 'raster',
             source: 'osm'
         }
-    ] as RasterLayerSpecification[]);
+    ]);
 
     const isLoaded = computed(() => tiles.value.length > 0);
 
     async function fetchTiles() {
-        if (!isLoaded.value) {
-            try {
-                const response = await apiClient.get('/tiles/index.json');
-                tiles.value = response.data;
-            } catch (error) {
-                console.warn('Error fetching tiles:', error, 'Setting OSM as default tile');
-            } finally {
-                getMaplibreSources();
-            }
+        if (isLoaded.value) return;
+        try {
+            const response = await apiClient.get('/tiles/index.json');
+            tiles.value = response.data;
+            getMaplibreSources(response.data)
+        } catch (error) {
+            console.warn('Error fetching tiles:', error, 'Setting OSM as default tile');
         }
     }
 
-    function getMaplibreSources(): void {
-        tiles.value.forEach(tile => {
-            sources.value[tile.id] = {
-                type: 'raster',
-                tiles: tile.tiles,
-                tileSize: 256,
-                attribution: '&copy;'
-            };
-            layers.value.push({
-                id: `${tile.id}-layer`,
-                type: 'raster',
-                source: tile.id
-            });
+    function getMaplibreSources(tileList: Tile[]): void {
+        tileList.forEach(tile => {
+            if (!sources.value[tile.id]) {
+                sources.value[tile.id] = {
+                    type: 'raster',
+                    tiles: tile.tiles,
+                    tileSize: 256,
+                    attribution: '&copy;'
+                };
+                layers.value.push({
+                    id: `${tile.id}-layer`,
+                    type: 'raster',
+                    source: tile.id
+                });
+            }
         });
     }
 

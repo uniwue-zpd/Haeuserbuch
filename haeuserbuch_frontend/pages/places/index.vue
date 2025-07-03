@@ -1,53 +1,34 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import maplibregl, {LngLat} from 'maplibre-gl';
+import maplibregl, {LngLat, type RasterLayerSpecification, type RasterSourceSpecification} from 'maplibre-gl';
 import "maplibre-gl/dist/maplibre-gl.css";
+import { initMap } from "~/service/map_init";
 
-const store = usePlaceStore();
-const places = computed(() => store.places);
+const place_store = usePlaceStore();
+const tile_store = useTileStore();
+const places = computed(() => place_store.places);
+const sources = computed(() => tile_store.sources);
+const layers = computed(() => tile_store.layers);
+let map: maplibregl.Map | null = null;
 
 onMounted(async ()=> {
-  await store.fetchPlaces();
-
-  const map = new maplibregl.Map({
-    container: 'map',
-    zoom: 10,
-    center:  DEFAULT_MAP_CENTER,
-    style: {
-      version: 8,
-      sources: {
-        osm: {
-          type: "raster",
-          tiles: ["https://tile.openstreetmap.de/{z}/{x}/{y}.png"],
-          tileSize: 256,
-          attribution: "&copy; OpenStreetMap Contributors"
-        }
-      },
-      layers: [
-        {
-          id: "osm-layer",
-          type: "raster",
-          source: "osm"
-        }
-      ]
-    }
-  });
-
-  map.addControl(new maplibregl.NavigationControl({
-    showCompass: true,
-    showZoom: true,
-    visualizePitch: true,
-    visualizeRoll: true
-  }));
+  map = initMap(
+      'map',
+      DEFAULT_MAP_CENTER,
+      12,
+      sources.value as Record<string, RasterSourceSpecification>,
+      // @ts-ignore
+      layers.value as RasterLayerSpecification[]
+  );
 
   map.on('load', () => {
     if (!places.value) return;
-    map.addSource('places', {
+    map!.addSource('places', {
       type: 'geojson',
       // @ts-ignore
-      data: places.value
+      data: places.value as FeatureCollection
     });
-    map.addLayer({
+    map!.addLayer({
       id: 'places',
       type: 'circle',
       source: 'places',
@@ -70,18 +51,25 @@ onMounted(async ()=> {
     new maplibregl.Popup()
         .setLngLat(coordinates)
         .setHTML(`<a href="/places/${e.features[0].id}">${(e.features[0].properties?.real_name)}</a>`)
-        .addTo(map);
-    map.flyTo({
+        .addTo(map!);
+    map!.flyTo({
       center: coordinates,
       zoom: 14
     });
   });
   map.on('mouseenter', 'places', () => {
-    map.getCanvas().style.cursor = 'pointer';
+    map!.getCanvas().style.cursor = 'pointer';
   });
   map.on('mouseleave', 'places', () => {
-    map.getCanvas().style.cursor = '';
+    map!.getCanvas().style.cursor = '';
   });
+});
+
+onBeforeUnmount(() => {
+  if (map) {
+    map.remove();
+    map = null;
+  }
 });
 </script>
 
