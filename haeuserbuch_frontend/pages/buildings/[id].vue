@@ -56,7 +56,7 @@ onMounted(async () => {
   map.addControl(draw, "top-left");
 
   try {
-    const response = await apiClient.get(`buildings/${building_id}?output=geojson`);
+    const response = await apiClient.get(`buildings/${building_id}`);
     building_geojson.value = response.data;
     data_fetched.value = true;
 
