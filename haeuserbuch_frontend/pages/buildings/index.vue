@@ -23,7 +23,6 @@ onMounted(async () => {
   );
   map.on('load', () => {
     if (!buildings.value) return;
-    console.log('Buildings are being loaded')
     map!.addSource('buildings', {
       type: "geojson",
       //@ts-ignore
