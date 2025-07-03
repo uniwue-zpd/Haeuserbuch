@@ -8,7 +8,7 @@ import { DEFAULT_MAP_CENTER } from "~/utils/constant_values";
 const router = useRoute();
 const place_id = Number(router.params.id);
 const store = usePlaceStore();
-const place_item = computed(() => store.currentPlace);
+const place_item = computed(() => store.current_place);
 const geometry = computed(() => place_item.value?.geometry as Point | null);
 const properties = computed(() => place_item.value?.properties as PlaceProperties | null);
 
