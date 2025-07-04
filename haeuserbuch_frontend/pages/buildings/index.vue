@@ -74,7 +74,7 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<template v-show="data_fetched">
+<template>
   <div class="flex flex-col gap-2">
     <h1 class="text-3xl montserrat-headline font-bold">Die Häuser im Überblick</h1>
     <div id="map" class="h-[500px] w-full rounded-md"/>

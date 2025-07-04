@@ -1,11 +1,12 @@
 package de.uniwue.dachs.haeuserbuch_backend.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.locationtech.jts.geom.Geometry;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "BUILDING")
@@ -27,7 +28,11 @@ public class Building extends BaseEntity {
 
     private String district_house_number;
 
-    private String source;
+    private String primary_source;
+
+    @ElementCollection(targetClass = String.class)
+    @CollectionTable(name = "building_secondary_sources", joinColumns = @JoinColumn(name = "building_id"))
+    private List<String> secondary_sources = new ArrayList<>();
 
     private String notes;
 

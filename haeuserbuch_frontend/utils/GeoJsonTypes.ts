@@ -45,7 +45,8 @@ export interface BuildingProperties {
     quarter?: string;
     district?: string;
     district_house_number?: string;
-    source?: string;
+    source?: Source;
+    secondary_sources?: string[];
     notes?: string;
 }
 

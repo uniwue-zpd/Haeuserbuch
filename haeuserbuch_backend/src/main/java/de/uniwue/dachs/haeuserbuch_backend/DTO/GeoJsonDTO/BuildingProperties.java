@@ -3,6 +3,9 @@ package de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 public class BuildingProperties extends Properties {
@@ -13,6 +16,7 @@ public class BuildingProperties extends Properties {
     private String quarter;
     private String district;
     private String district_house_number;
-    private String source;
+    private String primary_source;
+    private List<String> secondary_sources = new ArrayList<>();
     private String notes;
 }
