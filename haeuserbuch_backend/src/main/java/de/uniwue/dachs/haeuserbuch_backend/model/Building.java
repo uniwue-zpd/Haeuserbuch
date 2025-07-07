@@ -39,7 +39,10 @@ public class Building extends BaseEntity {
     private Set<Source> primary_sources = new HashSet<>();
 
     @ElementCollection(targetClass = String.class)
-    @CollectionTable(name = "building_secondary_sources", joinColumns = @JoinColumn(name = "building_id"))
+    @CollectionTable(
+            name = "building_secondary_source",
+            joinColumns = @JoinColumn(name = "building_id")
+    )
     private List<String> secondary_sources = new ArrayList<>();
 
     private String notes;

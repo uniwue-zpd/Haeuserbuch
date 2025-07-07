@@ -15,15 +15,17 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PlaceMapper.*;
 import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.*;
 
 @Service
 public class PlaceService {
     private final PlaceRepository placeRepository;
+    private final PlaceMapper placeMapper;
 
-    public PlaceService(PlaceRepository placeRepository) {
+    public PlaceService(PlaceRepository placeRepository,
+                        PlaceMapper placeMapper) {
         this.placeRepository = placeRepository;
+        this.placeMapper = placeMapper;
     }
 
     // GET all places as feature collection
@@ -31,20 +33,20 @@ public class PlaceService {
         List<Place> places = placeRepository.findAll();
         FeatureCollection featureCollection = new FeatureCollection();
         List<Feature> features = new ArrayList<>();
-        places.forEach(place -> features.add(PlaceToFeature(place)));
+        places.forEach(place -> features.add(placeMapper.PlaceToFeature(place)));
         featureCollection.setFeatures(features);
         return featureCollection;
     }
 
     // GET a place by its ID
     public Optional<Feature> getPlaceById(Long id) {
-        return placeRepository.findById(id).map(PlaceMapper::PlaceToFeature);
+        return placeRepository.findById(id).map(placeMapper::PlaceToFeature);
     }
 
     // POST Create new place
     @Transactional
     public void createPlace(Feature feature) {
-        Place place = FeatureToPlace(feature);
+        Place place = placeMapper.FeatureToPlace(feature);
         placeRepository.save(place);
     }
 

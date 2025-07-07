@@ -4,13 +4,15 @@ import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PlaceProperties;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PointGeometry;
 import de.uniwue.dachs.haeuserbuch_backend.model.Place;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.*;
 
+@Component
 public class PlaceMapper {
-    public static Place FeatureToPlace(Feature feature) {
+    public Place FeatureToPlace(Feature feature) {
         Place place = new Place();
         if (feature.getProperties() != null) {
             if (feature.getProperties() instanceof PlaceProperties properties) {
@@ -32,7 +34,7 @@ public class PlaceMapper {
         return place;
     }
 
-    public static Feature PlaceToFeature(Place place) {
+    public Feature PlaceToFeature(Place place) {
         Feature feature = new Feature();
         PlaceProperties properties = new PlaceProperties();
         feature.setId(place.getId());

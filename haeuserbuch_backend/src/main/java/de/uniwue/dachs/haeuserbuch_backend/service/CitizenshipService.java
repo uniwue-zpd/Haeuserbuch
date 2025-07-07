@@ -7,6 +7,7 @@ import de.uniwue.dachs.haeuserbuch_backend.repository.PersonRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PlaceRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.SourceRepository;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
+import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PlaceMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,23 +15,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PlaceMapper.PlaceToFeature;
-
 @Service
 public class CitizenshipService {
     private final CitizenshipRepository citizenshipRepository;
     private final PersonRepository personRepository;
     private final SourceRepository sourceRepository;
     private final PlaceRepository placeRepository;
+    private final PlaceMapper placeMapper;
 
     public CitizenshipService(CitizenshipRepository citizenshipRepository,
                               PersonRepository personRepository,
                               SourceRepository sourceRepository,
-                              PlaceRepository placeRepository) {
+                              PlaceRepository placeRepository, PlaceMapper placeMapper) {
         this.citizenshipRepository = citizenshipRepository;
         this.personRepository = personRepository;
         this.sourceRepository = sourceRepository;
         this.placeRepository = placeRepository;
+        this.placeMapper = placeMapper;
     }
 
     // GET all citizenships
@@ -83,7 +84,9 @@ public class CitizenshipService {
         citizenshipDTO.setId(citizenship.getId());
         citizenshipDTO.setPerson(citizenship.getPerson());
         citizenshipDTO.setSource(citizenship.getSource());
-        citizenshipDTO.setPlace(citizenship.getPlace() != null ? PlaceToFeature(citizenship.getPlace()) : null);
+        citizenshipDTO.setPlace(citizenship.getPlace() != null
+                ? placeMapper.PlaceToFeature(citizenship.getPlace())
+                : null);
         citizenshipDTO.setNumber(citizenship.getNumber());
         citizenshipDTO.setDate(citizenship.getDate());
         citizenshipDTO.setEntry_text(citizenship.getEntry_text());

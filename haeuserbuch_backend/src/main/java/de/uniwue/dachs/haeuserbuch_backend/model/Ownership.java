@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "OWNERSHIP")
@@ -25,9 +26,13 @@ public class Ownership extends BaseEntity {
     @JoinColumn(name = "seller_id")
     private Person seller;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "building_id", nullable = false)
-    private Building building;
+    @ManyToMany
+    @JoinTable(
+            name = "ownership_building",
+            joinColumns = @JoinColumn(name = "ownership_id"),
+            inverseJoinColumns = @JoinColumn(name = "building_id")
+    )
+    private Set<Building> buildings = new HashSet<>();
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "source_id", nullable = false)
@@ -37,6 +42,4 @@ public class Ownership extends BaseEntity {
     private String entry_text;
 
     private String notes;
-
-    // TODO: Add fields for remaining ownership details
 }
