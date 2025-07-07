@@ -11,6 +11,7 @@ import de.uniwue.dachs.haeuserbuch_backend.repository.SourceRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.TaxRepository;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.BuildingProperties;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
+import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.BuildingMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,23 +19,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.BuildingMapper.BuildingToFeature;
-
 @Service
 public class TaxService {
     private final BuildingRepository buildingRepository;
     private final PersonRepository personRepository;
     private final SourceRepository sourceRepository;
     private final TaxRepository taxRepository;
+    private final BuildingMapper buildingMapper;
 
     public TaxService(BuildingRepository buildingRepository,
                       PersonRepository personRepository,
                       SourceRepository sourceRepository,
-                      TaxRepository taxRepository) {
+                      TaxRepository taxRepository,
+                      BuildingMapper buildingMapper) {
         this.buildingRepository = buildingRepository;
         this.personRepository = personRepository;
         this.sourceRepository = sourceRepository;
         this.taxRepository = taxRepository;
+        this.buildingMapper = buildingMapper;
     }
 
     // GET
@@ -88,7 +90,7 @@ public class TaxService {
         taxDTO.setTax_number(tax.getTax_number());
         taxDTO.setPlan_number(tax.getPlan_number());
         taxDTO.setEntry_text(tax.getEntry_text());
-        taxDTO.setBuilding(BuildingToFeature(tax.getBuilding()));
+        taxDTO.setBuilding(buildingMapper.BuildingToFeature(tax.getBuilding()));
         taxDTO.setPerson(tax.getPerson());
         taxDTO.setSource(tax.getSource());
         taxDTO.setNotes(tax.getNotes());

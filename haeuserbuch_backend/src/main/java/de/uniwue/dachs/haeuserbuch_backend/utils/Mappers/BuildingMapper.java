@@ -5,16 +5,28 @@ import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.BuildingProperties;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PointGeometry;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PolygonGeometry;
+import de.uniwue.dachs.haeuserbuch_backend.model.Source;
+import de.uniwue.dachs.haeuserbuch_backend.repository.SourceRepository;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
+import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.*;
 
+@Component
 public class BuildingMapper {
-    public static Feature BuildingToFeature(Building building) {
+    private final SourceRepository sourceRepository;
+
+    public BuildingMapper(SourceRepository sourceRepository) {
+        this.sourceRepository = sourceRepository;
+    }
+
+    public Feature BuildingToFeature(Building building) {
         Feature feature = new Feature();
         BuildingProperties properties = new BuildingProperties();
         feature.setId(building.getId());
@@ -25,7 +37,7 @@ public class BuildingMapper {
         properties.setQuarter(building.getQuarter());
         properties.setDistrict(building.getDistrict());
         properties.setDistrict_house_number(building.getDistrict_house_number());
-        properties.setPrimary_source(building.getPrimary_source());
+        properties.setPrimary_sources(building.getPrimary_sources());
         properties.setSecondary_sources(building.getSecondary_sources());
         properties.setNotes(building.getNotes());
         feature.setProperties(properties);
@@ -45,7 +57,7 @@ public class BuildingMapper {
         return feature;
     }
 
-    public static Building FeatureToBuilding(Feature feature) {
+    public Building FeatureToBuilding(Feature feature) {
         Building building = new Building();
         if (feature.getProperties() != null) {
             if (feature.getProperties() instanceof BuildingProperties properties) {
@@ -56,7 +68,7 @@ public class BuildingMapper {
                 building.setQuarter(properties.getQuarter());
                 building.setDistrict(properties.getDistrict());
                 building.setDistrict_house_number(properties.getDistrict_house_number());
-                building.setPrimary_source(properties.getPrimary_source());
+                building.setPrimary_sources(getOrSaveSources(properties.getPrimary_sources()));
                 building.setSecondary_sources(properties.getSecondary_sources());
                 building.setNotes(properties.getNotes());
             } else {
@@ -75,5 +87,20 @@ public class BuildingMapper {
             }
         }
         return building;
+    }
+
+    public Set<Source> getOrSaveSources(Set<Source> sources) {
+        if (sources == null || sources.isEmpty()) {
+            return new HashSet<>();
+        }
+        Set<Source> savedSources = new HashSet<>();
+        for (Source source: sources) {
+            if (source.getId() != null) {
+                savedSources.add(sourceRepository.findById(source.getId()).orElse(null));
+            } else {
+                savedSources.add(sourceRepository.save(source));
+            }
+        }
+        return savedSources;
     }
 }

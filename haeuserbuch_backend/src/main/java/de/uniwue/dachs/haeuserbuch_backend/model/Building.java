@@ -6,7 +6,9 @@ import lombok.Setter;
 import org.locationtech.jts.geom.Geometry;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "BUILDING")
@@ -28,7 +30,13 @@ public class Building extends BaseEntity {
 
     private String district_house_number;
 
-    private String primary_source;
+    @ManyToMany
+    @JoinTable(
+            name = "building_primary_source",
+            joinColumns = @JoinColumn(name = "building_id"),
+            inverseJoinColumns = @JoinColumn(name = "primary_source_id")
+    )
+    private Set<Source> primary_sources = new HashSet<>();
 
     @ElementCollection(targetClass = String.class)
     @CollectionTable(name = "building_secondary_sources", joinColumns = @JoinColumn(name = "building_id"))
@@ -39,5 +47,3 @@ public class Building extends BaseEntity {
     @Column(columnDefinition = "geometry(Geometry,25832)")
     private Geometry coordinates;
 }
-
-// TODO: Add fields for the cadastral number, possibly the relation to the cadastre

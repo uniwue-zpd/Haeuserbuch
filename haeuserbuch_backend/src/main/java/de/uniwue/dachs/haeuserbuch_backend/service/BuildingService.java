@@ -9,16 +9,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-import static de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.BuildingMapper.*;
 import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.createPoint;
 import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.createPolygon;
 
 @Service
 public class BuildingService {
     private final BuildingRepository buildingRepository;
+    private final BuildingMapper buildingMapper;
 
-    public BuildingService(BuildingRepository buildingRepository) {
+    public BuildingService(BuildingRepository buildingRepository,
+                           BuildingMapper buildingMapper) {
         this.buildingRepository = buildingRepository;
+        this.buildingMapper = buildingMapper;
     }
 
     // GET all buildings as feature collection
@@ -27,7 +29,7 @@ public class BuildingService {
         FeatureCollection featureCollection = new FeatureCollection();
         List<Feature> features = new ArrayList<>();
         for (Building building : buildings) {
-            Feature feature = BuildingToFeature(building);
+            Feature feature = buildingMapper.BuildingToFeature(building);
             features.add(feature);
         }
         featureCollection.setFeatures(features);
@@ -36,13 +38,13 @@ public class BuildingService {
 
     // GET building by its ID
     public Optional<Feature> getBuildingById(Long id) {
-        return buildingRepository.findById(id).map(BuildingMapper::BuildingToFeature);
+        return buildingRepository.findById(id).map(buildingMapper::BuildingToFeature);
     }
 
     // POST Create new building
     @Transactional
     public void createBuilding(Feature feature) {
-        Building building = FeatureToBuilding(feature);
+        Building building = buildingMapper.FeatureToBuilding(feature);
         buildingRepository.save(building);
     }
 
@@ -58,7 +60,9 @@ public class BuildingService {
             entity.setQuarter(properties != null ? properties.getQuarter() : null);
             entity.setDistrict(properties != null ? properties.getDistrict() : null);
             entity.setDistrict_house_number(properties != null ? properties.getDistrict_house_number() : null);
-            entity.setPrimary_source(properties != null ? properties.getPrimary_source() : null);
+            entity.setPrimary_sources((properties != null && properties.getPrimary_sources() != null)
+                    ? buildingMapper.getOrSaveSources(properties.getPrimary_sources())
+                    : null);
             entity.setNotes(properties != null ? properties.getNotes() : null);
             if (updatedFeature.getGeometry() != null) {
                 if (updatedFeature.getGeometry() instanceof PointGeometry pointGeometry) {
