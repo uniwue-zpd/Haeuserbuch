@@ -5,6 +5,7 @@ import { computed, onMounted } from 'vue';
 import type { FeatureCollection } from "~/utils/GeoJsonTypes";
 import { initMap } from "~/service/map_init";
 
+const router = useRouter();
 const building_store = useBuildingStore();
 const tile_store = useTileStore();
 const buildings = computed(() => building_store.buildings);
@@ -34,8 +35,8 @@ onMounted(async () => {
       'source': 'buildings',
       'layout': {},
       'paint': {
-        'fill-color': '#176363',
-        'fill-opacity': 0.5
+        'fill-color': 'rgba(6,61,121,0.8)',
+        'fill-opacity': 0.7
       }
     });
   });
@@ -44,15 +45,19 @@ onMounted(async () => {
       console.warn('No features found');
       return;
     }
-    const geometry = e.features[0].geometry as Polygon;
+    const feature = e.features[0];
+    const geometry = feature.geometry as Polygon;
     const coordinates = new LngLat(
         (geometry.coordinates[0][1][0]),
         (geometry.coordinates[0][1][1])
     );
-    new maplibregl.Popup()
+    const popup = new maplibregl.Popup()
         .setLngLat(coordinates)
-        .setHTML(`<a href="/buildings/${e.features[0].id}">${(e.features[0].properties?.name)}</a>`)
+        .setHTML(`<div class="cursor-pointer montserrat-headline font-semibold text-black">${(feature.properties.name)}</a>`)
         .addTo(map!);
+    popup.getElement().addEventListener('click', ()=> {
+      router.push(`/buildings/${feature.id}`)
+    });
     map!.flyTo({
       center: coordinates,
       zoom: 17
