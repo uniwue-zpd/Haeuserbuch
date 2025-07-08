@@ -53,7 +53,7 @@ onMounted(async () => {
     );
     const popup = new maplibregl.Popup()
         .setLngLat(coordinates)
-        .setHTML(`<div class="cursor-pointer montserrat-headline font-semibold text-black">${(feature.properties.name)}</a>`)
+        .setHTML(`<div class="cursor-pointer montserrat-headline font-semibold text-black">${(feature.properties.name)}</div>`)
         .addTo(map!);
     popup.getElement().addEventListener('click', ()=> {
       router.push(`/buildings/${feature.id}`)

@@ -53,6 +53,6 @@ export interface BuildingProperties {
 export interface PlaceProperties {
     type?: string;
     real_name?: string;
-    alt_names?: string[];
+    alt_names: string[] | [];
     notes?: string;
 }

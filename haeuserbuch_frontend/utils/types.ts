@@ -32,7 +32,7 @@ export interface Ownership extends Auditable {
     price?: number;
     owner: Person;
     seller: Person;
-    building: Feature;
+    buildings: Feature[] | [];
     source: Source;
     entry_text?: string;
     notes?: string;
