@@ -11,7 +11,7 @@
 !**/src/main/**/target/
 !**/src/test/**/target/
 **/HELP.md
-**/src/main/resources/application.properties
+**/src/main/resources/application.yml
 
 # Frontend
 haeuserbuch_frontend/node_modules/
