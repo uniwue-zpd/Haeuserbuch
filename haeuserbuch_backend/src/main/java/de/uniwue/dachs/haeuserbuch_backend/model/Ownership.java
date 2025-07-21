@@ -38,7 +38,7 @@ public class Ownership extends BaseEntity {
     @JoinColumn(name = "source_id", nullable = false)
     private Source source;
 
-    @Column(length = 2000)
+    @Column(columnDefinition = "TEXT")
     private String entry_text;
 
     private String notes;
