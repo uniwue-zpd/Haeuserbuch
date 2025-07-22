@@ -51,8 +51,8 @@ export interface BuildingProperties {
 }
 
 export interface PlaceProperties {
-    type?: string;
-    real_name?: string;
-    alt_names: string[] | [];
-    notes?: string;
+    type: string | null;
+    realName: string | null;
+    altNames: string[] | [];
+    notes: string | null;
 }

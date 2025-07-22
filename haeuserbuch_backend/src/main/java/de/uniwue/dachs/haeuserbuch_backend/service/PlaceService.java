@@ -55,8 +55,8 @@ public class PlaceService {
     public void updatePlace(Long id, Feature updatedFeature) {
         placeRepository.findById(id).map(entity -> {
             PlaceProperties properties = (PlaceProperties) updatedFeature.getProperties();
-            entity.setReal_name(properties != null ? properties.getReal_name() : null);
-            entity.setAlt_names(properties != null ? properties.getAlt_names() : null);
+            entity.setRealName(properties != null ? properties.getRealName() : null);
+            entity.setAltNames(properties != null ? properties.getAltNames() : null);
             entity.setNotes(properties != null ? properties.getNotes() : null);
             if (updatedFeature.getGeometry() != null) {
                 if (updatedFeature.getGeometry() instanceof PointGeometry) {

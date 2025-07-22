@@ -68,7 +68,7 @@ onMounted(async () => {
 
 <template>
   <div class="flex flex-col gap-2">
-    <h1 class="text-3xl montserrat-headline font-bold">{{ properties?.real_name }}</h1>
+    <h1 class="text-3xl montserrat-headline font-bold">{{ properties?.realName }}</h1>
     <div id="map" class="h-[500px] w-full rounded-md"/>
   </div>
 </template>

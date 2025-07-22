@@ -13,11 +13,11 @@ import java.util.List;
 @Getter
 @Setter
 public class Place extends BaseEntity {
-    private String real_name;
+    private String realName;
 
     @ElementCollection(targetClass = String.class)
     @CollectionTable(name = "place_alt_names", joinColumns = @JoinColumn(name = "place_id"))
-    private List<String> alt_names = new ArrayList<>();
+    private List<String> altNames = new ArrayList<>();
 
     @Column(columnDefinition = "geometry(Geometry,25832)")
     private Geometry coordinates;

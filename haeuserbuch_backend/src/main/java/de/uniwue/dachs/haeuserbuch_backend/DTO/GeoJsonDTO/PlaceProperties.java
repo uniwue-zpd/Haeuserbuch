@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 public class PlaceProperties extends Properties {
-    private String real_name;
-    private List<String> alt_names = new ArrayList<>();
+    private String realName;
+    private List<String> altNames = new ArrayList<>();
     private String notes;
 }

@@ -50,7 +50,7 @@ onMounted(async ()=> {
     );
     new maplibregl.Popup()
         .setLngLat(coordinates)
-        .setHTML(`<a href="/places/${e.features[0].id}">${(e.features[0].properties?.real_name)}</a>`)
+        .setHTML(`<a href="/places/${e.features[0].id}">${(e.features[0].properties?.realName)}</a>`)
         .addTo(map!);
     map!.flyTo({
       center: coordinates,
