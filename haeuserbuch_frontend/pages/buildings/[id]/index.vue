@@ -90,17 +90,17 @@ onBeforeUnmount(() => {
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Name</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.name }}</td>
                       </tr>
-                      <tr v-if="building_item_properties.house_number">
+                      <tr v-if="building_item_properties.houseNumber">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Hausnummer</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.house_number }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.houseNumber }}</td>
                       </tr>
-                      <tr v-if="building_item_properties.part_type">
+                      <tr v-if="building_item_properties.partType">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Bauteil</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.part_type }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.partType }}</td>
                       </tr>
-                      <tr v-if="building_item_properties.special_status">
+                      <tr v-if="building_item_properties.specialStatus">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Sonderstatus</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.special_status }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.specialStatus }}</td>
                       </tr>
                       <tr v-if="building_item_properties.quarter">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Viertel</td>
@@ -110,21 +110,21 @@ onBeforeUnmount(() => {
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Distrikt</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.district }}</td>
                       </tr>
-                      <tr v-if="building_item_properties.primary_sources.length > 0">
+                      <tr v-if="building_item_properties.primarySources.length > 0">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Primärquellen</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <ul>
-                            <li v-for="(source, index) in building_item_properties.primary_sources" :key="index">
+                            <li v-for="(source, index) in building_item_properties.primarySources" :key="index">
                               {{ source.title }}, {{ source.signature }}
                             </li>
                           </ul>
                         </td>
                       </tr>
-                      <tr v-if="building_item_properties.secondary_sources.length > 0">
+                      <tr v-if="building_item_properties.secondarySources.length > 0">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Sekundärquellen</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <ul>
-                            <li v-for="(source, index) in building_item_properties.secondary_sources" :key="index">
+                            <li v-for="(source, index) in building_item_properties.secondarySources" :key="index">
                               {{ source }}
                             </li>
                           </ul>

@@ -31,14 +31,14 @@ public class BuildingMapper {
         BuildingProperties properties = new BuildingProperties();
         feature.setId(building.getId());
         properties.setName(building.getName());
-        properties.setHouse_number(building.getHouse_number());
-        properties.setPart_type(building.getPart_type());
-        properties.setSpecial_status(building.getSpecial_status());
+        properties.setHouseNumber(building.getHouseNumber());
+        properties.setPartType(building.getPartType());
+        properties.setSpecialStatus(building.getSpecialStatus());
         properties.setQuarter(building.getQuarter());
         properties.setDistrict(building.getDistrict());
-        properties.setDistrict_house_number(building.getDistrict_house_number());
-        properties.setPrimary_sources(building.getPrimary_sources());
-        properties.setSecondary_sources(building.getSecondary_sources());
+        properties.setDistrictHouseNumber(building.getDistrictHouseNumber());
+        properties.setPrimarySources(building.getPrimarySources());
+        properties.setSecondarySources(building.getSecondarySources());
         properties.setNotes(building.getNotes());
         feature.setProperties(properties);
         if (building.getCoordinates() != null) {
@@ -62,14 +62,14 @@ public class BuildingMapper {
         if (feature.getProperties() != null) {
             if (feature.getProperties() instanceof BuildingProperties properties) {
                 building.setName(properties.getName());
-                building.setHouse_number(properties.getHouse_number());
-                building.setPart_type(properties.getPart_type());
-                building.setSpecial_status(properties.getSpecial_status());
+                building.setHouseNumber(properties.getHouseNumber());
+                building.setPartType(properties.getPartType());
+                building.setSpecialStatus(properties.getSpecialStatus());
                 building.setQuarter(properties.getQuarter());
                 building.setDistrict(properties.getDistrict());
-                building.setDistrict_house_number(properties.getDistrict_house_number());
-                building.setPrimary_sources(getOrSaveSources(properties.getPrimary_sources()));
-                building.setSecondary_sources(properties.getSecondary_sources());
+                building.setDistrictHouseNumber(properties.getDistrictHouseNumber());
+                building.setPrimarySources(getOrSaveSources(properties.getPrimarySources()));
+                building.setSecondarySources(properties.getSecondarySources());
                 building.setNotes(properties.getNotes());
             } else {
                 throw new IllegalArgumentException("Unsupported properties type");

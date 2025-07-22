@@ -18,17 +18,17 @@ public class Building extends BaseEntity {
 
     private String name;
 
-    private String house_number;
+    private String houseNumber;
 
-    private String part_type;
+    private String partType;
 
-    private String special_status;
+    private String specialStatus;
 
     private String quarter;
 
     private String district;
 
-    private String district_house_number;
+    private String districtHouseNumber;
 
     @ManyToMany
     @JoinTable(
@@ -36,14 +36,14 @@ public class Building extends BaseEntity {
             joinColumns = @JoinColumn(name = "building_id"),
             inverseJoinColumns = @JoinColumn(name = "primary_source_id")
     )
-    private Set<Source> primary_sources = new HashSet<>();
+    private Set<Source> primarySources = new HashSet<>();
 
     @ElementCollection(targetClass = String.class)
     @CollectionTable(
             name = "building_secondary_source",
             joinColumns = @JoinColumn(name = "building_id")
     )
-    private List<String> secondary_sources = new ArrayList<>();
+    private List<String> secondarySources = new ArrayList<>();
 
     private String notes;
 

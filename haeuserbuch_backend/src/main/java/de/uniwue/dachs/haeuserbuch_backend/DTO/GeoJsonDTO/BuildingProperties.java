@@ -13,13 +13,13 @@ import java.util.Set;
 @Setter
 public class BuildingProperties extends Properties {
     private String name;
-    private String house_number;
-    private String part_type;
-    private String special_status;
+    private String houseNumber;
+    private String partType;
+    private String specialStatus;
     private String quarter;
     private String district;
-    private String district_house_number;
-    private Set<Source> primary_sources = new HashSet<>();
-    private List<String> secondary_sources = new ArrayList<>();
+    private String districtHouseNumber;
+    private Set<Source> primarySources = new HashSet<>();
+    private List<String> secondarySources = new ArrayList<>();
     private String notes;
 }

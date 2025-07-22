@@ -37,17 +37,17 @@ export interface FeatureCollection {
 }
 
 export interface BuildingProperties {
-    type?: string;
-    name?: string;
-    house_number?: string;
-    part_type?: string;
-    special_status?: string;
-    quarter?: string;
-    district?: string;
-    district_house_number?: string;
-    primary_sources: Source[] | [];
-    secondary_sources: string[] | [];
-    notes?: string;
+    type: string | null;
+    name: string | null;
+    houseNumber: string | null;
+    partType: string | null;
+    specialStatus: string | null;
+    quarter: string | null;
+    district: string | null;
+    districtHouseNumber: string | null;
+    primarySources: Source[] | [];
+    secondarySources: string[] | [];
+    notes: string | null;
 }
 
 export interface PlaceProperties {

@@ -54,14 +54,14 @@ public class BuildingService {
         buildingRepository.findById(id).map(entity -> {
             BuildingProperties properties = (BuildingProperties) updatedFeature.getProperties();
             entity.setName(properties != null ? properties.getName() : null);
-            entity.setHouse_number(properties != null ? properties.getHouse_number() : null);
-            entity.setPart_type(properties != null ? properties.getPart_type() : null);
-            entity.setSpecial_status(properties != null ? properties.getSpecial_status() : null);
+            entity.setHouseNumber(properties != null ? properties.getHouseNumber() : null);
+            entity.setPartType(properties != null ? properties.getPartType() : null);
+            entity.setSpecialStatus(properties != null ? properties.getSpecialStatus() : null);
             entity.setQuarter(properties != null ? properties.getQuarter() : null);
             entity.setDistrict(properties != null ? properties.getDistrict() : null);
-            entity.setDistrict_house_number(properties != null ? properties.getDistrict_house_number() : null);
-            entity.setPrimary_sources((properties != null && properties.getPrimary_sources() != null)
-                    ? buildingMapper.getOrSaveSources(properties.getPrimary_sources())
+            entity.setDistrictHouseNumber(properties != null ? properties.getDistrictHouseNumber() : null);
+            entity.setPrimarySources((properties != null && properties.getPrimarySources() != null)
+                    ? buildingMapper.getOrSaveSources(properties.getPrimarySources())
                     : null);
             entity.setNotes(properties != null ? properties.getNotes() : null);
             if (updatedFeature.getGeometry() != null) {
