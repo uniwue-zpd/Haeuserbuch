@@ -74,9 +74,9 @@ public class TaxService {
     // Helper methods
     private Tax DtoToTax(TaxDTO taxDTO) {
         Tax tax = new Tax();
-        tax.setTax_number(taxDTO.getTax_number());
-        tax.setPlan_number(taxDTO.getPlan_number());
-        tax.setEntry_text(taxDTO.getEntry_text());
+        tax.setTaxNumber(taxDTO.getTaxNumber());
+        tax.setPlanNumber(taxDTO.getPlanNumber());
+        tax.setEntryText(taxDTO.getEntryText());
         tax.setBuilding(getBuilding(taxDTO.getBuilding()));
         tax.setPerson(getOrSavePerson(taxDTO.getPerson()));
         tax.setSource(getOrSaveSource(taxDTO.getSource()));
@@ -87,9 +87,9 @@ public class TaxService {
     private TaxDTO taxToDto(Tax tax) {
         TaxDTO taxDTO = new TaxDTO();
         taxDTO.setId(tax.getId());
-        taxDTO.setTax_number(tax.getTax_number());
-        taxDTO.setPlan_number(tax.getPlan_number());
-        taxDTO.setEntry_text(tax.getEntry_text());
+        taxDTO.setTaxNumber(tax.getTaxNumber());
+        taxDTO.setPlanNumber(tax.getPlanNumber());
+        taxDTO.setEntryText(tax.getEntryText());
         taxDTO.setBuilding(buildingMapper.BuildingToFeature(tax.getBuilding()));
         taxDTO.setPerson(tax.getPerson());
         taxDTO.setSource(tax.getSource());

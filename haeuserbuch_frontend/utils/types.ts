@@ -57,11 +57,11 @@ export interface Person extends Auditable {
     Represents an item from the project's bibliography
 */
 export interface Source extends Auditable {
-    type?: string;
-    title?: string;
-    signature?: string;
-    description?: string;
-    notes?: string;
+    type: string | null;
+    title: string | null;
+    signature: string | null;
+    description: string | null;
+    notes: string;
 }
 
 /*

@@ -12,11 +12,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Tax extends BaseEntity {
-    private String tax_number;
+    private String taxNumber;
 
-    private String plan_number;
+    private String planNumber;
 
-    private String entry_text;
+    private String entryText;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "building_id")

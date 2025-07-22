@@ -10,9 +10,9 @@ import lombok.Setter;
 @Setter
 public class TaxDTO {
     private Long id;
-    private String tax_number;
-    private String plan_number;
-    private String entry_text;
+    private String taxNumber;
+    private String planNumber;
+    private String entryText;
     private Feature building;
     private Person person;
     private Source source;
