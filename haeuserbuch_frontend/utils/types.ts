@@ -3,10 +3,10 @@
 */
 export interface Auditable {
     id: number;
-    created_date: string;
-    created_by: string;
-    last_modified_date: string;
-    last_modified_by: string;
+    createdDate: string;
+    createdBy: string | null;
+    lastModifiedDate: string;
+    lastModifiedBy: string | null;
 }
 
 /*
