@@ -11,23 +11,21 @@ import lombok.Setter;
 @Setter
 public class Person extends BaseEntity{
 
-    private String first_name;
+    private String firstName;
 
-    private String last_name;
+    private String lastName;
 
-    private String topographic_surname;
+    private String topographicSurname;
 
-    private String full_name;
+    private String fullName;
 
     private String sex;
 
     private String occupation;
 
-    private Boolean is_citizen;
+    private Boolean isCitizen;
 
     private String confession;
 
     private String notes;
-
-    // TODO: Add column for places (Set/List)
 }

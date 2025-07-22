@@ -42,15 +42,15 @@ export interface Ownership extends Auditable {
     Represents a person
 */
 export interface Person extends Auditable {
-    first_name?: string;
-    last_name?: string;
-    topographic_surname?: string;
-    full_name?: string;
-    sex?: "männlich" | "weiblich" | null;
-    occupation?: string;
-    is_citizen?: boolean;
-    confession?: string;
-    notes?: string;
+    firstName: string | null;
+    lastName: string | null;
+    topographicSurname: string | null;
+    fullName: string | null;
+    sex: "männlich" | "weiblich" | null;
+    occupation: string | null;
+    isCitizen: boolean | null;
+    confession: string | null;
+    notes: string | null;
 }
 
 /*

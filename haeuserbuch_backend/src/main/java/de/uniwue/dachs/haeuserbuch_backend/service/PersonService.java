@@ -37,12 +37,12 @@ public class PersonService {
     public Person updatePerson(Long id, Person updatedPerson) {
         return personRepository.findById(id)
                 .map(existingPerson -> {
-                    existingPerson.setFirst_name(updatedPerson.getFirst_name());
-                    existingPerson.setLast_name(updatedPerson.getLast_name());
-                    existingPerson.setTopographic_surname(updatedPerson.getTopographic_surname());
-                    existingPerson.setFull_name(updatedPerson.getFull_name());
+                    existingPerson.setFirstName(updatedPerson.getFirstName());
+                    existingPerson.setLastName(updatedPerson.getLastName());
+                    existingPerson.setTopographicSurname(updatedPerson.getTopographicSurname());
+                    existingPerson.setFullName(updatedPerson.getFullName());
                     existingPerson.setOccupation(updatedPerson.getOccupation());
-                    existingPerson.setIs_citizen(updatedPerson.getIs_citizen());
+                    existingPerson.setIsCitizen(updatedPerson.getIsCitizen());
                     existingPerson.setConfession(updatedPerson.getConfession());
                     existingPerson.setNotes(updatedPerson.getNotes());
                     return personRepository.save(existingPerson);
