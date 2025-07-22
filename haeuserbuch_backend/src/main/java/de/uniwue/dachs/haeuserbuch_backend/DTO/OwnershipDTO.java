@@ -19,6 +19,6 @@ public class OwnershipDTO {
     private Person seller;
     private Set<Feature> buildings;
     private Source source;
-    private String entry_text;
+    private String entryText;
     private String notes;
 }

@@ -39,7 +39,7 @@ public class Ownership extends BaseEntity {
     private Source source;
 
     @Column(columnDefinition = "TEXT")
-    private String entry_text;
+    private String entryText;
 
     private String notes;
 }

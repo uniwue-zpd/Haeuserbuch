@@ -27,15 +27,15 @@ export interface Citizenship extends Auditable {
     Represents an ownership event written in the register
 */
 export interface Ownership extends Auditable {
-    type?: string;
-    date?: string;
-    price?: number;
+    type: string | null;
+    date: string | null;
+    price: number | null;
     owner: Person;
     seller: Person;
     buildings: Feature[] | [];
     source: Source;
-    entry_text?: string;
-    notes?: string;
+    entryText: string | null;
+    notes: string | null;
 }
 
 /*
