@@ -15,7 +15,7 @@ public class CitizenshipDTO {
     private Feature place;
     private Long number;
     private String date;
-    private String entry_text;
+    private String entryText;
     private String addendum;
     private String notes;
 }

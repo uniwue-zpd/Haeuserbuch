@@ -73,7 +73,7 @@ public class CitizenshipService {
         citizenship.setPlace(getPlace(citizenshipDTO.getPlace()));
         citizenship.setNumber(citizenshipDTO.getNumber());
         citizenship.setDate(citizenshipDTO.getDate());
-        citizenship.setEntry_text(citizenshipDTO.getEntry_text());
+        citizenship.setEntryText(citizenshipDTO.getEntryText());
         citizenship.setAddendum(citizenshipDTO.getAddendum());
         citizenship.setNotes(citizenshipDTO.getNotes());
         return citizenship;
@@ -89,7 +89,7 @@ public class CitizenshipService {
                 : null);
         citizenshipDTO.setNumber(citizenship.getNumber());
         citizenshipDTO.setDate(citizenship.getDate());
-        citizenshipDTO.setEntry_text(citizenship.getEntry_text());
+        citizenshipDTO.setEntryText(citizenship.getEntryText());
         citizenshipDTO.setAddendum(citizenship.getAddendum());
         citizenshipDTO.setNotes(citizenship.getNotes());
         return citizenshipDTO;
@@ -117,4 +117,4 @@ public class CitizenshipService {
     }
 }
 
-// TODO: PUT/PATCH
+// TODO: PUT

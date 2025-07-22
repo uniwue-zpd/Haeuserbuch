@@ -15,12 +15,12 @@ export interface Auditable {
 export interface Citizenship extends Auditable {
     person: Person;
     source: Source;
-    place?: Feature;
-    number?: number;
-    date?: string;
-    entry_text?: string;
-    addendum?: string;
-    notes?: string;
+    place: Feature | null;
+    number: number | null;
+    date: string | null;
+    entryText: string | null;
+    addendum: string | null;
+    notes: string | null;
 }
 
 /*

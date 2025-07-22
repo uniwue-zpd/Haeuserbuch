@@ -1,9 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,11 +26,10 @@ public class Citizenship extends BaseEntity {
 
     private String date;
 
-    private String entry_text;
+    @Column(columnDefinition = "TEXT")
+    private String entryText;
 
     private String addendum;
 
     private String notes;
 }
-
-// TODO: Check whether a more precise representation of the dates is possible
