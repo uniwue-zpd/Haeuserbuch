@@ -25,14 +25,12 @@ public class BuildingService {
 
     // GET all buildings as feature collection
     public FeatureCollection getAllBuildings() {
-        List<Building> buildings = buildingRepository.findAll();
         FeatureCollection featureCollection = new FeatureCollection();
-        List<Feature> features = new ArrayList<>();
-        for (Building building : buildings) {
-            Feature feature = buildingMapper.BuildingToFeature(building);
-            features.add(feature);
-        }
-        featureCollection.setFeatures(features);
+        featureCollection.setFeatures(
+                buildingRepository.findAll().stream()
+                        .map(buildingMapper::BuildingToFeature)
+                        .toList()
+        );
         return featureCollection;
     }
 

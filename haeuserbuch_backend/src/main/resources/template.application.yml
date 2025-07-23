@@ -26,3 +26,9 @@ spring:
   config:
     files:
       upload-dir: /files
+
+server:
+  compression:
+    enabled: true
+    mime-types: application/json
+    min-response-size: 1024
