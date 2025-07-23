@@ -15,7 +15,7 @@ let map: maplibregl.Map | null = null;
 
 onMounted(async () => {
   map = initMap(
-      'map',
+      'map_buildings',
       DEFAULT_MAP_CENTER,
       13,
       sources.value as Record<string, RasterSourceSpecification>,
@@ -53,7 +53,9 @@ onMounted(async () => {
     );
     const popup = new maplibregl.Popup()
         .setLngLat(coordinates)
-        .setHTML(`<div class="cursor-pointer montserrat-headline font-semibold text-black">${(feature.properties.name)}</div>`)
+        .setHTML(`<div class="cursor-pointer montserrat-headline font-semibold text-black">${(feature.properties.name
+            ? feature.properties.name
+            : feature.properties.districtHouseNumber)}</div>`)
         .addTo(map!);
     popup.getElement().addEventListener('click', ()=> {
       router.push(`/buildings/${feature.id}`)
@@ -82,7 +84,20 @@ onBeforeUnmount(() => {
 <template>
   <div class="flex flex-col gap-2">
     <h1 class="text-3xl montserrat-headline font-bold">Die Häuser im Überblick</h1>
-    <div id="map" class="h-[500px] w-full rounded-md"/>
+    <Tabs value="0">
+      <TabList>
+        <Tab value="0" class="montserrat-headline font-semibold text-lg">Karte</Tab>
+        <Tab value="1" class="montserrat-headline font-semibold text-lg">Tabellarische Übersicht</Tab>
+      </TabList>
+      <TabPanels>
+        <TabPanel value="0">
+          <div id="map_buildings" class="h-[500px] w-full rounded-md"/>
+        </TabPanel>
+        <TabPanel value="1">
+          <p>Hier entsteht die Tabelle mit Metadaten</p>
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
   </div>
 </template>
 

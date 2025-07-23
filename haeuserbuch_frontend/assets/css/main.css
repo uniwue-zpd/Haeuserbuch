@@ -4,6 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+    --p-tabs-tab-active-border-color: #1E293B !important;
+    --p-tabs-tab-active-color: #1E293B !important;
+}
+
 #__nuxt {
     display: flex;
     flex-direction: column;
