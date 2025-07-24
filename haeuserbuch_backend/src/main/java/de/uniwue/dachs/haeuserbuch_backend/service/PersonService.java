@@ -42,6 +42,7 @@ public class PersonService {
                     existingPerson.setTopographicSurname(updatedPerson.getTopographicSurname());
                     existingPerson.setFullName(updatedPerson.getFullName());
                     existingPerson.setOccupation(updatedPerson.getOccupation());
+                    existingPerson.setOccupationCategory(updatedPerson.getOccupationCategory());
                     existingPerson.setIsCitizen(updatedPerson.getIsCitizen());
                     existingPerson.setConfession(updatedPerson.getConfession());
                     existingPerson.setNotes(updatedPerson.getNotes());
