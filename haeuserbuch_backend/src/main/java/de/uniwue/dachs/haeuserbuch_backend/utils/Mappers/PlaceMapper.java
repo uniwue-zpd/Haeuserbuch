@@ -18,6 +18,7 @@ public class PlaceMapper {
             if (feature.getProperties() instanceof PlaceProperties properties) {
                 place.setRealName(properties.getRealName());
                 place.setAltNames(properties.getAltNames());
+                place.setIsUncertain(properties.getIsUncertain());
                 place.setNotes(properties.getNotes());
             } else {
                 throw new IllegalArgumentException("Unsupported properties type");
@@ -40,6 +41,7 @@ public class PlaceMapper {
         feature.setId(place.getId());
         properties.setRealName(place.getRealName());
         properties.setAltNames(place.getAltNames());
+        properties.setIsUncertain(place.getIsUncertain());
         properties.setNotes(place.getNotes());
         feature.setProperties(properties);
         if (place.getCoordinates() != null) {

@@ -19,10 +19,10 @@ public class Place extends BaseEntity {
     @CollectionTable(name = "place_alt_names", joinColumns = @JoinColumn(name = "place_id"))
     private List<String> altNames = new ArrayList<>();
 
+    private Boolean isUncertain;
+
     @Column(columnDefinition = "geometry(Geometry,25832)")
     private Geometry coordinates;
 
     private String notes;
-
-    // TODO: Use DTO (latitude and longitude as separate fields) in order to create a point for each place
 }

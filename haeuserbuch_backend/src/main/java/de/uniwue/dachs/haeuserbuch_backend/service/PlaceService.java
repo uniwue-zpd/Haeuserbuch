@@ -57,6 +57,7 @@ public class PlaceService {
             PlaceProperties properties = (PlaceProperties) updatedFeature.getProperties();
             entity.setRealName(properties != null ? properties.getRealName() : null);
             entity.setAltNames(properties != null ? properties.getAltNames() : null);
+            entity.setIsUncertain(properties != null ? properties.getIsUncertain() : null);
             entity.setNotes(properties != null ? properties.getNotes() : null);
             if (updatedFeature.getGeometry() != null) {
                 if (updatedFeature.getGeometry() instanceof PointGeometry) {
