@@ -48,6 +48,7 @@ export interface Person extends Auditable {
     fullName: string | null;
     sex: "männlich" | "weiblich" | null;
     occupation: string | null;
+    occupationCategory: string | null;
     isCitizen: boolean | null;
     confession: string | null;
     notes: string | null;
