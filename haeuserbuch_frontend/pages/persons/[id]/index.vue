@@ -10,6 +10,10 @@ const person_item = computed(() => person_store.current_person);
 onMounted(async () => {
   await person_store.fetchPersonById(person_id);
 });
+
+useHead(() => ({
+  title: person_item.value ? `${person_item.value.fullName} - Personenverzeichnis` : 'Nicht gefunden',
+}));
 </script>
 
 <template>

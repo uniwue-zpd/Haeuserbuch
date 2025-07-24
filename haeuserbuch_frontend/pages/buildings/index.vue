@@ -13,6 +13,10 @@ const sources = computed(() => tile_store.sources);
 const layers = computed(() => tile_store.layers);
 let map: maplibregl.Map | null = null;
 
+useHead(() => ({
+  title: 'Gebäude - Gebäudeverzeichnis',
+}));
+
 onMounted(async () => {
   map = initMap(
       'map_buildings',

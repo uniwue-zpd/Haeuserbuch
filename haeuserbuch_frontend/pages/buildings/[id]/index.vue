@@ -24,6 +24,10 @@ const draw = new MaplibreTerradrawControl({
   open: true,
 });
 
+useHead(() => ({
+  title: building_item.value ? `${building_item_properties.value?.districtHouseNumber} - Gebäudeverzeichnis` : 'Nicht gefunden',
+}));
+
 onMounted(async () => {
   await building_store.fetchBuildingById(building_id);
   center.value = [

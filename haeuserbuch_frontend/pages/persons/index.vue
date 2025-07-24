@@ -21,6 +21,10 @@ const filters = ref({
   sex: { value: null, matchMode: FilterMatchMode.IN },
   isCitizen: { value: null, matchMode: FilterMatchMode.IN }
 });
+
+useHead(() => ({
+  title: 'Personen - Personenverzeichnis',
+}));
 </script>
 
 <template>
@@ -70,6 +74,7 @@ const filters = ref({
             <NuxtLink
                 :to="`/persons/${slotProps.data.id}`"
                 class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md"
+                prefetch
             >
               {{ slotProps.data.fullName }}
             </NuxtLink>

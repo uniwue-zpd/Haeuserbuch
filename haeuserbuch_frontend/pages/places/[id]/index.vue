@@ -12,6 +12,10 @@ const place_item = computed(() => store.current_place);
 const geometry = computed(() => place_item.value?.geometry as Point | null);
 const properties = computed(() => place_item.value?.properties as PlaceProperties | null);
 
+useHead(() => ({
+  title: place_item.value ? `${properties.value?.realName} - Orteverzeichnis` : 'Nicht gefunden',
+}));
+
 onMounted(async () => {
   await store.fetchPlaceById(place_id);
   const center = (geometry.value) ? geometry.value.coordinates : DEFAULT_MAP_CENTER;
