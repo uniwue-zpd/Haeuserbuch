@@ -61,6 +61,50 @@ public class GeometryUtils {
         }
     }
 
+    public static List<List<List<List<Double>>>> convertMultiPolygon(Geometry geometry) {
+        if (!(geometry instanceof MultiPolygon multiPolygon)) {
+            throw new IllegalArgumentException("Geometry must be a MultiPolygon");
+        }
+        List<List<List<List<Double>>>> coordinates = new ArrayList<>();
+        for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
+            Polygon polygon = (Polygon) multiPolygon.getGeometryN(i);
+            List<List<List<Double>>> polygonCoordinates = new ArrayList<>();
+            polygonCoordinates.add(convertCoordinates(polygon.getExteriorRing().getCoordinates()));
+            for (int j = 0; j < polygon.getNumInteriorRing(); j++) {
+                polygonCoordinates.add(convertCoordinates(polygon.getInteriorRingN(j).getCoordinates()));
+            }
+            coordinates.add(polygonCoordinates);
+        }
+        return coordinates;
+    }
+
+
+    public static MultiPolygon createMultiPolygon(List<List<List<List<Double>>>> multiPolygon) {
+        if (multiPolygon == null || multiPolygon.isEmpty()) {
+            throw new IllegalArgumentException("MultiPolygon cannot be null or empty");
+        }
+        Polygon[] polygons = new Polygon[multiPolygon.size()];
+        for (int i = 0; i < multiPolygon.size(); i++) {
+            List<List<List<Double>>> polygon = multiPolygon.get(i);
+            if (polygon == null || polygon.isEmpty()) {
+                throw new IllegalArgumentException("Polygon at index " + i + " cannot be null or empty");
+            }
+            Coordinate[] outerCoordinates = toCoordinates(polygon.getFirst());
+            LinearRing outerRing = geometryFactory.createLinearRing(outerCoordinates);
+            if (polygon.size() == 1) {
+                polygons[i] = geometryFactory.createPolygon(outerRing, null);
+            } else {
+                LinearRing[] holes = new LinearRing[polygon.size() - 1];
+                for (int j = 1; j < polygon.size(); j++) {
+                    Coordinate[] innerCoordinates = toCoordinates(polygon.get(j));
+                    holes[j - 1] = geometryFactory.createLinearRing(innerCoordinates);
+                }
+                polygons[i] = geometryFactory.createPolygon(outerRing, holes);
+            }
+        }
+        return geometryFactory.createMultiPolygon(polygons);
+    }
+
     private static Coordinate[] toCoordinates(List<List<Double>> points) {
         Coordinate[] coordinates = new Coordinate[points.size()];
         for (int i = 0; i < points.size(); i++) {
