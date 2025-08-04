@@ -16,5 +16,6 @@ public class TaxDTO {
     private Feature building;
     private Person person;
     private Source source;
-    private String notes;
+    private String internalNotes;
+    private String generalNotes;
 }

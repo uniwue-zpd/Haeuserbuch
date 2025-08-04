@@ -47,12 +47,14 @@ export interface BuildingProperties {
     districtHouseNumber: string | null;
     primarySources: Source[] | [];
     secondarySources: string[] | [];
-    notes: string | null;
+    internalNotes: string | null;
+    generalNotes: string | null;
 }
 
 export interface PlaceProperties {
     type: string | null;
     realName: string | null;
     altNames: string[] | [];
-    notes: string | null;
+    internalNotes: string | null;
+    generalNotes: string | null;
 }

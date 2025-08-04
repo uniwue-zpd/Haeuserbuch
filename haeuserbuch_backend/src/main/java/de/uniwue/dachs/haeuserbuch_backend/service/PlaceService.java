@@ -58,7 +58,8 @@ public class PlaceService {
             entity.setRealName(properties != null ? properties.getRealName() : null);
             entity.setAltNames(properties != null ? properties.getAltNames() : null);
             entity.setIsUncertain(properties != null ? properties.getIsUncertain() : null);
-            entity.setNotes(properties != null ? properties.getNotes() : null);
+            entity.setInternalNotes(properties != null ? properties.getInternalNotes() : null);
+            entity.setGeneralNotes(properties != null ? properties.getGeneralNotes() : null);
             if (updatedFeature.getGeometry() != null) {
                 if (updatedFeature.getGeometry() instanceof PointGeometry) {
                     List<Double> coordinates = ((PointGeometry) updatedFeature.getGeometry()).getCoordinates();

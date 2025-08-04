@@ -75,7 +75,8 @@ public class CitizenshipService {
         citizenship.setDate(citizenshipDTO.getDate());
         citizenship.setEntryText(citizenshipDTO.getEntryText());
         citizenship.setAddendum(citizenshipDTO.getAddendum());
-        citizenship.setNotes(citizenshipDTO.getNotes());
+        citizenship.setInternalNotes(citizenshipDTO.getInternalNotes());
+        citizenship.setGeneralNotes(citizenshipDTO.getGeneralNotes());
         return citizenship;
     }
 
@@ -91,7 +92,8 @@ public class CitizenshipService {
         citizenshipDTO.setDate(citizenship.getDate());
         citizenshipDTO.setEntryText(citizenship.getEntryText());
         citizenshipDTO.setAddendum(citizenship.getAddendum());
-        citizenshipDTO.setNotes(citizenship.getNotes());
+        citizenshipDTO.setInternalNotes(citizenship.getInternalNotes());
+        citizenshipDTO.setGeneralNotes(citizenship.getGeneralNotes());
         return citizenshipDTO;
     }
 

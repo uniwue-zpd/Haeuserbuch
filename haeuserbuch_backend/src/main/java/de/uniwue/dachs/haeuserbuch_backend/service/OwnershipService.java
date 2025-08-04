@@ -70,7 +70,8 @@ public class OwnershipService {
                     entity.setBuildings(getBuildings(ownershipDTO.getBuildings()));
                     entity.setSource(getSource(ownershipDTO.getSource()));
                     entity.setEntryText(ownershipDTO.getEntryText());
-                    entity.setNotes(ownershipDTO.getNotes());
+                    entity.setInternalNotes(ownershipDTO.getInternalNotes());
+                    entity.setGeneralNotes(ownershipDTO.getGeneralNotes());
                     return ownershipRepository.save(entity);
                 }).orElseThrow(() -> new EntityNotFoundException("Ownership with id '" + id + "' does not exist"));
     }
@@ -94,7 +95,8 @@ public class OwnershipService {
         ownership.setBuildings(getBuildings(ownershipDTO.getBuildings()));
         ownership.setSource(getSource(ownershipDTO.getSource()));
         ownership.setEntryText(ownershipDTO.getEntryText());
-        ownership.setNotes(ownershipDTO.getNotes());
+        ownership.setInternalNotes(ownershipDTO.getInternalNotes());
+        ownership.setGeneralNotes(ownershipDTO.getGeneralNotes());
         return ownership;
     }
 
@@ -111,7 +113,8 @@ public class OwnershipService {
         ownershipDTO.setBuildings(buildings);
         ownershipDTO.setSource(ownership.getSource());
         ownershipDTO.setEntryText(ownership.getEntryText());
-        ownershipDTO.setNotes(ownership.getNotes());
+        ownershipDTO.setInternalNotes(ownership.getInternalNotes());
+        ownershipDTO.setGeneralNotes(ownership.getGeneralNotes());
         return ownershipDTO;
     }
 

@@ -40,6 +40,4 @@ public class Ownership extends BaseEntity {
 
     @Column(columnDefinition = "TEXT")
     private String entryText;
-
-    private String notes;
 }

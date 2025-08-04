@@ -7,6 +7,8 @@ export interface Auditable {
     createdBy: string | null;
     lastModifiedDate: string;
     lastModifiedBy: string | null;
+    internalNotes: string | null;
+    generalNotes: string | null;
 }
 
 /*
@@ -20,7 +22,6 @@ export interface Citizenship extends Auditable {
     date: string | null;
     entryText: string | null;
     addendum: string | null;
-    notes: string | null;
 }
 
 /*
@@ -35,7 +36,6 @@ export interface Ownership extends Auditable {
     buildings: Feature[] | [];
     source: Source;
     entryText: string | null;
-    notes: string | null;
 }
 
 /*
@@ -51,7 +51,6 @@ export interface Person extends Auditable {
     occupationCategory: string | null;
     isCitizen: boolean | null;
     confession: string | null;
-    notes: string | null;
 }
 
 /*
@@ -62,7 +61,6 @@ export interface Source extends Auditable {
     title: string | null;
     signature: string | null;
     description: string | null;
-    notes: string;
 }
 
 /*

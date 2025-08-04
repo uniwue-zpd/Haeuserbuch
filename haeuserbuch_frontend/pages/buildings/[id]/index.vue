@@ -56,7 +56,7 @@ onMounted(async () => {
       'source': 'building',
       'layout': {},
       'paint': {
-        'fill-color': 'rgba(6,61,121,0.8)',
+        'fill-color': 'rgba(255,250,0,0.8)',
         'fill-opacity': 0.7
       }
     });
@@ -134,9 +134,9 @@ onBeforeUnmount(() => {
                           </ul>
                         </td>
                       </tr>
-                      <tr v-if="building_item_properties.notes">
+                      <tr v-if="building_item_properties.generalNotes">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Notizen</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.notes }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.generalNotes }}</td>
                       </tr>
                       </tbody>
                     </table>

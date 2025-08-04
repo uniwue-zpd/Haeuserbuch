@@ -45,7 +45,8 @@ public class PersonService {
                     existingPerson.setOccupationCategory(updatedPerson.getOccupationCategory());
                     existingPerson.setIsCitizen(updatedPerson.getIsCitizen());
                     existingPerson.setConfession(updatedPerson.getConfession());
-                    existingPerson.setNotes(updatedPerson.getNotes());
+                    existingPerson.setInternalNotes(updatedPerson.getInternalNotes());
+                    existingPerson.setGeneralNotes(updatedPerson.getGeneralNotes());
                     return personRepository.save(existingPerson);
                 })
                 .orElse(null);

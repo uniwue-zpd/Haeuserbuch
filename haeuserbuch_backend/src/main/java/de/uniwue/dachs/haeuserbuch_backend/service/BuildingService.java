@@ -61,7 +61,8 @@ public class BuildingService {
             entity.setPrimarySources((properties != null && properties.getPrimarySources() != null)
                     ? buildingMapper.getOrSaveSources(properties.getPrimarySources())
                     : null);
-            entity.setNotes(properties != null ? properties.getNotes() : null);
+            entity.setInternalNotes(properties != null ? properties.getInternalNotes() : null);
+            entity.setGeneralNotes(properties != null ? properties.getGeneralNotes() : null);
             if (updatedFeature.getGeometry() != null) {
                 if (updatedFeature.getGeometry() instanceof PointGeometry pointGeometry) {
                     entity.setCoordinates(createPoint(pointGeometry.getCoordinates()));

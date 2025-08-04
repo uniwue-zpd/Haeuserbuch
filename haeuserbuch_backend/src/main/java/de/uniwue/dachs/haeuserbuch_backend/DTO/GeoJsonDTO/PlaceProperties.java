@@ -12,5 +12,6 @@ public class PlaceProperties extends Properties {
     private String realName;
     private List<String> altNames = new ArrayList<>();
     private Boolean isUncertain;
-    private String notes;
+    private String internalNotes;
+    private String generalNotes;
 }
