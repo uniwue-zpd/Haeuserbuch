@@ -39,7 +39,7 @@ onMounted(async () => {
       'source': 'buildings',
       'layout': {},
       'paint': {
-        'fill-color': 'rgba(6,61,121,0.8)',
+        'fill-color': 'rgba(255,250,0,0.8)',
         'fill-opacity': 0.7
       }
     });
