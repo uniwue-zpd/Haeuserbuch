@@ -19,7 +19,8 @@ public class PlaceMapper {
                 place.setRealName(properties.getRealName());
                 place.setAltNames(properties.getAltNames());
                 place.setIsUncertain(properties.getIsUncertain());
-                place.setNotes(properties.getNotes());
+                place.setInternalNotes(properties.getInternalNotes());
+                place.setGeneralNotes(properties.getGeneralNotes());
             } else {
                 throw new IllegalArgumentException("Unsupported properties type");
             }
@@ -42,7 +43,8 @@ public class PlaceMapper {
         properties.setRealName(place.getRealName());
         properties.setAltNames(place.getAltNames());
         properties.setIsUncertain(place.getIsUncertain());
-        properties.setNotes(place.getNotes());
+        properties.setInternalNotes(place.getInternalNotes());
+        properties.setGeneralNotes(place.getGeneralNotes());
         feature.setProperties(properties);
         if (place.getCoordinates() != null) {
             PointGeometry geometry = new PointGeometry();

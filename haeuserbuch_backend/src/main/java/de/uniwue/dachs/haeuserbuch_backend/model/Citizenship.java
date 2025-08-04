@@ -30,6 +30,4 @@ public class Citizenship extends BaseEntity {
     private String entryText;
 
     private String addendum;
-
-    private String notes;
 }

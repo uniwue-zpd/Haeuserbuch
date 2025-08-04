@@ -39,7 +39,8 @@ public class BuildingMapper {
         properties.setDistrictHouseNumber(building.getDistrictHouseNumber());
         properties.setPrimarySources(building.getPrimarySources());
         properties.setSecondarySources(building.getSecondarySources());
-        properties.setNotes(building.getNotes());
+        properties.setInternalNotes(building.getInternalNotes());
+        properties.setGeneralNotes(building.getGeneralNotes());
         feature.setProperties(properties);
         if (building.getCoordinates() != null) {
             Geometry geometry = building.getCoordinates();
@@ -70,7 +71,8 @@ public class BuildingMapper {
                 building.setDistrictHouseNumber(properties.getDistrictHouseNumber());
                 building.setPrimarySources(getOrSaveSources(properties.getPrimarySources()));
                 building.setSecondarySources(properties.getSecondarySources());
-                building.setNotes(properties.getNotes());
+                building.setInternalNotes(properties.getInternalNotes());
+                building.setGeneralNotes(properties.getGeneralNotes());
             } else {
                 throw new IllegalArgumentException("Unsupported properties type");
             }

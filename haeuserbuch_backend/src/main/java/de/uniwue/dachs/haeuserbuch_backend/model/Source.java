@@ -14,5 +14,4 @@ public class Source extends BaseEntity {
     private String title;
     private String signature;
     private String description;
-    private String notes;
 }

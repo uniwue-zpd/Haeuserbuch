@@ -20,5 +20,6 @@ public class OwnershipDTO {
     private Set<Feature> buildings;
     private Source source;
     private String entryText;
-    private String notes;
+    private String internalNotes;
+    private String generalNotes;
 }

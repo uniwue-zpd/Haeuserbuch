@@ -29,6 +29,4 @@ public class Tax extends BaseEntity {
     @ManyToOne(optional = false)
     @JoinColumn(name = "source_id")
     private Source source;
-
-    private String notes;
 }

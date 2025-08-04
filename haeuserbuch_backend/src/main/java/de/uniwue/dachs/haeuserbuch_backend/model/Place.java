@@ -23,6 +23,4 @@ public class Place extends BaseEntity {
 
     @Column(columnDefinition = "geometry(Geometry,25832)")
     private Geometry coordinates;
-
-    private String notes;
 }

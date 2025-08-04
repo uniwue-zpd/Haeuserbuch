@@ -21,5 +21,6 @@ public class BuildingProperties extends Properties {
     private String districtHouseNumber;
     private Set<Source> primarySources = new HashSet<>();
     private List<String> secondarySources = new ArrayList<>();
-    private String notes;
+    private String internalNotes;
+    private String generalNotes;
 }

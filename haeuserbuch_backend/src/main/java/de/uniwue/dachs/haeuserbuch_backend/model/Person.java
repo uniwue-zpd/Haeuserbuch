@@ -28,6 +28,4 @@ public class Person extends BaseEntity{
     private Boolean isCitizen;
 
     private String confession;
-
-    private String notes;
 }

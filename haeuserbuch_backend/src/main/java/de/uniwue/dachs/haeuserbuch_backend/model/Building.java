@@ -45,8 +45,6 @@ public class Building extends BaseEntity {
     )
     private List<String> secondarySources = new ArrayList<>();
 
-    private String notes;
-
     @Column(columnDefinition = "geometry(Geometry,25832)")
     private Geometry coordinates;
 }

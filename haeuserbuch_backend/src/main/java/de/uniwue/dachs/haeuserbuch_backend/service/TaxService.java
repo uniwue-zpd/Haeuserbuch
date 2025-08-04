@@ -80,7 +80,8 @@ public class TaxService {
         tax.setBuilding(getBuilding(taxDTO.getBuilding()));
         tax.setPerson(getOrSavePerson(taxDTO.getPerson()));
         tax.setSource(getOrSaveSource(taxDTO.getSource()));
-        tax.setNotes(taxDTO.getNotes());
+        tax.setInternalNotes(taxDTO.getInternalNotes());
+        tax.setGeneralNotes(taxDTO.getGeneralNotes());
         return tax;
     }
 
@@ -93,7 +94,8 @@ public class TaxService {
         taxDTO.setBuilding(buildingMapper.BuildingToFeature(tax.getBuilding()));
         taxDTO.setPerson(tax.getPerson());
         taxDTO.setSource(tax.getSource());
-        taxDTO.setNotes(tax.getNotes());
+        taxDTO.setInternalNotes(tax.getInternalNotes());
+        taxDTO.setGeneralNotes(tax.getGeneralNotes());
         return taxDTO;
     }
 
