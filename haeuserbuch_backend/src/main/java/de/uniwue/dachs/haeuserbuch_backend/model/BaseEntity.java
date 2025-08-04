@@ -34,4 +34,10 @@ public abstract class BaseEntity implements Serializable {
 
     @LastModifiedBy
     private String lastModifiedBy;
+
+    @Column(columnDefinition = "TEXT")
+    private String internalNotes;
+
+    @Column(columnDefinition = "TEXT")
+    private String generalNotes;
 }
