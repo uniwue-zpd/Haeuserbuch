@@ -154,7 +154,7 @@ onBeforeUnmount(() => {
             <div class="flex flex-row space-x-5">
               <FormKit
                   type="text"
-                  name="querter"
+                  name="quarter"
                   label="Viertel"
                   prefix-icon="text"
                   outer-class="max-w-full"
@@ -198,29 +198,34 @@ onBeforeUnmount(() => {
             />
           </div>
         </FormKit>
-        <FormKit type="group" name="geometry">
-          <div class="flex flex-col gap-2">
-            <FormKit
-                type="hidden"
-                name="type"
-                label="Geometrietyp"
-                v-model="geometry_type"
-            />
-            <FormKit
-                type="hidden"
-                name="coordinates"
-                label="Koordinaten"
-                v-model="coordinates"
-                @input="val => coordinates = val as number[] | number[][] | number[][][] | null"
-            />
-          </div>
-        </FormKit>
+        <div v-if="geometry_type">
+          <FormKit type="group" name="geometry">
+            <div class="flex flex-col gap-2">
+              <FormKit
+                  type="hidden"
+                  name="type"
+                  label="Geometrietyp"
+                  v-model="geometry_type"
+              />
+              <FormKit
+                  type="hidden"
+                  name="coordinates"
+                  label="Koordinaten"
+                  v-model="coordinates"
+              />
+            </div>
+          </FormKit>
+        </div>
       </div>
       <div class="border-solid border-2 rounded-md p-5 bg-[#F1F2F5] mb-2">
         <div class="font-mono">geoJSON-Preview</div>
         <hr>
         <pre wrap class="text-sm">{{ value }}</pre>
       </div>
+      <FormKit
+          type="submit"
+          label="Erstellen"
+      />
     </FormKit>
   </div>
 </template>

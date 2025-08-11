@@ -3,7 +3,6 @@ import maplibregl, { type RasterLayerSpecification, type RasterSourceSpecificati
 import "maplibre-gl/dist/maplibre-gl.css";
 import { computed, ref, onMounted } from 'vue';
 import type { Feature, Polygon } from "~/utils/GeoJsonTypes";
-import { MaplibreTerradrawControl } from '@watergis/maplibre-gl-terradraw';
 import '@watergis/maplibre-gl-terradraw/dist/maplibre-gl-terradraw.css';
 import { initMap } from "~/service/map_init";
 
@@ -19,10 +18,6 @@ const layers = computed(() => tile_store.layers);
 
 let map: maplibregl.Map | null = null;
 const center = ref<[number, number] | null>(null);
-const draw = new MaplibreTerradrawControl({
-  modes: ['render','point','linestring','polygon','select','delete-selection','delete','download'],
-  open: true,
-});
 
 useHead(() => ({
   title: building_item.value ? `${building_item_properties.value?.districtHouseNumber} - Gebäudeverzeichnis` : 'Nicht gefunden',
@@ -42,7 +37,6 @@ onMounted(async () => {
       // @ts-ignore
       layers.value as RasterLayerSpecification[]
   );
-  map.addControl(draw, "top-left");
   map.on('load', () => {
     if (!building_item.value) return;
     map!.addSource('building', {
