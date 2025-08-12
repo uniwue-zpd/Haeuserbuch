@@ -16,6 +16,7 @@ const props = defineProps<{
 const toast = useToast();
 const submitted = ref(false);
 const building_store = useBuildingStore();
+const source_store = useSourceStore();
 
 const tile_store = useTileStore();
 const sources = computed(() => tile_store.sources);
@@ -151,6 +152,7 @@ onBeforeUnmount(() => {
                 outer-class="max-w-full"
               />
             </div>
+            <Divider/>
             <div class="flex flex-row space-x-5">
               <FormKit
                   type="text"
@@ -180,6 +182,32 @@ onBeforeUnmount(() => {
                   label="Distrikt & Hausnummer"
                   prefix-icon="text"
                   outer-class="max-w-full"
+              />
+            </div>
+            <Divider/>
+            <div class="flex flex-col gap-2">
+              <FormKit type="list" :value="[]" name="secondarySources" dynamic #default="{ items, node, value }">
+                <FormKit
+                    v-for="(item, index) in items"
+                    :key="item"
+                    :index="index"
+                    label="Sekundärquellen"
+                    suffix-icon="trash"
+                    @suffix-icon-click="() => node.input(value?.filter((_, i) => i !== index))"
+                    :sections-schema="{ suffixIcon: { $el: 'button' } }"
+                    outer-class="max-w-full"
+                />
+                <FormKit type="button" @click="() => node.input(value?.concat(''))">Sekundärquelle hinzufügen</FormKit>
+              </FormKit>
+              <FormKit
+                  type="select"
+                  multiple
+                  name="primarySources"
+                  label="Primärquellen"
+                  outer-class="max-w-full"
+                  select-icon="select"
+                  :options="source_store.sources.map(p => ({ label: `${p.title}`, value: { id: p.id } }))"
+                  help="Halten Sie die Strg-Taste gedrückt, um mehrere Quellen auszuwählen"
               />
             </div>
             <FormKit
