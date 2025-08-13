@@ -57,9 +57,9 @@ useHead(() => ({
         </tbody>
       </table>
     </template>
-    <template #footer v-show="person_item?.generalNotes">
+    <template #footer>
       <div class="flex flex-col gap-2">
-        <Panel header="Notizen" toggleable>
+        <Panel header="Notizen" toggleable v-show="person_item?.generalNotes">
           <template #header>
             <p class="text-sm text-black roboto-plain font-bold">Notizen</p>
           </template>
