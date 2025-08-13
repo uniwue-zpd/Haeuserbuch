@@ -155,10 +155,21 @@ onBeforeUnmount(() => {
             <Divider/>
             <div class="flex flex-row space-x-5">
               <FormKit
-                  type="text"
+                  type="select"
                   name="quarter"
                   label="Viertel"
-                  prefix-icon="text"
+                  :options="[
+                    { label: '', value: null },
+                    { label: 'Bastheimer Viertel', value: 'Bastheimer Viertel' },
+                    { label: 'Cresser Viertel', value: 'Cresser Viertel' },
+                    { label: 'Dietricher Vierter', value: 'Dietricher Vierter' },
+                    { label: 'Gänheimer Viertel', value: 'Gänheimer Viertel' },
+                    { label: 'Hauger Viertel', value: 'Hauger Viertel' },
+                    { label: 'Mainviertel', value: 'Mainviertel' },
+                    { label: 'Pleichacher Viertel', value: 'Pleichacher Viertel' },
+                    { label: 'Sander Viertel', value: 'Sander Viertel' },
+                  ]"
+                  select-icon="select"
                   outer-class="max-w-full"
               />
               <FormKit
@@ -197,7 +208,7 @@ onBeforeUnmount(() => {
                     :sections-schema="{ suffixIcon: { $el: 'button' } }"
                     outer-class="max-w-full"
                 />
-                <FormKit type="button" @click="() => node.input(value?.concat(''))">Sekundärquelle hinzufügen</FormKit>
+                <FormKit type="button" @click="() => node.input(value?.concat(''))">Sekundärquellen hinzufügen</FormKit>
               </FormKit>
               <FormKit
                   type="select"
@@ -210,20 +221,23 @@ onBeforeUnmount(() => {
                   help="Halten Sie die Strg-Taste gedrückt, um mehrere Quellen auszuwählen"
               />
             </div>
-            <FormKit
-                type="textarea"
-                name="internalNotes"
-                label="Notizen intern"
-                prefix-icon="list"
-                outer-class="max-w-full"
-            />
-            <FormKit
-                type="textarea"
-                name="generalNotes"
-                label="Notizen allgemein"
-                prefix-icon="list"
-                outer-class="max-w-full"
-            />
+            <Divider/>
+            <div class="flex flex-col gap-2">
+              <FormKit
+                  type="textarea"
+                  name="internalNotes"
+                  label="Notizen intern"
+                  prefix-icon="list"
+                  outer-class="max-w-full"
+              />
+              <FormKit
+                  type="textarea"
+                  name="generalNotes"
+                  label="Notizen allgemein"
+                  prefix-icon="list"
+                  outer-class="max-w-full"
+              />
+            </div>
           </div>
         </FormKit>
         <div v-if="geometry_type">
