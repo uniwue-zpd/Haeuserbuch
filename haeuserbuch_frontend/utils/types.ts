@@ -44,7 +44,6 @@ export interface Ownership extends Auditable {
 export interface Person extends Auditable {
     firstName: string | null;
     lastName: string | null;
-    topographicSurname: string | null;
     fullName: string | null;
     sex: "männlich" | "weiblich" | null;
     occupation: string | null;

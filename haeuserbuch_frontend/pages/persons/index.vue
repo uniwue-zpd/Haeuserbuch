@@ -89,12 +89,6 @@ useHead(() => ({
         </Column>
         <Column field="firstName" header="Vorname" class="roboto-plain" :sortable="true" />
         <Column field="lastName" header="Nachname" class="roboto-plain" :sortable="true" />
-        <Column field="topographicSurname" header="Topographischer Nachname" class="roboto-plain" :sortable="true">
-          <template #body="slotProps">
-            <div v-if="slotProps.data.topographicSurname">{{ slotProps.data.topographicSurname }}</div>
-            <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
-          </template>
-        </Column>
         <Column
             field="sex" filterField="sex"
             header="Geschlecht"
