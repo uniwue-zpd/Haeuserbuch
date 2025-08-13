@@ -40,6 +40,7 @@ public class PersonService {
                     existingPerson.setFirstName(updatedPerson.getFirstName());
                     existingPerson.setLastName(updatedPerson.getLastName());
                     existingPerson.setFullName(updatedPerson.getFullName());
+                    existingPerson.setSex(updatedPerson.getSex());
                     existingPerson.setOccupation(updatedPerson.getOccupation());
                     existingPerson.setOccupationCategory(updatedPerson.getOccupationCategory());
                     existingPerson.setIsCitizen(updatedPerson.getIsCitizen());

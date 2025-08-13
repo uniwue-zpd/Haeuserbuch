@@ -126,6 +126,20 @@ const submit = async (formData: Partial<PersonInput>) => {
               outer-class="max-w-full"
           />
         </div>
+        <FormKit
+            type="textarea"
+            name="internalNotes"
+            label="Notizen intern"
+            prefix-icon="list"
+            outer-class="max-w-full"
+        />
+        <FormKit
+            type="textarea"
+            name="generalNotes"
+            label="Notizen allgemein"
+            prefix-icon="list"
+            outer-class="max-w-full"
+        />
         <div class="border-solid border-2 rounded-md p-5 bg-[#F1F2F5] mb-2">
           <div class="font-mono">JSON-Preview</div>
           <hr>
