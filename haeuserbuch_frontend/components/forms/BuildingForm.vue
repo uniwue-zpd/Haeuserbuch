@@ -67,6 +67,25 @@ onMounted(async () => {
   );
   map.addControl(draw, "top-left");
   const drawInstance = draw.getTerraDrawInstance();
+  map.once('load', () => {
+    if (drawInstance && props.building && props.building.geometry) {
+      const geojson = [
+        {
+          type: 'Feature',
+          geometry: {
+            type: props.building.geometry.type,
+            coordinates: props.building.geometry.coordinates
+          },
+          properties: {
+            mode: props.building.geometry.type === 'Point' ? 'point' : 'polygon',
+          }
+        }
+      ];
+      drawInstance?.addFeatures(geojson);
+      coordinates.value = props.building.geometry.coordinates;
+      geometry_type.value = props.building.geometry.type;
+    }
+  });
   if (drawInstance) {
     drawInstance.on('finish', (id) => {
       const snapshot = drawInstance.getSnapshot();
