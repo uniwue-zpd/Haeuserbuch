@@ -39,7 +39,6 @@ public class PersonService {
                 .map(existingPerson -> {
                     existingPerson.setFirstName(updatedPerson.getFirstName());
                     existingPerson.setLastName(updatedPerson.getLastName());
-                    existingPerson.setTopographicSurname(updatedPerson.getTopographicSurname());
                     existingPerson.setFullName(updatedPerson.getFullName());
                     existingPerson.setOccupation(updatedPerson.getOccupation());
                     existingPerson.setOccupationCategory(updatedPerson.getOccupationCategory());
