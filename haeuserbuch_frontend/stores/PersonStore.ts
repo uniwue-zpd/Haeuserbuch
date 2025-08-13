@@ -62,6 +62,9 @@ export const usePersonStore = defineStore("person", () => {
             if (index !== -1) {
                 persons.value[index] = response.data;
             }
+            if (current_person.value?.id === id) {
+                current_person.value = response.data;
+            }
             return response.data;
         } catch (error) {
             console.error("Error updating person:", error);

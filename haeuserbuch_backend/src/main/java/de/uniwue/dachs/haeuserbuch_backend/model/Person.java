@@ -15,8 +15,6 @@ public class Person extends BaseEntity{
 
     private String lastName;
 
-    private String topographicSurname;
-
     private String fullName;
 
     private String sex;

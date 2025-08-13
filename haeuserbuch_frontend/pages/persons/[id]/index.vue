@@ -32,10 +32,6 @@ useHead(() => ({
           <td class="px-6 py-4 whitespace-nowrap">Nachname</td>
           <td class="px-6 py-4 whitespace-nowrap">{{ person_item?.lastName }}</td>
         </tr>
-        <tr v-show="person_item?.topographicSurname">
-          <td class="px-6 py-4 whitespace-nowrap">Topographischer Nachname</td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ person_item?.topographicSurname }}</td>
-        </tr>
         <tr v-show="person_item?.sex">
           <td class="px-6 py-4 whitespace-nowrap">Geschlecht</td>
           <td class="px-6 py-4 whitespace-nowrap">{{ person_item?.sex }}</td>
@@ -61,9 +57,9 @@ useHead(() => ({
         </tbody>
       </table>
     </template>
-    <template #footer v-show="person_item?.generalNotes">
+    <template #footer>
       <div class="flex flex-col gap-2">
-        <Panel header="Notizen" toggleable>
+        <Panel header="Notizen" toggleable v-show="person_item?.generalNotes">
           <template #header>
             <p class="text-sm text-black roboto-plain font-bold">Notizen</p>
           </template>
