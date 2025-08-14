@@ -3,9 +3,10 @@ import { computed, onMounted } from "vue";
 import maplibregl, { type RasterLayerSpecification, type RasterSourceSpecification } from 'maplibre-gl';
 import "maplibre-gl/dist/maplibre-gl.css";
 import { initMap } from "~/service/map_init";
-import { MaplibreTerradrawControl } from '@watergis/maplibre-gl-terradraw';
+import { MaplibreTerradrawControl, roundFeatureCoordinates } from '@watergis/maplibre-gl-terradraw';
 import '@watergis/maplibre-gl-terradraw/dist/maplibre-gl-terradraw.css';
 import type { Position } from 'geojson';
+import { type GeoJSONStoreGeometries } from "terra-draw";
 
 const props = defineProps<{
   header: string;
@@ -25,6 +26,9 @@ let map: maplibregl.Map | null = null;
 const draw = new MaplibreTerradrawControl({
   modes: ['render','point', 'polygon','select','delete-selection','delete','download'],
   open: true,
+  adapterOptions: {
+    coordinatePrecision: 9
+  }
 });
 const coordinates = ref<Position | Position[] | Position[][] | null>(null);
 const geometry_type = ref<string | null>(null);
@@ -69,18 +73,18 @@ onMounted(async () => {
   const drawInstance = draw.getTerraDrawInstance();
   map.once('load', () => {
     if (drawInstance && props.building && props.building.geometry) {
-      const geojson = [
+      const geojson = roundFeatureCoordinates([
         {
           type: 'Feature',
           geometry: {
             type: props.building.geometry.type,
             coordinates: props.building.geometry.coordinates
-          },
+          } as GeoJSONStoreGeometries,
           properties: {
-            mode: props.building.geometry.type === 'Point' ? 'point' : 'polygon',
+            mode: props.building.geometry.type.toLowerCase(),
           }
         }
-      ];
+      ], 9);
       drawInstance?.addFeatures(geojson);
       coordinates.value = props.building.geometry.coordinates;
       geometry_type.value = props.building.geometry.type;
@@ -117,6 +121,9 @@ onBeforeUnmount(() => {
       Füllen Sie bitte die untenstehenden Felder aus, um ein Objekt zu erstellen oder anzupassen.
       Falls Sie ein Gebäude mit Koordinaten versehen möchten, können Sie dies auf der Karte tun.
     </p>
+    <Message v-if="(props.building?.geometry?.coordinates.length ?? 0) > 1 " severity="error">
+      Polygone mit inneren Ringen können aktuell nicht angezeigt werden
+    </Message>
     <div id="form_map_building" class="h-[500px] w-full rounded-md"/>
     <FormKit
         type="form"
