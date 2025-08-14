@@ -56,7 +56,16 @@ onMounted(async () => {
       'source': 'buildings',
       'layout': {},
       'paint': {
-        'fill-color': 'rgba(255,250,0,0.8)',
+        'fill-color': [
+          'match',
+          ['get', 'district'],
+          'I', '#e41a1c',
+          'II', '#377eb8',
+          'III', '#4daf4a',
+          'IV', '#ff7f00',
+          'V', '#984ea3',
+          '#999999'
+        ],
         'fill-opacity': 0.7
       }
     });
