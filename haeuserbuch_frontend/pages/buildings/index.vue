@@ -52,11 +52,11 @@ onMounted(async () => {
     });
     map!.addLayer({
       'id': 'buildings',
-      'type': 'fill',
+      'type': 'fill-extrusion',
       'source': 'buildings',
       'layout': {},
       'paint': {
-        'fill-color': [
+        'fill-extrusion-color': [
           'match',
           ['get', 'district'],
           'I', '#e41a1c',
@@ -66,7 +66,8 @@ onMounted(async () => {
           'V', '#984ea3',
           '#999999'
         ],
-        'fill-opacity': 0.7
+        'fill-extrusion-opacity': 0.8,
+        'fill-extrusion-height': 10
       }
     });
   });
