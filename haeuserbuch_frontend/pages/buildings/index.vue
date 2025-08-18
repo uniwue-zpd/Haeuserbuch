@@ -123,7 +123,7 @@ onBeforeUnmount(() => {
       </TabList>
       <TabPanels>
         <TabPanel value="0">
-          <div id="map_buildings" class="h-[500px] w-full rounded-md"/>
+          <div id="map_buildings" class="h-[50vh] md:h-[60vh] w-full rounded-md"/>
         </TabPanel>
         <TabPanel value="1">
           <div class="flex flex-col gap-2">
