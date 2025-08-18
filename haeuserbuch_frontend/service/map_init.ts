@@ -12,12 +12,14 @@ export function initMap(
     containerId: string,
     center: [number, number],
     zoom: number = 12,
+    pitch: number = 0,
     sources: Record<string, maplibregl.SourceSpecification>,
     layers: RasterLayerSpecification[]
 ) {
     return new maplibregl.Map({
         container: containerId,
         zoom: zoom,
+        pitch: pitch,
         center: center,
         style: {
             version: 8,

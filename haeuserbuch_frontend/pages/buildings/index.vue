@@ -38,7 +38,8 @@ onMounted(async () => {
   map = initMap(
       'map_buildings',
       DEFAULT_MAP_CENTER,
-      13,
+      14,
+      70,
       sources.value as Record<string, RasterSourceSpecification>,
       // @ts-ignore
       layers.value as RasterLayerSpecification[]
