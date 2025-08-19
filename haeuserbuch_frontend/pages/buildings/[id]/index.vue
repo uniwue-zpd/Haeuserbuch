@@ -32,7 +32,8 @@ onMounted(async () => {
   map = initMap(
       'map',
       center.value ? center.value : DEFAULT_MAP_CENTER,
-      15,
+      14,
+      70,
       sources.value as Record<string, RasterSourceSpecification>,
       // @ts-ignore
       layers.value as RasterLayerSpecification[]
@@ -46,14 +47,20 @@ onMounted(async () => {
     });
     map!.addLayer({
       'id': 'building',
-      'type': 'fill',
+      'type': 'fill-extrusion',
       'source': 'building',
       'layout': {},
       'paint': {
-        'fill-color': 'rgba(255,250,0,0.8)',
-        'fill-opacity': 0.7
+        'fill-extrusion-color': 'rgba(255,250,0,0.8)',
+        'fill-extrusion-opacity': 0.8,
+        'fill-extrusion-height': 10
       }
     });
+    map!.flyTo({
+      center: center.value ? center.value : DEFAULT_MAP_CENTER,
+      zoom: 17,
+      speed: 0.2
+    })
   });
 });
 
