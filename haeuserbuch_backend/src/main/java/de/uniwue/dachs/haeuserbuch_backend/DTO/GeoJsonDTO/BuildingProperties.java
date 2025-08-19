@@ -13,6 +13,7 @@ import java.util.Set;
 @Setter
 public class BuildingProperties extends Properties {
     private String name;
+    private List<String> altNames = new ArrayList<>();
     private String houseNumber;
     private String partType;
     private String specialStatus;

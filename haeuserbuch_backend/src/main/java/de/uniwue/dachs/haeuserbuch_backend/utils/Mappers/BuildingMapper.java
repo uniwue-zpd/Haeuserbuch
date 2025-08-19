@@ -31,6 +31,7 @@ public class BuildingMapper {
         BuildingProperties properties = new BuildingProperties();
         feature.setId(building.getId());
         properties.setName(building.getName());
+        properties.setAltNames(building.getAltNames());
         properties.setHouseNumber(building.getHouseNumber());
         properties.setPartType(building.getPartType());
         properties.setSpecialStatus(building.getSpecialStatus());
@@ -63,6 +64,7 @@ public class BuildingMapper {
         if (feature.getProperties() != null) {
             if (feature.getProperties() instanceof BuildingProperties properties) {
                 building.setName(properties.getName());
+                building.setAltNames(properties.getAltNames());
                 building.setHouseNumber(properties.getHouseNumber());
                 building.setPartType(properties.getPartType());
                 building.setSpecialStatus(properties.getSpecialStatus());

@@ -7,6 +7,7 @@ import { MaplibreTerradrawControl, roundFeatureCoordinates } from '@watergis/map
 import '@watergis/maplibre-gl-terradraw/dist/maplibre-gl-terradraw.css';
 import type { Position } from 'geojson';
 import { type GeoJSONStoreGeometries } from "terra-draw";
+import type { Feature } from "~/utils/GeoJsonTypes";
 
 const props = defineProps<{
   header: string;
@@ -33,9 +34,7 @@ const draw = new MaplibreTerradrawControl({
 const coordinates = ref<Position | Position[] | Position[][] | null>(null);
 const geometry_type = ref<string | null>(null);
 
-type BuildingInput = Omit<Feature, 'id' | 'createdBy' | 'createdDate' | 'lastModifiedBy' | 'lastModifiedDate'>;
-
-const submit = async (formData: Partial<BuildingInput>) => {
+const submit = async (formData: Partial<Feature>) => {
   try {
     if (props.action === 'create') {
       await building_store.createBuilding(formData);
@@ -44,10 +43,11 @@ const submit = async (formData: Partial<BuildingInput>) => {
       const form = getNode('building_creation');
       form?.reset();
     } else if (props.action === 'edit' && props.building?.id) {
+      const id = props.building.id;
       await building_store.updateBuilding(formData, props.building.id);
       submitted.value = true;
       toast.add({severity: 'success', summary: 'Erfolg', detail: 'Erfolgreich upgedated', life: 3000});
-      navigateTo(`/buildings/${props.building?.id}`);
+      navigateTo(`/buildings/${id}`);
     }
   } catch (error) {
     console.log(error)
@@ -64,7 +64,8 @@ onMounted(async () => {
   map = initMap(
       'form_map_building',
       DEFAULT_MAP_CENTER,
-      13,
+      14,
+      0,
       sources.value as Record<string, RasterSourceSpecification>,
       // @ts-ignore
       layers.value as RasterLayerSpecification[]
@@ -162,6 +163,19 @@ onBeforeUnmount(() => {
                   outer-class="max-w-full"
               />
             </div>
+            <FormKit type="list" :value="[]" name="altNames" dynamic #default="{ items, node, value }">
+              <FormKit
+                  v-for="(item, index) in items"
+                  :key="item"
+                  :index="index"
+                  label="Andere Namen"
+                  suffix-icon="trash"
+                  @suffix-icon-click="() => node.input(value?.filter((_, i) => i !== index))"
+                  :sections-schema="{ suffixIcon: { $el: 'button', attrs: { type: 'button' } } }"
+                  outer-class="max-w-full"
+              />
+              <FormKit type="button" @click="() => node.input(value?.concat(''))">Andere Namen hinzufügen</FormKit>
+            </FormKit>
             <div class="flex flex-row space-x-5">
               <FormKit
                   type="text"
@@ -231,7 +245,7 @@ onBeforeUnmount(() => {
                     label="Sekundärquellen"
                     suffix-icon="trash"
                     @suffix-icon-click="() => node.input(value?.filter((_, i) => i !== index))"
-                    :sections-schema="{ suffixIcon: { $el: 'button' } }"
+                    :sections-schema="{ suffixIcon: { $el: 'button', attrs: { type: 'button' } } }"
                     outer-class="max-w-full"
                 />
                 <FormKit type="button" @click="() => node.input(value?.concat(''))">Sekundärquellen hinzufügen</FormKit>

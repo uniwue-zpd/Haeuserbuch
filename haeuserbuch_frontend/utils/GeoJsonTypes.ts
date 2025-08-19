@@ -39,6 +39,7 @@ export interface FeatureCollection {
 export interface BuildingProperties {
     type: string | null;
     name: string | null;
+    altNames: string[] | [];
     houseNumber: string | null;
     partType: string | null;
     specialStatus: string | null;

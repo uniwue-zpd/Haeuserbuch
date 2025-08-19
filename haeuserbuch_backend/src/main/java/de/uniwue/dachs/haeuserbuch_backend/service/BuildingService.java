@@ -52,6 +52,7 @@ public class BuildingService {
         buildingRepository.findById(id).map(entity -> {
             BuildingProperties properties = (BuildingProperties) updatedFeature.getProperties();
             entity.setName(properties != null ? properties.getName() : null);
+            entity.setAltNames(properties != null ? properties.getAltNames() : new ArrayList<>());
             entity.setHouseNumber(properties != null ? properties.getHouseNumber() : null);
             entity.setPartType(properties != null ? properties.getPartType() : null);
             entity.setSpecialStatus(properties != null ? properties.getSpecialStatus() : null);

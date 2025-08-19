@@ -18,6 +18,13 @@ public class Building extends BaseEntity {
 
     private String name;
 
+    @ElementCollection(targetClass = String.class)
+    @CollectionTable(
+            name = "building_alt_names",
+            joinColumns = @JoinColumn(name = "building_id")
+    )
+    private List<String> altNames = new ArrayList<>();
+
     private String houseNumber;
 
     private String partType;

@@ -25,6 +25,7 @@ useHead(() => ({
 
 onMounted(async () => {
   await building_store.fetchBuildingById(building_id);
+  console.log('Building item:', building_item.value.properties.altNames);
   center.value = [
     (building_item.value?.geometry as Polygon).coordinates[0][0][0],
     (building_item.value?.geometry as Polygon).coordinates[0][0][1]
@@ -94,6 +95,10 @@ onBeforeUnmount(() => {
                       <tr v-if="building_item_properties.name">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Name</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.name }}</td>
+                      </tr>
+                      <tr v-if="building_item_properties.altNames">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Andere Namen</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.altNames.toString() }}</td>
                       </tr>
                       <tr v-if="building_item_properties.houseNumber">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Hausnummer</td>
