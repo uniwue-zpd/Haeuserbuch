@@ -96,9 +96,9 @@ onBeforeUnmount(() => {
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Name</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.name }}</td>
                       </tr>
-                      <tr v-if="building_item_properties.altNames">
+                      <tr v-if="building_item_properties.altNames.length > 0">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Andere Namen</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.altNames.toString() }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.altNames.join(', ') }}</td>
                       </tr>
                       <tr v-if="building_item_properties.houseNumber">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Hausnummer</td>
