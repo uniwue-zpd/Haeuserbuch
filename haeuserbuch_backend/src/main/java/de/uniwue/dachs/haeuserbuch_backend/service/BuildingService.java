@@ -4,6 +4,9 @@ import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.*;
 import de.uniwue.dachs.haeuserbuch_backend.model.Building;
 import de.uniwue.dachs.haeuserbuch_backend.repository.BuildingRepository;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.BuildingMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +27,7 @@ public class BuildingService {
     }
 
     // GET all buildings as feature collection
+    @Cacheable("buildings")
     public FeatureCollection getAllBuildings() {
         FeatureCollection featureCollection = new FeatureCollection();
         featureCollection.setFeatures(
@@ -35,12 +39,14 @@ public class BuildingService {
     }
 
     // GET building by its ID
+    @Cacheable(value = "buildingById", key = "#id")
     public Optional<Feature> getBuildingById(Long id) {
         return buildingRepository.findById(id).map(buildingMapper::BuildingToFeature);
     }
 
     // POST Create new building
     @Transactional
+    @CacheEvict(value = "buildings", allEntries = true)
     public void createBuilding(Feature feature) {
         Building building = buildingMapper.FeatureToBuilding(feature);
         buildingRepository.save(building);
@@ -48,6 +54,7 @@ public class BuildingService {
 
     // PUT Update existing building
     @Transactional
+    @CachePut(value = "buildingById", key = "#id")
     public void updateBuilding(Long id, Feature updatedFeature) {
         buildingRepository.findById(id).map(entity -> {
             BuildingProperties properties = (BuildingProperties) updatedFeature.getProperties();
@@ -79,6 +86,7 @@ public class BuildingService {
 
     // DELETE building by ID
     @Transactional
+    @CacheEvict(value = "buildingById", key = "#id")
     public void deleteBuilding(Long id) {
         if (!buildingRepository.existsById(id)) {
             throw new RuntimeException("Building with id '" + id + "' does not exist");
