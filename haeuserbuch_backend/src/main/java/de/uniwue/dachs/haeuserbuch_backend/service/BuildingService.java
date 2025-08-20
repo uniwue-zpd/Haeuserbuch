@@ -33,6 +33,7 @@ public class BuildingService {
         featureCollection.setFeatures(
                 buildingRepository.findAll().stream()
                         .map(buildingMapper::BuildingToFeature)
+                        .sorted(Comparator.comparing(Feature::getId))
                         .toList()
         );
         return featureCollection;

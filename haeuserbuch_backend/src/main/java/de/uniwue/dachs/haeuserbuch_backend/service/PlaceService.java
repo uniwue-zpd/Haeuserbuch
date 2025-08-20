@@ -13,10 +13,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.*;
 
@@ -34,11 +31,13 @@ public class PlaceService {
     // GET all places as feature collection
     @Cacheable("places")
     public FeatureCollection getAllPlaces() {
-        List<Place> places = placeRepository.findAll();
         FeatureCollection featureCollection = new FeatureCollection();
-        List<Feature> features = new ArrayList<>();
-        places.forEach(place -> features.add(placeMapper.PlaceToFeature(place)));
-        featureCollection.setFeatures(features);
+        featureCollection.setFeatures(
+                placeRepository.findAll().stream()
+                        .map(placeMapper::PlaceToFeature)
+                        .sorted(Comparator.comparing(Feature::getId))
+                        .toList()
+        );
         return featureCollection;
     }
 
