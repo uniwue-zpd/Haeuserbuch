@@ -20,6 +20,7 @@ onMounted(async ()=> {
       'map',
       DEFAULT_MAP_CENTER,
       12,
+      0,
       sources.value as Record<string, RasterSourceSpecification>,
       // @ts-ignore
       layers.value as RasterLayerSpecification[]

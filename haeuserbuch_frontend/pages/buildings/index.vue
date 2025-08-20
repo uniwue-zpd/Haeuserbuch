@@ -153,14 +153,13 @@ onBeforeUnmount(() => {
               </template>
               <Column field="properties.districtHouseNumber" header="Bezeichnung" :sortable="true">
                 <template #body="{ data }">
-                  <div class="flex flex-row space-x-5 items-center">
-                    <NuxtLink
-                        :to="`/buildings/${data.id}`"
-                        class="roboto-plain font-semibold"
-                    >
-                      {{ data.properties.districtHouseNumber }}
-                    </NuxtLink>
-                  </div>
+                  <NuxtLink
+                      :to="`/buildings/${data.id}`"
+                      class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md"
+                      prefetch
+                  >
+                    {{ data.properties.districtHouseNumber }}
+                  </NuxtLink>
                 </template>
                 <template #filter="{ filterModel, filterCallback }">
                   <InputText
