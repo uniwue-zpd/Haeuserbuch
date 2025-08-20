@@ -42,6 +42,10 @@ public class BuildingMapper {
         properties.setSecondarySources(building.getSecondarySources());
         properties.setInternalNotes(building.getInternalNotes());
         properties.setGeneralNotes(building.getGeneralNotes());
+        properties.setCreatedDate(building.getCreatedDate());
+        properties.setCreatedBy(building.getCreatedBy());
+        properties.setLastModifiedDate(building.getLastModifiedDate());
+        properties.setLastModifiedBy(building.getLastModifiedBy());
         feature.setProperties(properties);
         if (building.getCoordinates() != null) {
             Geometry geometry = building.getCoordinates();

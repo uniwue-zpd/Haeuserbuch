@@ -140,12 +140,29 @@ onBeforeUnmount(() => {
                           </ul>
                         </td>
                       </tr>
-                      <tr v-if="building_item_properties.generalNotes">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Notizen</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.generalNotes }}</td>
-                      </tr>
                       </tbody>
                     </table>
+                  </template>
+                  <template #footer>
+                    <div class="flex flex-col gap-2">
+                      <Panel header="Notizen" toggleable v-show="building_item_properties?.generalNotes">
+                        <template #header>
+                          <p class="text-sm text-black roboto-plain font-bold">Notizen</p>
+                        </template>
+                        <p class="text-sm text-black roboto-plain">{{ building_item_properties?.generalNotes }}</p>
+                      </Panel>
+                      <Divider/>
+                      <div class="flex flex-col">
+                        <div v-if="building_item_properties?.createdDate" class="flex flex-row space-x-2 text-sm text-black roboto-plain">
+                          <p>Erstellt am:</p>
+                          <p>{{ new Date(building_item_properties.createdDate).toLocaleDateString() }}</p>
+                        </div>
+                        <div v-if="building_item_properties?.lastModifiedDate" class="flex flex-row space-x-2 text-sm text-black roboto-plain">
+                          <p>Stand:</p>
+                          <p>{{ new Date(building_item_properties.lastModifiedDate).toLocaleDateString() }}</p>
+                        </div>
+                      </div>
+                    </div>
                   </template>
                 </Card>
               </AccordionContent>

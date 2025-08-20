@@ -4,10 +4,7 @@ import de.uniwue.dachs.haeuserbuch_backend.model.Source;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -24,4 +21,8 @@ public class BuildingProperties extends Properties {
     private List<String> secondarySources = new ArrayList<>();
     private String internalNotes;
     private String generalNotes;
+    private Date createdDate;
+    private String createdBy;
+    private Date lastModifiedDate;
+    private String lastModifiedBy;
 }

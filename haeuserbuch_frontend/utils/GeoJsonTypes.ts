@@ -50,6 +50,10 @@ export interface BuildingProperties {
     secondarySources: string[] | [];
     internalNotes: string | null;
     generalNotes: string | null;
+    createdDate: number | null;
+    createdBy: string | null;
+    lastModifiedDate: number | null;
+    lastModifiedBy: string | null;
 }
 
 export interface PlaceProperties {
