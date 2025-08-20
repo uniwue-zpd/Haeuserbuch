@@ -7,6 +7,9 @@ import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.FeatureCollection;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PlaceProperties;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PointGeometry;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PlaceMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +32,7 @@ public class PlaceService {
     }
 
     // GET all places as feature collection
+    @Cacheable("places")
     public FeatureCollection getAllPlaces() {
         List<Place> places = placeRepository.findAll();
         FeatureCollection featureCollection = new FeatureCollection();
@@ -39,12 +43,14 @@ public class PlaceService {
     }
 
     // GET a place by its ID
+    @Cacheable(value = "places", key = "#id")
     public Optional<Feature> getPlaceById(Long id) {
         return placeRepository.findById(id).map(placeMapper::PlaceToFeature);
     }
 
     // POST Create new place
     @Transactional
+    @CacheEvict(value = "places", allEntries = true)
     public void createPlace(Feature feature) {
         Place place = placeMapper.FeatureToPlace(feature);
         placeRepository.save(place);
@@ -52,6 +58,7 @@ public class PlaceService {
 
     // PUT Update existing place
     @Transactional
+    @CachePut(value = "places", key = "#id")
     public void updatePlace(Long id, Feature updatedFeature) {
         placeRepository.findById(id).map(entity -> {
             PlaceProperties properties = (PlaceProperties) updatedFeature.getProperties();
@@ -74,6 +81,7 @@ public class PlaceService {
 
     // DELETE place by ID
     @Transactional
+    @CacheEvict(value = "places", allEntries = true)
     public void deletePlace(Long id) {
         if (!placeRepository.existsById(id)) {
             throw new RuntimeException("Place with id '" + id + "' does not exist");

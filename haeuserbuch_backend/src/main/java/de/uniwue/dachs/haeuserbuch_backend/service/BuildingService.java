@@ -39,7 +39,7 @@ public class BuildingService {
     }
 
     // GET building by its ID
-    @Cacheable(value = "buildingById", key = "#id")
+    @Cacheable(value = "buildings", key = "#id")
     public Optional<Feature> getBuildingById(Long id) {
         return buildingRepository.findById(id).map(buildingMapper::BuildingToFeature);
     }
@@ -54,7 +54,7 @@ public class BuildingService {
 
     // PUT Update existing building
     @Transactional
-    @CachePut(value = "buildingById", key = "#id")
+    @CachePut(value = "buildings", key = "#id")
     public void updateBuilding(Long id, Feature updatedFeature) {
         buildingRepository.findById(id).map(entity -> {
             BuildingProperties properties = (BuildingProperties) updatedFeature.getProperties();
@@ -86,7 +86,7 @@ public class BuildingService {
 
     // DELETE building by ID
     @Transactional
-    @CacheEvict(value = "buildingById", key = "#id")
+    @CacheEvict(value = "buildings", key = "#id")
     public void deleteBuilding(Long id) {
         if (!buildingRepository.existsById(id)) {
             throw new RuntimeException("Building with id '" + id + "' does not exist");
