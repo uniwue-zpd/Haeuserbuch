@@ -36,6 +36,16 @@ public class CitizenshipController {
         return ResponseEntity.status(201).build();
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateCitizenship(@PathVariable Long id, @RequestBody CitizenshipDTO citizenshipDTO) {
+        try {
+            citizenshipService.updateCitizenship(id, citizenshipDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(404).build();
+        }
+        return ResponseEntity.ok().build();
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCitizenshipById(@PathVariable Long id) {
         try {

@@ -2,6 +2,7 @@ package de.uniwue.dachs.haeuserbuch_backend.service;
 
 import de.uniwue.dachs.haeuserbuch_backend.model.Person;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PersonRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -56,7 +57,7 @@ public class PersonService {
                     existingPerson.setGeneralNotes(updatedPerson.getGeneralNotes());
                     return personRepository.save(existingPerson);
                 })
-                .orElse(null);
+                .orElseThrow(() -> new EntityNotFoundException("Person with ID " + id + " does not exist."));
     }
 
     // DELETE a person by ID
@@ -64,7 +65,7 @@ public class PersonService {
     @CacheEvict(value = "persons", key = "#id")
     public void deletePerson(Long id) {
         if (!personRepository.existsById(id)) {
-            throw new IllegalArgumentException("Source with ID " + id + " does not exist.");
+            throw new EntityNotFoundException("Person with ID " + id + " does not exist.");
         }
         personRepository.deleteById(id);
     }
