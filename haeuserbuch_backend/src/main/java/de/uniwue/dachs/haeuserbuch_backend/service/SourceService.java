@@ -3,6 +3,9 @@ package de.uniwue.dachs.haeuserbuch_backend.service;
 import de.uniwue.dachs.haeuserbuch_backend.model.Source;
 import de.uniwue.dachs.haeuserbuch_backend.repository.SourceRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,24 +19,28 @@ public class SourceService {
         this.sourceRepository = sourceRepository;
     }
 
-    // Get all sources
+    // GET all sources
+    @Cacheable("sources")
     public List<Source> getAllSources() {
         return sourceRepository.findAll();
     }
 
-    // Get source by ID
+    // GET source by ID
+    @Cacheable(value = "sources", key = "#id")
     public Optional<Source> getSourceById(Long id) {
         return sourceRepository.findById(id);
     }
 
     // POST create a new source
     @Transactional
+    @CacheEvict(value = "sources", allEntries = true)
     public Source createSource(Source source) {
         return sourceRepository.save(source);
     }
 
     // PUT update an existing source
     @Transactional
+    @CachePut(value = "sources", key = "#id")
     public Source updateSource(Long id, Source updatedSource) {
         return sourceRepository.findById(id)
                 .map(existingSource -> {
@@ -50,6 +57,7 @@ public class SourceService {
 
     // DELETE a source by ID
     @Transactional
+    @CacheEvict(value = "sources", allEntries = true)
     public void deleteSource(Long id) {
         if (!sourceRepository.existsById(id)) {
             throw new IllegalArgumentException("Source with ID " + id + " does not exist.");
