@@ -12,6 +12,10 @@ import de.uniwue.dachs.haeuserbuch_backend.repository.PersonRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.SourceRepository;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.BuildingMapper;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -37,6 +41,7 @@ public class OwnershipService {
     }
 
     // GET all ownerships
+    @Cacheable("ownerships")
     public List<OwnershipDTO> getAllOwnerships() {
         List<Ownership> ownerships = ownershipRepository.findAll();
         List<OwnershipDTO> ownershipDTOs = new ArrayList<>();
@@ -47,18 +52,23 @@ public class OwnershipService {
     }
 
     // GET ownership by ID
+    @Cacheable(value = "ownerships", key = "#id")
     public Optional<OwnershipDTO> getOwnershipById(Long id) {
         return ownershipRepository.findById(id)
                 .map(this::OwnershipToDto);
     }
 
     // POST create new ownership
+    @Transactional
+    @CacheEvict(value = "ownerships", allEntries = true)
     public void createOwnership(OwnershipDTO ownershipDTO) {
         Ownership ownership = DtoToOwnership(ownershipDTO);
         ownershipRepository.save(ownership);
     }
 
     // PUT update existing ownership
+    @Transactional
+    @CachePut(value = "ownerships", key = "#id")
     public void updateOwnership(Long id, OwnershipDTO ownershipDTO) {
         ownershipRepository.findById(id)
                 .map(entity -> {
@@ -77,6 +87,8 @@ public class OwnershipService {
     }
 
     // DELETE ownership by ID
+    @Transactional
+    @CacheEvict(value = "ownerships", key = "#id")
     public void deleteOwnership(Long id) {
         if (!ownershipRepository.existsById(id)) {
             throw new EntityNotFoundException("Ownership with id '" + id + "' does not exist");
