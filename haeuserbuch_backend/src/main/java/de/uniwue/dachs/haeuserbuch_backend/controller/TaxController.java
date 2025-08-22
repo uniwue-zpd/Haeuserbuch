@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/taxes")
@@ -34,6 +35,16 @@ public class TaxController {
     public ResponseEntity<Tax> createTax(@RequestBody TaxDTO taxDTO) {
         taxService.createTax(taxDTO);
         return ResponseEntity.status(201).build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateTax(@PathVariable Long id, @RequestBody TaxDTO taxDTO) {
+        try {
+            taxService.updateTax(id, taxDTO);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(404).build();
+        }
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
