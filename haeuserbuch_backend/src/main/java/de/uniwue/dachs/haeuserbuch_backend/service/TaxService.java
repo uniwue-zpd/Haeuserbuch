@@ -12,6 +12,10 @@ import de.uniwue.dachs.haeuserbuch_backend.repository.TaxRepository;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.BuildingProperties;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.BuildingMapper;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +44,7 @@ public class TaxService {
     }
 
     // GET
+    @Cacheable("taxes")
     public List<TaxDTO> getAllTaxes() {
         List<Tax> taxes = taxRepository.findAll();
         List<TaxDTO> taxDTOs = new ArrayList<>();
@@ -50,6 +55,7 @@ public class TaxService {
     }
 
     // GET
+    @Cacheable(value = "taxes", key = "#id")
     public Optional<TaxDTO> getTaxById(Long id) {
         return taxRepository.findById(id)
                 .map(this::taxToDto);
@@ -57,13 +63,34 @@ public class TaxService {
 
     // POST
     @Transactional
+    @CacheEvict(value = "taxes", allEntries = true)
     public void createTax(TaxDTO taxDTO) {
         Tax tax = DtoToTax(taxDTO);
         taxRepository.save(tax);
     }
 
+    // PUT
+    @Transactional
+    @CachePut(value = "taxes", key = "#id")
+    public void updateTax(Long id, TaxDTO taxDTO) {
+        taxRepository.findById(id)
+                .map(entity -> {
+                    entity.setTaxNumber(taxDTO.getTaxNumber());
+                    entity.setPlanNumber(taxDTO.getPlanNumber());
+                    entity.setEntryText(taxDTO.getEntryText());
+                    entity.setBuilding(getBuilding(taxDTO.getBuilding()));
+                    entity.setPerson(getOrSavePerson(taxDTO.getPerson()));
+                    entity.setSource(getOrSaveSource(taxDTO.getSource()));
+                    entity.setInternalNotes(taxDTO.getInternalNotes());
+                    entity.setGeneralNotes(taxDTO.getGeneralNotes());
+                    return taxRepository.save(entity);
+                })
+                .orElseThrow(() -> new EntityNotFoundException("Tax with id " + id + " does not exist"));
+    }
+
     // DELETE
     @Transactional
+    @CacheEvict(value = "taxes", key = "#id")
     public void deleteTax(Long id) {
         if (!taxRepository.existsById(id)) {
             throw new IllegalArgumentException("Tax with id " + id + " does not exist");

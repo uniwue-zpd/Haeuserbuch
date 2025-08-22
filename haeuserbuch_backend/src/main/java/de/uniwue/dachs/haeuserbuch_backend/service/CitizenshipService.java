@@ -8,6 +8,10 @@ import de.uniwue.dachs.haeuserbuch_backend.repository.PlaceRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.SourceRepository;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PlaceMapper;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +39,7 @@ public class CitizenshipService {
     }
 
     // GET all citizenships
+    @Cacheable("citizenships")
     public List<CitizenshipDTO> getAllCitizenships() {
         List<Citizenship> citizenships = citizenshipRepository.findAll();
         List<CitizenshipDTO> citizenshipDTOs = new ArrayList<>();
@@ -44,6 +49,8 @@ public class CitizenshipService {
         return citizenshipDTOs;
     }
 
+    // GET citizenship by ID
+    @Cacheable(value = "citizenships", key = "#id")
     public Optional<CitizenshipDTO> getCitizenshipById(Long id) {
         return citizenshipRepository.findById(id)
                 .map(this::CitizenshipToDto);
@@ -51,13 +58,35 @@ public class CitizenshipService {
 
     // POST
     @Transactional
+    @CacheEvict(value = "citizenships", allEntries = true)
     public void createCitizenship(CitizenshipDTO citizenshipDTO) {
         Citizenship citizenship = DtoToCitizenship(citizenshipDTO);
         citizenshipRepository.save(citizenship);
     }
 
+    // PUT
+    @Transactional
+    @CachePut(value = "citizenships", key = "#id")
+    public void updateCitizenship(Long id, CitizenshipDTO updatedCitizenshipDTO) {
+        citizenshipRepository.findById(id)
+                .map(existingCitizenship -> {
+                    existingCitizenship.setPerson(getOrSavePerson(updatedCitizenshipDTO.getPerson()));
+                    existingCitizenship.setSource(getOrSaveSource(updatedCitizenshipDTO.getSource()));
+                    existingCitizenship.setPlace(getPlace(updatedCitizenshipDTO.getPlace()));
+                    existingCitizenship.setNumber(updatedCitizenshipDTO.getNumber());
+                    existingCitizenship.setDate(updatedCitizenshipDTO.getDate());
+                    existingCitizenship.setEntryText(updatedCitizenshipDTO.getEntryText());
+                    existingCitizenship.setAddendum(updatedCitizenshipDTO.getAddendum());
+                    existingCitizenship.setInternalNotes(updatedCitizenshipDTO.getInternalNotes());
+                    existingCitizenship.setGeneralNotes(updatedCitizenshipDTO.getGeneralNotes());
+                    return citizenshipRepository.save(existingCitizenship);
+                })
+                .orElseThrow(() -> new EntityNotFoundException("Citizenship with id '" + id + "' does not exist"));
+    }
+
     // DELETE
     @Transactional
+    @CacheEvict(value = "citizenships", key = "#id")
     public void deleteCitizenship(Long id) {
         if (!citizenshipRepository.existsById(id)) {
             throw new RuntimeException("Citizenship with id '" + id + "' does not exist");

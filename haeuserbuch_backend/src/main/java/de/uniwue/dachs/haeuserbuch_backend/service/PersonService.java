@@ -2,7 +2,11 @@ package de.uniwue.dachs.haeuserbuch_backend.service;
 
 import de.uniwue.dachs.haeuserbuch_backend.model.Person;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PersonRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,23 +21,27 @@ public class PersonService {
     }
 
     // Get all persons
+    @Cacheable("persons")
     public List<Person> getAllPersons() {
         return personRepository.findAll();
     }
 
     // Get person by ID
+    @Cacheable(value = "persons", key = "#id")
     public Optional<Person> getPersonById(Long id) {
         return personRepository.findById(id);
     }
 
     // POST create a new person
     @Transactional
+    @CacheEvict(value = "persons", allEntries = true)
     public Person createPerson(Person person) {
         return personRepository.save(person);
     }
 
     // PUT update an existing person
     @Transactional
+    @CachePut(value = "persons", key = "#id")
     public Person updatePerson(Long id, Person updatedPerson) {
         return personRepository.findById(id)
                 .map(existingPerson -> {
@@ -49,14 +57,15 @@ public class PersonService {
                     existingPerson.setGeneralNotes(updatedPerson.getGeneralNotes());
                     return personRepository.save(existingPerson);
                 })
-                .orElse(null);
+                .orElseThrow(() -> new EntityNotFoundException("Person with ID " + id + " does not exist."));
     }
 
     // DELETE a person by ID
     @Transactional
+    @CacheEvict(value = "persons", key = "#id")
     public void deletePerson(Long id) {
         if (!personRepository.existsById(id)) {
-            throw new IllegalArgumentException("Source with ID " + id + " does not exist.");
+            throw new EntityNotFoundException("Person with ID " + id + " does not exist.");
         }
         personRepository.deleteById(id);
     }
