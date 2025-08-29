@@ -1,11 +1,17 @@
 package de.uniwue.dachs.haeuserbuch_backend.utils.Mappers;
 
+import de.uniwue.dachs.haeuserbuch_backend.DTO.DistrictDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.QuarterDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Building;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.BuildingProperties;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PointGeometry;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PolygonGeometry;
+import de.uniwue.dachs.haeuserbuch_backend.model.District;
+import de.uniwue.dachs.haeuserbuch_backend.model.Quarter;
 import de.uniwue.dachs.haeuserbuch_backend.model.Source;
+import de.uniwue.dachs.haeuserbuch_backend.repository.DistrictRepository;
+import de.uniwue.dachs.haeuserbuch_backend.repository.QuarterRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.SourceRepository;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
@@ -21,9 +27,13 @@ import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.*;
 @Component
 public class BuildingMapper {
     private final SourceRepository sourceRepository;
+    private final QuarterRepository quarterRepository;
+    private final DistrictRepository districtRepository;
 
-    public BuildingMapper(SourceRepository sourceRepository) {
+    public BuildingMapper(SourceRepository sourceRepository, QuarterRepository quarterRepository, DistrictRepository districtRepository) {
         this.sourceRepository = sourceRepository;
+        this.quarterRepository = quarterRepository;
+        this.districtRepository = districtRepository;
     }
 
     public Feature BuildingToFeature(Building building) {
@@ -35,8 +45,8 @@ public class BuildingMapper {
         properties.setHouseNumber(building.getHouseNumber());
         properties.setPartType(building.getPartType());
         properties.setSpecialStatus(building.getSpecialStatus());
-        properties.setQuarter(building.getQuarter());
-        properties.setDistrict(building.getDistrict());
+        properties.setQuarter(getQuarterDTO(building.getQuarter()));
+        properties.setDistrict(getDistrictDTO(building.getDistrict()));
         properties.setDistrictHouseNumber(building.getDistrictHouseNumber());
         properties.setPrimarySources(building.getPrimarySources());
         properties.setSecondarySources(building.getSecondarySources());
@@ -72,8 +82,8 @@ public class BuildingMapper {
                 building.setHouseNumber(properties.getHouseNumber());
                 building.setPartType(properties.getPartType());
                 building.setSpecialStatus(properties.getSpecialStatus());
-                building.setQuarter(properties.getQuarter());
-                building.setDistrict(properties.getDistrict());
+                building.setQuarter(getQuarter(properties.getQuarter()));
+                building.setDistrict(getDistrict(properties.getDistrict()));
                 building.setDistrictHouseNumber(properties.getDistrictHouseNumber());
                 building.setPrimarySources(getOrSaveSources(properties.getPrimarySources()));
                 building.setSecondarySources(properties.getSecondarySources());
@@ -110,5 +120,39 @@ public class BuildingMapper {
             }
         }
         return savedSources;
+    }
+
+    public Quarter getQuarter(QuarterDTO quarterDTO) {
+        if (quarterDTO == null || quarterDTO.getId() == null) {
+            return null;
+        }
+        return quarterRepository.findById(quarterDTO.getId()).orElse(null);
+    }
+
+    public QuarterDTO getQuarterDTO(Quarter quarter) {
+        if (quarter == null) {
+            return null;
+        }
+        QuarterDTO quarterDTO = new QuarterDTO();
+        quarterDTO.setId(quarter.getId());
+        quarterDTO.setName(quarter.getName());
+        return quarterDTO;
+    }
+
+    public District getDistrict(DistrictDTO districtDTO) {
+        if (districtDTO == null || districtDTO.getId() == null) {
+            return null;
+        }
+        return districtRepository.findById(districtDTO.getId()).orElse(null);
+    }
+
+    public DistrictDTO getDistrictDTO(District district) {
+        if (district == null) {
+            return null;
+        }
+        DistrictDTO districtDTO = new DistrictDTO();
+        districtDTO.setId(district.getId());
+        districtDTO.setName(district.getName());
+        return districtDTO;
     }
 }

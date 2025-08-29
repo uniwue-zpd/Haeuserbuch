@@ -31,9 +31,13 @@ public class Building extends BaseEntity {
 
     private String specialStatus;
 
-    private String quarter;
+    @ManyToOne
+    @JoinColumn(name = "quarter_id")
+    private Quarter quarter;
 
-    private String district;
+    @ManyToOne
+    @JoinColumn(name = "district_id")
+    private District district;
 
     private String districtHouseNumber;
 

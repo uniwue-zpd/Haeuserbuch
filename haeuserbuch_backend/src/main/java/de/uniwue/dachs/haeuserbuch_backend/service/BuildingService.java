@@ -5,7 +5,6 @@ import de.uniwue.dachs.haeuserbuch_backend.model.Building;
 import de.uniwue.dachs.haeuserbuch_backend.repository.BuildingRepository;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.BuildingMapper;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +54,7 @@ public class BuildingService {
 
     // PUT Update existing building
     @Transactional
-    @CachePut(value = "buildings", key = "#id")
+    @CacheEvict(value = "buildings", key = "#id")
     public void updateBuilding(Long id, Feature updatedFeature) {
         buildingRepository.findById(id).map(entity -> {
             BuildingProperties properties = (BuildingProperties) updatedFeature.getProperties();
@@ -64,8 +63,8 @@ public class BuildingService {
             entity.setHouseNumber(properties != null ? properties.getHouseNumber() : null);
             entity.setPartType(properties != null ? properties.getPartType() : null);
             entity.setSpecialStatus(properties != null ? properties.getSpecialStatus() : null);
-            entity.setQuarter(properties != null ? properties.getQuarter() : null);
-            entity.setDistrict(properties != null ? properties.getDistrict() : null);
+            entity.setQuarter(properties != null ? buildingMapper.getQuarter(properties.getQuarter()) : null);
+            entity.setDistrict(properties != null ? buildingMapper.getDistrict(properties.getDistrict()) : null);
             entity.setDistrictHouseNumber(properties != null ? properties.getDistrictHouseNumber() : null);
             entity.setPrimarySources((properties != null && properties.getPrimarySources() != null)
                     ? buildingMapper.getOrSaveSources(properties.getPrimarySources())
