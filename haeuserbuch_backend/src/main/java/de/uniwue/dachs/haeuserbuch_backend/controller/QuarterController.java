@@ -2,6 +2,7 @@ package de.uniwue.dachs.haeuserbuch_backend.controller;
 
 import de.uniwue.dachs.haeuserbuch_backend.model.Quarter;
 import de.uniwue.dachs.haeuserbuch_backend.service.QuarterService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,10 +38,10 @@ public class QuarterController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Quarter> updateQuarter(@PathVariable Long id, @RequestBody Quarter updatedQuarter) {
-        Quarter quarter = quarterService.updateQuarter(id, updatedQuarter);
-        if (quarter != null) {
-            return ResponseEntity.status(201).body(quarter);
-        } else {
+        try {
+            Quarter quarter = quarterService.updateQuarter(id, updatedQuarter);
+            return ResponseEntity.ok(quarter);
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.status(404).build();
         }
     }
@@ -50,7 +51,7 @@ public class QuarterController {
         try {
             quarterService.deleteQuarter(id);
             return ResponseEntity.status(204).build();
-        } catch (Exception e) {
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.status(404).build();
         }
     }
