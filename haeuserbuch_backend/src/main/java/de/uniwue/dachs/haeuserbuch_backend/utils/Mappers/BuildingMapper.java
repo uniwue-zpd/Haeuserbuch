@@ -2,17 +2,16 @@ package de.uniwue.dachs.haeuserbuch_backend.utils.Mappers;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.DistrictDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.QuarterDTO;
-import de.uniwue.dachs.haeuserbuch_backend.model.Building;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.StreetDTO;
+import de.uniwue.dachs.haeuserbuch_backend.model.*;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.BuildingProperties;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PointGeometry;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PolygonGeometry;
-import de.uniwue.dachs.haeuserbuch_backend.model.District;
-import de.uniwue.dachs.haeuserbuch_backend.model.Quarter;
-import de.uniwue.dachs.haeuserbuch_backend.model.Source;
 import de.uniwue.dachs.haeuserbuch_backend.repository.DistrictRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.QuarterRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.SourceRepository;
+import de.uniwue.dachs.haeuserbuch_backend.repository.StreetRepository;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
@@ -29,11 +28,13 @@ public class BuildingMapper {
     private final SourceRepository sourceRepository;
     private final QuarterRepository quarterRepository;
     private final DistrictRepository districtRepository;
+    private final StreetRepository streetRepository;
 
-    public BuildingMapper(SourceRepository sourceRepository, QuarterRepository quarterRepository, DistrictRepository districtRepository) {
+    public BuildingMapper(SourceRepository sourceRepository, QuarterRepository quarterRepository, DistrictRepository districtRepository, StreetRepository streetRepository) {
         this.sourceRepository = sourceRepository;
         this.quarterRepository = quarterRepository;
         this.districtRepository = districtRepository;
+        this.streetRepository = streetRepository;
     }
 
     public Feature BuildingToFeature(Building building) {
@@ -45,6 +46,7 @@ public class BuildingMapper {
         properties.setHouseNumber(building.getHouseNumber());
         properties.setPartType(building.getPartType());
         properties.setSpecialStatus(building.getSpecialStatus());
+        properties.setStreet(getStreetDTO(building.getStreet()));
         properties.setQuarter(getQuarterDTO(building.getQuarter()));
         properties.setDistrict(getDistrictDTO(building.getDistrict()));
         properties.setDistrictHouseNumber(building.getDistrictHouseNumber());
@@ -82,6 +84,7 @@ public class BuildingMapper {
                 building.setHouseNumber(properties.getHouseNumber());
                 building.setPartType(properties.getPartType());
                 building.setSpecialStatus(properties.getSpecialStatus());
+                building.setStreet(getStreet(properties.getStreet()));
                 building.setQuarter(getQuarter(properties.getQuarter()));
                 building.setDistrict(getDistrict(properties.getDistrict()));
                 building.setDistrictHouseNumber(properties.getDistrictHouseNumber());
@@ -154,5 +157,22 @@ public class BuildingMapper {
         districtDTO.setId(district.getId());
         districtDTO.setName(district.getName());
         return districtDTO;
+    }
+
+    public Street getStreet(StreetDTO streetDTO) {
+        if (streetDTO == null || streetDTO.getId() == null) {
+            return null;
+        }
+        return streetRepository.findById(streetDTO.getId()).orElse(null);
+    }
+
+    public StreetDTO getStreetDTO(Street street) {
+        if (street == null) {
+            return null;
+        }
+        StreetDTO streetDTO = new StreetDTO();
+        streetDTO.setId(street.getId());
+        streetDTO.setName(street.getName());
+        return streetDTO;
     }
 }

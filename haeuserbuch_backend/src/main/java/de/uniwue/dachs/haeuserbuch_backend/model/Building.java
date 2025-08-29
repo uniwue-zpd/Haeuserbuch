@@ -32,6 +32,10 @@ public class Building extends BaseEntity {
     private String specialStatus;
 
     @ManyToOne
+    @JoinColumn(name = "street_id")
+    private Street street;
+
+    @ManyToOne
     @JoinColumn(name = "quarter_id")
     private Quarter quarter;
 

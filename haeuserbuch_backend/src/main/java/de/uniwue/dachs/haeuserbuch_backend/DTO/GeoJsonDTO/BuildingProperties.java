@@ -2,6 +2,7 @@ package de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.DistrictDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.QuarterDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.StreetDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Source;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,8 +17,9 @@ public class BuildingProperties extends Properties {
     private String houseNumber;
     private String partType;
     private String specialStatus;
-    private DistrictDTO district;
+    private StreetDTO street;
     private QuarterDTO quarter;
+    private DistrictDTO district;
     private String districtHouseNumber;
     private Set<Source> primarySources = new HashSet<>();
     private List<String> secondarySources = new ArrayList<>();

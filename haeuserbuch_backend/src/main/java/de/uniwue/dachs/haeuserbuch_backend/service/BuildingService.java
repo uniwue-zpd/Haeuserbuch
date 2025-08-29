@@ -63,6 +63,7 @@ public class BuildingService {
             entity.setHouseNumber(properties != null ? properties.getHouseNumber() : null);
             entity.setPartType(properties != null ? properties.getPartType() : null);
             entity.setSpecialStatus(properties != null ? properties.getSpecialStatus() : null);
+            entity.setStreet(properties != null ? buildingMapper.getStreet(properties.getStreet()) : null);
             entity.setQuarter(properties != null ? buildingMapper.getQuarter(properties.getQuarter()) : null);
             entity.setDistrict(properties != null ? buildingMapper.getDistrict(properties.getDistrict()) : null);
             entity.setDistrictHouseNumber(properties != null ? properties.getDistrictHouseNumber() : null);
