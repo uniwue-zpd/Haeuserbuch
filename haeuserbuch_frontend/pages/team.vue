@@ -17,7 +17,7 @@
       </template>
       <template #content>
         <Divider/>
-        <div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-3">
           <div class="flex flex-col">
             <div class="text-black roboto-plain montserrat-headline font-bold">Vita</div>
           </div>
@@ -26,6 +26,10 @@
           </div>
           <div class="flex flex-col">
             <div class="text-black roboto-plain montserrat-headline font-bold">Kontakt</div>
+            <div class="flex flex-row space-x-3 roboto-plain">
+              <p>E-Mail:</p>
+              <a href="mailto:" class="text-blue-950">@uni-wuerzburg.de</a>
+            </div>
           </div>
         </div>
       </template>
@@ -42,7 +46,7 @@
       </template>
       <template #content>
         <Divider/>
-        <div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-3">
           <div class="flex flex-col">
             <div class="text-black roboto-plain montserrat-headline font-bold">Vita</div>
           </div>
@@ -51,6 +55,10 @@
           </div>
           <div class="flex flex-col">
             <div class="text-black roboto-plain montserrat-headline font-bold">Kontakt</div>
+            <div class="flex flex-row space-x-3 roboto-plain">
+              <p>E-Mail:</p>
+              <a href="mailto:" class="text-blue-950">@uni-wuerzburg.de</a>
+            </div>
           </div>
         </div>
       </template>
@@ -67,7 +75,7 @@
       </template>
       <template #content>
         <Divider/>
-        <div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-3">
           <div class="flex flex-col">
             <div class="text-black roboto-plain montserrat-headline font-bold">Vita</div>
           </div>
@@ -76,6 +84,10 @@
           </div>
           <div class="flex flex-col">
             <div class="text-black roboto-plain montserrat-headline font-bold">Kontakt</div>
+            <div class="flex flex-row space-x-3 roboto-plain">
+              <p>E-Mail:</p>
+              <a href="mailto:" class="text-blue-950">@uni-wuerzburg.de</a>
+            </div>
           </div>
         </div>
       </template>
@@ -92,7 +104,7 @@
       </template>
       <template #content>
         <Divider/>
-        <div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-3">
           <div class="flex flex-col">
             <div class="text-black roboto-plain montserrat-headline font-bold">Vita</div>
           </div>
@@ -101,6 +113,10 @@
           </div>
           <div class="flex flex-col">
             <div class="text-black roboto-plain montserrat-headline font-bold">Kontakt</div>
+            <div class="flex flex-row space-x-3 roboto-plain">
+              <p>E-Mail:</p>
+              <a href="mailto:" class="text-blue-950">@uni-wuerzburg.de</a>
+            </div>
           </div>
         </div>
       </template>
