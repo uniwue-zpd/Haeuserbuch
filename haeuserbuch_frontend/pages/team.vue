@@ -4,7 +4,7 @@
 
 <template>
   <div class="text-3xl font-bold montserrat-headline pb-2">Das Team</div>
-  <div class="flex flex-col gap-4">
+  <div class="flex flex-col gap-4 md:grid md:grid-cols-2 md:gap-3">
     <Card>
       <template #title>
         <div class="flex flex-row justify-between space-x-5">
