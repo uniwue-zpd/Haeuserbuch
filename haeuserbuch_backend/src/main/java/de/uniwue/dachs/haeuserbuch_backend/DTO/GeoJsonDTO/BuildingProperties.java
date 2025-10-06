@@ -15,9 +15,10 @@ public class BuildingProperties extends Properties {
     private String name;
     private List<String> altNames = new ArrayList<>();
     private String houseNumber;
+    private String currentHouseNumber;
+    private StreetDTO currentStreet;
     private String partType;
     private String specialStatus;
-    private StreetDTO street;
     private QuarterDTO quarter;
     private DistrictDTO district;
     private String districtHouseNumber;

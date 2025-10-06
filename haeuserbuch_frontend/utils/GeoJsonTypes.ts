@@ -43,9 +43,10 @@ export interface BuildingProperties {
     name: string | null;
     altNames: string[] | [];
     houseNumber: string | null;
+    currentHouseNumber: string | null;
+    currentStreet: Street | null;
     partType: string | null;
     specialStatus: string | null;
-    street: Street | null;
     quarter: Quarter | null;
     district: District | null;
     districtHouseNumber: string | null;

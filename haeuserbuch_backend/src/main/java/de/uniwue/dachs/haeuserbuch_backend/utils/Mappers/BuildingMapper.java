@@ -44,9 +44,10 @@ public class BuildingMapper {
         properties.setName(building.getName());
         properties.setAltNames(building.getAltNames());
         properties.setHouseNumber(building.getHouseNumber());
+        properties.setCurrentHouseNumber(building.getCurrentHouseNumber());
         properties.setPartType(building.getPartType());
         properties.setSpecialStatus(building.getSpecialStatus());
-        properties.setStreet(getStreetDTO(building.getStreet()));
+        properties.setCurrentStreet(getStreetDTO(building.getCurrentStreet()));
         properties.setQuarter(getQuarterDTO(building.getQuarter()));
         properties.setDistrict(getDistrictDTO(building.getDistrict()));
         properties.setDistrictHouseNumber(building.getDistrictHouseNumber());
@@ -82,9 +83,10 @@ public class BuildingMapper {
                 building.setName(properties.getName());
                 building.setAltNames(properties.getAltNames());
                 building.setHouseNumber(properties.getHouseNumber());
+                building.setCurrentHouseNumber(properties.getCurrentHouseNumber());
                 building.setPartType(properties.getPartType());
                 building.setSpecialStatus(properties.getSpecialStatus());
-                building.setStreet(getStreet(properties.getStreet()));
+                building.setCurrentStreet(getStreet(properties.getCurrentStreet()));
                 building.setQuarter(getQuarter(properties.getQuarter()));
                 building.setDistrict(getDistrict(properties.getDistrict()));
                 building.setDistrictHouseNumber(properties.getDistrictHouseNumber());
