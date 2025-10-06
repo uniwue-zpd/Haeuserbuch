@@ -1,4 +1,6 @@
 // GeoJSON single feature
+import type { District, Quarter, Street } from "~/utils/types";
+
 export interface Feature {
     type: 'Feature';
     id?: number;
@@ -43,8 +45,9 @@ export interface BuildingProperties {
     houseNumber: string | null;
     partType: string | null;
     specialStatus: string | null;
-    quarter: string | null;
-    district: string | null;
+    street: Street | null;
+    quarter: Quarter | null;
+    district: District | null;
     districtHouseNumber: string | null;
     primarySources: Source[] | [];
     secondarySources: string[] | [];

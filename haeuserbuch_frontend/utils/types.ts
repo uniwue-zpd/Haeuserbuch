@@ -63,6 +63,28 @@ export interface Source extends Auditable {
 }
 
 /*
+    Represents a street
+*/
+export interface Street extends Auditable {
+    name: string | null;
+    altNames: string[] | null;
+}
+
+/*
+    Represents a district
+*/
+export interface District extends Auditable {
+    name: string | null;
+}
+
+/*
+    Represents a quarter
+*/
+export interface Quarter extends Auditable {
+    name: string | null;
+}
+
+/*
     Represents the response object from the tileserver-gl API
 */
 export interface Tile {
