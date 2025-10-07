@@ -21,6 +21,6 @@ public class Place extends BaseEntity {
 
     private Boolean isUncertain;
 
-    @Column(columnDefinition = "geometry(Geometry,25832)")
+    @Column(columnDefinition = "geometry(Geometry,4326)")
     private Geometry coordinates;
 }

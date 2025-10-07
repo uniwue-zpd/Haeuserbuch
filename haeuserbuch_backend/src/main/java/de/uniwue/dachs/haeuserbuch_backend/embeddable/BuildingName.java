@@ -1,4 +1,4 @@
-package de.uniwue.dachs.haeuserbuch_backend.embeddables;
+package de.uniwue.dachs.haeuserbuch_backend.embeddable;
 
 import jakarta.persistence.Embeddable;
 import lombok.Getter;

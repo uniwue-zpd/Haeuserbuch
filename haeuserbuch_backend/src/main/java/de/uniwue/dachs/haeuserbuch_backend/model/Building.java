@@ -1,6 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.model;
 
-import de.uniwue.dachs.haeuserbuch_backend.embeddables.BuildingName;
+import de.uniwue.dachs.haeuserbuch_backend.embeddable.BuildingName;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

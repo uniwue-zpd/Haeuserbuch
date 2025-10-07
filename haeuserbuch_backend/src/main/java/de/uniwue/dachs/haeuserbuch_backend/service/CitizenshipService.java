@@ -1,23 +1,24 @@
 package de.uniwue.dachs.haeuserbuch_backend.service;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.CitizenshipDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.PersonDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.SourceDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.*;
 import de.uniwue.dachs.haeuserbuch_backend.repository.CitizenshipRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PersonRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PlaceRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.SourceRepository;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
+import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PersonMapper;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PlaceMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CitizenshipService {
@@ -26,16 +27,18 @@ public class CitizenshipService {
     private final SourceRepository sourceRepository;
     private final PlaceRepository placeRepository;
     private final PlaceMapper placeMapper;
+    private final PersonMapper personMapper;
 
     public CitizenshipService(CitizenshipRepository citizenshipRepository,
                               PersonRepository personRepository,
                               SourceRepository sourceRepository,
-                              PlaceRepository placeRepository, PlaceMapper placeMapper) {
+                              PlaceRepository placeRepository, PlaceMapper placeMapper, PersonMapper personMapper) {
         this.citizenshipRepository = citizenshipRepository;
         this.personRepository = personRepository;
         this.sourceRepository = sourceRepository;
         this.placeRepository = placeRepository;
         this.placeMapper = placeMapper;
+        this.personMapper = personMapper;
     }
 
     // GET all citizenships
@@ -66,12 +69,12 @@ public class CitizenshipService {
 
     // PUT
     @Transactional
-    @CachePut(value = "citizenships", key = "#id")
+    @CacheEvict(value = "citizenships", key = "#id")
     public void updateCitizenship(Long id, CitizenshipDTO updatedCitizenshipDTO) {
         citizenshipRepository.findById(id)
                 .map(existingCitizenship -> {
-                    existingCitizenship.setPerson(getOrSavePerson(updatedCitizenshipDTO.getPerson()));
-                    existingCitizenship.setSource(getOrSaveSource(updatedCitizenshipDTO.getSource()));
+                    existingCitizenship.setPersons(getOrSavePersons(updatedCitizenshipDTO.getPersons()));
+                    existingCitizenship.setSource(getSource(updatedCitizenshipDTO.getSource()));
                     existingCitizenship.setPlace(getPlace(updatedCitizenshipDTO.getPlace()));
                     existingCitizenship.setNumber(updatedCitizenshipDTO.getNumber());
                     existingCitizenship.setDate(updatedCitizenshipDTO.getDate());
@@ -97,8 +100,8 @@ public class CitizenshipService {
     // Helper methods
     private Citizenship DtoToCitizenship(CitizenshipDTO citizenshipDTO) {
         Citizenship citizenship = new Citizenship();
-        citizenship.setPerson(getOrSavePerson(citizenshipDTO.getPerson()));
-        citizenship.setSource(getOrSaveSource(citizenshipDTO.getSource()));
+        citizenship.setPersons(getOrSavePersons(citizenshipDTO.getPersons()));
+        citizenship.setSource(getSource(citizenshipDTO.getSource()));
         citizenship.setPlace(getPlace(citizenshipDTO.getPlace()));
         citizenship.setNumber(citizenshipDTO.getNumber());
         citizenship.setDate(citizenshipDTO.getDate());
@@ -112,40 +115,86 @@ public class CitizenshipService {
     private CitizenshipDTO CitizenshipToDto(Citizenship citizenship) {
         CitizenshipDTO citizenshipDTO = new CitizenshipDTO();
         citizenshipDTO.setId(citizenship.getId());
-        citizenshipDTO.setPerson(citizenship.getPerson());
-        citizenshipDTO.setSource(citizenship.getSource());
-        citizenshipDTO.setPlace(citizenship.getPlace() != null
-                ? placeMapper.PlaceToFeature(citizenship.getPlace())
-                : null);
+        citizenshipDTO.setPersons(getPersonDTOs(citizenship.getPersons()));
+        citizenshipDTO.setSource(getSourceDTO(citizenship.getSource()));
+        citizenshipDTO.setPlace(getPlaceFeature(citizenship.getPlace()));
         citizenshipDTO.setNumber(citizenship.getNumber());
         citizenshipDTO.setDate(citizenship.getDate());
         citizenshipDTO.setEntryText(citizenship.getEntryText());
         citizenshipDTO.setAddendum(citizenship.getAddendum());
         citizenshipDTO.setInternalNotes(citizenship.getInternalNotes());
         citizenshipDTO.setGeneralNotes(citizenship.getGeneralNotes());
+        citizenshipDTO.setCreatedBy(citizenship.getCreatedBy());
+        citizenshipDTO.setCreatedDate(citizenship.getCreatedDate());
+        citizenshipDTO.setLastModifiedBy(citizenship.getLastModifiedBy());
+        citizenshipDTO.setLastModifiedDate(citizenship.getLastModifiedDate());
         return citizenshipDTO;
     }
 
-    private Person getOrSavePerson(Person person) {
-        if (person.getId() != null) {
-            return personRepository.findById(person.getId()).orElse(null);
+    // Persons
+        // Get existing persons or save new ones
+    private Set<Person> getOrSavePersons(Set<PersonDTO> personDTOs) {
+        if (personDTOs == null || personDTOs.isEmpty()) {
+            return new HashSet<>();
         }
-        return personRepository.save(person);
+        return personDTOs.stream()
+                .map(person -> {
+                    if (person.getId() != null) {
+                        return personRepository.findById(person.getId())
+                                .orElse(null);
+                    } else {
+                        Person newPerson = personMapper.PersonDTOToPerson(person);
+                        return personRepository.save(newPerson);
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
     }
 
-    private Source getOrSaveSource(Source source) {
-        if (source.getId() != null) {
-            return sourceRepository.findById(source.getId()).orElse(null);
+        // Get PersonDTOs from Persons
+    private Set<PersonDTO> getPersonDTOs(Set<Person> persons) {
+        if (persons == null || persons.isEmpty()) {
+            return new HashSet<>();
         }
-        return sourceRepository.save(source);
+        return persons.stream()
+                .map(personMapper::PersonToPersonDTO)
+                .collect(Collectors.toSet());
     }
 
+    // Source
+        // Get Source from SourceDTO
+    private Source getSource(SourceDTO sourceDTO) {
+        if (sourceDTO == null || sourceDTO.getId() == null) {
+            return null;
+        }
+        return sourceRepository.findById(sourceDTO.getId()).orElse(null);
+    }
+
+        // Get SourceDTO from Source
+    private SourceDTO getSourceDTO(Source source) {
+        if (source == null) {
+            return null;
+        }
+        SourceDTO sourceDTO = new SourceDTO();
+        sourceDTO.setId(source.getId());
+        sourceDTO.setTitle(source.getTitle());
+        return sourceDTO;
+    }
+
+    // Place
+        // Get Place from Feature
     private Place getPlace(Feature feature) {
         if (feature != null) {
             return placeRepository.findById(feature.getId()).orElse(null);
         }
         return null;
     }
-}
 
-// TODO: PUT
+        // Get Feature from Place
+    private Feature getPlaceFeature(Place place) {
+        if (place != null) {
+            return placeMapper.PlaceToFeature(place);
+        }
+        return null;
+    }
+}

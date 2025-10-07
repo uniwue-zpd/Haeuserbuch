@@ -1,7 +1,7 @@
 package de.uniwue.dachs.haeuserbuch_backend.utils.Mappers;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.*;
-import de.uniwue.dachs.haeuserbuch_backend.embeddables.BuildingName;
+import de.uniwue.dachs.haeuserbuch_backend.embeddable.BuildingName;
 import de.uniwue.dachs.haeuserbuch_backend.model.*;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.BuildingProperties;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;

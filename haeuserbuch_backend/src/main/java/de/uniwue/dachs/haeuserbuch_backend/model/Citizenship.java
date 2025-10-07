@@ -4,15 +4,21 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "CITIZENSHIP")
 @Getter
 @Setter
 public class Citizenship extends BaseEntity {
-
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "person_id", nullable = false)
-    private Person person;
+    @ManyToMany
+    @JoinTable(
+            name = "citizenship_person",
+            joinColumns = @JoinColumn(name = "citizenship_id"),
+            inverseJoinColumns = @JoinColumn(name = "person_id")
+    )
+    private Set<Person> persons = new HashSet<>();
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "source_id", nullable = false)
