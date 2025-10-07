@@ -1,9 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO;
 
-import de.uniwue.dachs.haeuserbuch_backend.DTO.DistrictDTO;
-import de.uniwue.dachs.haeuserbuch_backend.DTO.QuarterDTO;
-import de.uniwue.dachs.haeuserbuch_backend.DTO.SourceDTO;
-import de.uniwue.dachs.haeuserbuch_backend.DTO.StreetDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,8 +9,7 @@ import java.util.*;
 @Getter
 @Setter
 public class BuildingProperties extends Properties {
-    private String name;
-    private List<String> altNames = new ArrayList<>();
+    private Set<BuildingNameDTO> names = new HashSet<>();
     private String houseNumber;
     private String currentHouseNumber;
     private StreetDTO currentStreet;

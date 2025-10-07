@@ -1,13 +1,12 @@
 package de.uniwue.dachs.haeuserbuch_backend.model;
 
+import de.uniwue.dachs.haeuserbuch_backend.embeddables.BuildingName;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.locationtech.jts.geom.Geometry;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -15,15 +14,12 @@ import java.util.Set;
 @Getter
 @Setter
 public class Building extends BaseEntity {
-
-    private String name;
-
-    @ElementCollection(targetClass = String.class)
+    @ElementCollection
     @CollectionTable(
-            name = "building_alt_names",
+            name = "building_names",
             joinColumns = @JoinColumn(name = "building_id")
     )
-    private List<String> altNames = new ArrayList<>();
+    private Set<BuildingName> names = new HashSet<>();
 
     private String houseNumber;
     private String currentHouseNumber;

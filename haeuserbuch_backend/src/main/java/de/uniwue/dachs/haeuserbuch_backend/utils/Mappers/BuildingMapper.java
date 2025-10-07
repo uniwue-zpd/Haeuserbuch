@@ -1,9 +1,7 @@
 package de.uniwue.dachs.haeuserbuch_backend.utils.Mappers;
 
-import de.uniwue.dachs.haeuserbuch_backend.DTO.DistrictDTO;
-import de.uniwue.dachs.haeuserbuch_backend.DTO.QuarterDTO;
-import de.uniwue.dachs.haeuserbuch_backend.DTO.SourceDTO;
-import de.uniwue.dachs.haeuserbuch_backend.DTO.StreetDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.*;
+import de.uniwue.dachs.haeuserbuch_backend.embeddables.BuildingName;
 import de.uniwue.dachs.haeuserbuch_backend.model.*;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.BuildingProperties;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
@@ -44,8 +42,7 @@ public class BuildingMapper {
         Feature feature = new Feature();
         BuildingProperties properties = new BuildingProperties();
         feature.setId(building.getId());
-        properties.setName(building.getName());
-        properties.setAltNames(building.getAltNames());
+        properties.setNames(getBuildingNamesDTOs(building.getNames()));
         properties.setHouseNumber(building.getHouseNumber());
         properties.setCurrentHouseNumber(building.getCurrentHouseNumber());
         properties.setPartType(building.getPartType());
@@ -83,8 +80,7 @@ public class BuildingMapper {
         Building building = new Building();
         if (feature.getProperties() != null) {
             if (feature.getProperties() instanceof BuildingProperties properties) {
-                building.setName(properties.getName());
-                building.setAltNames(properties.getAltNames());
+                building.setNames(getBuildingNames(properties.getNames()));
                 building.setHouseNumber(properties.getHouseNumber());
                 building.setCurrentHouseNumber(properties.getCurrentHouseNumber());
                 building.setPartType(properties.getPartType());
@@ -192,4 +188,29 @@ public class BuildingMapper {
         streetDTO.setName(street.getName());
         return streetDTO;
     }
+
+    public Set<BuildingNameDTO> getBuildingNamesDTOs(Set<BuildingName> names) {
+        if (names == null || names.isEmpty()) {
+            return new HashSet<>();
+        }
+        return names.stream().map(name -> {
+            BuildingNameDTO dto = new BuildingNameDTO();
+            dto.setName(name.getName());
+            dto.setSource(name.getSource());
+            return dto;
+        }).collect(Collectors.toSet());
+    }
+
+    public Set<BuildingName> getBuildingNames(Set<BuildingNameDTO> dtos) {
+        if (dtos == null || dtos.isEmpty()) {
+            return new HashSet<>();
+        }
+        return dtos.stream().map(dto -> {
+            BuildingName name = new BuildingName();
+            name.setName(dto.getName());
+            name.setSource(dto.getSource());
+            return name;
+        }).collect(Collectors.toSet());
+    }
+
 }

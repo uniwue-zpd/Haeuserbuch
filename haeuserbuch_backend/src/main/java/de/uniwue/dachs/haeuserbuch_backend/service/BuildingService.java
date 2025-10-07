@@ -58,24 +58,27 @@ public class BuildingService {
     public void updateBuilding(Long id, Feature updatedFeature) {
         buildingRepository.findById(id).map(entity -> {
             BuildingProperties properties = (BuildingProperties) updatedFeature.getProperties();
-            entity.setName(properties != null ? properties.getName() : null);
-            entity.setAltNames(properties != null ? properties.getAltNames() : new ArrayList<>());
-            entity.setHouseNumber(properties != null ? properties.getHouseNumber() : null);
-            entity.setCurrentHouseNumber(properties != null ? properties.getCurrentHouseNumber() : null);
-            entity.setCurrentStreet(properties != null ? buildingMapper.getStreet(properties.getCurrentStreet()) : null);
-            entity.setPartType(properties != null ? properties.getPartType() : null);
-            entity.setSpecialStatus(properties != null ? properties.getSpecialStatus() : null);
-            entity.setQuarter(properties != null ? buildingMapper.getQuarter(properties.getQuarter()) : null);
-            entity.setDistrict(properties != null ? buildingMapper.getDistrict(properties.getDistrict()) : null);
-            entity.setDistrictHouseNumber(properties != null ? properties.getDistrictHouseNumber() : null);
-            entity.setPrimarySources((properties != null && properties.getPrimarySources() != null)
-                    ? buildingMapper.getSources(properties.getPrimarySources())
-                    : null);
-            entity.setSecondarySources((properties != null && properties.getSecondarySources() != null)
-                    ? buildingMapper.getSources(properties.getSecondarySources())
-                    : null);
-            entity.setInternalNotes(properties != null ? properties.getInternalNotes() : null);
-            entity.setGeneralNotes(properties != null ? properties.getGeneralNotes() : null);
+            if (properties != null) {
+                entity.setNames(properties.getNames() != null
+                        ? buildingMapper.getBuildingNames(properties.getNames())
+                        : new HashSet<>());
+                entity.setHouseNumber(properties.getHouseNumber());
+                entity.setCurrentHouseNumber(properties.getCurrentHouseNumber());
+                entity.setCurrentStreet(buildingMapper.getStreet(properties.getCurrentStreet()));
+                entity.setPartType(properties.getPartType());
+                entity.setSpecialStatus(properties.getSpecialStatus());
+                entity.setQuarter(buildingMapper.getQuarter(properties.getQuarter()));
+                entity.setDistrict(buildingMapper.getDistrict(properties.getDistrict()));
+                entity.setDistrictHouseNumber(properties.getDistrictHouseNumber());
+                entity.setPrimarySources(properties.getPrimarySources() != null
+                        ? buildingMapper.getSources(properties.getPrimarySources())
+                        : new HashSet<>());
+                entity.setSecondarySources(properties.getSecondarySources() != null
+                        ? buildingMapper.getSources(properties.getSecondarySources())
+                        : new HashSet<>());
+                entity.setInternalNotes(properties.getInternalNotes());
+                entity.setGeneralNotes(properties.getGeneralNotes());
+            }
             if (updatedFeature.getGeometry() != null) {
                 if (updatedFeature.getGeometry() instanceof PointGeometry pointGeometry) {
                     entity.setCoordinates(createPoint(pointGeometry.getCoordinates()));
