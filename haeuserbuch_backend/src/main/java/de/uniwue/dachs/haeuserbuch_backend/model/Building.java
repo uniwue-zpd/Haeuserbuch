@@ -54,12 +54,13 @@ public class Building extends BaseEntity {
     )
     private Set<Source> primarySources = new HashSet<>();
 
-    @ElementCollection(targetClass = String.class)
-    @CollectionTable(
+    @ManyToMany
+    @JoinTable(
             name = "building_secondary_source",
-            joinColumns = @JoinColumn(name = "building_id")
+            joinColumns = @JoinColumn(name = "building_id"),
+            inverseJoinColumns = @JoinColumn(name = "secondary_source_id")
     )
-    private List<String> secondarySources = new ArrayList<>();
+    private Set<Source> secondarySources = new HashSet<>();
 
     @Column(columnDefinition = "geometry(Geometry,25832)")
     private Geometry coordinates;

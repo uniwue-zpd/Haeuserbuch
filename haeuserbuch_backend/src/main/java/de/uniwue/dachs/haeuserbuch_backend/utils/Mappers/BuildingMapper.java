@@ -2,6 +2,7 @@ package de.uniwue.dachs.haeuserbuch_backend.utils.Mappers;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.DistrictDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.QuarterDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.SourceDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.StreetDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.*;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.BuildingProperties;
@@ -19,7 +20,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.*;
 
@@ -51,8 +54,8 @@ public class BuildingMapper {
         properties.setQuarter(getQuarterDTO(building.getQuarter()));
         properties.setDistrict(getDistrictDTO(building.getDistrict()));
         properties.setDistrictHouseNumber(building.getDistrictHouseNumber());
-        properties.setPrimarySources(building.getPrimarySources());
-        properties.setSecondarySources(building.getSecondarySources());
+        properties.setPrimarySources(getSourceDTOs(building.getPrimarySources()));
+        properties.setSecondarySources(getSourceDTOs(building.getSecondarySources()));
         properties.setInternalNotes(building.getInternalNotes());
         properties.setGeneralNotes(building.getGeneralNotes());
         properties.setCreatedDate(building.getCreatedDate());
@@ -90,8 +93,8 @@ public class BuildingMapper {
                 building.setQuarter(getQuarter(properties.getQuarter()));
                 building.setDistrict(getDistrict(properties.getDistrict()));
                 building.setDistrictHouseNumber(properties.getDistrictHouseNumber());
-                building.setPrimarySources(getOrSaveSources(properties.getPrimarySources()));
-                building.setSecondarySources(properties.getSecondarySources());
+                building.setPrimarySources(getSources(properties.getPrimarySources()));
+                building.setSecondarySources(getSources(properties.getSecondarySources()));
                 building.setInternalNotes(properties.getInternalNotes());
                 building.setGeneralNotes(properties.getGeneralNotes());
             } else {
@@ -112,19 +115,31 @@ public class BuildingMapper {
         return building;
     }
 
-    public Set<Source> getOrSaveSources(Set<Source> sources) {
+    public Set<SourceDTO> getSourceDTOs(Set<Source> sources) {
         if (sources == null || sources.isEmpty()) {
             return new HashSet<>();
         }
-        Set<Source> savedSources = new HashSet<>();
+        Set<SourceDTO> sourceDTOs = new HashSet<>();
         for (Source source: sources) {
-            if (source.getId() != null) {
-                savedSources.add(sourceRepository.findById(source.getId()).orElse(null));
-            } else {
-                savedSources.add(sourceRepository.save(source));
+            if (source != null) {
+                SourceDTO sourceDTO = new SourceDTO();
+                sourceDTO.setId(source.getId());
+                sourceDTO.setTitle(source.getTitle());
+                sourceDTOs.add(sourceDTO);
             }
         }
-        return savedSources;
+        return sourceDTOs;
+    }
+
+    public Set<Source> getSources(Set<SourceDTO> sourceDTOs) {
+        if (sourceDTOs == null || sourceDTOs.isEmpty()) {
+            return new HashSet<>();
+        }
+        return sourceDTOs.stream()
+                .filter(Objects::nonNull)
+                .map(dto -> sourceRepository.findById(dto.getId()).orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
     }
 
     public Quarter getQuarter(QuarterDTO quarterDTO) {
