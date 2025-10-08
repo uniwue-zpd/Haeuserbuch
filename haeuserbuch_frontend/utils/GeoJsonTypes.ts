@@ -1,4 +1,3 @@
-// GeoJSON single feature
 import type {
     BuildingNameDTO,
     DistrictDTO,
@@ -7,6 +6,7 @@ import type {
     StreetDTO
 } from "~/utils/types";
 
+/* GeoJSON `Feature` */
 export interface Feature {
     type: 'Feature';
     id?: number;
@@ -14,36 +14,43 @@ export interface Feature {
     geometry: GeometryType | null;
 }
 
-// GeoJSON geometry types
-export type GeometryType = Point | Polygon | LineString;
-
-// GeoJSON properties types
-export type PropertiesType = BuildingProperties | PlaceProperties;
-
-// GeoJSON Point
-export interface Point {
-    type: 'Point';
-    coordinates: [number, number];
-}
-
-// GeoJSON Polygon
-export interface Polygon {
-    type: 'Polygon';
-    coordinates: [number, number][][];
-}
-
-// GeoJSON LineString
-export interface LineString {
-    type: 'LineString';
-    coordinates: [number, number][];
-}
-
-// GeoJSON collection of features
+/* GeoJSON `FeatureCollection` */
 export interface FeatureCollection {
     type: 'FeatureCollection';
     features: Feature[];
 }
 
+/* GeoJSON `geometry` types */
+export type GeometryType = Point | Polygon | LineString | MultiPolygon;
+
+/* GeoJSON `properties` types */
+export type PropertiesType = BuildingProperties | PlaceProperties;
+
+/* GeoJSON `Point` */
+export interface Point {
+    type: 'Point';
+    coordinates: [number, number];
+}
+
+/* GeoJSON `Polygon` */
+export interface Polygon {
+    type: 'Polygon';
+    coordinates: [number, number][][];
+}
+
+/* GeoJSON `LineString` */
+export interface LineString {
+    type: 'LineString';
+    coordinates: [number, number][];
+}
+
+/* GeoJSON MultiPolygon */
+export interface MultiPolygon {
+    type: 'MultiPolygon';
+    coordinates: [number, number][][][];
+}
+
+/* GeoJSON `properties` for a building feature */
 export interface BuildingProperties {
     type: string | null;
     names: BuildingNameDTO[] | [];
@@ -65,6 +72,7 @@ export interface BuildingProperties {
     lastModifiedBy: string | null;
 }
 
+/* GeoJSON `properties` for a place feature */
 export interface PlaceProperties {
     type: string | null;
     realName: string | null;
