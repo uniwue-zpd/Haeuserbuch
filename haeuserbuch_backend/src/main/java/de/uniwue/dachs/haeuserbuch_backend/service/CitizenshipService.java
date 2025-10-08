@@ -3,76 +3,67 @@ package de.uniwue.dachs.haeuserbuch_backend.service;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.CitizenshipDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.*;
 import de.uniwue.dachs.haeuserbuch_backend.repository.CitizenshipRepository;
-import de.uniwue.dachs.haeuserbuch_backend.repository.PersonRepository;
-import de.uniwue.dachs.haeuserbuch_backend.repository.PlaceRepository;
-import de.uniwue.dachs.haeuserbuch_backend.repository.SourceRepository;
-import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
+import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.CitizenshipMapper;
+import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PersonMapper;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PlaceMapper;
+import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.SourceMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class CitizenshipService {
     private final CitizenshipRepository citizenshipRepository;
-    private final PersonRepository personRepository;
-    private final SourceRepository sourceRepository;
-    private final PlaceRepository placeRepository;
+    private final CitizenshipMapper citizenshipMapper;
     private final PlaceMapper placeMapper;
+    private final SourceMapper sourceMapper;
+    private final PersonMapper personMapper;
 
-    public CitizenshipService(CitizenshipRepository citizenshipRepository,
-                              PersonRepository personRepository,
-                              SourceRepository sourceRepository,
-                              PlaceRepository placeRepository, PlaceMapper placeMapper) {
+    public CitizenshipService(CitizenshipRepository citizenshipRepository, CitizenshipMapper citizenshipMapper, PlaceMapper placeMapper, SourceMapper sourceMapper, PersonMapper personMapper) {
         this.citizenshipRepository = citizenshipRepository;
-        this.personRepository = personRepository;
-        this.sourceRepository = sourceRepository;
-        this.placeRepository = placeRepository;
+        this.citizenshipMapper = citizenshipMapper;
         this.placeMapper = placeMapper;
+        this.sourceMapper = sourceMapper;
+        this.personMapper = personMapper;
     }
 
     // GET all citizenships
     @Cacheable("citizenships")
     public List<CitizenshipDTO> getAllCitizenships() {
-        List<Citizenship> citizenships = citizenshipRepository.findAll();
-        List<CitizenshipDTO> citizenshipDTOs = new ArrayList<>();
-        citizenships.forEach(citizenship ->
-                citizenshipDTOs.add(CitizenshipToDto(citizenship))
-        );
-        return citizenshipDTOs;
+        return citizenshipRepository.findAll().stream()
+                .map(citizenshipMapper::CitizenshipToDTO)
+                .sorted(Comparator.comparing(CitizenshipDTO::getId))
+                .toList();
     }
 
     // GET citizenship by ID
     @Cacheable(value = "citizenships", key = "#id")
     public Optional<CitizenshipDTO> getCitizenshipById(Long id) {
         return citizenshipRepository.findById(id)
-                .map(this::CitizenshipToDto);
+                .map(citizenshipMapper::CitizenshipToDTO);
     }
 
     // POST
     @Transactional
     @CacheEvict(value = "citizenships", allEntries = true)
     public void createCitizenship(CitizenshipDTO citizenshipDTO) {
-        Citizenship citizenship = DtoToCitizenship(citizenshipDTO);
+        Citizenship citizenship = citizenshipMapper.CitizenshipDTOToCitizenship(citizenshipDTO);
         citizenshipRepository.save(citizenship);
     }
 
     // PUT
     @Transactional
-    @CachePut(value = "citizenships", key = "#id")
+    @CacheEvict(value = "citizenships", key = "#id")
     public void updateCitizenship(Long id, CitizenshipDTO updatedCitizenshipDTO) {
         citizenshipRepository.findById(id)
                 .map(existingCitizenship -> {
-                    existingCitizenship.setPerson(getOrSavePerson(updatedCitizenshipDTO.getPerson()));
-                    existingCitizenship.setSource(getOrSaveSource(updatedCitizenshipDTO.getSource()));
-                    existingCitizenship.setPlace(getPlace(updatedCitizenshipDTO.getPlace()));
+                    existingCitizenship.setPersons(personMapper.PersonDTOsToPersons(updatedCitizenshipDTO.getPersons()));
+                    existingCitizenship.setSource(sourceMapper.SourceDTOToSource(updatedCitizenshipDTO.getSource()));
+                    existingCitizenship.setPlace(placeMapper.PlaceDTOToPlace(updatedCitizenshipDTO.getPlace()));
                     existingCitizenship.setNumber(updatedCitizenshipDTO.getNumber());
                     existingCitizenship.setDate(updatedCitizenshipDTO.getDate());
                     existingCitizenship.setEntryText(updatedCitizenshipDTO.getEntryText());
@@ -93,59 +84,4 @@ public class CitizenshipService {
         }
         citizenshipRepository.deleteById(id);
     }
-
-    // Helper methods
-    private Citizenship DtoToCitizenship(CitizenshipDTO citizenshipDTO) {
-        Citizenship citizenship = new Citizenship();
-        citizenship.setPerson(getOrSavePerson(citizenshipDTO.getPerson()));
-        citizenship.setSource(getOrSaveSource(citizenshipDTO.getSource()));
-        citizenship.setPlace(getPlace(citizenshipDTO.getPlace()));
-        citizenship.setNumber(citizenshipDTO.getNumber());
-        citizenship.setDate(citizenshipDTO.getDate());
-        citizenship.setEntryText(citizenshipDTO.getEntryText());
-        citizenship.setAddendum(citizenshipDTO.getAddendum());
-        citizenship.setInternalNotes(citizenshipDTO.getInternalNotes());
-        citizenship.setGeneralNotes(citizenshipDTO.getGeneralNotes());
-        return citizenship;
-    }
-
-    private CitizenshipDTO CitizenshipToDto(Citizenship citizenship) {
-        CitizenshipDTO citizenshipDTO = new CitizenshipDTO();
-        citizenshipDTO.setId(citizenship.getId());
-        citizenshipDTO.setPerson(citizenship.getPerson());
-        citizenshipDTO.setSource(citizenship.getSource());
-        citizenshipDTO.setPlace(citizenship.getPlace() != null
-                ? placeMapper.PlaceToFeature(citizenship.getPlace())
-                : null);
-        citizenshipDTO.setNumber(citizenship.getNumber());
-        citizenshipDTO.setDate(citizenship.getDate());
-        citizenshipDTO.setEntryText(citizenship.getEntryText());
-        citizenshipDTO.setAddendum(citizenship.getAddendum());
-        citizenshipDTO.setInternalNotes(citizenship.getInternalNotes());
-        citizenshipDTO.setGeneralNotes(citizenship.getGeneralNotes());
-        return citizenshipDTO;
-    }
-
-    private Person getOrSavePerson(Person person) {
-        if (person.getId() != null) {
-            return personRepository.findById(person.getId()).orElse(null);
-        }
-        return personRepository.save(person);
-    }
-
-    private Source getOrSaveSource(Source source) {
-        if (source.getId() != null) {
-            return sourceRepository.findById(source.getId()).orElse(null);
-        }
-        return sourceRepository.save(source);
-    }
-
-    private Place getPlace(Feature feature) {
-        if (feature != null) {
-            return placeRepository.findById(feature.getId()).orElse(null);
-        }
-        return null;
-    }
 }
-
-// TODO: PUT

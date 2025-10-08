@@ -3,7 +3,9 @@ package de.uniwue.dachs.haeuserbuch_backend.utils.Mappers;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PlaceProperties;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PointGeometry;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.PlaceDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Place;
+import de.uniwue.dachs.haeuserbuch_backend.repository.PlaceRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,6 +14,36 @@ import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.*;
 
 @Component
 public class PlaceMapper {
+    private final PlaceRepository placeRepository;
+
+    public PlaceMapper(PlaceRepository placeRepository) {
+        this.placeRepository = placeRepository;
+    }
+
+    public Place PlaceDTOToPlace(PlaceDTO placeDTO) {
+        if (placeDTO == null) {
+            return null;
+        } if (placeDTO.getId() != null) {
+            return placeRepository.findById(placeDTO.getId()).orElse(null);
+        } else {
+            Place place = new Place();
+            place.setRealName(placeDTO.getRealName());
+            place.setAltNames(placeDTO.getAltNames());
+            placeRepository.save(place);
+            return place;
+        }
+    }
+
+    public PlaceDTO PlaceToDTO(Place place) {
+        if (place == null) {
+            return null;
+        }
+        PlaceDTO placeDTO = new PlaceDTO();
+        placeDTO.setId(place.getId());
+        placeDTO.setRealName(place.getRealName());
+        return placeDTO;
+    }
+
     public Place FeatureToPlace(Feature feature) {
         Place place = new Place();
         if (feature.getProperties() != null) {

@@ -1,45 +1,50 @@
 package de.uniwue.dachs.haeuserbuch_backend.utils.Mappers;
 
-import de.uniwue.dachs.haeuserbuch_backend.model.Building;
+import de.uniwue.dachs.haeuserbuch_backend.model.*;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.BuildingProperties;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PointGeometry;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PolygonGeometry;
-import de.uniwue.dachs.haeuserbuch_backend.model.Source;
-import de.uniwue.dachs.haeuserbuch_backend.repository.SourceRepository;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.*;
 
 @Component
 public class BuildingMapper {
-    private final SourceRepository sourceRepository;
+    private final SourceMapper sourceMapper;
+    private final DistrictMapper districtMapper;
+    private final QuarterMapper quarterMapper;
+    private final StreetMapper streetMapper;
+    private final BuildingNameMapper buildingNameMapper;
 
-    public BuildingMapper(SourceRepository sourceRepository) {
-        this.sourceRepository = sourceRepository;
+    public BuildingMapper(SourceMapper sourceMapper, DistrictMapper districtMapper, QuarterMapper quarterMapper, StreetMapper streetMapper, BuildingNameMapper buildingNameMapper) {
+        this.sourceMapper = sourceMapper;
+        this.districtMapper = districtMapper;
+        this.quarterMapper = quarterMapper;
+        this.streetMapper = streetMapper;
+        this.buildingNameMapper = buildingNameMapper;
     }
 
     public Feature BuildingToFeature(Building building) {
         Feature feature = new Feature();
         BuildingProperties properties = new BuildingProperties();
         feature.setId(building.getId());
-        properties.setName(building.getName());
-        properties.setAltNames(building.getAltNames());
+        properties.setNames(buildingNameMapper.buildingNamesToBuildingNameDTOs(building.getNames()));
         properties.setHouseNumber(building.getHouseNumber());
+        properties.setCurrentHouseNumber(building.getCurrentHouseNumber());
         properties.setPartType(building.getPartType());
         properties.setSpecialStatus(building.getSpecialStatus());
-        properties.setQuarter(building.getQuarter());
-        properties.setDistrict(building.getDistrict());
+        properties.setCurrentStreet(streetMapper.StreetToDTO(building.getCurrentStreet()));
+        properties.setQuarter(quarterMapper.QuarterToDTO(building.getQuarter()));
+        properties.setDistrict(districtMapper.DistrictToDTO(building.getDistrict()));
         properties.setDistrictHouseNumber(building.getDistrictHouseNumber());
-        properties.setPrimarySources(building.getPrimarySources());
-        properties.setSecondarySources(building.getSecondarySources());
+        properties.setPrimarySources(sourceMapper.SourcesToDTOs(building.getPrimarySources()));
+        properties.setSecondarySources(sourceMapper.SourcesToDTOs(building.getSecondarySources()));
         properties.setInternalNotes(building.getInternalNotes());
         properties.setGeneralNotes(building.getGeneralNotes());
         properties.setCreatedDate(building.getCreatedDate());
@@ -67,16 +72,17 @@ public class BuildingMapper {
         Building building = new Building();
         if (feature.getProperties() != null) {
             if (feature.getProperties() instanceof BuildingProperties properties) {
-                building.setName(properties.getName());
-                building.setAltNames(properties.getAltNames());
+                building.setNames(buildingNameMapper.buildingNameDTOsToBuildingNames(properties.getNames()));
                 building.setHouseNumber(properties.getHouseNumber());
+                building.setCurrentHouseNumber(properties.getCurrentHouseNumber());
                 building.setPartType(properties.getPartType());
                 building.setSpecialStatus(properties.getSpecialStatus());
-                building.setQuarter(properties.getQuarter());
-                building.setDistrict(properties.getDistrict());
+                building.setCurrentStreet(streetMapper.StreetDTOToStreet(properties.getCurrentStreet()));
+                building.setQuarter(quarterMapper.QuarterDTOToQuarter(properties.getQuarter()));
+                building.setDistrict(districtMapper.DistrctDTOToDistrict(properties.getDistrict()));
                 building.setDistrictHouseNumber(properties.getDistrictHouseNumber());
-                building.setPrimarySources(getOrSaveSources(properties.getPrimarySources()));
-                building.setSecondarySources(properties.getSecondarySources());
+                building.setPrimarySources(sourceMapper.SourceDTOsToSources(properties.getPrimarySources()));
+                building.setSecondarySources(sourceMapper.SourceDTOsToSources(properties.getSecondarySources()));
                 building.setInternalNotes(properties.getInternalNotes());
                 building.setGeneralNotes(properties.getGeneralNotes());
             } else {
@@ -95,20 +101,5 @@ public class BuildingMapper {
             }
         }
         return building;
-    }
-
-    public Set<Source> getOrSaveSources(Set<Source> sources) {
-        if (sources == null || sources.isEmpty()) {
-            return new HashSet<>();
-        }
-        Set<Source> savedSources = new HashSet<>();
-        for (Source source: sources) {
-            if (source.getId() != null) {
-                savedSources.add(sourceRepository.findById(source.getId()).orElse(null));
-            } else {
-                savedSources.add(sourceRepository.save(source));
-            }
-        }
-        return savedSources;
     }
 }
