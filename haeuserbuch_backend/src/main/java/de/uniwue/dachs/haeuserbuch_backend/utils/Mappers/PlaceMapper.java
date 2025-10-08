@@ -77,6 +77,10 @@ public class PlaceMapper {
         properties.setIsUncertain(place.getIsUncertain());
         properties.setInternalNotes(place.getInternalNotes());
         properties.setGeneralNotes(place.getGeneralNotes());
+        properties.setCreatedDate(place.getCreatedDate());
+        properties.setCreatedBy(place.getCreatedBy());
+        properties.setLastModifiedDate(place.getLastModifiedDate());
+        properties.setLastModifiedBy(place.getLastModifiedBy());
         feature.setProperties(properties);
         if (place.getCoordinates() != null) {
             PointGeometry geometry = new PointGeometry();

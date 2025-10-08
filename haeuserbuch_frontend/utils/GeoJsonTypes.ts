@@ -1,5 +1,11 @@
 // GeoJSON single feature
-import type { District, Quarter, Street } from "~/utils/types";
+import type {
+    BuildingNameDTO,
+    DistrictDTO,
+    QuarterDTO,
+    SourceDTO,
+    StreetDTO
+} from "~/utils/types";
 
 export interface Feature {
     type: 'Feature';
@@ -40,18 +46,17 @@ export interface FeatureCollection {
 
 export interface BuildingProperties {
     type: string | null;
-    name: string | null;
-    altNames: string[] | [];
+    names: BuildingNameDTO[] | [];
     houseNumber: string | null;
     currentHouseNumber: string | null;
-    currentStreet: Street | null;
+    currentStreet: StreetDTO | null;
     partType: string | null;
     specialStatus: string | null;
-    quarter: Quarter | null;
-    district: District | null;
+    quarter: QuarterDTO | null;
+    district: DistrictDTO | null;
     districtHouseNumber: string | null;
-    primarySources: Source[] | [];
-    secondarySources: string[] | [];
+    primarySources: SourceDTO[] | [];
+    secondarySources: SourceDTO[] | [];
     internalNotes: string | null;
     generalNotes: string | null;
     createdDate: number | null;
@@ -66,4 +71,8 @@ export interface PlaceProperties {
     altNames: string[] | [];
     internalNotes: string | null;
     generalNotes: string | null;
+    createdDate: number | null;
+    createdBy: string | null;
+    lastModifiedDate: number | null;
+    lastModifiedBy: string | null;
 }
