@@ -1,6 +1,5 @@
 package de.uniwue.dachs.haeuserbuch_backend.DTO;
 
-import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +13,7 @@ public class CitizenshipDTO {
     private Long id;
     private Set<PersonDTO> persons = new HashSet<>();
     private SourceDTO source;
-    private Feature place;
+    private PlaceDTO place;
     private Long number;
     private String date;
     private String entryText;

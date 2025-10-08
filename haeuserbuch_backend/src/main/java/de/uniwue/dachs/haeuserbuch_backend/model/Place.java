@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.locationtech.jts.geom.Geometry;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "PLACE")
@@ -17,7 +17,7 @@ public class Place extends BaseEntity {
 
     @ElementCollection(targetClass = String.class)
     @CollectionTable(name = "place_alt_names", joinColumns = @JoinColumn(name = "place_id"))
-    private List<String> altNames = new ArrayList<>();
+    private Set<String> altNames = new HashSet<>();
 
     private Boolean isUncertain;
 

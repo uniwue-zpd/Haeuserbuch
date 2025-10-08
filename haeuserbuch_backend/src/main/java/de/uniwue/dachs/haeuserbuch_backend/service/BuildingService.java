@@ -3,7 +3,7 @@ package de.uniwue.dachs.haeuserbuch_backend.service;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.*;
 import de.uniwue.dachs.haeuserbuch_backend.model.Building;
 import de.uniwue.dachs.haeuserbuch_backend.repository.BuildingRepository;
-import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.BuildingMapper;
+import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.*;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -18,11 +18,21 @@ import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.cr
 public class BuildingService {
     private final BuildingRepository buildingRepository;
     private final BuildingMapper buildingMapper;
+    private final SourceMapper sourceMapper;
+    private final DistrictMapper districtMapper;
+    private final QuarterMapper quarterMapper;
+    private final StreetMapper streetMapper;
+    private final BuildingNameMapper buildingNameMapper;
 
     public BuildingService(BuildingRepository buildingRepository,
-                           BuildingMapper buildingMapper) {
+                           BuildingMapper buildingMapper, SourceMapper sourceMapper, DistrictMapper districtMapper, QuarterMapper quarterMapper, StreetMapper streetMapper, BuildingNameMapper buildingNameMapper) {
         this.buildingRepository = buildingRepository;
         this.buildingMapper = buildingMapper;
+        this.sourceMapper = sourceMapper;
+        this.districtMapper = districtMapper;
+        this.quarterMapper = quarterMapper;
+        this.streetMapper = streetMapper;
+        this.buildingNameMapper = buildingNameMapper;
     }
 
     // GET all buildings as feature collection
@@ -60,21 +70,21 @@ public class BuildingService {
             BuildingProperties properties = (BuildingProperties) updatedFeature.getProperties();
             if (properties != null) {
                 entity.setNames(properties.getNames() != null
-                        ? buildingMapper.getBuildingNames(properties.getNames())
+                        ? buildingNameMapper.buildingNameDTOsToBuildingNames(properties.getNames())
                         : new HashSet<>());
                 entity.setHouseNumber(properties.getHouseNumber());
                 entity.setCurrentHouseNumber(properties.getCurrentHouseNumber());
-                entity.setCurrentStreet(buildingMapper.getStreet(properties.getCurrentStreet()));
+                entity.setCurrentStreet(streetMapper.StreetDTOToStreet(properties.getCurrentStreet()));
                 entity.setPartType(properties.getPartType());
                 entity.setSpecialStatus(properties.getSpecialStatus());
-                entity.setQuarter(buildingMapper.getQuarter(properties.getQuarter()));
-                entity.setDistrict(buildingMapper.getDistrict(properties.getDistrict()));
+                entity.setQuarter(quarterMapper.QuarterDTOToQuarter(properties.getQuarter()));
+                entity.setDistrict(districtMapper.DistrctDTOToDistrict(properties.getDistrict()));
                 entity.setDistrictHouseNumber(properties.getDistrictHouseNumber());
                 entity.setPrimarySources(properties.getPrimarySources() != null
-                        ? buildingMapper.getSources(properties.getPrimarySources())
+                        ? sourceMapper.SourceDTOsToSources(properties.getPrimarySources())
                         : new HashSet<>());
                 entity.setSecondarySources(properties.getSecondarySources() != null
-                        ? buildingMapper.getSources(properties.getSecondarySources())
+                        ? sourceMapper.SourceDTOsToSources(properties.getSecondarySources())
                         : new HashSet<>());
                 entity.setInternalNotes(properties.getInternalNotes());
                 entity.setGeneralNotes(properties.getGeneralNotes());
