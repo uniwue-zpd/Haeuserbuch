@@ -14,4 +14,14 @@ public interface BuildingRepository extends JpaRepository<Building, Long> {
     @NonNull
     @EntityGraph(attributePaths = {"primarySources"})
     List<Building> findAll();
+
+    List<Building> findAllByDistrict_Id(Long districtId);
+
+    List<Building> findAllByQuarter_Id(Long quarterId);
+
+    List<Building> findAllByCurrentStreet_Id(Long streetId);
+
+    List<Building> findAllByPrimarySources_Id(Long sourceId);
+
+    List<Building> findAllBySecondarySources_Id(Long sourceId);
 }
