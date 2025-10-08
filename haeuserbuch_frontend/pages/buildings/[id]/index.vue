@@ -25,7 +25,6 @@ useHead(() => ({
 
 onMounted(async () => {
   await building_store.fetchBuildingById(building_id);
-  console.log('Building item:', building_item.value.properties.altNames);
   center.value = [
     (building_item.value?.geometry as Polygon).coordinates[0][0][0],
     (building_item.value?.geometry as Polygon).coordinates[0][0][1]
@@ -76,8 +75,8 @@ onBeforeUnmount(() => {
 <template>
   <div class="flex flex-col gap-2">
     <Card v-show="building_item">
-      <template #title>
-        <h1 class="text-3xl montserrat-headline font-bold">{{ building_item_properties?.name }}</h1>
+      <template #title v-show="building_item_properties.districtHouseNumber">
+        <h1 class="text-3xl montserrat-headline font-bold">{{ building_item_properties?.districtHouseNumber }}</h1>
       </template>
       <template #content>
         <div class="flex flex-col gap-2">
@@ -92,13 +91,15 @@ onBeforeUnmount(() => {
                   <template #content>
                     <table class="min-w-full divide-y divide-gray-200">
                       <tbody v-if="building_item_properties" class="bg-white divide-y divide-gray-200">
-                      <tr v-if="building_item_properties.name">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Name</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.name }}</td>
-                      </tr>
-                      <tr v-if="building_item_properties.altNames.length > 0">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Andere Namen</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.altNames.join(', ') }}</td>
+                      <tr v-if="building_item_properties.names.length > 0">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Namen</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <ul class="list-disc list-inside">
+                            <li v-for="(name, index) in building_item_properties.names" :key="index">
+                              {{ name.name }} (Quelle: {{ name.source }})
+                            </li>
+                          </ul>
+                        </td>
                       </tr>
                       <tr v-if="building_item_properties.houseNumber">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Hausnummer</td>
@@ -114,18 +115,22 @@ onBeforeUnmount(() => {
                       </tr>
                       <tr v-if="building_item_properties.quarter">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Viertel</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.quarter }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <NuxtLink :to="`/quarters/${building_item_properties.quarter.id}`">{{ building_item_properties.quarter.name }}</NuxtLink>
+                        </td>
                       </tr>
                       <tr v-if="building_item_properties.district">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Distrikt</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.district }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <NuxtLink :to="`/districts/${building_item_properties.district.id}`">{{ building_item_properties.district.name }}</NuxtLink>
+                        </td>
                       </tr>
                       <tr v-if="building_item_properties.primarySources.length > 0">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Primärquellen</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <ul>
                             <li v-for="(source, index) in building_item_properties.primarySources" :key="index">
-                              {{ source.title }}, {{ source.signature }}
+                              <NuxtLink :to="`/sources/${source.id}`">{{ source.title }}</NuxtLink>
                             </li>
                           </ul>
                         </td>
@@ -135,7 +140,7 @@ onBeforeUnmount(() => {
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <ul>
                             <li v-for="(source, index) in building_item_properties.secondarySources" :key="index">
-                              {{ source }}
+                              <NuxtLink :to="`/sources/${source.id}`">{{ source.title }}</NuxtLink>
                             </li>
                           </ul>
                         </td>

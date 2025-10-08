@@ -22,7 +22,7 @@ useHead(() => ({
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   'properties.districtHouseNumber': { value: null, matchMode: FilterMatchMode.CONTAINS },
-  'properties.district': { value: null, matchMode: FilterMatchMode.IN }
+  'properties.district.name': { value: null, matchMode: FilterMatchMode.IN }
 });
 
 const districts = ref([
@@ -59,7 +59,7 @@ onMounted(async () => {
       'paint': {
         'fill-extrusion-color': [
           'match',
-          ['get', 'district'],
+          ['get', 'name', ['get', 'district']],
           'I', '#e41a1c',
           'II', '#377eb8',
           'III', '#4daf4a',
@@ -87,7 +87,6 @@ onMounted(async () => {
         .setLngLat(coordinates)
         .setHTML(`<div class="flex flex-col cursor-pointer items-center montserrat-headline font-semibold text-black">
 <div>${(feature.properties.districtHouseNumber)}</div>
-<div>${(feature.properties.name)}</div>
 </div>`)
         .addTo(map!);
     popup.getElement().addEventListener('click', ()=> {
@@ -134,7 +133,7 @@ onBeforeUnmount(() => {
             <DataTable
                 :value="buildings?.features"
                 v-model:filters="filters" filter-display="row"
-                :global-filter-fields="['properties.districtHouseNumber', 'properties.name', 'properties.partType', 'properties.specialStatus', 'properties.quarter', 'properties.district']"
+                :global-filter-fields="['properties.districtHouseNumber', 'properties.partType', 'properties.specialStatus', 'properties.quarter.name', 'properties.district.name']"
                 stateStorage="session" stateKey="dt-state-demo-session" paginator :rows="7"
             >
               <template #header>
@@ -169,9 +168,15 @@ onBeforeUnmount(() => {
                   />
                 </template>
               </Column>
-              <Column field="properties.name" header="Name" class="roboto-plain" :sortable="true">
+              <Column field="properties.names" header="Namen" class="roboto-plain" :sortable="true">
                 <template #body="slotProps">
-                  <div v-if="slotProps.data.properties.name">{{ slotProps.data.properties.name }}</div>
+                  <div v-if="slotProps.data.properties.names.length > 0">
+                    <ul class="list-disc list-inside">
+                      <li v-for="(name, index) in slotProps.data.properties.names" :key="index">
+                        {{ name.name }}
+                      </li>
+                    </ul>
+                  </div>
                   <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
                 </template>
               </Column>
@@ -189,12 +194,16 @@ onBeforeUnmount(() => {
               </Column>
               <Column field="properties.quarter" header="Viertel" class="roboto-plain" :sortable="true">
                 <template #body="slotProps">
-                  <div v-if="slotProps.data.properties.quarter">{{ slotProps.data.properties.quarter }}</div>
+                  <div v-if="slotProps.data.properties.quarter">
+                    <NuxtLink :to="`/quarters/${slotProps.data.properties.quarter.id}`">
+                      {{ slotProps.data.properties.quarter.name }}
+                    </NuxtLink>
+                  </div>
                   <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
                 </template>
               </Column>
               <Column
-                  filterField="properties.district" field="properties.district"
+                  filterField="properties.district.name" field="properties.district.name"
                   :showFilterMenu="false"
                   :sortable="true"
                   header="Distrikt"
@@ -202,7 +211,9 @@ onBeforeUnmount(() => {
               >
                 <template #body="slotProps">
                   <div v-if="slotProps.data.properties.district">
-                    {{ slotProps.data.properties.district }}
+                    <NuxtLink :to="`/districts/${slotProps.data.properties.district.id}`">
+                      {{ slotProps.data.properties.district.name }}
+                    </NuxtLink>
                   </div>
                   <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">
                     unbekannt
