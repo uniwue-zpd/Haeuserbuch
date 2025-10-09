@@ -16,8 +16,8 @@ export const useBuildingStore = defineStore('building', () => {
     async function fetchBuildings() {
         if (!isLoaded.value) {
             try {
-                const response = await apiClient.get<FeatureCollection>("/buildings");
-                buildings.value = response.data;
+                const { data } = await useFetch("/api/buildings");
+                buildings.value = data.value as FeatureCollection;
             } catch (error) {
                 console.error("Error fetching buildings:", error);
             }
@@ -32,8 +32,8 @@ export const useBuildingStore = defineStore('building', () => {
                 current_building.value = cachedBuilding;
             } else {
                 try {
-                    const response = await apiClient.get<Feature>(`/buildings/${id}`);
-                    current_building.value = response.data;
+                    const { data } = await useFetch(`/api/buildings/${id}`);
+                    current_building.value = data.value as Feature;
                 } catch (error) {
                     console.error("Error fetching building by ID:", error);
                 }
@@ -44,9 +44,13 @@ export const useBuildingStore = defineStore('building', () => {
         // Create new building
     async function createBuilding(payload: Partial<Feature>) {
         try {
-            const response = await apiClient.post('/buildings', payload);
-            buildings.value?.features.push(response.data);
-            return response.data;
+            const { data } = await useFetch('/api/buildings', {
+                method: 'POST',
+                body: payload,
+            });
+
+            buildings.value?.features.push(data.value);
+            return data.value;
         } catch (error) {
             console.error("Error creating building:", error);
             throw error;
@@ -60,15 +64,18 @@ export const useBuildingStore = defineStore('building', () => {
                 console.error("Buildings data is not loaded");
                 return;
             }
-            const response = await apiClient.put(`/buildings/${id}`, payload);
+            const { data } = await useFetch(`/api/buildings/${id}`, {
+                method: 'PUT',
+                body: payload
+            });
             const index = buildings.value.features.findIndex(feature => feature.id === id);
             if (index !== -1) {
-                buildings.value.features[index] = response.data;
+                buildings.value.features[index] = data.value;
             }
             if (current_building.value?.id === id) {
-                current_building.value = response.data;
+                current_building.value = data.value;
             }
-            return response.data;
+            return data.value;
         } catch (error) {
             console.error("Error updating building:", error);
             return;
@@ -77,19 +84,23 @@ export const useBuildingStore = defineStore('building', () => {
 
         // Delete building
     async function deleteBuilding(id: number) {
-        try {
-            if (!buildings.value) {
-                console.error("Buildings data is not loaded");
-                return;
+        if (!buildings.value) {
+            console.error("Buildings data is not loaded");
+            return;
+        }
+        const { error } = await useFetch(`/api/buildings/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
             }
-            await apiClient.delete(`/buildings/${id}`);
-            buildings.value.features = buildings.value.features.filter(p => p.id !== id);
-            if (current_building.value?.id === id) {
-                current_building.value = null;
-            }
-        } catch (error) {
-            console.log('Error deleting building:', error);
-            throw error;
+        });
+        if (error.value) {
+            console.error('Error deleting building:', error.value);
+            throw error.value;
+        }
+        buildings.value.features = buildings.value.features.filter(p => p.id !== id);
+        if (current_building.value?.id === id) {
+            current_building.value = null;
         }
     }
 

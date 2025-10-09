@@ -15,8 +15,9 @@ export const useDistrictStore = defineStore("district", () => {
     async function fetchDistricts() {
         if (!isLoaded.value) {
             try {
-                const response = await apiClient.get<District[]>("/districts");
-                districts.value = response.data;
+                const { data } = await useFetch("/api/districts");
+                districts.value = data.value as District[];
+                districts.value = data.value;
             } catch (error) {
                 console.error("Error fetching districts:", error);
             }
@@ -31,8 +32,8 @@ export const useDistrictStore = defineStore("district", () => {
                 current_district.value = cachedDistrict;
             } else {
                 try {
-                    const response = await apiClient.get<District>(`/districts/${id}`);
-                    current_district.value = response.data;
+                    const { data } = await useFetch(`/api/districts/${id}`);
+                    current_district.value = data.value as District;
                 } catch (error) {
                     console.error("Error fetching district by ID:", error);
                 }
@@ -43,9 +44,12 @@ export const useDistrictStore = defineStore("district", () => {
         // Create new district
     async function createDistrict(payload: Partial<District>) {
         try {
-            const response = await apiClient.post<District>('/districts', payload);
-            districts.value.push(response.data);
-            return response.data;
+            const { data } = await useFetch('/api/districts', {
+                method: 'POST',
+                body: payload,
+            });
+            districts.value.push(data.value as District);
+            return data.value;
         } catch (error) {
             console.error("Error creating district:", error);
             throw error;
@@ -59,15 +63,18 @@ export const useDistrictStore = defineStore("district", () => {
                 console.error("Districts data is not loaded");
                 return;
             }
-            const response = await apiClient.put<District>(`/districts/${id}`, payload);
+            const { data } = await useFetch(`/api/districts/${id}`, {
+                method: 'PUT',
+                body: payload,
+            });
             const index = districts.value.findIndex(district => district.id === id);
             if (index !== -1) {
-                districts.value[index] = response.data;
+                districts.value[index] = data.value as District;
             }
             if (current_district.value && current_district.value.id === id) {
-                current_district.value = response.data;
+                current_district.value = data.value as District;
             }
-            return response.data;
+            return data.value;
         } catch (error) {
             console.error("Error updating district:", error);
             throw error;
@@ -76,15 +83,20 @@ export const useDistrictStore = defineStore("district", () => {
 
         // Delete district
     async function deleteDistrict(id: number) {
-        try {
-            await apiClient.delete(`/districts/${id}`);
-            districts.value = districts.value.filter(district => district.id !== id);
-            if (current_district.value && current_district.value.id === id) {
-                current_district.value = null;
-            }
-        } catch (error) {
-            console.error("Error deleting district:", error);
-            throw error;
+        if (!districts.value) {
+            console.error("Districts data is not loaded");
+            return;
+        }
+        const { error } = await useFetch(`/api/districts/${id}`, {
+            method: 'DELETE'
+        });
+        if (error.value) {
+            console.error('Error deleting district:', error.value);
+            throw error.value;
+        }
+        districts.value = districts.value.filter(p => p.id !== id);
+        if (current_district.value?.id === id) {
+            current_district.value = null;
         }
     }
 
