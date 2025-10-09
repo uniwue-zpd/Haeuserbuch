@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import apiClient from '~/service/api';
 import type { Tile } from '~/utils/types';
 import type { RasterLayerSpecification, RasterSourceSpecification} from "maplibre-gl";
 
@@ -27,9 +26,9 @@ export const useTileStore = defineStore('tile', () => {
     async function fetchTiles() {
         if (isLoaded.value) return;
         try {
-            const response = await apiClient.get('/tiles/index.json');
-            tiles.value = response.data;
-            getMaplibreSources(response.data)
+            const { data } = await useFetch('/api/tiles/index.json');
+            tiles.value = data.value as Tile[];
+            getMaplibreSources(tiles.value)
         } catch (error) {
             console.warn('Error fetching tiles:', error, 'Setting OSM as default tile');
         }
