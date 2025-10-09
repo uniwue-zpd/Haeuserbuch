@@ -1,6 +1,8 @@
 services:
   frontend:
     image: haeuserbuch_frontend
+    env_file:
+      - .env
     container_name: frontend
     build:
       context: ./haeuserbuch_frontend
