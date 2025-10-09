@@ -1,6 +1,5 @@
 import { ref, computed } from "vue";
 import type { District } from "~/utils/types";
-import apiClient from "~/service/api";
 
 export const useDistrictStore = defineStore("district", () => {
     // State
@@ -17,7 +16,6 @@ export const useDistrictStore = defineStore("district", () => {
             try {
                 const { data } = await useFetch("/api/districts");
                 districts.value = data.value as District[];
-                districts.value = data.value;
             } catch (error) {
                 console.error("Error fetching districts:", error);
             }

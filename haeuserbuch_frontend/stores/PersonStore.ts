@@ -1,5 +1,3 @@
-import apiClient from "~/service/api";
-
 export const usePersonStore = defineStore("person", () => {
     // State
     const persons = ref<Person[]>([]);

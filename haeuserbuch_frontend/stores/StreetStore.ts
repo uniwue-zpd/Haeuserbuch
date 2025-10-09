@@ -1,6 +1,5 @@
 import { ref, computed } from "vue";
 import type { Street } from "~/utils/types";
-import apiClient from "~/service/api";
 
 export const useStreetStore = defineStore("street", () => {
     // State
@@ -15,8 +14,8 @@ export const useStreetStore = defineStore("street", () => {
     async function fetchStreets() {
         if (!isLoaded.value) {
             try {
-                const response = await apiClient.get<Street[]>("/streets");
-                streets.value = response.data;
+                const { data } = await useFetch("/api/streets");
+                streets.value = data.value as Street[];
             } catch (error) {
                 console.error("Error fetching streets:", error);
             }
@@ -31,8 +30,8 @@ export const useStreetStore = defineStore("street", () => {
                 current_street.value = cachedStreet;
             } else {
                 try {
-                    const response = await apiClient.get<Street>(`/streets/${id}`);
-                    current_street.value = response.data;
+                    const { data } = await useFetch<Street>(`/api/streets/${id}`);
+                    current_street.value = data.value as Street;
                 } catch (error) {
                     console.error("Error fetching street by ID:", error);
                 }
@@ -43,9 +42,12 @@ export const useStreetStore = defineStore("street", () => {
         // Create new street
     async function createStreet(payload: Partial<Street>) {
         try {
-            const response = await apiClient.post<Street>('/streets', payload);
-            streets.value.push(response.data);
-            return response.data;
+            const { data } = await useFetch('/api/streets', {
+                method: 'POST',
+                body: payload,
+            });
+            streets.value.push(data.value as Street);
+            return data.value;
         } catch (error) {
             console.error("Error creating street:", error);
             throw error;
@@ -59,15 +61,18 @@ export const useStreetStore = defineStore("street", () => {
                 console.error("Streets data is not loaded");
                 return;
             }
-            const response = await apiClient.put<Street>(`/streets/${id}`, payload);
+            const { data } = await useFetch<Street>(`/api/streets/${id}`, {
+                method: 'PUT',
+                body: payload,
+            });
             const index = streets.value.findIndex(street => street.id === id);
             if (index !== -1) {
-                streets.value[index] = response.data;
+                streets.value[index] = data.value as Street;
             }
             if (current_street.value && current_street.value.id === id) {
-                current_street.value = response.data;
+                current_street.value = data.value as Street;
             }
-            return response.data;
+            return data.value;
         } catch (error) {
             console.error("Error updating street:", error);
             throw error;
@@ -76,15 +81,20 @@ export const useStreetStore = defineStore("street", () => {
 
         // Delete street by ID
     async function deleteStreet(id: number) {
-        try {
-            await apiClient.delete(`/streets/${id}`);
-            streets.value = streets.value.filter(street => street.id !== id);
-            if (current_street.value && current_street.value.id === id) {
-                current_street.value = null;
-            }
-        } catch (error) {
-            console.error("Error deleting street:", error);
-            throw error;
+        if (!streets.value) {
+            console.error("Streets data is not loaded");
+            return;
+        }
+        const { error } = await useFetch(`/api/streets/${id}`, {
+            method: 'DELETE'
+        });
+        if (error.value) {
+            console.error('Error deleting street:', error.value);
+            throw error.value;
+        }
+        streets.value = streets.value.filter(p => p.id !== id);
+        if (current_street.value?.id === id) {
+            current_street.value = null;
         }
     }
 

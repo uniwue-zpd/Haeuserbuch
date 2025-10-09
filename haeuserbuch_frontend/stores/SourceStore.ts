@@ -1,6 +1,5 @@
 import {defineStore} from "pinia";
 import {computed, ref} from "vue";
-import apiClient from "~/service/api";
 
 export const useSourceStore = defineStore("source", () => {
     // State
@@ -15,8 +14,8 @@ export const useSourceStore = defineStore("source", () => {
     async function fetchSources() {
         if (!isLoaded.value) {
             try {
-                const response = await apiClient.get<Source[]>("/sources");
-                sources.value = response.data;
+                const { data } = await useFetch("/api/sources");
+                sources.value = data.value as Source[];
             } catch (error) {
                 console.error("Error fetching sources:", error);
             }
@@ -31,8 +30,8 @@ export const useSourceStore = defineStore("source", () => {
                 currentSource.value = cachedSource;
             } else {
                 try {
-                    const response = await apiClient.get<Source>(`/sources/${id}`);
-                    currentSource.value = response.data;
+                    const { data } = await useFetch<Source>(`/api/sources/${id}`);
+                    currentSource.value = data.value as Source;
                 } catch (error) {
                     console.error("Error fetching source by ID:", error);
                 }
@@ -43,9 +42,12 @@ export const useSourceStore = defineStore("source", () => {
     // Create new source
     async function createSource(payload: Partial<Source>) {
         try {
-            const response = await apiClient.post('/sources', payload);
-            sources.value.push(response.data);
-            return response.data;
+            const { data } = await useFetch('/api/sources', {
+                method: 'POST',
+                body: payload,
+            });
+            sources.value.push(data.value as Source);
+            return data.value;
         } catch (error) {
             console.error("Error creating source:", error);
             throw error;
@@ -59,15 +61,18 @@ export const useSourceStore = defineStore("source", () => {
                 console.error("Sources data is not loaded");
                 return;
             }
-            const response = await apiClient.put(`/sources/${id}`, payload);
+            const { data } = await useFetch<Source>(`/api/sources/${id}`, {
+                method: 'PUT',
+                body: payload,
+            });
             const index = sources.value.findIndex(source => source.id === id);
             if (index !== -1) {
-                sources.value[index] = response.data;
+                sources.value[index] = data.value as Source;
             }
             if (currentSource.value?.id === id) {
-                currentSource.value = response.data;
+                currentSource.value = data.value as Source;
             }
-            return response.data;
+            return data.value;
         } catch (error) {
             console.error("Error updating source:", error);
             return;
@@ -76,19 +81,20 @@ export const useSourceStore = defineStore("source", () => {
 
     // Delete source by ID
     async function deleteSource(id: number) {
-        try {
-            if (!sources.value) {
-                console.error("Sources data is not loaded");
-                return;
-            }
-            await apiClient.delete(`/sources/${id}`);
-            sources.value = sources.value.filter(p => p.id !== id);
-            if (currentSource.value?.id === id) {
-                currentSource.value = null;
-            }
-        } catch (error) {
-            console.log('Error deleting source:', error);
-            throw error;
+        if (!sources.value) {
+            console.error("Districts data is not loaded");
+            return;
+        }
+        const { error } = await useFetch(`/api/sources/${id}`, {
+            method: 'DELETE'
+        });
+        if (error.value) {
+            console.error('Error deleting source:', error.value);
+            throw error.value;
+        }
+        sources.value = sources.value.filter(p => p.id !== id);
+        if (currentSource.value?.id === id) {
+            currentSource.value = null;
         }
     }
 

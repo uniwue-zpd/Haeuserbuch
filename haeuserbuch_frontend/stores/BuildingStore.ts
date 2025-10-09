@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import apiClient from "~/service/api";
 import type { Feature, FeatureCollection } from "~/utils/GeoJsonTypes";
 
 export const useBuildingStore = defineStore('building', () => {
@@ -49,7 +48,7 @@ export const useBuildingStore = defineStore('building', () => {
                 body: payload,
             });
 
-            buildings.value?.features.push(data.value);
+            buildings.value?.features.push(data.value as Feature);
             return data.value;
         } catch (error) {
             console.error("Error creating building:", error);
@@ -70,10 +69,10 @@ export const useBuildingStore = defineStore('building', () => {
             });
             const index = buildings.value.features.findIndex(feature => feature.id === id);
             if (index !== -1) {
-                buildings.value.features[index] = data.value;
+                buildings.value.features[index] = data.value as Feature;
             }
             if (current_building.value?.id === id) {
-                current_building.value = data.value;
+                current_building.value = data.value as Feature;
             }
             return data.value;
         } catch (error) {

@@ -104,7 +104,7 @@ public class BuildingService {
 
     // DELETE building by ID
     @Transactional
-    @CacheEvict(value = "buildings", key = "#id")
+    @CacheEvict(value = "buildings", allEntries = true)
     public void deleteBuilding(Long id) {
         if (!buildingRepository.existsById(id)) {
             throw new RuntimeException("Building with id '" + id + "' does not exist");

@@ -1,6 +1,5 @@
 import { ref, computed } from "vue";
 import type { Quarter } from "~/utils/types";
-import apiClient from "~/service/api";
 
 export const useQuarterStore = defineStore("quarter", () => {
     // State
