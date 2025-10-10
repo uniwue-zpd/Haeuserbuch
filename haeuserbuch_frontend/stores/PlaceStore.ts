@@ -14,12 +14,12 @@ export const usePlaceStore = defineStore("place", () => {
         // Fetch places from the API
     async function fetchPlaces() {
         if (!isLoaded.value) {
-            try {
-                const { data } = await useFetch('/api/places');
-                places.value = data.value as FeatureCollection;
-            } catch (error) {
-                console.error("Error fetching places:", error);
+            const { data, error } = await useFetch('/api/places');
+            if (error.value) {
+                console.error("Error fetching places:", error.value);
+                return;
             }
+            places.value = data.value as FeatureCollection;
         }
     }
 
@@ -30,54 +30,49 @@ export const usePlaceStore = defineStore("place", () => {
             if (cachedPlace) {
                 current_place.value = cachedPlace;
             } else {
-                try {
-                    const { data } = await useFetch<Feature>(`/api/places/${id}`);
-                    current_place.value = data.value as Feature;
-                } catch (error) {
-                    console.error("Error fetching place by ID:", error);
+                const { data, error } = await useFetch<Feature>(`/api/places/${id}`);
+                if (error.value) {
+                    console.error(`Error fetching place by ID: ${ id }`, error.value);
+                    return;
                 }
+                current_place.value = data.value as Feature;
             }
         }
     }
 
         // Create new place
     async function createPlace(payload: Partial<Feature>) {
-        try {
-            const { data } = await useFetch('/api/places', {
-                method: 'POST',
-                body: payload
-            });
-            places.value?.features.push(data.value as Feature);
-            return data.value;
-        } catch (error) {
-            console.error("Error creating place:", error);
-            throw error;
+        const { data, error } = await useFetch('/api/places', {
+            method: 'POST',
+            body: payload
+        });
+        if (error.value) {
+            console.error("Error creating place:", error.value);
+            return;
         }
+        places.value?.features.push(data.value as Feature);
+        return data.value;
     }
 
         // Update existing place
     async function updatePlace(payload: Partial<Feature>, id: number) {
-        try {
-            if (!places.value) {
-                console.error("Places data is not loaded");
-                return;
-            }
-            const { data } = await useFetch<Feature>(`/api/places/${id}`, {
-                method: 'PUT',
-                body: payload
-            });
-            const index = places.value.features.findIndex(feature => feature.id === id);
-            if (index !== -1) {
-                places.value.features[index] = data.value as Feature;
-            }
-            if (current_place.value?.id === id) {
-                current_place.value = data.value as Feature;
-            }
-            return data.value;
-        } catch (error) {
-            console.error("Error updating place:", error);
+        if (!places.value) {
+            console.error("Places data is not loaded");
             return;
         }
+        const { data, error } = await useFetch<Feature>(`/api/places/${id}`, {
+            method: 'PUT',
+            body: payload
+        });
+        if (error.value) {
+            console.error("Error updating place:", error.value);
+            return;
+        }
+        const updatedPlace = data.value as Feature;
+        const index = places.value.features.findIndex(feature => feature.id === id);
+        if (index !== -1) places.value.features[index] = updatedPlace;
+        if (current_place.value?.id === id) current_place.value = updatedPlace;
+        return data.value;
     }
 
         // Delete place by ID
@@ -86,17 +81,13 @@ export const usePlaceStore = defineStore("place", () => {
             console.error("Places data is not loaded");
             return;
         }
-        const { error } = await useFetch(`/api/places/${id}`, {
-            method: 'DELETE'
-        });
+        const { error } = await useFetch(`/api/places/${id}`, { method: 'DELETE' });
         if (error.value) {
             console.error('Error deleting places:', error.value);
-            throw error.value;
+            return
         }
         places.value.features = places.value.features.filter(p => p.id !== id);
-        if (current_place.value?.id === id) {
-            current_place.value = null;
-        }
+        if (current_place.value?.id === id) current_place.value = null;
     }
 
         // Clear current place

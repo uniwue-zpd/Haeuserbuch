@@ -7,18 +7,18 @@ export const useDistrictStore = defineStore("district", () => {
     const current_district = ref<District | null>(null);
 
     // Getters
-    const isLoaded = computed(() => districts.value.length > 0);
+    const isLoaded = computed(() => districts.value !== null);
 
     // Actions
         // Fetch districts from the API
     async function fetchDistricts() {
         if (!isLoaded.value) {
-            try {
-                const { data } = await useFetch("/api/districts");
-                districts.value = data.value as District[];
-            } catch (error) {
-                console.error("Error fetching districts:", error);
+            const { data, error } = await useFetch("/api/districts");
+            if (error.value) {
+                console.error("Error fetching districts:", error.value);
+                return;
             }
+            districts.value = data.value as District[];
         }
     }
 
@@ -29,54 +29,49 @@ export const useDistrictStore = defineStore("district", () => {
             if (cachedDistrict) {
                 current_district.value = cachedDistrict;
             } else {
-                try {
-                    const { data } = await useFetch(`/api/districts/${id}`);
-                    current_district.value = data.value as District;
-                } catch (error) {
-                    console.error("Error fetching district by ID:", error);
+                const { data, error } = await useFetch(`/api/districts/${id}`);
+                if (error.value) {
+                    console.error(`Error fetching district by ID: ${ id }`, error.value);
+                    return;
                 }
+                current_district.value = data.value as District;
             }
         }
     }
 
         // Create new district
     async function createDistrict(payload: Partial<District>) {
-        try {
-            const { data } = await useFetch('/api/districts', {
-                method: 'POST',
-                body: payload,
-            });
-            districts.value.push(data.value as District);
-            return data.value;
-        } catch (error) {
-            console.error("Error creating district:", error);
-            throw error;
+        const { data, error } = await useFetch('/api/districts', {
+            method: 'POST',
+            body: payload,
+        });
+        if (error.value) {
+            console.error("Error creating district:", error.value);
+            return;
         }
+        districts.value.push(data.value as District);
+        return data.value;
     }
 
         // Update existing district
     async function updateDistrict(payload: Partial<District>, id: number) {
-        try {
-            if (!districts.value.length) {
-                console.error("Districts data is not loaded");
-                return;
-            }
-            const { data } = await useFetch(`/api/districts/${id}`, {
-                method: 'PUT',
-                body: payload,
-            });
-            const index = districts.value.findIndex(district => district.id === id);
-            if (index !== -1) {
-                districts.value[index] = data.value as District;
-            }
-            if (current_district.value && current_district.value.id === id) {
-                current_district.value = data.value as District;
-            }
-            return data.value;
-        } catch (error) {
-            console.error("Error updating district:", error);
-            throw error;
+        if (!districts.value.length) {
+            console.error("Districts data is not loaded");
+            return;
         }
+        const { data, error } = await useFetch(`/api/districts/${id}`, {
+            method: 'PUT',
+            body: payload,
+        });
+        if (error.value) {
+            console.error("Error updating district:", error.value);
+            return;
+        }
+        const updatedDistrict = data.value as District;
+        const index = districts.value.findIndex(district => district.id === id);
+        if (index !== -1) districts.value[index] = updatedDistrict;
+        if (current_district.value && current_district.value.id === id) current_district.value = updatedDistrict;
+        return updatedDistrict;
     }
 
         // Delete district
@@ -85,17 +80,10 @@ export const useDistrictStore = defineStore("district", () => {
             console.error("Districts data is not loaded");
             return;
         }
-        const { error } = await useFetch(`/api/districts/${id}`, {
-            method: 'DELETE'
-        });
-        if (error.value) {
-            console.error('Error deleting district:', error.value);
-            throw error.value;
-        }
+        const { error } = await useFetch(`/api/districts/${id}`, { method: 'DELETE' });
+        if (error.value) console.error('Error deleting district:', error.value);
         districts.value = districts.value.filter(p => p.id !== id);
-        if (current_district.value?.id === id) {
-            current_district.value = null;
-        }
+        if (current_district.value?.id === id) current_district.value = null;
     }
 
         // Clear current district
