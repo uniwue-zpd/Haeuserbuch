@@ -14,12 +14,12 @@ export const useBuildingStore = defineStore('building', () => {
         // Fetch buildings
     async function fetchBuildings() {
         if (!isLoaded.value) {
-            try {
-                const { data } = await useFetch("/api/buildings");
-                buildings.value = data.value as FeatureCollection;
-            } catch (error) {
-                console.error("Error fetching buildings:", error);
+            const { data, error } = await useFetch("/api/buildings");
+            if (error.value) {
+                console.error("Error fetching buildings:", error.value);
+                return;
             }
+            buildings.value = data.value as FeatureCollection;
         }
     }
 
@@ -30,55 +30,49 @@ export const useBuildingStore = defineStore('building', () => {
             if (cachedBuilding) {
                 current_building.value = cachedBuilding;
             } else {
-                try {
-                    const { data } = await useFetch(`/api/buildings/${id}`);
-                    current_building.value = data.value as Feature;
-                } catch (error) {
-                    console.error("Error fetching building by ID:", error);
+                const { data, error } = await useFetch(`/api/buildings/${id}`);
+                if (error.value) {
+                    console.error(`Error fetching building by ID :${ id }`, error.value);
+                    return;
                 }
+                current_building.value = data.value as Feature;
             }
         }
     }
 
         // Create new building
     async function createBuilding(payload: Partial<Feature>) {
-        try {
-            const { data } = await useFetch('/api/buildings', {
-                method: 'POST',
-                body: payload,
-            });
-
-            buildings.value?.features.push(data.value as Feature);
-            return data.value;
-        } catch (error) {
-            console.error("Error creating building:", error);
-            throw error;
+        const { data, error } = await useFetch('/api/buildings', {
+            method: 'POST',
+            body: payload,
+        });
+        if (error.value) {
+            console.error("Error creating building:", error.value);
+            return;
         }
+        buildings.value?.features.push(data.value as Feature);
+        return data.value;
     }
 
         // Update building by ID
     async function updateBuilding(payload: Partial<Feature>, id: number) {
-        try {
-            if (!buildings.value) {
-                console.error("Buildings data is not loaded");
-                return;
-            }
-            const { data } = await useFetch(`/api/buildings/${id}`, {
-                method: 'PUT',
-                body: payload
-            });
-            const index = buildings.value.features.findIndex(feature => feature.id === id);
-            if (index !== -1) {
-                buildings.value.features[index] = data.value as Feature;
-            }
-            if (current_building.value?.id === id) {
-                current_building.value = data.value as Feature;
-            }
-            return data.value;
-        } catch (error) {
-            console.error("Error updating building:", error);
+        if (!buildings.value) {
+            console.error('Buildings data is not loaded');
             return;
         }
+        const { data, error } = await useFetch(`/api/buildings/${id}`, {
+            method: 'PUT',
+            body: payload
+        });
+        if (error.value) {
+            console.error("Error updating building:", error.value);
+            return;
+        }
+        const updatedFeature = data.value as Feature;
+        const index = buildings.value.features.findIndex(feature => feature.id === id);
+        if (index !== -1) buildings.value.features[index] = updatedFeature;
+        if (current_building.value?.id === id) current_building.value = updatedFeature;
+        return data.value;
     }
 
         // Delete building
@@ -87,20 +81,13 @@ export const useBuildingStore = defineStore('building', () => {
             console.error("Buildings data is not loaded");
             return;
         }
-        const { error } = await useFetch(`/api/buildings/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+        const { error } = await useFetch(`/api/buildings/${id}`, { method: 'DELETE' });
         if (error.value) {
             console.error('Error deleting building:', error.value);
-            throw error.value;
+            return;
         }
         buildings.value.features = buildings.value.features.filter(p => p.id !== id);
-        if (current_building.value?.id === id) {
-            current_building.value = null;
-        }
+        if (current_building.value?.id === id) current_building.value = null;
     }
 
         // Clear current building

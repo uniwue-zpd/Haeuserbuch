@@ -44,7 +44,7 @@ services:
       - "5432:5432"
     volumes:
       # In case you have a database dump, uncomment the following line and change the file name
-      - ./haeuserbuch_dev.sql:/docker-entrypoint-initdb.d/haeuserbuch_dev.sql
+      # - ./<your_dump>.sql:/docker-entrypoint-initdb.d/<your_dump>.sql
       - db_data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}" ]
