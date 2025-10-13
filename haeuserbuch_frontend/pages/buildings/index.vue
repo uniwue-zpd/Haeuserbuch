@@ -49,7 +49,10 @@ onMounted(async () => {
     map!.addSource('buildings', {
       type: "geojson",
       //@ts-ignore
-      data: buildings.value as FeatureCollection
+      data: {
+        ...buildings.value,
+        features: buildings.value.features.filter(f => f.geometry !== null)
+      } as FeatureCollection
     });
     map!.addLayer({
       'id': 'buildings',

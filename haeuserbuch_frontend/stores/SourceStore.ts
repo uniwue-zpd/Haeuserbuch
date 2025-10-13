@@ -1,6 +1,5 @@
 import {defineStore} from "pinia";
 import {computed, ref} from "vue";
-import apiClient from "~/service/api";
 
 export const useSourceStore = defineStore("source", () => {
     // State
@@ -14,12 +13,12 @@ export const useSourceStore = defineStore("source", () => {
     // Fetch sources from the API
     async function fetchSources() {
         if (!isLoaded.value) {
-            try {
-                const response = await apiClient.get<Source[]>("/sources");
-                sources.value = response.data;
-            } catch (error) {
-                console.error("Error fetching sources:", error);
+            const { data, error } = await useFetch("/api/sources");
+            if (error.value) {
+                console.error("Error fetching sources:", error.value);
+                return;
             }
+            sources.value = data.value as Source[];
         }
     }
 
@@ -30,66 +29,63 @@ export const useSourceStore = defineStore("source", () => {
             if (cachedSource) {
                 currentSource.value = cachedSource;
             } else {
-                try {
-                    const response = await apiClient.get<Source>(`/sources/${id}`);
-                    currentSource.value = response.data;
-                } catch (error) {
-                    console.error("Error fetching source by ID:", error);
+                const { data, error } = await useFetch<Source>(`/api/sources/${id}`);
+                if (error.value) {
+                    console.error(`Error fetching source by ID: ${ id }`, error.value);
+                    return;
                 }
+                currentSource.value = data.value as Source;
             }
         }
     }
 
     // Create new source
     async function createSource(payload: Partial<Source>) {
-        try {
-            const response = await apiClient.post('/sources', payload);
-            sources.value.push(response.data);
-            return response.data;
-        } catch (error) {
-            console.error("Error creating source:", error);
-            throw error;
+        const { data, error } = await useFetch('/api/sources', {
+            method: 'POST',
+            body: payload,
+        });
+        if (error.value) {
+            console.error("Error creating source:", error.value);
+            return;
         }
+        sources.value.push(data.value as Source);
+        return data.value;
     }
 
     // Update existing source
     async function updateSource(payload: Partial<Source>, id: number) {
-        try {
-            if (!sources.value) {
-                console.error("Sources data is not loaded");
-                return;
-            }
-            const response = await apiClient.put(`/sources/${id}`, payload);
-            const index = sources.value.findIndex(source => source.id === id);
-            if (index !== -1) {
-                sources.value[index] = response.data;
-            }
-            if (currentSource.value?.id === id) {
-                currentSource.value = response.data;
-            }
-            return response.data;
-        } catch (error) {
-            console.error("Error updating source:", error);
+        if (sources.value.length === 0) {
+            console.error("Sources data is not loaded");
             return;
         }
+        const { data, error } = await useFetch<Source>(`/api/sources/${id}`, {
+            method: 'PUT',
+            body: payload,
+        });
+        if (error.value) {
+            console.error("Error updating source:", error.value);
+            return;
+        }
+        const updatedSource = data.value as Source;
+        const index = sources.value.findIndex(source => source.id === id);
+        if (index !== -1) sources.value[index] = data.value as Source;
+        if (currentSource.value?.id === id) currentSource.value = data.value as Source;
+        return updatedSource;
     }
 
     // Delete source by ID
     async function deleteSource(id: number) {
-        try {
-            if (!sources.value) {
-                console.error("Sources data is not loaded");
-                return;
-            }
-            await apiClient.delete(`/sources/${id}`);
-            sources.value = sources.value.filter(p => p.id !== id);
-            if (currentSource.value?.id === id) {
-                currentSource.value = null;
-            }
-        } catch (error) {
-            console.log('Error deleting source:', error);
-            throw error;
+        if (!sources.value) {
+            console.error("Districts data is not loaded");
+            return;
         }
+        const { error } = await useFetch(`/api/sources/${id}`, { method: 'DELETE' });
+        if (error.value) {
+            console.error('Error deleting source:', error.value);
+        }
+        sources.value = sources.value.filter(p => p.id !== id);
+        if (currentSource.value?.id === id) currentSource.value = null;
     }
 
     // Clear current source

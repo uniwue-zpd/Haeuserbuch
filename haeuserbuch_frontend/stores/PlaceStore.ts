@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import apiClient from "~/service/api";
 import type { Feature, FeatureCollection } from "~/utils/GeoJsonTypes";
 
 export const usePlaceStore = defineStore("place", () => {
@@ -15,12 +14,12 @@ export const usePlaceStore = defineStore("place", () => {
         // Fetch places from the API
     async function fetchPlaces() {
         if (!isLoaded.value) {
-            try {
-                const response = await apiClient.get<FeatureCollection>("/places");
-                places.value = response.data;
-            } catch (error) {
-                console.error("Error fetching places:", error);
+            const { data, error } = await useFetch('/api/places');
+            if (error.value) {
+                console.error("Error fetching places:", error.value);
+                return;
             }
+            places.value = data.value as FeatureCollection;
         }
     }
 
@@ -31,66 +30,64 @@ export const usePlaceStore = defineStore("place", () => {
             if (cachedPlace) {
                 current_place.value = cachedPlace;
             } else {
-                try {
-                    const response = await apiClient.get<Feature>(`/places/${id}`);
-                    current_place.value = response.data;
-                } catch (error) {
-                    console.error("Error fetching place by ID:", error);
+                const { data, error } = await useFetch<Feature>(`/api/places/${id}`);
+                if (error.value) {
+                    console.error(`Error fetching place by ID: ${ id }`, error.value);
+                    return;
                 }
+                current_place.value = data.value as Feature;
             }
         }
     }
 
         // Create new place
     async function createPlace(payload: Partial<Feature>) {
-        try {
-            const response = await apiClient.post('/places', payload);
-            places.value?.features.push(response.data);
-            return response.data;
-        } catch (error) {
-            console.error("Error creating place:", error);
-            throw error;
+        const { data, error } = await useFetch('/api/places', {
+            method: 'POST',
+            body: payload
+        });
+        if (error.value) {
+            console.error("Error creating place:", error.value);
+            return;
         }
+        places.value?.features.push(data.value as Feature);
+        return data.value;
     }
 
         // Update existing place
     async function updatePlace(payload: Partial<Feature>, id: number) {
-        try {
-            if (!places.value) {
-                console.error("Places data is not loaded");
-                return;
-            }
-            const response = await apiClient.put(`/places/${id}`, payload);
-            const index = places.value.features.findIndex(feature => feature.id === id);
-            if (index !== -1) {
-                places.value.features[index] = response.data;
-            }
-            if (current_place.value?.id === id) {
-                current_place.value = response.data;
-            }
-            return response.data;
-        } catch (error) {
-            console.error("Error updating place:", error);
+        if (places.value?.features.length === 0 || !places.value) {
+            console.error("Places data is not loaded");
             return;
         }
+        const { data, error } = await useFetch<Feature>(`/api/places/${id}`, {
+            method: 'PUT',
+            body: payload
+        });
+        if (error.value) {
+            console.error("Error updating place:", error.value);
+            return;
+        }
+        const updatedPlace = data.value as Feature;
+        const index = places.value.features.findIndex(feature => feature.id === id);
+        if (index !== -1) places.value.features[index] = updatedPlace;
+        if (current_place.value?.id === id) current_place.value = updatedPlace;
+        return data.value;
     }
 
         // Delete place by ID
     async function deletePlace(id: number) {
-        try {
-            if (!places.value) {
-                console.error("Places data is not loaded");
-                return;
-            }
-            await apiClient.delete(`/places/${id}`);
-            places.value.features = places.value.features.filter(p => p.id !== id);
-            if (current_place.value?.id === id) {
-                current_place.value = null;
-            }
-        } catch (error) {
-            console.log('Error deleting building:', error);
-            throw error;
+        if (!places.value) {
+            console.error("Places data is not loaded");
+            return;
         }
+        const { error } = await useFetch(`/api/places/${id}`, { method: 'DELETE' });
+        if (error.value) {
+            console.error('Error deleting places:', error.value);
+            return
+        }
+        places.value.features = places.value.features.filter(p => p.id !== id);
+        if (current_place.value?.id === id) current_place.value = null;
     }
 
         // Clear current place

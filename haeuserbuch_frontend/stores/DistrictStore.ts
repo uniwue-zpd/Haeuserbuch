@@ -1,6 +1,5 @@
 import { ref, computed } from "vue";
 import type { District } from "~/utils/types";
-import apiClient from "~/service/api";
 
 export const useDistrictStore = defineStore("district", () => {
     // State
@@ -14,12 +13,12 @@ export const useDistrictStore = defineStore("district", () => {
         // Fetch districts from the API
     async function fetchDistricts() {
         if (!isLoaded.value) {
-            try {
-                const response = await apiClient.get<District[]>("/districts");
-                districts.value = response.data;
-            } catch (error) {
-                console.error("Error fetching districts:", error);
+            const { data, error } = await useFetch("/api/districts");
+            if (error.value) {
+                console.error("Error fetching districts:", error.value);
+                return;
             }
+            districts.value = data.value as District[];
         }
     }
 
@@ -30,62 +29,61 @@ export const useDistrictStore = defineStore("district", () => {
             if (cachedDistrict) {
                 current_district.value = cachedDistrict;
             } else {
-                try {
-                    const response = await apiClient.get<District>(`/districts/${id}`);
-                    current_district.value = response.data;
-                } catch (error) {
-                    console.error("Error fetching district by ID:", error);
+                const { data, error } = await useFetch(`/api/districts/${id}`);
+                if (error.value) {
+                    console.error(`Error fetching district by ID: ${ id }`, error.value);
+                    return;
                 }
+                current_district.value = data.value as District;
             }
         }
     }
 
         // Create new district
     async function createDistrict(payload: Partial<District>) {
-        try {
-            const response = await apiClient.post<District>('/districts', payload);
-            districts.value.push(response.data);
-            return response.data;
-        } catch (error) {
-            console.error("Error creating district:", error);
-            throw error;
+        const { data, error } = await useFetch('/api/districts', {
+            method: 'POST',
+            body: payload,
+        });
+        if (error.value) {
+            console.error("Error creating district:", error.value);
+            return;
         }
+        districts.value.push(data.value as District);
+        return data.value;
     }
 
         // Update existing district
     async function updateDistrict(payload: Partial<District>, id: number) {
-        try {
-            if (!districts.value.length) {
-                console.error("Districts data is not loaded");
-                return;
-            }
-            const response = await apiClient.put<District>(`/districts/${id}`, payload);
-            const index = districts.value.findIndex(district => district.id === id);
-            if (index !== -1) {
-                districts.value[index] = response.data;
-            }
-            if (current_district.value && current_district.value.id === id) {
-                current_district.value = response.data;
-            }
-            return response.data;
-        } catch (error) {
-            console.error("Error updating district:", error);
-            throw error;
+        if (districts.value.length === 0) {
+            console.error("Districts data is not loaded");
+            return;
         }
+        const { data, error } = await useFetch(`/api/districts/${id}`, {
+            method: 'PUT',
+            body: payload,
+        });
+        if (error.value) {
+            console.error("Error updating district:", error.value);
+            return;
+        }
+        const updatedDistrict = data.value as District;
+        const index = districts.value.findIndex(district => district.id === id);
+        if (index !== -1) districts.value[index] = updatedDistrict;
+        if (current_district.value && current_district.value.id === id) current_district.value = updatedDistrict;
+        return updatedDistrict;
     }
 
         // Delete district
     async function deleteDistrict(id: number) {
-        try {
-            await apiClient.delete(`/districts/${id}`);
-            districts.value = districts.value.filter(district => district.id !== id);
-            if (current_district.value && current_district.value.id === id) {
-                current_district.value = null;
-            }
-        } catch (error) {
-            console.error("Error deleting district:", error);
-            throw error;
+        if (!districts.value) {
+            console.error("Districts data is not loaded");
+            return;
         }
+        const { error } = await useFetch(`/api/districts/${id}`, { method: 'DELETE' });
+        if (error.value) console.error('Error deleting district:', error.value);
+        districts.value = districts.value.filter(p => p.id !== id);
+        if (current_district.value?.id === id) current_district.value = null;
     }
 
         // Clear current district

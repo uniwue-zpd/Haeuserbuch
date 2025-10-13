@@ -1,5 +1,3 @@
-import apiClient from "~/service/api";
-
 export const usePersonStore = defineStore("person", () => {
     // State
     const persons = ref<Person[]>([]);
@@ -12,12 +10,12 @@ export const usePersonStore = defineStore("person", () => {
         // Fetch persons from the API
     async function fetchPersons() {
         if (!isLoaded.value) {
-            try {
-                const response = await apiClient.get<Person[]>("/persons");
-                persons.value = response.data;
-            } catch (error) {
-                console.error("Error fetching persons:", error);
+            const { data, error } = await useFetch("/api/persons");
+            if (error.value) {
+                console.error("Error fetching persons:", error.value);
+                return;
             }
+            persons.value = data.value as Person[];
         }
     }
 
@@ -28,62 +26,64 @@ export const usePersonStore = defineStore("person", () => {
             if (cachedPerson) {
                 current_person.value = cachedPerson;
             } else {
-                try {
-                    const response = await apiClient.get<Person>(`/persons/${id}`);
-                    current_person.value = response.data;
-                } catch (error) {
-                    console.error("Error fetching person by ID:", error);
+                const { data, error } = await useFetch(`/api/persons/${id}`);
+                if (error.value) {
+                    console.error(`Error fetching person by ID: ${ id }`, error.value);
+                    return;
                 }
+                current_person.value = data.value as Person;
             }
         }
     }
 
         // Create new person
     async function createPerson(payload: Partial<Person>) {
-        try {
-            const response = await apiClient.post<Person>('/persons', payload);
-            persons.value.push(response.data);
-            return response.data;
-        } catch (error) {
-            console.error("Error creating person:", error);
-            throw error;
+        const { data, error } = await useFetch('/api/persons', {
+            method: 'POST',
+            body: payload,
+        });
+        if (error.value) {
+            console.error("Error creating person:", error.value);
+            return;
         }
+        persons.value.push(data.value as Person);
+        return data.value;
     }
 
         // Update existing person
     async function updatePerson(payload: Partial<Person>, id: number) {
-        try {
-            if (!persons.value.length) {
-                console.error("Persons data is not loaded");
-                return;
-            }
-            const response = await apiClient.put<Person>(`/persons/${id}`, payload);
-            const index = persons.value.findIndex(person => person.id === id);
-            if (index !== -1) {
-                persons.value[index] = response.data;
-            }
-            if (current_person.value?.id === id) {
-                current_person.value = response.data;
-            }
-            return response.data;
-        } catch (error) {
-            console.error("Error updating person:", error);
-            throw error;
+        if (persons.value.length === 0) {
+            console.error("Persons data is not loaded");
+            return;
         }
+        const { data, error } = await useFetch<Person>(`/api/persons/${id}`, {
+            method: 'PUT',
+            body: payload,
+        });
+        if (error.value) {
+            console.error("Error updating person:", error.value);
+            return;
+        }
+        const updatedPerson = data.value as Person;
+        const index = persons.value.findIndex(person => person.id === id);
+        if (index !== -1) persons.value[index] = updatedPerson;
+        if (current_person.value?.id === id) current_person.value = updatedPerson;
+        return updatedPerson;
     }
 
         // Delete person
     async function deletePerson(id: number) {
-        try {
-            await apiClient.delete(`/persons/${id}`);
-            persons.value = persons.value.filter(person => person.id !== id);
-            if (current_person.value?.id === id) {
-                current_person.value = null;
-            }
-        } catch (error) {
-            console.error("Error deleting person:", error);
-            throw error;
+        if (!persons.value) {
+            console.error("Persons data is not loaded");
+            return;
         }
+        const { error } = await useFetch(`/api/persons/${id}`, { method: 'DELETE' });
+        if (error.value) {
+            console.error('Error deleting person:', error.value);
+            return;
+        }
+        persons.value = persons.value.filter(p => p.id !== id);
+        if (current_person.value?.id === id) current_person.value = null;
     }
 
         // Clear current person

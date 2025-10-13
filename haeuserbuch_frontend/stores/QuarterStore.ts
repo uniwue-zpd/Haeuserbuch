@@ -1,6 +1,5 @@
 import { ref, computed } from "vue";
 import type { Quarter } from "~/utils/types";
-import apiClient from "~/service/api";
 
 export const useQuarterStore = defineStore("quarter", () => {
     // State
@@ -14,12 +13,12 @@ export const useQuarterStore = defineStore("quarter", () => {
         // Fetch quarters from the API
     async function fetchQuarters() {
         if (!isLoaded.value) {
-            try {
-                const response = await apiClient.get<Quarter[]>("/quarters");
-                quarters.value = response.data;
-            } catch (error) {
-                console.error("Error fetching quarters:", error);
+            const { data, error } = await useFetch("/api/quarters");
+            if (error.value) {
+                console.error("Error fetching quarters:", error.value);
+                return;
             }
+            quarters.value = data.value as Quarter[];
         }
     }
 
@@ -30,62 +29,64 @@ export const useQuarterStore = defineStore("quarter", () => {
             if (cachedQuarter) {
                 current_quarter.value = cachedQuarter;
             } else {
-                try {
-                    const response = await apiClient.get<Quarter>(`/quarters/${id}`);
-                    current_quarter.value = response.data;
-                } catch (error) {
-                    console.error("Error fetching quarter by ID:", error);
+                const { data, error } = await useFetch(`/api/quarters/${id}`);
+                if (error.value) {
+                    console.error(`Error fetching quarter by ID: ${ id }`, error.value);
+                    return;
                 }
+                current_quarter.value = data.value as Quarter;
             }
         }
     }
 
         // Create new quarter
     async function createQuarter(payload: Partial<Quarter>) {
-        try {
-            const response = await apiClient.post<Quarter>('/quarters', payload);
-            quarters.value.push(response.data);
-            return response.data;
-        } catch (error) {
-            console.error("Error creating quarter:", error);
-            throw error;
+        const { data, error } = await useFetch('/api/quarters', {
+            method: 'POST',
+            body: payload,
+        });
+        if (error.value) {
+            console.error("Error creating quarter:", error.value);
+            return;
         }
+        quarters.value.push(data.value as Quarter);
+        return data.value;
     }
 
         // Update existing quarter
     async function updateQuarter(payload: Partial<Quarter>, id: number) {
-        try {
-            if (!quarters.value.length) {
-                console.error("Quarters data is not loaded");
-                return;
-            }
-            const response = await apiClient.put<Quarter>(`/quarters/${id}`, payload);
-            const index = quarters.value.findIndex(q => q.id === id);
-            if (index !== -1) {
-                quarters.value[index] = response.data;
-            }
-            if (current_quarter.value && current_quarter.value.id === id) {
-                current_quarter.value = response.data;
-            }
-            return response.data;
-        } catch (error) {
-            console.error("Error updating quarter:", error);
-            throw error;
+        if (quarters.value.length === 0) {
+            console.error("Quarters data is not loaded");
+            return;
         }
+        const { data, error } = await useFetch<Quarter>(`/api/quarters/${id}`, {
+            method: 'PUT',
+            body: payload,
+        });
+        if (error.value) {
+            console.error("Error updating quarter:", error.value);
+            return;
+        }
+        const updatedQuarter = data.value as Quarter;
+        const index = quarters.value.findIndex(q => q.id === id);
+        if (index !== -1) quarters.value[index] = updatedQuarter;
+        if (current_quarter.value && current_quarter.value.id === id) current_quarter.value = updatedQuarter;
+        return updatedQuarter;
     }
 
         // Delete quarter
     async function deleteQuarter(id: number) {
-        try {
-            await apiClient.delete(`/quarters/${id}`);
-            quarters.value = quarters.value.filter(q => q.id !== id);
-            if (current_quarter.value && current_quarter.value.id === id) {
-                current_quarter.value = null;
-            }
-        } catch (error) {
-            console.error("Error deleting quarter:", error);
-            throw error;
+        if (!quarters.value) {
+            console.error("Quarters data is not loaded");
+            return;
         }
+        const { error } = await useFetch(`/api/quarters/${id}`, { method: 'DELETE' });
+        if (error.value) {
+            console.error('Error deleting quarter:', error.value);
+            return;
+        }
+        quarters.value = quarters.value.filter(p => p.id !== id);
+        if (current_quarter.value?.id === id) current_quarter.value = null;
     }
 
         // Clear current quarter
