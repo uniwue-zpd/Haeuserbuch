@@ -7,11 +7,12 @@ export const useDistrictStore = defineStore("district", () => {
     const current_district = ref<District | null>(null);
 
     // Getters
-    const isLoaded = computed(() => districts.value !== null);
+    const isLoaded = computed(() => districts.value.length > 0);
 
     // Actions
         // Fetch districts from the API
     async function fetchDistricts() {
+        console.log(isLoaded.value)
         if (!isLoaded.value) {
             const { data, error } = await useFetch("/api/districts");
             if (error.value) {
@@ -55,7 +56,7 @@ export const useDistrictStore = defineStore("district", () => {
 
         // Update existing district
     async function updateDistrict(payload: Partial<District>, id: number) {
-        if (!districts.value.length) {
+        if (districts.value.length === 0) {
             console.error("Districts data is not loaded");
             return;
         }

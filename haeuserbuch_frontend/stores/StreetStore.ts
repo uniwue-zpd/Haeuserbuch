@@ -13,12 +13,12 @@ export const useStreetStore = defineStore("street", () => {
         // Fetch streets from the API
     async function fetchStreets() {
         if (!isLoaded.value) {
-            try {
-                const { data } = await useFetch("/api/streets");
-                streets.value = data.value as Street[];
-            } catch (error) {
-                console.error("Error fetching streets:", error);
+            const { data, error } = await useFetch("/api/streets");
+            if (error.value) {
+                console.error("Error fetching streets:", error.value);
+                return;
             }
+            streets.value = data.value as Street[];
         }
     }
 
@@ -29,54 +29,49 @@ export const useStreetStore = defineStore("street", () => {
             if (cachedStreet) {
                 current_street.value = cachedStreet;
             } else {
-                try {
-                    const { data } = await useFetch<Street>(`/api/streets/${id}`);
-                    current_street.value = data.value as Street;
-                } catch (error) {
-                    console.error("Error fetching street by ID:", error);
+                const { data, error } = await useFetch<Street>(`/api/streets/${id}`);
+                if (error.value) {
+                    console.error(`Error fetching street by ID: ${ id }`, error.value);
+                    return;
                 }
+                current_street.value = data.value as Street;
             }
         }
     }
 
         // Create new street
     async function createStreet(payload: Partial<Street>) {
-        try {
-            const { data } = await useFetch('/api/streets', {
-                method: 'POST',
-                body: payload,
-            });
-            streets.value.push(data.value as Street);
-            return data.value;
-        } catch (error) {
-            console.error("Error creating street:", error);
-            throw error;
+        const { data, error } = await useFetch('/api/streets', {
+            method: 'POST',
+            body: payload,
+        });
+        if (error.value) {
+            console.error("Error creating street:", error.value);
+            return;
         }
+        streets.value.push(data.value as Street);
+        return data.value;
     }
 
         // Update existing street
     async function updateStreet(payload: Partial<Street>, id: number) {
-        try {
-            if (!streets.value.length) {
-                console.error("Streets data is not loaded");
-                return;
-            }
-            const { data } = await useFetch<Street>(`/api/streets/${id}`, {
-                method: 'PUT',
-                body: payload,
-            });
-            const index = streets.value.findIndex(street => street.id === id);
-            if (index !== -1) {
-                streets.value[index] = data.value as Street;
-            }
-            if (current_street.value && current_street.value.id === id) {
-                current_street.value = data.value as Street;
-            }
-            return data.value;
-        } catch (error) {
-            console.error("Error updating street:", error);
-            throw error;
+        if (streets.value.length === 0) {
+            console.error("Streets data is not loaded");
+            return;
         }
+        const { data, error } = await useFetch<Street>(`/api/streets/${id}`, {
+            method: 'PUT',
+            body: payload,
+        });
+        if (error.value) {
+            console.error("Error updating street:", error.value);
+            return;
+        }
+        const updatedStreet = data.value as Street;
+        const index = streets.value.findIndex(street => street.id === id);
+        if (index !== -1) streets.value[index] = updatedStreet;
+        if (current_street.value && current_street.value.id === id) current_street.value = updatedStreet;
+        return data.value;
     }
 
         // Delete street by ID
@@ -85,17 +80,13 @@ export const useStreetStore = defineStore("street", () => {
             console.error("Streets data is not loaded");
             return;
         }
-        const { error } = await useFetch(`/api/streets/${id}`, {
-            method: 'DELETE'
-        });
+        const { error } = await useFetch(`/api/streets/${id}`, { method: 'DELETE' });
         if (error.value) {
             console.error('Error deleting street:', error.value);
             throw error.value;
         }
         streets.value = streets.value.filter(p => p.id !== id);
-        if (current_street.value?.id === id) {
-            current_street.value = null;
-        }
+        if (current_street.value?.id === id) current_street.value = null;
     }
 
         // Clear current street

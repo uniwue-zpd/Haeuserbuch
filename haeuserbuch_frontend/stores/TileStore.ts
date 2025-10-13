@@ -31,7 +31,7 @@ export const useTileStore = defineStore('tile', () => {
             tiles.value = response.data;
             getMaplibreSources(response.data);
         } catch (error) {
-            console.warn('Error fetching tiles:', error, 'Setting OSM as default tile');
+            console.error('Error fetching tiles:', error, 'Setting OSM as default tile');
         }
     }
 

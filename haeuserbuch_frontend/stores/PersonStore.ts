@@ -4,7 +4,7 @@ export const usePersonStore = defineStore("person", () => {
     const current_person = ref<Person | null>(null);
 
     // Getters
-    const isLoaded = computed(() => persons.value !== null);
+    const isLoaded = computed(() => persons.value.length > 0);
 
     // Actions
         // Fetch persons from the API
@@ -52,7 +52,7 @@ export const usePersonStore = defineStore("person", () => {
 
         // Update existing person
     async function updatePerson(payload: Partial<Person>, id: number) {
-        if (!persons.value.length) {
+        if (persons.value.length === 0) {
             console.error("Persons data is not loaded");
             return;
         }

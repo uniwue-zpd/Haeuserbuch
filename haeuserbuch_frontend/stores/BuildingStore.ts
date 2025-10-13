@@ -56,7 +56,7 @@ export const useBuildingStore = defineStore('building', () => {
 
         // Update building by ID
     async function updateBuilding(payload: Partial<Feature>, id: number) {
-        if (!buildings.value) {
+        if (buildings.value?.features.length === 0 || !buildings.value) {
             console.error('Buildings data is not loaded');
             return;
         }

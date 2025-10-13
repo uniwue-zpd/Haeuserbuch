@@ -56,7 +56,7 @@ export const usePlaceStore = defineStore("place", () => {
 
         // Update existing place
     async function updatePlace(payload: Partial<Feature>, id: number) {
-        if (!places.value) {
+        if (places.value?.features.length === 0 || !places.value) {
             console.error("Places data is not loaded");
             return;
         }
