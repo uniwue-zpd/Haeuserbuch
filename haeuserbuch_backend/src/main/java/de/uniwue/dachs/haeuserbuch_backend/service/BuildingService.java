@@ -78,7 +78,7 @@ public class BuildingService {
                 entity.setPartType(properties.getPartType());
                 entity.setSpecialStatus(properties.getSpecialStatus());
                 entity.setQuarter(quarterMapper.QuarterDTOToQuarter(properties.getQuarter()));
-                entity.setDistrict(districtMapper.DistrctDTOToDistrict(properties.getDistrict()));
+                entity.setDistrict(districtMapper.DistrictDTOToDistrict(properties.getDistrict()));
                 entity.setDistrictHouseNumber(properties.getDistrictHouseNumber());
                 entity.setPrimarySources(properties.getPrimarySources() != null
                         ? sourceMapper.SourceDTOsToSources(properties.getPrimarySources())

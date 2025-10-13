@@ -39,6 +39,7 @@ public class DistrictService {
         return districtRepository.findById(id)
                 .map(entity -> {
                     entity.setName(updatedDistrict.getName());
+                    entity.setDescription(updatedDistrict.getDescription());
                     entity.setGeneralNotes(updatedDistrict.getGeneralNotes());
                     entity.setInternalNotes(updatedDistrict.getInternalNotes());
                     return districtRepository.save(entity);

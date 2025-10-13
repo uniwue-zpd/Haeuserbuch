@@ -98,6 +98,7 @@ export interface StreetDTO {
 /* Represents a district */
 export interface District extends Auditable {
     name: string | null;
+    description: string | null;
 }
 
 /* DTO projection of a {@link District} object */

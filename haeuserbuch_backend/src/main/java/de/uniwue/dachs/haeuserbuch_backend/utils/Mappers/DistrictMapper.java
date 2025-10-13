@@ -13,7 +13,7 @@ public class DistrictMapper {
         this.districtRepository = districtRepository;
     }
 
-    public District DistrctDTOToDistrict(DistrictDTO districtDTO) {
+    public District DistrictDTOToDistrict(DistrictDTO districtDTO) {
         if (districtDTO == null || districtDTO.getId() == null) {
             return null;
         }

@@ -79,7 +79,7 @@ public class BuildingMapper {
                 building.setSpecialStatus(properties.getSpecialStatus());
                 building.setCurrentStreet(streetMapper.StreetDTOToStreet(properties.getCurrentStreet()));
                 building.setQuarter(quarterMapper.QuarterDTOToQuarter(properties.getQuarter()));
-                building.setDistrict(districtMapper.DistrctDTOToDistrict(properties.getDistrict()));
+                building.setDistrict(districtMapper.DistrictDTOToDistrict(properties.getDistrict()));
                 building.setDistrictHouseNumber(properties.getDistrictHouseNumber());
                 building.setPrimarySources(sourceMapper.SourceDTOsToSources(properties.getPrimarySources()));
                 building.setSecondarySources(sourceMapper.SourceDTOsToSources(properties.getSecondarySources()));

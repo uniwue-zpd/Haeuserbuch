@@ -11,4 +11,5 @@ import lombok.Setter;
 @Setter
 public class District extends BaseEntity {
     private String name;
+    private String description;
 }
