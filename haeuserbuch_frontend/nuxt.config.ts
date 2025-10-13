@@ -6,6 +6,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   runtimeConfig: {
     apiBaseUrl: 'http://localhost:8080',
+    tileserverApiUrl: 'http://localhost:8081'
   },
   modules: [
       '@primevue/nuxt-module',

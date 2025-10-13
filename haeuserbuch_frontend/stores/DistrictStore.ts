@@ -12,7 +12,6 @@ export const useDistrictStore = defineStore("district", () => {
     // Actions
         // Fetch districts from the API
     async function fetchDistricts() {
-        console.log(isLoaded.value)
         if (!isLoaded.value) {
             const { data, error } = await useFetch("/api/districts");
             if (error.value) {
