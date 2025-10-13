@@ -123,6 +123,7 @@ onBeforeUnmount(() => {
       <TabList>
         <Tab value="0" class="montserrat-headline font-semibold text-lg">Karte</Tab>
         <Tab value="1" class="montserrat-headline font-semibold text-lg">Tabellarische Übersicht</Tab>
+        <Tab value="2" class="montserrat-headline font-semibold text-lg">Siehe auch</Tab>
       </TabList>
       <TabPanels>
         <TabPanel value="0">
@@ -246,6 +247,48 @@ onBeforeUnmount(() => {
                 </template>
               </Column>
             </DataTable>
+          </div>
+        </TabPanel>
+        <TabPanel value="2">
+          <div class="misc">
+            <div class="flex flex-col gap-3 md:grid md:grid-cols-3">
+              <NuxtLink to="/districts" prefetch>
+                <Card class="hover:shadow-md hover:scale-105 transition-transform duration-300 bg-[#F1F2F2]">
+                  <template #header>
+                    <div class="flex justify-center pt-5">
+                      <i class="pi pi-map text-5xl md:text-7xl"/>
+                    </div>
+                  </template>
+                  <template #title>
+                    <h3 class="text-center text-xl text-black montserrat-headline font-bold">Distrikte</h3>
+                  </template>
+                </Card>
+              </NuxtLink>
+              <NuxtLink to="/quarters" prefetch>
+                <Card class="hover:shadow-md hover:scale-105 transition-transform duration-300 bg-[#F1F2F2]">
+                  <template #header>
+                    <div class="flex justify-center pt-5">
+                      <i class="pi pi-th-large text-5xl md:text-7xl"/>
+                    </div>
+                  </template>
+                  <template #title>
+                    <h3 class="text-center text-xl text-black montserrat-headline font-bold">Viertel</h3>
+                  </template>
+                </Card>
+              </NuxtLink>
+              <NuxtLink to="/streets" prefetch>
+                <Card class="hover:shadow-md hover:scale-105 transition-transform duration-300 bg-[#F1F2F2]">
+                  <template #header>
+                    <div class="flex justify-center pt-5">
+                      <i class="pi pi-list text-5xl md:text-7xl"/>
+                    </div>
+                  </template>
+                  <template #title>
+                    <h3 class="text-center text-xl text-black montserrat-headline font-bold">Straßen</h3>
+                  </template>
+                </Card>
+              </NuxtLink>
+            </div>
           </div>
         </TabPanel>
       </TabPanels>
