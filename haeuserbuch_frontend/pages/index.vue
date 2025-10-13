@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import QuickNavigation from "~/components/homepage/QuickNavigation.vue";
+
+useHead(() => ({
+  title: 'Häuserbuch - Hauptseite'
+}));
 </script>
 
 <template>

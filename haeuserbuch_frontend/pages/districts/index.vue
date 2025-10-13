@@ -4,6 +4,10 @@ const districts = ref<District[]>([]);
 onMounted(async () => {
   districts.value = useDistrictStore().districts;
 })
+
+useHead(() => ({
+  title: 'Distrikte - Distriktverzeichnis'
+}));
 </script>
 
 <template>
