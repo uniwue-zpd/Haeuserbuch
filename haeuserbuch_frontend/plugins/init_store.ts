@@ -10,6 +10,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     const districtStore = useDistrictStore();
     const streetStore = useStreetStore();
     const quarterStore = useQuarterStore();
+    const citizenshipStore = useCitizenshipStore();
 
     await buildingStore.fetchBuildings();
     await placeStore.fetchPlaces();
@@ -19,4 +20,5 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     await districtStore.fetchDistricts();
     await streetStore.fetchStreets();
     await quarterStore.fetchQuarters();
+    await citizenshipStore.fetchCitizenships();
 });

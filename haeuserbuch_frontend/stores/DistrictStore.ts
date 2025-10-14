@@ -81,7 +81,10 @@ export const useDistrictStore = defineStore("district", () => {
             return;
         }
         const { error } = await useFetch(`/api/districts/${id}`, { method: 'DELETE' });
-        if (error.value) console.error('Error deleting district:', error.value);
+        if (error.value) {
+            console.error('Error deleting district:', error.value);
+            return;
+        }
         districts.value = districts.value.filter(p => p.id !== id);
         if (current_district.value?.id === id) current_district.value = null;
     }

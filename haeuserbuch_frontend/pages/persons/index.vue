@@ -48,117 +48,117 @@ useHead(() => ({
             </AccordionContent>
           </AccordionPanel>
         </Accordion>
-      </div>
-      <DataTable
-          v-model:filters="filters"
-          :value="person_store.persons"
-          :global-filter-fields="['fullName', 'sex', 'occupation', 'occupationCategory', 'confession']"
-          filter-display="row"
-      >
-        <template #header>
-          <div class="flex flex-row justify-end">
-            <IconField>
-              <InputIcon>
-                <i class="pi pi-search"/>
-              </InputIcon>
+        <DataTable
+            v-model:filters="filters"
+            :value="person_store.persons"
+            :global-filter-fields="['fullName', 'sex', 'occupation', 'occupationCategory', 'confession']"
+            filter-display="row"
+        >
+          <template #header>
+            <div class="flex flex-row justify-end">
+              <IconField>
+                <InputIcon>
+                  <i class="pi pi-search"/>
+                </InputIcon>
+                <InputText
+                    v-model="filters['global'].value"
+                    type="text"
+                    placeholder="Schlagwortsuche"
+                />
+              </IconField>
+            </div>
+          </template>
+          <Column field="fullName" header="Name" :sortable="true">
+            <template #body="slotProps">
+              <NuxtLink
+                  :to="`/persons/${slotProps.data.id}`"
+                  class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md"
+                  prefetch
+              >
+                {{ slotProps.data.fullName }}
+              </NuxtLink>
+            </template>
+            <template #filter="{ filterModel, filterCallback }">
               <InputText
-                  v-model="filters['global'].value"
-                  type="text"
-                  placeholder="Schlagwortsuche"
+                  v-model="filterModel.value"
+                  type="text" @input="filterCallback()"
+                  placeholder="Nach Namen suchen"
               />
-            </IconField>
-          </div>
-        </template>
-        <Column field="fullName" header="Name" :sortable="true">
-          <template #body="slotProps">
-            <NuxtLink
-                :to="`/persons/${slotProps.data.id}`"
-                class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md"
-                prefetch
-            >
-              {{ slotProps.data.fullName }}
-            </NuxtLink>
-          </template>
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText
-                v-model="filterModel.value"
-                type="text" @input="filterCallback()"
-                placeholder="Nach Namen suchen"
-            />
-          </template>
-        </Column>
-        <Column field="firstName" header="Vorname" class="roboto-plain" :sortable="true" />
-        <Column field="lastName" header="Nachname" class="roboto-plain" :sortable="true" />
-        <Column
-            field="sex" filterField="sex"
-            header="Geschlecht"
-            class="roboto-plain"
-            :showFilterMenu="false" :sortable="true"
-        >
-          <template #body="slotProps">
-            <div v-if="slotProps.data.sex">
-              {{ slotProps.data.sex }}
-            </div>
-            <div v-else class="roboto-italic">unbekannt</div>
-          </template>
-          <template #filter="{ filterModel, filterCallback }">
-            <MultiSelect
-                v-model="filterModel.value"
-                @change="filterCallback()"
-                :options="sex"
-                optionLabel="type"
-                placeholder="Beliebige"
-            >
-              <template #option="slotProps">
-                <div>{{ slotProps.option.value }}</div>
-              </template>
-            </MultiSelect>
-          </template>
-        </Column>
-        <Column field="occupation" header="Beruf" class="roboto-plain" :sortable="true">
-          <template #body="slotProps">
-            <div v-if="slotProps.data.occupation">{{ slotProps.data.occupation }}</div>
-            <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
-          </template>
-        </Column>
-        <Column field="occupationCategory" header="Berufskategorie" class="roboto-plain" :sortable="true">
-          <template #body="slotProps">
-            <div v-if="slotProps.data.occupationCategory">{{ slotProps.data.occupationCategory }}</div>
-            <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
-          </template>
-        </Column>
-        <Column
-            field="isCitizen" filterField="isCitizen"
-            header="Bürger"
-            class="roboto-plain"
-            :showFilterMenu="false" :sortable="true"
-        >
-          <template #body="slotProps">
-            <div v-if="slotProps.data.isCitizen !== null">
-              <i :class="[slotProps.data.isCitizen ? 'pi pi-check text-green-500' : 'pi pi-times text-red-500']"/>
-            </div>
-            <div v-else class="roboto-italic">unbekannt</div>
-          </template>
-          <template #filter="{ filterModel, filterCallback }">
-            <MultiSelect
-                v-model="filterModel.value"
-                @change="filterCallback()"
-                :options="isCitizen" optionLabel="type" :option-value="option => option.value"
-                placeholder="Beliebige"
-            >
-              <template #option="slotProps">
-                <div>{{ slotProps.option.value }}</div>
-              </template>
-            </MultiSelect>
-          </template>
-        </Column>
-        <Column field="confession" header="Religion" class="roboto-plain" :sortable="true">
-          <template #body="slotProps">
-            <div v-if="slotProps.data.confession">{{ slotProps.data.confession }}</div>
-            <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
-          </template>
-        </Column>
-      </DataTable>
+            </template>
+          </Column>
+          <Column field="firstName" header="Vorname" class="roboto-plain" :sortable="true" />
+          <Column field="lastName" header="Nachname" class="roboto-plain" :sortable="true" />
+          <Column
+              field="sex" filterField="sex"
+              header="Geschlecht"
+              class="roboto-plain"
+              :showFilterMenu="false" :sortable="true"
+          >
+            <template #body="slotProps">
+              <div v-if="slotProps.data.sex">
+                {{ slotProps.data.sex }}
+              </div>
+              <div v-else class="roboto-italic">unbekannt</div>
+            </template>
+            <template #filter="{ filterModel, filterCallback }">
+              <MultiSelect
+                  v-model="filterModel.value"
+                  @change="filterCallback()"
+                  :options="sex"
+                  optionLabel="type"
+                  placeholder="Beliebige"
+              >
+                <template #option="slotProps">
+                  <div>{{ slotProps.option.value }}</div>
+                </template>
+              </MultiSelect>
+            </template>
+          </Column>
+          <Column field="occupation" header="Beruf" class="roboto-plain" :sortable="true">
+            <template #body="slotProps">
+              <div v-if="slotProps.data.occupation">{{ slotProps.data.occupation }}</div>
+              <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
+            </template>
+          </Column>
+          <Column field="occupationCategory" header="Berufskategorie" class="roboto-plain" :sortable="true">
+            <template #body="slotProps">
+              <div v-if="slotProps.data.occupationCategory">{{ slotProps.data.occupationCategory }}</div>
+              <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
+            </template>
+          </Column>
+          <Column
+              field="isCitizen" filterField="isCitizen"
+              header="Bürger"
+              class="roboto-plain"
+              :showFilterMenu="false" :sortable="true"
+          >
+            <template #body="slotProps">
+              <div v-if="slotProps.data.isCitizen !== null">
+                <i :class="[slotProps.data.isCitizen ? 'pi pi-check text-green-500' : 'pi pi-times text-red-500']"/>
+              </div>
+              <div v-else class="roboto-italic">unbekannt</div>
+            </template>
+            <template #filter="{ filterModel, filterCallback }">
+              <MultiSelect
+                  v-model="filterModel.value"
+                  @change="filterCallback()"
+                  :options="isCitizen" optionLabel="type" :option-value="option => option.value"
+                  placeholder="Beliebige"
+              >
+                <template #option="slotProps">
+                  <div>{{ slotProps.option.value }}</div>
+                </template>
+              </MultiSelect>
+            </template>
+          </Column>
+          <Column field="confession" header="Religion" class="roboto-plain" :sortable="true">
+            <template #body="slotProps">
+              <div v-if="slotProps.data.confession">{{ slotProps.data.confession }}</div>
+              <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
+            </template>
+          </Column>
+        </DataTable>
+      </div>
     </template>
   </Card>
 </template>
