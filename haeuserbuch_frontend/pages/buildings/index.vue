@@ -251,42 +251,30 @@ onBeforeUnmount(() => {
         </TabPanel>
         <TabPanel value="2">
           <div class="misc">
-            <div class="flex flex-col gap-3 md:grid md:grid-cols-3">
+            <div class="flex flex-col gap-4 md:grid md:grid-cols-3">
               <NuxtLink to="/districts" prefetch>
-                <Card class="hover:shadow-md hover:scale-105 transition-transform duration-300 bg-[#F1F2F2]">
-                  <template #header>
-                    <div class="flex justify-center pt-5">
-                      <i class="pi pi-map text-5xl md:text-7xl"/>
-                    </div>
-                  </template>
-                  <template #title>
+                <div class="bg-[#F1F2F2] shadow-md rounded-md p-5 hover:shadow-lg hover:scale-105 transition-transform duration-300">
+                  <div class="flex flex-col gap-3 items-center">
+                    <i class="pi pi-map" style="font-size: 4.5rem"/>
                     <h3 class="text-center text-xl text-black montserrat-headline font-bold">Distrikte</h3>
-                  </template>
-                </Card>
+                  </div>
+                </div>
               </NuxtLink>
               <NuxtLink to="/quarters" prefetch>
-                <Card class="hover:shadow-md hover:scale-105 transition-transform duration-300 bg-[#F1F2F2]">
-                  <template #header>
-                    <div class="flex justify-center pt-5">
-                      <i class="pi pi-th-large text-5xl md:text-7xl"/>
-                    </div>
-                  </template>
-                  <template #title>
+                <div class="bg-[#F1F2F2] shadow-md rounded-md p-5 hover:shadow-lg hover:scale-105 transition-transform duration-300">
+                  <div class="flex flex-col gap-3 items-center">
+                    <i class="pi pi-th-large" style="font-size: 4.5rem"/>
                     <h3 class="text-center text-xl text-black montserrat-headline font-bold">Viertel</h3>
-                  </template>
-                </Card>
+                  </div>
+                </div>
               </NuxtLink>
               <NuxtLink to="/streets" prefetch>
-                <Card class="hover:shadow-md hover:scale-105 transition-transform duration-300 bg-[#F1F2F2]">
-                  <template #header>
-                    <div class="flex justify-center pt-5">
-                      <i class="pi pi-list text-5xl md:text-7xl"/>
-                    </div>
-                  </template>
-                  <template #title>
+                <div class="bg-[#F1F2F2] shadow-md rounded-md p-5 hover:shadow-lg hover:scale-105 transition-transform duration-300">
+                  <div class="flex flex-col gap-3 items-center">
+                    <i class="pi pi-list" style="font-size: 4.5rem"/>
                     <h3 class="text-center text-xl text-black montserrat-headline font-bold">Straßen</h3>
-                  </template>
-                </Card>
+                  </div>
+                </div>
               </NuxtLink>
             </div>
           </div>
