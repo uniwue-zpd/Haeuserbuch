@@ -57,10 +57,11 @@ public class CitizenshipService {
 
     // PUT
     @Transactional
-    @CacheEvict(value = "citizenships", key = "#id")
+    @CacheEvict(value = "citizenships", allEntries = true)
     public void updateCitizenship(Long id, CitizenshipDTO updatedCitizenshipDTO) {
         citizenshipRepository.findById(id)
                 .map(existingCitizenship -> {
+                    existingCitizenship.setSignature(updatedCitizenshipDTO.getSignature());
                     existingCitizenship.setPersons(personMapper.PersonDTOsToPersons(updatedCitizenshipDTO.getPersons()));
                     existingCitizenship.setSource(sourceMapper.SourceDTOToSource(updatedCitizenshipDTO.getSource()));
                     existingCitizenship.setPlace(placeMapper.PlaceDTOToPlace(updatedCitizenshipDTO.getPlace()));
@@ -77,7 +78,7 @@ public class CitizenshipService {
 
     // DELETE
     @Transactional
-    @CacheEvict(value = "citizenships", key = "#id")
+    @CacheEvict(value = "citizenships", allEntries = true)
     public void deleteCitizenship(Long id) {
         if (!citizenshipRepository.existsById(id)) {
             throw new RuntimeException("Citizenship with id '" + id + "' does not exist");

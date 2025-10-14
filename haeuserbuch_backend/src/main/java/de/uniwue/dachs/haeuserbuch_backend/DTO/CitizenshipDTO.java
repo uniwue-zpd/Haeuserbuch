@@ -11,6 +11,7 @@ import java.util.Set;
 @Setter
 public class CitizenshipDTO {
     private Long id;
+    private String signature;
     private Set<PersonDTO> persons = new HashSet<>();
     private SourceDTO source;
     private PlaceDTO place;

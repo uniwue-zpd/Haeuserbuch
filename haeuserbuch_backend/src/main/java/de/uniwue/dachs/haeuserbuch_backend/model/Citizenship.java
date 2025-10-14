@@ -12,6 +12,8 @@ import java.util.Set;
 @Getter
 @Setter
 public class Citizenship extends BaseEntity {
+    private String signature;
+
     @ManyToMany
     @JoinTable(
             name = "citizenship_person",
