@@ -41,6 +41,7 @@ public class PlaceMapper {
         PlaceDTO placeDTO = new PlaceDTO();
         placeDTO.setId(place.getId());
         placeDTO.setRealName(place.getRealName());
+        placeDTO.setAltNames(place.getAltNames());
         return placeDTO;
     }
 

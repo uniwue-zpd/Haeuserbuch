@@ -60,7 +60,7 @@ useHead(() => ({
           <Column field="number" header="Nummer" :sortable="true">
             <template #body="slotProps">
               <NuxtLink
-                  :to="`/persons/${slotProps.data.id}`"
+                  :to="`/citizenships/${slotProps.data.id}`"
                   class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md"
                   prefetch
               >
