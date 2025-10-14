@@ -29,16 +29,14 @@ useHead(() => ({
             </div>
           </div>
         </Panel>
-        <Card
+        <div
             v-for="district in districts"
-            class="hover:shadow-md bg-[#F1F2F2]"
+            class="bg-[#F1F2F2] shadow-md rounded-md p-3 hover:shadow-lg hover:translate-x-2 transition-transform duration-300"
         >
-          <template #content>
-            <NuxtLink :to="`/districts/${district.id}`" class="no-underline">
-              <h2 class="text-xl font-bold text-black montserrat-headline">{{ district.name }}</h2>
-            </NuxtLink>
-          </template>
-        </Card>
+          <NuxtLink :to="`/districts/${district.id}`" class="no-underline">
+            <h2 class="text-xl font-bold text-black montserrat-headline">{{ district.name }}</h2>
+          </NuxtLink>
+        </div>
       </div>
     </template>
   </Card>

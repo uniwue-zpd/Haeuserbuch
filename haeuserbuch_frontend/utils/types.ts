@@ -110,6 +110,7 @@ export interface DistrictDTO {
 /* Represents a quarter */
 export interface Quarter extends Auditable {
     name: string | null;
+    description: string | null;
 }
 
 /* DTO projection of a {@link Quarter} object */

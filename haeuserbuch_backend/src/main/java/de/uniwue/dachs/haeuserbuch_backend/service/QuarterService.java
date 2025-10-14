@@ -39,6 +39,7 @@ public class QuarterService {
         return quarterRepository.findById(id)
                 .map(entity -> {
                     entity.setName(updatedQuarter.getName());
+                    entity.setDescription(updatedQuarter.getDescription());
                     entity.setGeneralNotes(updatedQuarter.getGeneralNotes());
                     entity.setInternalNotes(updatedQuarter.getInternalNotes());
                     return quarterRepository.save(entity);
