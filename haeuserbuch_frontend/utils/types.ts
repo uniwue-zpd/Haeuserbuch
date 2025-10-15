@@ -9,6 +9,15 @@ export interface Auditable {
     generalNotes: string | null;
 }
 
+/* Represents a small metadata subset of the {@link BuildingProperties} */
+export interface BuildingDTO {
+    id: number | null;
+    districtHouseNumber: string | null;
+}
+
+/* Available filters for buildings. Applies only to the `filterBuildingsByPropertyId` action in the {@link useBuildingStore} */
+export type FilterBuilding = "district" | "street" | "quarter";
+
 /* Represents an object with data about a name of the {@link BuildingProperties} */
 export interface BuildingNameDTO {
     name: string | null;

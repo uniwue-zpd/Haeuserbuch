@@ -42,7 +42,7 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
       # In case you have a database dump, uncomment the following line and change the file name
-      # - ./<your_dump>.sql:/docker-entrypoint-initdb.d/<your_dump>.sql
+      - ./haeuserbuch_dev.sql:/docker-entrypoint-initdb.d/haeuserbuch_dev.sql
       - db_data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}" ]

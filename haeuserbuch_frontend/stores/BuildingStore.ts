@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import type { Feature, FeatureCollection } from "~/utils/GeoJsonTypes";
+import type {BuildingDTO, FilterBuilding} from "~/utils/types";
 
 export const useBuildingStore = defineStore('building', () => {
     // State
@@ -38,6 +39,19 @@ export const useBuildingStore = defineStore('building', () => {
                 current_building.value = data.value as Feature;
             }
         }
+    }
+
+        // Filter buildings by IDs of some properties
+    async function filterBuildingsByPropertyId(filter: FilterBuilding, id: number) {
+        if (!isLoaded.value) {
+            return [];
+        }
+        const {data, error} = await useFetch(`/api/buildings/filter?${filter}Id=${id}`);
+        if (error.value) {
+            console.error(`Error fetching buildings by ${filter} ID :${id}`, error.value);
+            return [];
+        }
+        return data.value as BuildingDTO[];
     }
 
         // Create new building
@@ -100,6 +114,7 @@ export const useBuildingStore = defineStore('building', () => {
         current_building,
         fetchBuildings,
         fetchBuildingById,
+        filterBuildingsByPropertyId,
         createBuilding,
         updateBuilding,
         deleteBuilding,
