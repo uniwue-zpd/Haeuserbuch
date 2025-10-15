@@ -97,6 +97,7 @@ export interface SourceDTO {
 export interface Street extends Auditable {
     name: string | null;
     altNames: string[] | null;
+    description: string | null;
 }
 
 /* DTO projection of a {@link Street} object */

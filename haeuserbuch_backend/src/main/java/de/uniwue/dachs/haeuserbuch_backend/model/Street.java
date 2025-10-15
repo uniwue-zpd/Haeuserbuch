@@ -19,4 +19,6 @@ public class Street extends BaseEntity {
             joinColumns = @JoinColumn(name = "street_id")
     )
     private List<String> altNames;
+
+    private String description;
 }

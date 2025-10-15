@@ -40,6 +40,7 @@ public class StreetService {
                 .map(entity -> {
                     entity.setName(street.getName());
                     entity.setAltNames(street.getAltNames());
+                    entity.setDescription(street.getDescription());
                     entity.setGeneralNotes(street.getGeneralNotes());
                     entity.setInternalNotes(street.getInternalNotes());
                     return streetRepository.save(entity);
