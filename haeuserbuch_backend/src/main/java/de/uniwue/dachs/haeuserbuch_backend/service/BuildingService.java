@@ -4,9 +4,11 @@ import de.uniwue.dachs.haeuserbuch_backend.DTO.BuildingDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.*;
 import de.uniwue.dachs.haeuserbuch_backend.model.Building;
 import de.uniwue.dachs.haeuserbuch_backend.repository.BuildingRepository;
+import de.uniwue.dachs.haeuserbuch_backend.specification.BuildingSpecifications;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.*;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +17,9 @@ import java.util.*;
 import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.createPoint;
 import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.createPolygon;
 
+/** Service class for managing Building entities.
+ * Provides methods for CRUD operations and searching buildings based on various criteria.
+ */
 @Service
 public class BuildingService {
     private final BuildingRepository buildingRepository;
@@ -55,22 +60,38 @@ public class BuildingService {
         return buildingRepository.findById(id).map(buildingMapper::BuildingToFeature);
     }
 
-    // GET buildings by district ID
-    public List<BuildingDTO> getBuildingsByDistrictId(Long id) {
-        List<Building> buildings = buildingRepository.findAllByDistrict_Id(id);
-        return buildingMapper.buildingsToBuildingDTOs(buildings);
-    }
+    // GET buildings based on search criteria
+    public List<BuildingDTO> searchBuildings(
+            Long districtId,
+            String districtName,
+            Long quarterId,
+            String quarterName,
+            Long streetId,
+            String streetName
+    ) {
+        Specification<Building> spec = Specification.where(null);
 
-    // GET buildings by street ID
-    public List<BuildingDTO> getBuildingsByStreetId(Long id) {
-        List<Building> buildings = buildingRepository.findAllByCurrentStreet_Id(id);
-        return buildingMapper.buildingsToBuildingDTOs(buildings);
-    }
+        if (districtId != null) {
+            spec = spec.and(BuildingSpecifications.hasDistrictId(districtId));
+        }
+        if (districtName != null && !districtName.isEmpty()) {
+            spec = spec.and(BuildingSpecifications.hasDistrict(districtName));
+        }
+        if (quarterId != null) {
+            spec = spec.and(BuildingSpecifications.hasQuarterId(quarterId));
+        }
+        if (quarterName != null && !quarterName.isEmpty()) {
+            spec = spec.and(BuildingSpecifications.hasQuarter(quarterName));
+        }
+        if (streetId != null) {
+            spec = spec.and(BuildingSpecifications.hasStreetId(streetId));
+        }
+        if (streetName != null && !streetName.isEmpty()) {
+            spec = spec.and(BuildingSpecifications.hasStreet(streetName));
+        }
 
-    // GET buildings by quarter ID
-    public List<BuildingDTO> getBuildingsByQuarterId(Long id) {
-        List<Building> buildings = buildingRepository.findAllByQuarter_Id(id);
-        return buildingMapper.buildingsToBuildingDTOs(buildings);
+        List<Building> response = buildingRepository.findAll(spec);
+        return buildingMapper.buildingsToBuildingDTOs(response);
     }
 
     // POST Create new building

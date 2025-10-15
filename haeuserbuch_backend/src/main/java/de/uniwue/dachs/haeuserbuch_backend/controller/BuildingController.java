@@ -27,17 +27,21 @@ public class BuildingController {
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<List<BuildingDTO>> getBuildingsBy(@RequestParam(required = false) Long districtId,
-                                                            @RequestParam(required = false) Long quarterId,
-                                                            @RequestParam(required = false) Long streetId)
-    {
-        List<Long> paramsCount = Stream.of(districtId, quarterId, streetId).filter(Objects::nonNull).toList();
-        if (paramsCount.size() != 1) return ResponseEntity.badRequest().build();
+    public ResponseEntity<List<BuildingDTO>> searchBuildings(
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) String districtName,
+            @RequestParam(required = false) Long quarterId,
+            @RequestParam(required = false) String quarterName,
+            @RequestParam(required = false) Long streetId,
+            @RequestParam(required = false) String streetName
+    ) {
+        List<Object> paramsCount = Stream.<Object>of(districtId, districtName, quarterId, quarterName, streetId, streetName)
+                .filter(Objects::nonNull).toList();
+        if (paramsCount.isEmpty()) return ResponseEntity.badRequest().build();
 
-        if (districtId != null) return ResponseEntity.ok(buildingService.getBuildingsByDistrictId(districtId));
-        if (quarterId != null) return ResponseEntity.ok(buildingService.getBuildingsByQuarterId(quarterId));
-        if (streetId != null) return ResponseEntity.ok(buildingService.getBuildingsByStreetId(streetId));
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(
+                buildingService.searchBuildings(districtId, districtName, quarterId, quarterName, streetId, streetName)
+        );
     }
 
     @GetMapping("/{id}")
