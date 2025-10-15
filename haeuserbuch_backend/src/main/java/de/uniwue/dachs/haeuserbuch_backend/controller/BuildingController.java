@@ -1,10 +1,15 @@
 package de.uniwue.dachs.haeuserbuch_backend.controller;
 
+import de.uniwue.dachs.haeuserbuch_backend.DTO.BuildingDTO;
 import de.uniwue.dachs.haeuserbuch_backend.service.BuildingService;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.FeatureCollection;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 
 @RestController
@@ -19,6 +24,20 @@ public class BuildingController {
     @GetMapping
     public ResponseEntity<FeatureCollection> getBuildings() {
         return ResponseEntity.ok(buildingService.getAllBuildings());
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<BuildingDTO>> getBuildingsBy(@RequestParam(required = false) Long districtId,
+                                                            @RequestParam(required = false) Long quarterId,
+                                                            @RequestParam(required = false) Long streetId)
+    {
+        List<Long> paramsCount = Stream.of(districtId, quarterId, streetId).filter(Objects::nonNull).toList();
+        if (paramsCount.size() != 1) return ResponseEntity.badRequest().build();
+
+        if (districtId != null) return ResponseEntity.ok(buildingService.getBuildingsByDistrictId(districtId));
+        if (quarterId != null) return ResponseEntity.ok(buildingService.getBuildingsByQuarterId(quarterId));
+        if (streetId != null) return ResponseEntity.ok(buildingService.getBuildingsByStreetId(streetId));
+        return ResponseEntity.badRequest().build();
     }
 
     @GetMapping("/{id}")

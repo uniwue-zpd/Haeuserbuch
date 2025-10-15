@@ -1,5 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.service;
 
+import de.uniwue.dachs.haeuserbuch_backend.DTO.BuildingDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.*;
 import de.uniwue.dachs.haeuserbuch_backend.model.Building;
 import de.uniwue.dachs.haeuserbuch_backend.repository.BuildingRepository;
@@ -52,6 +53,24 @@ public class BuildingService {
     @Cacheable(value = "buildings", key = "#id")
     public Optional<Feature> getBuildingById(Long id) {
         return buildingRepository.findById(id).map(buildingMapper::BuildingToFeature);
+    }
+
+    // GET buildings by district ID
+    public List<BuildingDTO> getBuildingsByDistrictId(Long id) {
+        List<Building> buildings = buildingRepository.findAllByDistrict_Id(id);
+        return buildingMapper.buildingsToBuildingDTOs(buildings);
+    }
+
+    // GET buildings by street ID
+    public List<BuildingDTO> getBuildingsByStreetId(Long id) {
+        List<Building> buildings = buildingRepository.findAllByCurrentStreet_Id(id);
+        return buildingMapper.buildingsToBuildingDTOs(buildings);
+    }
+
+    // GET buildings by quarter ID
+    public List<BuildingDTO> getBuildingsByQuarterId(Long id) {
+        List<Building> buildings = buildingRepository.findAllByQuarter_Id(id);
+        return buildingMapper.buildingsToBuildingDTOs(buildings);
     }
 
     // POST Create new building

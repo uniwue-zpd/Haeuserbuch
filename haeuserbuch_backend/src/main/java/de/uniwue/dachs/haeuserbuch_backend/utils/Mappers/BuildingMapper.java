@@ -1,16 +1,20 @@
 package de.uniwue.dachs.haeuserbuch_backend.utils.Mappers;
 
+import de.uniwue.dachs.haeuserbuch_backend.DTO.BuildingDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.*;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.BuildingProperties;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PointGeometry;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PolygonGeometry;
+import de.uniwue.dachs.haeuserbuch_backend.repository.BuildingRepository;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.*;
 
@@ -21,13 +25,15 @@ public class BuildingMapper {
     private final QuarterMapper quarterMapper;
     private final StreetMapper streetMapper;
     private final BuildingNameMapper buildingNameMapper;
+    private final BuildingRepository buildingRepository;
 
-    public BuildingMapper(SourceMapper sourceMapper, DistrictMapper districtMapper, QuarterMapper quarterMapper, StreetMapper streetMapper, BuildingNameMapper buildingNameMapper) {
+    public BuildingMapper(SourceMapper sourceMapper, DistrictMapper districtMapper, QuarterMapper quarterMapper, StreetMapper streetMapper, BuildingNameMapper buildingNameMapper, BuildingRepository buildingRepository) {
         this.sourceMapper = sourceMapper;
         this.districtMapper = districtMapper;
         this.quarterMapper = quarterMapper;
         this.streetMapper = streetMapper;
         this.buildingNameMapper = buildingNameMapper;
+        this.buildingRepository = buildingRepository;
     }
 
     public Feature BuildingToFeature(Building building) {
@@ -101,5 +107,30 @@ public class BuildingMapper {
             }
         }
         return building;
+    }
+
+    public Building buildingDTOToBuilding(BuildingDTO buildingDTO) {
+        if (buildingDTO == null || buildingDTO.getId() == null) {
+            return null;
+        }
+        return buildingRepository.findById(buildingDTO.getId()).orElse(null);
+    }
+
+    public List<Building> buildingDTOsToBuildings(List<BuildingDTO> buildingDTOs) {
+        return buildingDTOs.stream().map(this::buildingDTOToBuilding).filter(Objects::nonNull).toList();
+    }
+
+    public BuildingDTO buildingToBuildingDTO(Building building) {
+        BuildingDTO buildingDTO = new BuildingDTO();
+        buildingDTO.setId(building.getId());
+        buildingDTO.setDistrictHouseNumber(building.getDistrictHouseNumber());
+        return buildingDTO;
+    }
+
+    public List<BuildingDTO> buildingsToBuildingDTOs(List<Building> buildings) {
+        return buildings.stream()
+                .map(this::buildingToBuildingDTO)
+                .sorted(Comparator.comparing(BuildingDTO::getId))
+                .toList();
     }
 }
