@@ -1,12 +1,22 @@
 package de.uniwue.dachs.haeuserbuch_backend.specification;
 
+import de.uniwue.dachs.haeuserbuch_backend.embeddable.BuildingName;
 import de.uniwue.dachs.haeuserbuch_backend.model.Building;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
  * Specifications for filtering Building entities based on various criteria.
  */
 public class BuildingSpecifications {
+    public static Specification<Building> hasName(String name) {
+        return (root, query, cb) -> {
+            Join<Building, BuildingName> namesJoin = root.joinSet("names");
+            return cb.like(cb.lower(namesJoin.get("name")), "%" + name.toLowerCase() + "%");
+        };
+    }
+
     public static Specification<Building> hasDistrictId(Long districtId) {
         return (root, query, cb) ->
                 cb.equal(root.get("district").get("id"), districtId);
@@ -41,5 +51,27 @@ public class BuildingSpecifications {
                 cb.like(
                         cb.lower(root.get("currentStreet").get("name")), "%" + streetName.toLowerCase() + "%"
                 );
+    }
+
+    public static Specification<Building> hasSourceId(Long sourceId) {
+        return (root, query, cb) -> {
+            Join<Object, Object> primarySourcesJoin = root.joinSet("primarySources", JoinType.LEFT);
+            Join<Object, Object> secondarySourcesJoin = root.joinSet("secondarySources", JoinType.LEFT);
+            return cb.or(
+                    cb.equal(primarySourcesJoin.get("id"), sourceId),
+                    cb.equal(secondarySourcesJoin.get("id"), sourceId)
+            );
+        };
+    }
+
+    public static Specification<Building> hasSourceName(String sourceName) {
+        return (root, query, cb) -> {
+            Join<Object, Object> primarySourcesJoin = root.joinSet("primarySources", JoinType.LEFT);
+            Join<Object, Object> secondarySourcesJoin = root.joinSet("secondarySources", JoinType.LEFT);
+            return cb.or(
+                    cb.like(cb.lower(primarySourcesJoin.get("name")), "%" + sourceName.toLowerCase() + "%"),
+                    cb.like(cb.lower(secondarySourcesJoin.get("name")), "%" + sourceName.toLowerCase() + "%")
+            );
+        };
     }
 }

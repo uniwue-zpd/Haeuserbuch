@@ -28,19 +28,26 @@ public class BuildingController {
 
     @GetMapping("/filter")
     public ResponseEntity<List<BuildingDTO>> searchBuildings(
+            @RequestParam(required = false) String name,
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) String districtName,
             @RequestParam(required = false) Long quarterId,
             @RequestParam(required = false) String quarterName,
             @RequestParam(required = false) Long streetId,
-            @RequestParam(required = false) String streetName
+            @RequestParam(required = false) String streetName,
+            @RequestParam(required = false) Long sourceId,
+            @RequestParam(required = false) String sourceName
     ) {
-        List<Object> paramsCount = Stream.<Object>of(districtId, districtName, quarterId, quarterName, streetId, streetName)
+        List<Object> paramsCount = Stream.<Object>of(
+                name, districtId, districtName, quarterId, quarterName, streetId, streetName, sourceId, sourceName
+                )
                 .filter(Objects::nonNull).toList();
         if (paramsCount.isEmpty()) return ResponseEntity.badRequest().build();
 
         return ResponseEntity.ok(
-                buildingService.searchBuildings(districtId, districtName, quarterId, quarterName, streetId, streetName)
+                buildingService.searchBuildings(
+                        name, districtId, districtName, quarterId, quarterName, streetId, streetName, sourceId, sourceName
+                )
         );
     }
 

@@ -62,15 +62,21 @@ public class BuildingService {
 
     // GET buildings based on search criteria
     public List<BuildingDTO> searchBuildings(
+            String name,
             Long districtId,
             String districtName,
             Long quarterId,
             String quarterName,
             Long streetId,
-            String streetName
+            String streetName,
+            Long sourceId,
+            String sourceName
     ) {
         Specification<Building> spec = Specification.where(null);
 
+        if (name != null && !name.isEmpty()) {
+            spec = spec.and(BuildingSpecifications.hasName(name));
+        }
         if (districtId != null) {
             spec = spec.and(BuildingSpecifications.hasDistrictId(districtId));
         }
@@ -88,6 +94,12 @@ public class BuildingService {
         }
         if (streetName != null && !streetName.isEmpty()) {
             spec = spec.and(BuildingSpecifications.hasStreet(streetName));
+        }
+        if (sourceId != null) {
+            spec = spec.and(BuildingSpecifications.hasSourceId(sourceId));
+        }
+        if (sourceName != null && !sourceName.isEmpty()) {
+            spec = spec.and(BuildingSpecifications.hasSourceName(sourceName));
         }
 
         List<Building> response = buildingRepository.findAll(spec);
