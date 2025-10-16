@@ -46,7 +46,7 @@ export const useBuildingStore = defineStore('building', () => {
         if (!isLoaded.value) {
             return [];
         }
-        const {data, error} = await useFetch(`/api/buildings/filter?${filter}Id=${id}`);
+        const {data, error} = await useFetch(`/api/buildings/filter?${filter}=${id}`);
         if (error.value) {
             console.error(`Error fetching buildings by ${filter} ID :${id}`, error.value);
             return [];

@@ -16,7 +16,16 @@ export interface BuildingDTO {
 }
 
 /* Available filters for buildings. Applies only to the `filterBuildingsByPropertyId` action in the {@link useBuildingStore} */
-export type FilterBuilding = "district" | "street" | "quarter";
+export type FilterBuilding =
+    | "name"
+    | "districtId"
+    | "districtName"
+    | "streetId"
+    | "streetName"
+    | "quarterId"
+    | "quarterName"
+    | "sourceId"
+    | "sourceName";
 
 /* Represents an object with data about a name of the {@link BuildingProperties} */
 export interface BuildingNameDTO {
@@ -96,7 +105,7 @@ export interface SourceDTO {
 /* Represents a street */
 export interface Street extends Auditable {
     name: string | null;
-    altNames: string[] | null;
+    altNames: string[] | [];
     description: string | null;
 }
 
