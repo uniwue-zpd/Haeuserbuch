@@ -17,7 +17,7 @@ useHead(() => ({
 
 <template>
   <StreetForm
-      header=""
+      header="Straße bearbeiten"
       action="edit"
       :street="street_item ?? undefined"
   />
