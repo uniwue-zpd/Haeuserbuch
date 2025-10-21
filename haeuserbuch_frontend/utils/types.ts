@@ -94,6 +94,7 @@ export interface Source extends Auditable {
     title: string | null;
     signature: string | null;
     description: string | null;
+    links: string[] | [];
 }
 
 /* DTO projection of a {@link Source} object */

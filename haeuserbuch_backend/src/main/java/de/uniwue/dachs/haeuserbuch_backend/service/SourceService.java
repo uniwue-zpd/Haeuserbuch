@@ -4,7 +4,6 @@ import de.uniwue.dachs.haeuserbuch_backend.model.Source;
 import de.uniwue.dachs.haeuserbuch_backend.repository.SourceRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +39,7 @@ public class SourceService {
 
     // PUT update an existing source
     @Transactional
-    @CachePut(value = "sources", key = "#id")
+    @CacheEvict(value = "sources", allEntries = true)
     public Source updateSource(Long id, Source updatedSource) {
         return sourceRepository.findById(id)
                 .map(existingSource -> {
@@ -48,6 +47,7 @@ public class SourceService {
                     existingSource.setTitle(updatedSource.getTitle());
                     existingSource.setSignature(updatedSource.getSignature());
                     existingSource.setDescription(updatedSource.getDescription());
+                    existingSource.setLinks(updatedSource.getLinks());
                     existingSource.setInternalNotes(updatedSource.getInternalNotes());
                     existingSource.setGeneralNotes(updatedSource.getGeneralNotes());
                     return sourceRepository.save(existingSource);

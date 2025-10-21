@@ -23,7 +23,7 @@ public class SourceController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Source> getSourceById(Long id) {
+    public ResponseEntity<Source> getSourceById(@PathVariable Long id) {
         return sourceService.getSourceById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.status(404).build());
