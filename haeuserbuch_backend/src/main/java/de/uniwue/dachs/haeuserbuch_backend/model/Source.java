@@ -23,4 +23,8 @@ public class Source extends BaseEntity {
     @ElementCollection(targetClass = String.class)
     @CollectionTable(name = "source_links")
     private Set<String> links = new HashSet<>();
+
+    @ElementCollection(targetClass = String.class)
+    @CollectionTable(name = "source_authors")
+    private Set<String> authors = new HashSet<>();
 }

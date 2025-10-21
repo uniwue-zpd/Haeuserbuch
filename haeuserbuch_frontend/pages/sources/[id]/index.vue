@@ -6,6 +6,9 @@ const source_item = computed(() => source_store.currentSource);
 const links = computed(() =>
     source_store.currentSource?.links?.length ? source_store.currentSource.links : null
 );
+const authors = computed(() =>
+    source_store.currentSource?.authors?.length ? source_store.currentSource.authors : null
+);
 
 onMounted(async () => {
   await source_store.fetchSourceById(source_id);
@@ -19,9 +22,9 @@ useHead({
 <template>
   <Card>
     <template #title>
-      <div class="flex flex-col gap-2 text-black montserrat-headline">
-        <h1 class="text-3xl font-bold">{{ source_item?.title }}</h1>
-        <h2 class="text-2xl font-semibold" v-show="source_item?.type">{{ source_item?.type }}</h2>
+      <div class="flex flex-col gap-2 montserrat-headline">
+        <h1 class="text-3xl font-bold text-black">{{ source_item?.title }}</h1>
+        <h2 class="text-2xl font-semibold text-gray-600" v-show="source_item?.type">{{ source_item?.type }}</h2>
       </div>
     </template>
     <template #content>
@@ -37,6 +40,14 @@ useHead({
           <div class="flex flex-col gap-2 roboto-plain text-black">
             <div class="text-lg roboto-plain font-bold">Beschreibung</div>
             <div>{{ source_item?.description }}</div>
+          </div>
+        </div>
+        <div v-show="authors">
+          <div class="flex flex-col gap-2 roboto-plain text-black">
+            <div class="text-lg roboto-plain font-bold">Autoren</div>
+            <ul class="list-disc list-inside">
+              <li v-for="author in source_item?.authors">{{ author }}</li>
+            </ul>
           </div>
         </div>
         <div v-show="links">

@@ -48,6 +48,7 @@ public class SourceService {
                     existingSource.setSignature(updatedSource.getSignature());
                     existingSource.setDescription(updatedSource.getDescription());
                     existingSource.setLinks(updatedSource.getLinks());
+                    existingSource.setAuthors(updatedSource.getAuthors());
                     existingSource.setInternalNotes(updatedSource.getInternalNotes());
                     existingSource.setGeneralNotes(updatedSource.getGeneralNotes());
                     return sourceRepository.save(existingSource);

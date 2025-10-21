@@ -92,6 +92,7 @@ export interface PlaceDTO {
 export interface Source extends Auditable {
     type: string | null;
     title: string | null;
+    authors: string[] | [];
     signature: string | null;
     description: string | null;
     links: string[] | [];

@@ -276,6 +276,14 @@ onBeforeUnmount(() => {
                   </div>
                 </div>
               </NuxtLink>
+              <NuxtLink to="/sources" prefetch>
+                <div class="bg-[#F1F2F2] shadow-md rounded-md p-5 hover:shadow-lg hover:scale-105 transition-transform duration-300">
+                  <div class="flex flex-col gap-3 items-center">
+                    <i class="pi pi-book" style="font-size: 4.5rem"/>
+                    <h3 class="text-center text-xl text-black montserrat-headline font-bold">Quellenverzeichnis</h3>
+                  </div>
+                </div>
+              </NuxtLink>
             </div>
           </div>
         </TabPanel>
