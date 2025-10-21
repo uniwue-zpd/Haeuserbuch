@@ -1,6 +1,8 @@
 package de.uniwue.dachs.haeuserbuch_backend.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,4 +28,8 @@ public class Person extends BaseEntity{
     private Boolean isCitizen;
 
     private String confession;
+
+    @ManyToOne
+    @JoinColumn(name = "place_id")
+    private Place origin;
 }

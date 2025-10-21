@@ -14,7 +14,6 @@ public class CitizenshipDTO {
     private String signature;
     private Set<PersonDTO> persons = new HashSet<>();
     private SourceDTO source;
-    private PlaceDTO place;
     private Long number;
     private String date;
     private String entryText;

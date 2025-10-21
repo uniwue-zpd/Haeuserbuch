@@ -1,5 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.controller;
 
+import de.uniwue.dachs.haeuserbuch_backend.DTO.PersonDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Person;
 import de.uniwue.dachs.haeuserbuch_backend.service.PersonService;
 import org.springframework.http.ResponseEntity;
@@ -17,26 +18,26 @@ public class PersonController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Person>> getPersons() {
-        List<Person> persons = personService.getAllPersons();
+    public ResponseEntity<List<PersonDTO>> getPersons() {
+        List<PersonDTO> persons = personService.getAllPersons();
         return ResponseEntity.ok(persons);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Person> getPersonById(@PathVariable Long id) {
+    public ResponseEntity<PersonDTO> getPersonById(@PathVariable Long id) {
         return personService.getPersonById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.status(404).build());
     }
 
     @PostMapping
-    public ResponseEntity<Person> createPerson(@RequestBody Person person) {
-        Person createdPerson = personService.createPerson(person);
-        return ResponseEntity.status(201).body(createdPerson);
+    public ResponseEntity<Person> createPerson(@RequestBody PersonDTO personDTO) {
+        personService.createPerson(personDTO);
+        return ResponseEntity.status(201).build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Person> updatePerson(@PathVariable Long id, @RequestBody Person updatedPerson) {
+    public ResponseEntity<Person> updatePerson(@PathVariable Long id, @RequestBody PersonDTO updatedPerson) {
         Person person = personService.updatePerson(id, updatedPerson);
         if (person != null) {
             return ResponseEntity.status(201).body(person);

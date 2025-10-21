@@ -15,4 +15,7 @@ public class PersonDTO {
     private String occupationCategory;
     private Boolean isCitizen;
     private String confession;
+    private PlaceDTO origin;
+    private String internalNotes;
+    private String generalNotes;
 }

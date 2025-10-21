@@ -5,7 +5,6 @@ import de.uniwue.dachs.haeuserbuch_backend.model.*;
 import de.uniwue.dachs.haeuserbuch_backend.repository.CitizenshipRepository;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.CitizenshipMapper;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PersonMapper;
-import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PlaceMapper;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.SourceMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.cache.annotation.CacheEvict;
@@ -19,14 +18,12 @@ import java.util.*;
 public class CitizenshipService {
     private final CitizenshipRepository citizenshipRepository;
     private final CitizenshipMapper citizenshipMapper;
-    private final PlaceMapper placeMapper;
     private final SourceMapper sourceMapper;
     private final PersonMapper personMapper;
 
-    public CitizenshipService(CitizenshipRepository citizenshipRepository, CitizenshipMapper citizenshipMapper, PlaceMapper placeMapper, SourceMapper sourceMapper, PersonMapper personMapper) {
+    public CitizenshipService(CitizenshipRepository citizenshipRepository, CitizenshipMapper citizenshipMapper, SourceMapper sourceMapper, PersonMapper personMapper) {
         this.citizenshipRepository = citizenshipRepository;
         this.citizenshipMapper = citizenshipMapper;
-        this.placeMapper = placeMapper;
         this.sourceMapper = sourceMapper;
         this.personMapper = personMapper;
     }
@@ -64,7 +61,6 @@ public class CitizenshipService {
                     existingCitizenship.setSignature(updatedCitizenshipDTO.getSignature());
                     existingCitizenship.setPersons(personMapper.PersonDTOsToPersons(updatedCitizenshipDTO.getPersons()));
                     existingCitizenship.setSource(sourceMapper.SourceDTOToSource(updatedCitizenshipDTO.getSource()));
-                    existingCitizenship.setPlace(placeMapper.PlaceDTOToPlace(updatedCitizenshipDTO.getPlace()));
                     existingCitizenship.setNumber(updatedCitizenshipDTO.getNumber());
                     existingCitizenship.setDate(updatedCitizenshipDTO.getDate());
                     existingCitizenship.setEntryText(updatedCitizenshipDTO.getEntryText());

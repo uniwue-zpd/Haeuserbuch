@@ -26,10 +26,6 @@ public class Citizenship extends BaseEntity {
     @JoinColumn(name = "source_id", nullable = false)
     private Source source;
 
-    @ManyToOne
-    @JoinColumn(name = "place_id")
-    private Place place;
-
     private Long number;
 
     private String date;
