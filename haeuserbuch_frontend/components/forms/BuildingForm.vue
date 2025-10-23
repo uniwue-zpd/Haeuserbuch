@@ -19,6 +19,8 @@ const toast = useToast();
 const submitted = ref(false);
 const building_store = useBuildingStore();
 const source_store = useSourceStore();
+const district_store = useDistrictStore();
+const quarter_store = useQuarterStore();
 
 const tile_store = useTileStore();
 const sources = computed(() => tile_store.sources);
@@ -146,35 +148,42 @@ onBeforeUnmount(() => {
                 value="building"
                 contenteditable="false"
             />
-            <div class="flex flex-row space-x-5">
+            <FormKit type="list" :value="[]" name="names" dynamic #default="{ items, node, value }">
               <FormKit
-                  type="text"
-                  name="name"
-                  label="Name"
-                  prefix-icon="text"
-                  outer-class="max-w-full"
-              />
-              <FormKit
-                  type="number"
-                  number
-                  name="houseNumber"
-                  label="Hausnummer"
-                  prefix-icon="number"
-                  outer-class="max-w-full"
-              />
-            </div>
-            <FormKit type="list" :value="[]" name="altNames" dynamic #default="{ items, node, value }">
-              <FormKit
+                  type="group"
                   v-for="(item, index) in items"
                   :key="item"
                   :index="index"
-                  label="Andere Namen"
-                  suffix-icon="trash"
-                  @suffix-icon-click="() => node.input(value?.filter((_, i) => i !== index))"
-                  :sections-schema="{ suffixIcon: { $el: 'button', attrs: { type: 'button' } } }"
-                  outer-class="max-w-full"
-              />
-              <FormKit type="button" @click="() => node.input(value?.concat(''))">Andere Namen hinzufügen</FormKit>
+              >
+                <div class="flex flex-row space-x-3 p-2 items-center">
+                  <FormKit
+                      type="text"
+                      name="name"
+                      label="Name"
+                      placeholder="Name eingeben"
+                      class="flex-1"
+                  />
+                  <FormKit
+                      type="text"
+                      name="source"
+                      label="Quelle"
+                      placeholder="Quelle eingeben"
+                      class="flex-1"
+                  />
+                  <button
+                      type="button"
+                      @click="() => node.input(value?.filter((_, i) => i !== index))"
+                      class="border border-blue-600 text-blue-600 p-2 h-fit"
+                  >
+                    – Entfernen
+                  </button>
+                </div>
+              </FormKit>
+              <button
+                  type="button"
+                  @click="() => node.input(value?.concat({ name: '', quelle: '' }))"
+                  class="border border-blue-600 text-blue-600 p-2 rounded-md bg-blue-50 font-bold"
+              >Namen hinzufügen</button>
             </FormKit>
             <div class="flex flex-row space-x-5">
               <FormKit
@@ -198,33 +207,30 @@ onBeforeUnmount(() => {
                   type="select"
                   name="quarter"
                   label="Viertel"
-                  :options="[
-                    { label: '', value: null },
-                    { label: 'Bastheimer Viertel', value: 'Bastheimer Viertel' },
-                    { label: 'Cresser Viertel', value: 'Cresser Viertel' },
-                    { label: 'Dietricher Vierter', value: 'Dietricher Vierter' },
-                    { label: 'Gänheimer Viertel', value: 'Gänheimer Viertel' },
-                    { label: 'Hauger Viertel', value: 'Hauger Viertel' },
-                    { label: 'Mainviertel', value: 'Mainviertel' },
-                    { label: 'Pleichacher Viertel', value: 'Pleichacher Viertel' },
-                    { label: 'Sander Viertel', value: 'Sander Viertel' },
-                  ]"
-                  select-icon="select"
                   outer-class="max-w-full"
+                  select-icon="select"
+                  :options="[{ label: 'Keine Auswahl', value: null },
+                  ...quarter_store.quarters.map(p => ({label: p.name, value: { id: p.id, name: p.name }})) as any
+                  ]"
               />
               <FormKit
                   type="select"
                   name="district"
                   label="Distrikt"
-                  :options="[
-                    { label: '', value: null },
-                    { label: 'I', value: 'I' },
-                    { label: 'II', value: 'II' },
-                    { label: 'III', value: 'IV' },
-                    { label: 'IV', value: 'III' },
-                    { label: 'V', value: 'V' }
-                  ]"
+                  outer-class="max-w-full"
                   select-icon="select"
+                  :options="[{ label: 'Keine Auswahl', value: null },
+                  ...district_store.districts.map(p => ({label: p.name, value: { id: p.id, name: p.name }})) as any
+                  ]"
+              />
+            </div>
+            <div class="flex flex-row space-x-5">
+              <FormKit
+                  type="number"
+                  number
+                  name="houseNumber"
+                  label="Hausnummer"
+                  prefix-icon="number"
                   outer-class="max-w-full"
               />
               <FormKit
@@ -233,23 +239,19 @@ onBeforeUnmount(() => {
                   label="Distrikt & Hausnummer"
                   prefix-icon="text"
                   outer-class="max-w-full"
+                  help="Schreibweise: Distrikt/Historische Hausnummer"
+              />
+              <FormKit
+                  type="number"
+                  number
+                  name="currentHouseNumber"
+                  label="Derzeitige Hausnummer"
+                  prefix-icon="number"
+                  outer-class="max-w-full"
               />
             </div>
             <Divider/>
             <div class="flex flex-col gap-2">
-              <FormKit type="list" :value="[]" name="secondarySources" dynamic #default="{ items, node, value }">
-                <FormKit
-                    v-for="(item, index) in items"
-                    :key="item"
-                    :index="index"
-                    label="Sekundärquellen"
-                    suffix-icon="trash"
-                    @suffix-icon-click="() => node.input(value?.filter((_, i) => i !== index))"
-                    :sections-schema="{ suffixIcon: { $el: 'button', attrs: { type: 'button' } } }"
-                    outer-class="max-w-full"
-                />
-                <FormKit type="button" @click="() => node.input(value?.concat(''))">Sekundärquellen hinzufügen</FormKit>
-              </FormKit>
               <FormKit
                   type="select"
                   multiple
@@ -257,7 +259,21 @@ onBeforeUnmount(() => {
                   label="Primärquellen"
                   outer-class="max-w-full"
                   select-icon="select"
-                  :options="source_store.sources.map(p => ({ label: `${p.title}`, value: { id: p.id } }))"
+                  :options="[{ label: 'Keine Auswahl', value: null },
+                  ...source_store.sources.map(p => ({label: p.title, value: { id: p.id, title: p.title }})) as any
+                  ]"
+                  help="Halten Sie die Strg-Taste gedrückt, um mehrere Quellen auszuwählen"
+              />
+              <FormKit
+                  type="select"
+                  multiple
+                  name="secondarySources"
+                  label="Sekundärquellen"
+                  outer-class="max-w-full"
+                  select-icon="select"
+                  :options="[{ label: 'Keine Auswahl', value: null },
+                  ...source_store.sources.map(p => ({label: p.title, value: { id: p.id, title: p.title }})) as any
+                  ]"
                   help="Halten Sie die Strg-Taste gedrückt, um mehrere Quellen auszuwählen"
               />
             </div>
@@ -293,7 +309,7 @@ onBeforeUnmount(() => {
                   type="hidden"
                   name="coordinates"
                   label="Koordinaten"
-                  v-model="coordinates"
+                  v-model="coordinates as any"
               />
             </div>
           </FormKit>

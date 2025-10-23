@@ -116,7 +116,7 @@ public class BuildingService {
 
     // PUT Update existing building
     @Transactional
-    @CacheEvict(value = "buildings", key = "#id")
+    @CacheEvict(value = "buildings", allEntries = true)
     public void updateBuilding(Long id, Feature updatedFeature) {
         buildingRepository.findById(id).map(entity -> {
             BuildingProperties properties = (BuildingProperties) updatedFeature.getProperties();
