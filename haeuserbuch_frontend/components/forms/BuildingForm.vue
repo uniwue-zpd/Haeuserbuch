@@ -309,7 +309,7 @@ onBeforeUnmount(() => {
                   type="hidden"
                   name="coordinates"
                   label="Koordinaten"
-                  v-model="coordinates as any"
+                  v-model="coordinates"
               />
             </div>
           </FormKit>
