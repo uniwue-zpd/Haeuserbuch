@@ -5,6 +5,7 @@ import de.uniwue.dachs.haeuserbuch_backend.repository.SourceRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +22,8 @@ public class SourceService {
     // GET all sources
     @Cacheable("sources")
     public List<Source> getAllSources() {
-        return sourceRepository.findAll();
+
+        return sourceRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
     }
 
     // GET source by ID
