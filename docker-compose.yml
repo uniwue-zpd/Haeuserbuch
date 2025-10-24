@@ -23,7 +23,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     volumes:
-      - "${WORKSPACE:?error}/uploads:/uploads"
+      - ${WORKSPACE:?error}/uploads:/uploads
     depends_on:
       database:
         condition: service_healthy
@@ -43,12 +43,32 @@ services:
     volumes:
       # In case you have a database dump, uncomment the following line and change the file name
       # - ./<your_dump>.sql:/docker-entrypoint-initdb.d/<your_dump>.sql
-      - db_data:/var/lib/postgresql/data
+      - ${WORKSPACE:?error}/db_data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}" ]
       interval: 30s
       retries: 10
       start_period: 60s
+    networks:
+      - haeuserbuch_network
+    restart: unless-stopped
+
+  db_backup:
+    image: postgres:17-alpine
+    container_name: db_backup
+    environment:
+      - PGPASSWORD=${DB_PASSWORD}
+    volumes:
+      - ${BACKUPS:?error}/db_backups:/backups
+    entrypoint: /bin/sh
+    command: -c "sleep 90; while true; do
+      pg_dump -h haeuserbuch_db -U ${DB_USER} ${DB_NAME} | gzip > /backups/haeuserbuch_$(date +'%Y%m%d_%H%M%S').sql.gz;
+      find /backups -type f -name '*.sql.gz' -mtime +7 -delete;
+      sleep 86400;
+      done"
+    depends_on:
+      database:
+        condition: service_healthy
     networks:
       - haeuserbuch_network
     restart: unless-stopped
@@ -68,10 +88,10 @@ services:
     restart: unless-stopped
 
   tileserver:
-    image: maptiler/tileserver-gl:latest
+    image: maptiler/tileserver-gl:v5.4.0
     container_name: tileserver
     volumes:
-      - ./tiles:/data
+      - ${TILES:?error}:/data
     networks:
       - haeuserbuch_network
     command: --public_url /tiles/
@@ -80,6 +100,3 @@ services:
 networks:
   haeuserbuch_network:
     driver: bridge
-
-volumes:
-  db_data:
