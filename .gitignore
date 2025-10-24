@@ -20,8 +20,9 @@ haeuserbuch_frontend/.nuxt/
 haeuserbuch_frontend/.output/
 haeuserbuch_frontend/.cache/
 
-# Environment variables
+# Environment variables and secrets
 .env
+nginx/.htpasswd
 
 # OS
 .DS_Store
