@@ -54,6 +54,14 @@ useHead(() => ({
           <td class="px-6 py-4 whitespace-nowrap">Religion</td>
           <td class="px-6 py-4 whitespace-nowrap">{{ person_item?.confession }}</td>
         </tr>
+        <tr v-show="person_item?.origin">
+          <td class="px-6 py-4 whitespace-nowrap">Herkunft</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <NuxtLink :to="`/places/${person_item?.origin?.id}`" class="rounded-md shadow-md hover:shadow-lg p-2 bg-[#F1F2F2]">
+              {{ person_item?.origin?.realName }}
+            </NuxtLink>
+          </td>
+        </tr>
         </tbody>
       </table>
     </template>
