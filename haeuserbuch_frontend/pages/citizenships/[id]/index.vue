@@ -39,7 +39,7 @@ useHead(() => ({
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="flex flex-row space-x-2">
               <div v-for="(person, index) in citizenship_item?.persons" :key="index">
-                <NuxtLink :to="`/api/citizenships/${person.id}`" class="rounded-md shadow-md hover:shadow-lg p-2 bg-[#F1F2F2]">
+                <NuxtLink :to="`/persons/${person.id}`" class="rounded-md shadow-md hover:shadow-lg p-2 bg-[#F1F2F2]">
                   {{ person.firstName }} {{ person.lastName }}
                 </NuxtLink>
               </div>

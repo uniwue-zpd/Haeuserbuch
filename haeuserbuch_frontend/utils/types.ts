@@ -67,6 +67,7 @@ export interface Person extends Auditable {
     occupationCategory: string | null;
     isCitizen: boolean | null;
     confession: string | null;
+    origin: PlaceDTO | null;
 }
 
 /* DTO projection of a {@link Person} object */
@@ -80,6 +81,7 @@ export interface PersonDTO {
     occupationCategory: string | null;
     isCitizen: boolean | null;
     confession: string | null;
+    origin: PlaceDTO | null;
 }
 
 export interface PlaceDTO {

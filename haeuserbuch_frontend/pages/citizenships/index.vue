@@ -42,6 +42,7 @@ useHead(() => ({
             :value="citizenship_store.citizenships"
             :global-filter-fields="['signature', 'source.title', 'place.realName', 'number', 'date']"
             filter-display="row"
+            paginator :rows="10"
         >
           <template #header>
             <div class="flex flex-row justify-end">

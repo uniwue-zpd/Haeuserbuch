@@ -8,7 +8,6 @@ import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PlaceProperties;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PointGeometry;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PlaceMapper;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,7 +56,7 @@ public class PlaceService {
 
     // PUT Update existing place
     @Transactional
-    @CachePut(value = "places", key = "#id")
+    @CacheEvict(value = "places", allEntries = true)
     public void updatePlace(Long id, Feature updatedFeature) {
         placeRepository.findById(id).map(entity -> {
             PlaceProperties properties = (PlaceProperties) updatedFeature.getProperties();
