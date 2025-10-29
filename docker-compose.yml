@@ -2,7 +2,7 @@ services:
   frontend:
     image: haeuserbuch_frontend
     env_file:
-      - .env
+      - env-dev
     container_name: frontend
     build:
       context: ./haeuserbuch_frontend
@@ -35,7 +35,7 @@ services:
     image: postgis/postgis:17-3.5-alpine
     container_name: haeuserbuch_db
     env_file:
-      - .env
+      - env-dev
     environment:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
@@ -59,12 +59,13 @@ services:
     environment:
       - PGPASSWORD=${DB_PASSWORD}
     volumes:
-      - ${BACKUPS:?error}/db_backups:/backups
+      - ${BACKUPS:?error}:/backups
     entrypoint: /bin/sh
-    command: -c "sleep 90; while true; do
-      pg_dump -h haeuserbuch_db -U ${DB_USER} ${DB_NAME} | gzip > /backups/haeuserbuch_$(date +'%Y%m%d_%H%M%S').sql.gz;
-      find /backups -type f -name '*.sql.gz' -mtime +7 -delete;
-      sleep 86400;
+    command: -c "sleep 90; while true; do \
+      mkdir -p /backups/$(date +'%Y-%m-%d'); \
+      pg_dump -h haeuserbuch_db -U ${DB_USER} ${DB_NAME} \
+      | gzip > /backups/$(date +'%Y-%m-%d')/haeuserbuch_$(date +'%H%M%S').sql.gz; \
+      sleep 86400; \
       done"
     depends_on:
       database:
