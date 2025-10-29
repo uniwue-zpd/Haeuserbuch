@@ -61,10 +61,10 @@ services:
     volumes:
       - ${BACKUPS:?error}:/backups
     entrypoint: /bin/sh
-    command: -c "sleep 90; while true; do \
+    command: -c "sleep $(( ( $(date -d '05:00' +%s) - $(date +%s) + 86400 ) % 86400 )); \
+      while true; do \
       mkdir -p /backups/$(date +'%Y-%m-%d'); \
-      pg_dump -h haeuserbuch_db -U ${DB_USER} ${DB_NAME} \
-      | gzip > /backups/$(date +'%Y-%m-%d')/haeuserbuch_$(date +'%H%M%S').sql.gz; \
+      pg_dump -h haeuserbuch_db -U ${DB_USER} ${DB_NAME} | gzip > /backups/$(date +'%Y-%m-%d')/haeuserbuch_$(date +'%H%M%S').sql.gz; \
       sleep 86400; \
       done"
     depends_on:
