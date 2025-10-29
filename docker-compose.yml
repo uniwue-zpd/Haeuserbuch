@@ -92,7 +92,7 @@ services:
     image: maptiler/tileserver-gl:v5.4.0
     container_name: tileserver
     volumes:
-      - ${TILES:?error}:/data
+      - ${WORKSPACE:?error}/tiles:/data
     networks:
       - haeuserbuch_network
     command: --public_url /tiles/
