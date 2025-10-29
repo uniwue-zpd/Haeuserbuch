@@ -36,16 +36,16 @@
         </div>
       </div>
     </NuxtLink>
-    <div class="bg-[#F1F2F2] shadow-md rounded-md p-5 hover:shadow-lg hover:scale-105 transition-transform duration-300">
+    <div class="bg-[#F1F2F2] shadow-md rounded-md p-5">
       <div class="flex flex-col gap-3 items-center">
-        <i class="pi pi-book" style="font-size: 4.5rem"/>
-        <h3 class="text-center text-xl text-black montserrat-headline font-bold">Eigentumsverhältnisse</h3>
+        <i class="pi pi-book" style="font-size: 4.5rem; color:darkgray"/>
+        <h3 class="text-center text-xl text-[darkgray] montserrat-headline font-bold">Eigentumsverhältnisse</h3>
       </div>
     </div>
-    <div class="bg-[#F1F2F2] shadow-md rounded-md p-5 hover:shadow-lg hover:scale-105 transition-transform duration-300">
+    <div class="bg-[#F1F2F2] shadow-md rounded-md p-5">
       <div class="flex flex-col gap-3 items-center">
-        <i class="pi pi-building-columns" style="font-size: 4.5rem"/>
-        <h3 class="text-center text-xl text-black montserrat-headline font-bold">Steuerbucheinträge</h3>
+        <i class="pi pi-building-columns" style="font-size: 4.5rem; color:darkgray"/>
+        <h3 class="text-center text-xl text-[darkgray] montserrat-headline font-bold">Steuerbucheinträge</h3>
       </div>
     </div>
   </div>
