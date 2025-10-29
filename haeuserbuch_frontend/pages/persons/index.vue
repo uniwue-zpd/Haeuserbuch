@@ -51,7 +51,7 @@ useHead(() => ({
         <DataTable
             v-model:filters="filters"
             :value="person_store.persons"
-            :global-filter-fields="['fullName', 'sex', 'occupation', 'occupationCategory', 'confession']"
+            :global-filter-fields="['fullName', 'sex', 'occupation', 'occupationCategory', 'confession', 'origin.realName']"
             filter-display="row"
         >
           <template #header>
