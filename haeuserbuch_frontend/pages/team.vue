@@ -4,123 +4,192 @@
 
 <template>
   <div class="text-3xl font-bold montserrat-headline pb-2">Das Team</div>
-  <div class="flex flex-col gap-4 md:grid md:grid-cols-2 md:gap-3">
-    <Card>
-      <template #title>
-        <div class="flex flex-row justify-between space-x-5">
-          <div class="flex flex-col">
-            <div class="text-2xl text-black font-bold montserrat-headline">Person 1</div>
-            <div class="text-black font-medium montserrat-headline italic">Projektleiter</div>
-          </div>
-          <Avatar label="P1" size="xlarge" shape="circle"/>
+  <div class="flex flex-col gap-4 w-[90%] mx-auto">
+    <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg">
+      <div class="flex flex-col text-black montserrat-headline">
+        <h1 class="text-2xl text-black font-bold">Dr. Christian Naser</h1>
+        <h2 class="text-xl italic font-medium">Projektleitung</h2>
+      </div>
+      <Divider>
+        <div class="px-2 roboto-plain font-bold text-lg text-black">Vita</div>
+      </Divider>
+      <div class="roboto-plain text-black text-justify">
+        Der akademische Direktor Christian Naser promovierte 1993 an der Universität Würzburg
+        mit der Arbeit „Der geistliche Streit. Synoptischer Abdruck der Fassungen A, C, B und
+        D. Kommentar und Motivgeschichte“. Seit 1987 arbeitet er als wissenschaftlicher Mitarbeiter
+        am Institut für dt. Philologie, zunächst in der Sprachwissenschaft, dann in der Mediävistik
+        und in der Neueren Abteilung. Sein Zuständigkeitsbereich sind die EDV-Belange in philologisch
+        ausgerichteten Forschungsprojekten. So übernahm er 1987 die EDV-Betreuung von den Würzburger
+        und Eichstätter Projekten des Sonderforschungsbereichs 226 (= Wissensorganisierende u.
+        wissensvermittelnde Literatur im Mittelalter). Ab 1994 betreute er die fünf Einzelprojekte
+        der interdisziplinären DFG-geförderten Forschergruppe „Das Bild des Krieges im Wandel vom
+        späten Mittelalter zur frühen Neuzeit“. Seit 2005 betreut Christian Naser das von der DFG
+        geförderte Langzeitprojekt der historisch-kritischen Jean- Paul-Ausgabe und seit 2022 im
+        Anschluss das Projekt der Bayerischen Akademie der Wissenschaften „Sprachgitter digital:
+        Die historisch-kritische Jean-Paul-Ausgabe“. Darüber hinaus leitet er ab Januar 2025 in
+        Kooperation mit dem Staatsarchiv Würzburg das DFG-Projekt „Würzburg: Häuserbuch ohne
+        Häuser Die sozialgeschichtliche und topographische Rekonstruktion einer untergegangenen
+        Stadt durch Auswertung und Zusammenführung verschiedenartiger Archivaliengattungen des
+        17. bis 19. Jahrhunderts“.
+      </div>
+      <Divider>
+        <div class="px-2 roboto-plain font-bold text-lg text-black">Kontakt</div>
+      </Divider>
+      <div class="flex flex-row space-x-3 roboto-plain">
+        <p class="font-bold">E-Mail:</p>
+        <NuxtLink to="mailto:christian.naser@uni-wuerzburg.de" target="_blank" class="text-blue-950">christian.naser@uni-wuerzburg.de</NuxtLink>
+      </div>
+    </div>
+    <Divider>
+      <div class="px-2 roboto-plain font-bold text-xl text-black">Mitarbeitende</div>
+    </Divider>
+    <div class="flex flex-col md:grid md:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg">
+        <h1 class="text-2xl text-black font-bold">Hans-Wolfgang Bergerhausen</h1>
+        <Divider>
+          <div class="px-2 roboto-plain font-bold text-lg text-black">Vita</div>
+        </Divider>
+        <div class="roboto-plain text-black text-justify">
+          Hans-Wolfgang Bergerhausen lehrte seit der Habilitation 1999 als Privatdozent
+          und als außerplanmäßiger Professor bis 2018 Neuere Geschichte an der Universität
+          Würzburg. In seinen Arbeiten verknüpft er frühneuzeitliche Reichsgeschichte mit
+          vergleichender Landes- und Stadtgeschichte sowie der Konfessionalisierungsforschung.
+          Aus seinen intensiven archivalischen Recherchen zur Geschichte Würzburgs in der
+          Frühen Neuzeit ging 2014 eine umfangreiche Edition „Quellen zur Geschichte des
+          Bürgerspitals Würzburg 1500 – 1650“ hervor. Ihr folgten weitere ganz aus den Quellen
+          geschöpfte Arbeiten zum Fürsorgewesen in Würzburg und 2021 eine Biographie des Würzburger
+          Bürgermeisters und Spitalpflegers Paulus von Worms (+ 1579). Zum Reformationsjubiläum
+          verfasste er eine Studie über „Protestantisches Leben in Würzburg während des 16.
+          Jahrhunderts“. Ferner wirkte er an der Edition der „Würzburger Ratsprotokolle der
+          Riemenschneiderzeit“ mit, deren erster Band 2020 erschienen ist.
         </div>
-      </template>
-      <template #content>
-        <Divider/>
-        <div class="flex flex-col gap-3">
-          <div class="flex flex-col">
-            <div class="text-black roboto-plain montserrat-headline font-bold">Vita</div>
-          </div>
-          <div class="flex flex-col">
-            <div class="text-black roboto-plain montserrat-headline font-bold">Aufgaben</div>
-          </div>
-          <div class="flex flex-col">
-            <div class="text-black roboto-plain montserrat-headline font-bold">Kontakt</div>
-            <div class="flex flex-row space-x-3 roboto-plain">
-              <p>E-Mail:</p>
-              <a href="mailto:" class="text-blue-950">@uni-wuerzburg.de</a>
-            </div>
-          </div>
+      </div>
+      <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg">
+        <div class="flex flex-col text-black montserrat-headline">
+          <h1 class="text-2xl text-black font-bold">Julia Merz, M.A.</h1>
+          <h2 class="text-xl italic font-medium">Verarbeitung geospatialer Daten</h2>
         </div>
-      </template>
-    </Card>
-    <Card>
-      <template #title>
-        <div class="flex flex-row justify-between space-x-5">
-          <div class="flex flex-col">
-            <div class="text-2xl text-black font-bold montserrat-headline">Person 2</div>
-            <div class="text-black font-medium montserrat-headline italic">Technische Assistenz</div>
-          </div>
-          <Avatar label="P2" size="xlarge" shape="circle"/>
+        <Divider>
+          <div class="px-2 roboto-plain font-bold text-lg text-black">Vita</div>
+        </Divider>
+        <div class="flex flex-col gap-1 roboto-plain text-black text-justify">
+          <p>
+            Julia Merz, M.A., ist seit Januar 2025 wissenschaftliche Mitarbeiterin am Institut
+            für Deutsche Philologie der Julius-Maximilians-Universität Würzburg im von der
+            Deutschen Forschungsgemeinschaft (DFG) geförderten Würzburger Häuserprojekt unter
+            der Leitung von Dr. Christian Naser. Das Projekt verfolgt die Rekonstruktion der
+            historischen Sozialtopographie Würzburgs sowie die Geschichte ihrer Häuser und
+            Bewohnerinnen und Bewohner auf Grundlage bislang kaum erschlossener archivalischer
+            Quellen.
+          </p>
+          <p class="indent-4">
+            Nach ihrem Studium der Archäologie des Mittelalters und der Neuzeit, Bau- und
+            Kunstdenkmalpflege sowie Restaurierungswissenschaften an der Otto-Friedrich-Universität
+            Bamberg liegen ihre Schwerpunkte auf denkmalpflegerischen Erhebungen, kommunalen
+            Denkmalkonzepten und historischen Ortsanalysen. Ein besonderer Fokus ihrer Arbeit
+            liegt auf GIS-basierter Kartierung, 3D-Modellierung und Datenmodellierung im
+            kulturellen Kontext.
+          </p>
+          <p class="indent-4">
+            Im Würzburger Häuserprojekt ist Julia Merz verantwortlich für die räumliche
+            Erfassung, georeferenzierte Auswertung und denkmalpflegerische Kontextualisierung
+            der historischen Stadtstruktur. Ihre langjährige freiberufliche Erfahrung im
+            Bereich der städtebaulichen Denkmalpflege fließt dabei maßgeblich in ihre Arbeit ein.
+          </p>
         </div>
-      </template>
-      <template #content>
-        <Divider/>
-        <div class="flex flex-col gap-3">
-          <div class="flex flex-col">
-            <div class="text-black roboto-plain montserrat-headline font-bold">Vita</div>
-          </div>
-          <div class="flex flex-col">
-            <div class="text-black roboto-plain montserrat-headline font-bold">Aufgaben</div>
-          </div>
-          <div class="flex flex-col">
-            <div class="text-black roboto-plain montserrat-headline font-bold">Kontakt</div>
-            <div class="flex flex-row space-x-3 roboto-plain">
-              <p>E-Mail:</p>
-              <a href="mailto:" class="text-blue-950">@uni-wuerzburg.de</a>
-            </div>
-          </div>
+        <Divider>
+          <div class="px-2 roboto-plain font-bold text-lg text-black">Kontakt</div>
+        </Divider>
+        <div class="flex flex-row space-x-3 roboto-plain">
+          <p class="font-bold">E-Mail:</p>
+          <NuxtLink to="mailto:julia.merz@uni-wuerzburg.de" target="_blank" class="text-blue-950">julia.merz@uni-wuerzburg.de</NuxtLink>
         </div>
-      </template>
-    </Card>
-    <Card>
-      <template #title>
-        <div class="flex flex-row justify-between space-x-5">
-          <div class="flex flex-col">
-            <div class="text-2xl text-black font-bold montserrat-headline">Person 3</div>
-            <div class="text-black font-medium montserrat-headline italic">Transkription</div>
-          </div>
-          <Avatar label="P3" size="xlarge" shape="circle"/>
+      </div>
+      <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg">
+        <h1 class="text-2xl text-black font-bold">Dr. Renate Schindler</h1>
+        <Divider>
+          <div class="px-2 roboto-plain font-bold text-lg text-black">Vita</div>
+        </Divider>
+        <div class="roboto-plain text-black text-justify">
+          Studium der Geschichte in Marburg und Bonn, dort Magister Artium
+          und Promotion an der Rheinischen Friedrich-Wilhelms-Universität.
+          Zweites Staatsexamen für den Archivdienst. Tätigkeit als Archivarin
+          in Koblenz, Wertheim und Würzburg.
         </div>
-      </template>
-      <template #content>
-        <Divider/>
-        <div class="flex flex-col gap-3">
-          <div class="flex flex-col">
-            <div class="text-black roboto-plain montserrat-headline font-bold">Vita</div>
-          </div>
-          <div class="flex flex-col">
-            <div class="text-black roboto-plain montserrat-headline font-bold">Aufgaben</div>
-          </div>
-          <div class="flex flex-col">
-            <div class="text-black roboto-plain montserrat-headline font-bold">Kontakt</div>
-            <div class="flex flex-row space-x-3 roboto-plain">
-              <p>E-Mail:</p>
-              <a href="mailto:" class="text-blue-950">@uni-wuerzburg.de</a>
-            </div>
-          </div>
+        <Divider>
+          <div class="px-2 roboto-plain font-bold text-lg text-black">Kontakt</div>
+        </Divider>
+        <div class="flex flex-row space-x-3 roboto-plain">
+          <p class="font-bold">ORCID:</p>
+          <NuxtLink to="https://orcid.org/0009-0000-2430-5616" target="_blank" class="text-blue-950">0009-0000-2430-5616</NuxtLink>
         </div>
-      </template>
-    </Card>
-    <Card>
-      <template #title>
-        <div class="flex flex-row justify-between space-x-5">
-          <div class="flex flex-col">
-            <div class="text-2xl text-black font-bold montserrat-headline">Person 4</div>
-            <div class="text-black font-medium montserrat-headline italic">Verarbeitung geospatialer Daten</div>
-          </div>
-          <Avatar label="P4" size="xlarge" shape="circle"/>
+      </div>
+      <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg">
+        <h1 class="text-2xl text-black font-bold">Dr. Stefan Moser</h1>
+        <Divider>
+          <div class="px-2 roboto-plain font-bold text-lg text-black">Vita</div>
+        </Divider>
+        <div class="roboto-plain text-black text-justify">
+          Stephan Moser studierte Germanistik und Geschichte
+          in Augsburg, Regensburg und Würzburg. 1987 bis 2024 arbeitete
+          er am Würzburger Institut für deutsche Philologie in den
+          Bereichen Sprachwissenschaft und Computerphilologie. 1994
+          promovierte er in der Deutschen Sprachwissenschaft mit einer
+          Arbeit zur Herausbildung der deutschen Fachsprachen im
+          Spätmittelalter.
         </div>
-      </template>
-      <template #content>
-        <Divider/>
-        <div class="flex flex-col gap-3">
-          <div class="flex flex-col">
-            <div class="text-black roboto-plain montserrat-headline font-bold">Vita</div>
-          </div>
-          <div class="flex flex-col">
-            <div class="text-black roboto-plain montserrat-headline font-bold">Aufgaben</div>
-          </div>
-          <div class="flex flex-col">
-            <div class="text-black roboto-plain montserrat-headline font-bold">Kontakt</div>
-            <div class="flex flex-row space-x-3 roboto-plain">
-              <p>E-Mail:</p>
-              <a href="mailto:" class="text-blue-950">@uni-wuerzburg.de</a>
-            </div>
-          </div>
+      </div>
+    </div>
+    <Divider>
+      <div class="px-2 roboto-plain font-bold text-xl text-black">Technische Umsetzung</div>
+    </Divider>
+    <div class="flex flex-col md:grid md:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg">
+        <div class="flex flex-col text-black montserrat-headline">
+          <h1 class="text-2xl text-black font-bold">Tomash Shtohryn, M.A.</h1>
+          <h2 class="text-xl italic font-medium">Full-Stack-Entwicklung</h2>
         </div>
-      </template>
-    </Card>
+        <Divider>
+          <div class="px-2 roboto-plain font-bold text-lg text-black">Vita</div>
+        </Divider>
+        <div class="roboto-plain text-black text-justify">
+          Tomash Shtohryn hat sein Studium in Fächern Political and Social Studies und Digital
+          Humanities als Nebenfach absolviert. Während des Masterstudiums machte er die Digital
+          Humanities zu seinem Hauptfach und ist aktuell wissenschaftlicher Mitarbeiter am Zentrum
+          für Philologie und Digitalität an der Universität Würzburg. Hier ist er an mehreren
+          Forschungsprojekten beteiligt, deren Schwerpunkt auf der Erstellung und Kuratierung von
+          Digitalen Editionen liegt. Auch die Entwicklung von vollwertigen interaktiven Ressourcen
+          auf Basis einer Datenbank macht einen wesentlichen Bestandteil seiner Tätigkeit aus.
+        </div>
+        <Divider>
+          <div class="px-2 roboto-plain font-bold text-lg text-black">Kontakt</div>
+        </Divider>
+        <div class="flex flex-row space-x-3 roboto-plain">
+          <p class="font-bold">E-Mail:</p>
+          <NuxtLink to="mailto:tomash.shtohryn@uni-wuerzburg.de" target="_blank" class="text-blue-950">tomash.shtohryn@uni-wuerzburg.de</NuxtLink>
+        </div>
+        <div class="flex flex-row space-x-3 roboto-plain">
+          <p class="font-bold">ORCID:</p>
+          <NuxtLink to="https://orcid.org/0009-0000-4597-603X" target="_blank" class="text-blue-950">0009-0000-4597-603X</NuxtLink>
+        </div>
+      </div>
+      <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg">
+        <h1 class="text-2xl text-black font-bold">Florian Langhanki, M.A.</h1>
+        <Divider>
+          <div class="px-2 roboto-plain font-bold text-lg text-black">Kontakt</div>
+        </Divider>
+        <div class="flex flex-row space-x-3 roboto-plain">
+          <p class="font-bold">E-Mail:</p>
+          <NuxtLink to="mailto:florian.langhanki@uni-wuerzburg.de" target="_blank" class="text-blue-950">florian.langhanki@uni-wuerzburg.de</NuxtLink>
+        </div>
+      </div>
+      <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg">
+        <div class="flex flex-col text-black montserrat-headline">
+          <h1 class="text-2xl text-black font-bold">Natália Ratulovská, B.A.</h1>
+          <h2 class="text-xl italic font-medium">Datentransformation und -verarbeitung</h2>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
