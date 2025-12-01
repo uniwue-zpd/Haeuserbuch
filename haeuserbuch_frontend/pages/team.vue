@@ -5,7 +5,7 @@
 <template>
   <div class="text-3xl font-bold montserrat-headline pb-2">Das Team</div>
   <div class="flex flex-col gap-4 w-[90%] mx-auto">
-    <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg">
+    <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg border-2 border-[#F1F2F2]">
       <div class="flex flex-col text-black montserrat-headline">
         <h1 class="text-2xl text-black font-bold">Dr. Christian Naser</h1>
         <h2 class="text-xl italic font-medium">Projektleitung</h2>
@@ -44,7 +44,7 @@
       <div class="px-2 roboto-plain font-bold text-xl text-black">Mitarbeitende</div>
     </Divider>
     <div class="flex flex-col md:grid md:grid-cols-2 gap-4">
-      <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg">
+      <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg border-2 border-[#F1F2F2]">
         <h1 class="text-2xl text-black font-bold">Hans-Wolfgang Bergerhausen</h1>
         <Divider>
           <div class="px-2 roboto-plain font-bold text-lg text-black">Vita</div>
@@ -64,7 +64,7 @@
           Riemenschneiderzeit“ mit, deren erster Band 2020 erschienen ist.
         </div>
       </div>
-      <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg">
+      <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg border-2 border-[#F1F2F2]">
         <div class="flex flex-col text-black montserrat-headline">
           <h1 class="text-2xl text-black font-bold">Julia Merz, M.A.</h1>
           <h2 class="text-xl italic font-medium">Verarbeitung geospatialer Daten</h2>
@@ -105,7 +105,7 @@
           <NuxtLink to="mailto:julia.merz@uni-wuerzburg.de" target="_blank" class="text-blue-950">julia.merz@uni-wuerzburg.de</NuxtLink>
         </div>
       </div>
-      <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg">
+      <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg border-2 border-[#F1F2F2]">
         <h1 class="text-2xl text-black font-bold">Dr. Renate Schindler</h1>
         <Divider>
           <div class="px-2 roboto-plain font-bold text-lg text-black">Vita</div>
@@ -124,7 +124,7 @@
           <NuxtLink to="https://orcid.org/0009-0000-2430-5616" target="_blank" class="text-blue-950">0009-0000-2430-5616</NuxtLink>
         </div>
       </div>
-      <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg">
+      <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg border-2 border-[#F1F2F2]">
         <h1 class="text-2xl text-black font-bold">Dr. Stefan Moser</h1>
         <Divider>
           <div class="px-2 roboto-plain font-bold text-lg text-black">Vita</div>
@@ -144,7 +144,7 @@
       <div class="px-2 roboto-plain font-bold text-xl text-black">Technische Umsetzung</div>
     </Divider>
     <div class="flex flex-col md:grid md:grid-cols-2 gap-4">
-      <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg">
+      <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg border-2 border-[#F1F2F2]">
         <div class="flex flex-col text-black montserrat-headline">
           <h1 class="text-2xl text-black font-bold">Tomash Shtohryn, M.A.</h1>
           <h2 class="text-xl italic font-medium">Full-Stack-Entwicklung</h2>
@@ -173,7 +173,7 @@
           <NuxtLink to="https://orcid.org/0009-0000-4597-603X" target="_blank" class="text-blue-950">0009-0000-4597-603X</NuxtLink>
         </div>
       </div>
-      <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg">
+      <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg border-2 border-[#F1F2F2]">
         <h1 class="text-2xl text-black font-bold">Florian Langhanki, M.A.</h1>
         <Divider>
           <div class="px-2 roboto-plain font-bold text-lg text-black">Kontakt</div>
@@ -183,10 +183,20 @@
           <NuxtLink to="mailto:florian.langhanki@uni-wuerzburg.de" target="_blank" class="text-blue-950">florian.langhanki@uni-wuerzburg.de</NuxtLink>
         </div>
       </div>
-      <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg">
+      <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg border-2 border-[#F1F2F2]">
         <div class="flex flex-col text-black montserrat-headline">
           <h1 class="text-2xl text-black font-bold">Natália Ratulovská, B.A.</h1>
           <h2 class="text-xl italic font-medium">Datentransformation und -verarbeitung</h2>
+        </div>
+        <Divider>
+          <div class="px-2 roboto-plain font-bold text-lg text-black">Vita</div>
+        </Divider>
+        <div class="roboto-plain text-black text-justify">
+          Natália Ratulovská absolvierte ihr Bachelorstudium an der LMU München, wobei
+          sie Germanistik als Hauptfach und Digital Humanities als Nebenfach belegte.
+          Gegenwärtig studiert sie im Masterstudiengang Digital Humanities an der JMU Würzburg.
+          Parallel zum Studium ist sie als Studentische Hilfskraft am Zentrum für Philologie
+          und Digitalität der JMU tätig.
         </div>
       </div>
     </div>
