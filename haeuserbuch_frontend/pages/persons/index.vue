@@ -51,7 +51,7 @@ useHead(() => ({
         <DataTable
             v-model:filters="filters"
             :value="person_store.persons"
-            :global-filter-fields="['fullName', 'sex', 'occupation', 'occupationCategory', 'confession']"
+            :global-filter-fields="['fullName', 'sex', 'occupation', 'occupationCategory', 'confession', 'origin.realName']"
             filter-display="row"
         >
           <template #header>
@@ -154,6 +154,16 @@ useHead(() => ({
           <Column field="confession" header="Religion" class="roboto-plain" :sortable="true">
             <template #body="slotProps">
               <div v-if="slotProps.data.confession">{{ slotProps.data.confession }}</div>
+              <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
+            </template>
+          </Column>
+          <Column field="origin" header="Herkunft" class="roboto-plain" :sortable="true">
+            <template #body="slotProps">
+              <div v-if="slotProps.data.origin">
+                <NuxtLink :to="`/places/${slotProps.data.origin?.id}`" class="rounded-md shadow-md hover:shadow-lg p-2 bg-[#F1F2F2]">
+                  {{ slotProps.data.origin?.realName }}
+                </NuxtLink>
+              </div>
               <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
             </template>
           </Column>

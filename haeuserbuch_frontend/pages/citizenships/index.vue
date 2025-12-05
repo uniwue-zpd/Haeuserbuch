@@ -89,16 +89,6 @@ useHead(() => ({
               <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
             </template>
           </Column>
-          <Column field="place" header="Ort" class="roboto-plain" :sortable="true">
-            <template #body="slotProps">
-              <div v-if="slotProps.data.place">
-                <NuxtLink :to="`/places/${slotProps.data.place.id}`">
-                  {{ slotProps.data.place.realName }}
-                </NuxtLink>
-              </div>
-              <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
-            </template>
-          </Column>
           <Column field="date" header="Datum" class="roboto-plain" :sortable="true" />
           <Column field="source" header="Quelle" class="roboto-plain" :sortable="true">
             <template #body="slotProps">

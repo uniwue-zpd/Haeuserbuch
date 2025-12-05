@@ -21,7 +21,7 @@ haeuserbuch_frontend/.output/
 haeuserbuch_frontend/.cache/
 
 # Environment variables and secrets
-.env
+env-dev
 nginx/.htpasswd
 
 # OS

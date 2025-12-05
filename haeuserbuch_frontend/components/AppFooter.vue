@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { useToast } from "primevue/usetoast";
 
 const toast = useToast();
-const email = 'email@uni-wuerzburg.de';
+const email = 'christian.naser@uni-wuerzburg.de';
 const date = ref(new Date().getFullYear());
 
 function copy_to_clipboard(copy_item: string) {

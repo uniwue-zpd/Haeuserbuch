@@ -1,20 +1,15 @@
 services:
   frontend:
-    image: haeuserbuch_frontend
-    env_file:
-      - .env
-    container_name: frontend
+    environment:
+      - NUXT_API_BASE_URL=${NUXT_API_BASE_URL}
+      - NUXT_TILESERVER_API_URL=${NUXT_TILESERVER_API_URL}
     build:
       context: ./haeuserbuch_frontend
     depends_on:
       - backend
-    networks:
-      - haeuserbuch_network
-    restart: unless-stopped
+    restart: always
 
   backend:
-    image: haeuserbuch_backend
-    container_name: backend
     build:
       context: ./haeuserbuch_backend
     environment:
@@ -27,15 +22,10 @@ services:
     depends_on:
       database:
         condition: service_healthy
-    networks:
-      - haeuserbuch_network
-    restart: unless-stopped
+    restart: always
 
   database:
     image: postgis/postgis:17-3.5-alpine
-    container_name: haeuserbuch_db
-    env_file:
-      - .env
     environment:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
@@ -49,54 +39,36 @@ services:
       interval: 30s
       retries: 10
       start_period: 60s
-    networks:
-      - haeuserbuch_network
-    restart: unless-stopped
+    restart: always
 
   db_backup:
-    image: postgres:17-alpine
-    container_name: db_backup
+    build:
+      context: ./db_backup
     environment:
+      - DB_HOST=database # Host is the service name of the database container
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
       - PGPASSWORD=${DB_PASSWORD}
     volumes:
-      - ${BACKUPS:?error}/db_backups:/backups
-    entrypoint: /bin/sh
-    command: -c "sleep 90; while true; do
-      pg_dump -h haeuserbuch_db -U ${DB_USER} ${DB_NAME} | gzip > /backups/haeuserbuch_$(date +'%Y%m%d_%H%M%S').sql.gz;
-      find /backups -type f -name '*.sql.gz' -mtime +7 -delete;
-      sleep 86400;
-      done"
+      - ${BACKUPS:?error}:/backups
     depends_on:
-      database:
-        condition: service_healthy
-    networks:
-      - haeuserbuch_network
-    restart: unless-stopped
+      - backend
+    restart: always
 
   nginx:
     image: nginx:alpine-slim
-    container_name: nginx
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/.htpasswd:/etc/nginx/.htpasswd
     ports:
-      - "${GENERAL_PORT:-80}:80"
+      - "${PORT_NGINX:-80}:80"
     depends_on:
       - frontend
-      - backend
-    networks:
-      - haeuserbuch_network
-    restart: unless-stopped
+    restart: always
 
   tileserver:
     image: maptiler/tileserver-gl:v5.4.0
-    container_name: tileserver
     volumes:
-      - ${TILES:?error}:/data
-    networks:
-      - haeuserbuch_network
+      - ${WORKSPACE:?error}/tiles:/data
     command: --public_url /tiles/
-    restart: unless-stopped
-
-networks:
-  haeuserbuch_network:
-    driver: bridge
+    restart: always
