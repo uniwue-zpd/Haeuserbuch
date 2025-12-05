@@ -8,8 +8,8 @@ useHead(() => ({
 
 <template>
   <div class="flex flex-col gap-4">
-    <div class="text-3xl font-bold montserrat-headline flex flex-row space-x-2">
-      <p>Willkommen im Häuserbuch</p>
+    <div class="text-3xl font-bold montserrat-headline flex flex-row space-x-2 uppercase">
+      <p>Das Würzburger Häuserprojekt - Häuserbuch</p>
       <p class="text-black text-opacity-40"> ohne Häuser</p>
     </div>
     <!--
