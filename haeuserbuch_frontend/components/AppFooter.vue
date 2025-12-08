@@ -21,6 +21,7 @@ function copy_to_clipboard(copy_item: string) {
             <p class="text-xl montserrat-headline font-bold text-white">Häuserbuch</p>
             <NuxtLink to="/project" class="text-white roboto-plain">Projekt</NuxtLink>
             <NuxtLink to="/faq" class="text-white roboto-plain">FAQ</NuxtLink>
+            <NuxtLink to="/team" class="text-white roboto-plain">Über uns</NuxtLink>
           </div>
           <div class="flex flex-col gap-2">
             <p class="text-xl montserrat-headline font-bold text-white">Kontakt</p>
