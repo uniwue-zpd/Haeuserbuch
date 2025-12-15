@@ -45,6 +45,31 @@
     </Divider>
     <div class="flex flex-col md:grid md:grid-cols-2 gap-4">
       <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg border-2 border-[#F1F2F2]">
+        <h1 class="text-2xl text-black font-bold">Dr. Alexander Wolz</h1>
+        <Divider>
+          <div class="px-2 roboto-plain font-bold text-lg text-black">Vita</div>
+        </Divider>
+        <div class="roboto-plain text-black text-justify">
+          Dr. Alexander Wolz studierte Geschichte und Volkskunde an der Julius-Maximilians-Universität
+          in Würzburg. Im Jahr 2012 wurde er mit einer Arbeit über die Rheinlandkrise 1936 promoviert.
+          Nach einer kurzen Tätigkeit beim Stadtarchiv Lohr a. Main besuchte er von 2014 bis 2016 die
+          Bayerische Archivschule. Von 2016 bis 2021 leitete er das Staatsarchiv Coburg. Seit 2021
+          ist er der Leiter des Staatsarchivs Würzburg/Kitzingen. Wolz forscht zur fränkischen
+          Landesgeschichte, insbesondere mit den Schwerpunkten im 19. und 20. Jahrhundert.
+        </div>
+        <Divider>
+          <div class="px-2 roboto-plain font-bold text-lg text-black">Kontakt</div>
+        </Divider>
+        <div class="flex flex-row space-x-3 roboto-plain">
+          <p class="font-bold">E-Mail:</p>
+          <NuxtLink to="mailto:alexander.wolz@stakt.bayern.de" target="_blank" class="text-blue-950">alexander.wolz@stakt.bayern.de</NuxtLink>
+        </div>
+        <div class="flex flex-row space-x-3 roboto-plain">
+          <p class="font-bold">Dienststelle:</p>
+          <p class="text-black">Staatsarchiv Kitzingen, Deuster-Park 1, 97318 Kitzingen</p>
+        </div>
+      </div>
+      <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg border-2 border-[#F1F2F2]">
         <h1 class="text-2xl text-black font-bold">Hans-Wolfgang Bergerhausen</h1>
         <Divider>
           <div class="px-2 roboto-plain font-bold text-lg text-black">Vita</div>
