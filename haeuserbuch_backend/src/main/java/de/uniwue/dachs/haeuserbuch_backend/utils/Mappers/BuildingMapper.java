@@ -26,14 +26,16 @@ public class BuildingMapper {
     private final StreetMapper streetMapper;
     private final BuildingNameMapper buildingNameMapper;
     private final BuildingRepository buildingRepository;
+    private final AddressMapper addressMapper;
 
-    public BuildingMapper(SourceMapper sourceMapper, DistrictMapper districtMapper, QuarterMapper quarterMapper, StreetMapper streetMapper, BuildingNameMapper buildingNameMapper, BuildingRepository buildingRepository) {
+    public BuildingMapper(SourceMapper sourceMapper, DistrictMapper districtMapper, QuarterMapper quarterMapper, StreetMapper streetMapper, BuildingNameMapper buildingNameMapper, BuildingRepository buildingRepository, AddressMapper addressMapper) {
         this.sourceMapper = sourceMapper;
         this.districtMapper = districtMapper;
         this.quarterMapper = quarterMapper;
         this.streetMapper = streetMapper;
         this.buildingNameMapper = buildingNameMapper;
         this.buildingRepository = buildingRepository;
+        this.addressMapper = addressMapper;
     }
 
     public Feature BuildingToFeature(Building building) {
@@ -46,6 +48,7 @@ public class BuildingMapper {
         properties.setPartType(building.getPartType());
         properties.setSpecialStatus(building.getSpecialStatus());
         properties.setCurrentStreet(streetMapper.StreetToDTO(building.getCurrentStreet()));
+        properties.setAddresses(addressMapper.AddressesToDTOs(building.getAddresses()));
         properties.setQuarter(quarterMapper.QuarterToDTO(building.getQuarter()));
         properties.setDistrict(districtMapper.DistrictToDTO(building.getDistrict()));
         properties.setDistrictHouseNumber(building.getDistrictHouseNumber());
@@ -84,6 +87,7 @@ public class BuildingMapper {
                 building.setPartType(properties.getPartType());
                 building.setSpecialStatus(properties.getSpecialStatus());
                 building.setCurrentStreet(streetMapper.StreetDTOToStreet(properties.getCurrentStreet()));
+                building.setAddresses(addressMapper.AddressDTOsToAddresses(properties.getAddresses()));
                 building.setQuarter(quarterMapper.QuarterDTOToQuarter(properties.getQuarter()));
                 building.setDistrict(districtMapper.DistrictDTOToDistrict(properties.getDistrict()));
                 building.setDistrictHouseNumber(properties.getDistrictHouseNumber());

@@ -2,6 +2,7 @@ package de.uniwue.dachs.haeuserbuch_backend.service;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.BuildingDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.*;
+import de.uniwue.dachs.haeuserbuch_backend.model.Address;
 import de.uniwue.dachs.haeuserbuch_backend.model.Building;
 import de.uniwue.dachs.haeuserbuch_backend.repository.BuildingRepository;
 import de.uniwue.dachs.haeuserbuch_backend.specification.BuildingSpecifications;
@@ -29,9 +30,10 @@ public class BuildingService {
     private final QuarterMapper quarterMapper;
     private final StreetMapper streetMapper;
     private final BuildingNameMapper buildingNameMapper;
+    private final AddressMapper addressMapper;
 
     public BuildingService(BuildingRepository buildingRepository,
-                           BuildingMapper buildingMapper, SourceMapper sourceMapper, DistrictMapper districtMapper, QuarterMapper quarterMapper, StreetMapper streetMapper, BuildingNameMapper buildingNameMapper) {
+                           BuildingMapper buildingMapper, SourceMapper sourceMapper, DistrictMapper districtMapper, QuarterMapper quarterMapper, StreetMapper streetMapper, BuildingNameMapper buildingNameMapper, AddressMapper addressMapper) {
         this.buildingRepository = buildingRepository;
         this.buildingMapper = buildingMapper;
         this.sourceMapper = sourceMapper;
@@ -39,6 +41,7 @@ public class BuildingService {
         this.quarterMapper = quarterMapper;
         this.streetMapper = streetMapper;
         this.buildingNameMapper = buildingNameMapper;
+        this.addressMapper = addressMapper;
     }
 
     // GET all buildings as feature collection
@@ -127,6 +130,9 @@ public class BuildingService {
                 entity.setHouseNumber(properties.getHouseNumber());
                 entity.setCurrentHouseNumber(properties.getCurrentHouseNumber());
                 entity.setCurrentStreet(streetMapper.StreetDTOToStreet(properties.getCurrentStreet()));
+                Set<Address> newAddresses = addressMapper.AddressDTOsToAddresses(properties.getAddresses());
+                entity.getAddresses().clear();
+                entity.getAddresses().addAll(newAddresses);
                 entity.setPartType(properties.getPartType());
                 entity.setSpecialStatus(properties.getSpecialStatus());
                 entity.setQuarter(quarterMapper.QuarterDTOToQuarter(properties.getQuarter()));
