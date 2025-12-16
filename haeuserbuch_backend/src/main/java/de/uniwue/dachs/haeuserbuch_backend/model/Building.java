@@ -28,13 +28,6 @@ public class Building extends BaseEntity {
     @JoinColumn(name = "building_id")
     private Set<Address> addresses = new HashSet<>();
 
-    private String houseNumber;
-    private String currentHouseNumber;
-
-    @ManyToOne
-    @JoinColumn(name = "street_id")
-    private Street currentStreet;
-
     private String partType;
 
     private String specialStatus;
@@ -46,6 +39,8 @@ public class Building extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "district_id")
     private District district;
+
+    private String houseNumber;
 
     private String districtHouseNumber;
 

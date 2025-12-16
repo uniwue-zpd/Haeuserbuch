@@ -33,20 +33,18 @@ public class BuildingController {
             @RequestParam(required = false) String districtName,
             @RequestParam(required = false) Long quarterId,
             @RequestParam(required = false) String quarterName,
-            @RequestParam(required = false) Long streetId,
-            @RequestParam(required = false) String streetName,
             @RequestParam(required = false) Long sourceId,
             @RequestParam(required = false) String sourceName
     ) {
         List<Object> paramsCount = Stream.<Object>of(
-                name, districtId, districtName, quarterId, quarterName, streetId, streetName, sourceId, sourceName
+                name, districtId, districtName, quarterId, quarterName, sourceId, sourceName
                 )
                 .filter(Objects::nonNull).toList();
         if (paramsCount.isEmpty()) return ResponseEntity.badRequest().build();
 
         return ResponseEntity.ok(
                 buildingService.searchBuildings(
-                        name, districtId, districtName, quarterId, quarterName, streetId, streetName, sourceId, sourceName
+                        name, districtId, districtName, quarterId, quarterName, sourceId, sourceName
                 )
         );
     }

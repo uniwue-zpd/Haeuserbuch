@@ -28,18 +28,16 @@ public class BuildingService {
     private final SourceMapper sourceMapper;
     private final DistrictMapper districtMapper;
     private final QuarterMapper quarterMapper;
-    private final StreetMapper streetMapper;
     private final BuildingNameMapper buildingNameMapper;
     private final AddressMapper addressMapper;
 
     public BuildingService(BuildingRepository buildingRepository,
-                           BuildingMapper buildingMapper, SourceMapper sourceMapper, DistrictMapper districtMapper, QuarterMapper quarterMapper, StreetMapper streetMapper, BuildingNameMapper buildingNameMapper, AddressMapper addressMapper) {
+                           BuildingMapper buildingMapper, SourceMapper sourceMapper, DistrictMapper districtMapper, QuarterMapper quarterMapper, BuildingNameMapper buildingNameMapper, AddressMapper addressMapper) {
         this.buildingRepository = buildingRepository;
         this.buildingMapper = buildingMapper;
         this.sourceMapper = sourceMapper;
         this.districtMapper = districtMapper;
         this.quarterMapper = quarterMapper;
-        this.streetMapper = streetMapper;
         this.buildingNameMapper = buildingNameMapper;
         this.addressMapper = addressMapper;
     }
@@ -70,8 +68,6 @@ public class BuildingService {
             String districtName,
             Long quarterId,
             String quarterName,
-            Long streetId,
-            String streetName,
             Long sourceId,
             String sourceName
     ) {
@@ -91,12 +87,6 @@ public class BuildingService {
         }
         if (quarterName != null && !quarterName.isEmpty()) {
             spec = spec.and(BuildingSpecifications.hasQuarter(quarterName));
-        }
-        if (streetId != null) {
-            spec = spec.and(BuildingSpecifications.hasStreetId(streetId));
-        }
-        if (streetName != null && !streetName.isEmpty()) {
-            spec = spec.and(BuildingSpecifications.hasStreet(streetName));
         }
         if (sourceId != null) {
             spec = spec.and(BuildingSpecifications.hasSourceId(sourceId));
@@ -127,9 +117,6 @@ public class BuildingService {
                 entity.setNames(properties.getNames() != null
                         ? buildingNameMapper.buildingNameDTOsToBuildingNames(properties.getNames())
                         : new HashSet<>());
-                entity.setHouseNumber(properties.getHouseNumber());
-                entity.setCurrentHouseNumber(properties.getCurrentHouseNumber());
-                entity.setCurrentStreet(streetMapper.StreetDTOToStreet(properties.getCurrentStreet()));
                 Set<Address> newAddresses = addressMapper.AddressDTOsToAddresses(properties.getAddresses());
                 entity.getAddresses().clear();
                 entity.getAddresses().addAll(newAddresses);
@@ -137,6 +124,7 @@ public class BuildingService {
                 entity.setSpecialStatus(properties.getSpecialStatus());
                 entity.setQuarter(quarterMapper.QuarterDTOToQuarter(properties.getQuarter()));
                 entity.setDistrict(districtMapper.DistrictDTOToDistrict(properties.getDistrict()));
+                entity.setHouseNumber(properties.getHouseNumber());
                 entity.setDistrictHouseNumber(properties.getDistrictHouseNumber());
                 entity.setPrimarySources(properties.getPrimarySources() != null
                         ? sourceMapper.SourceDTOsToSources(properties.getPrimarySources())

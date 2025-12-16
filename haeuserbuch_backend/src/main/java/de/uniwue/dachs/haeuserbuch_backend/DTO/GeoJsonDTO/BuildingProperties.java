@@ -10,14 +10,12 @@ import java.util.*;
 @Setter
 public class BuildingProperties extends Properties {
     private Set<BuildingNameDTO> names = new HashSet<>();
-    private String houseNumber;
-    private String currentHouseNumber;
     private Set<AddressDTO> addresses = new HashSet<>();
-    private StreetDTO currentStreet;
     private String partType;
     private String specialStatus;
     private QuarterDTO quarter;
     private DistrictDTO district;
+    private String houseNumber;
     private String districtHouseNumber;
     private Set<SourceDTO> primarySources = new HashSet<>();
     private Set<SourceDTO> secondarySources = new HashSet<>();
