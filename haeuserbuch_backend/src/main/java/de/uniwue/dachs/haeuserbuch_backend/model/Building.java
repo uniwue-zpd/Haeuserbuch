@@ -21,6 +21,13 @@ public class Building extends BaseEntity {
     )
     private Set<BuildingName> names = new HashSet<>();
 
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JoinColumn(name = "building_id")
+    private Set<Address> addresses = new HashSet<>();
+
     private String houseNumber;
     private String currentHouseNumber;
 
