@@ -92,8 +92,8 @@ onBeforeUnmount(() => {
                     <table class="min-w-full divide-y divide-gray-200">
                       <tbody v-if="building_item_properties" class="bg-white divide-y divide-gray-200">
                       <tr v-if="building_item_properties.names.length > 0">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Namen</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td class="px-6 py-4 whitespace-nowrap font-bold">Namen</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium">
                           <ul class="list-disc list-inside">
                             <li v-for="(name, index) in building_item_properties.names" :key="index">
                               {{ name.name }} (Quelle: {{ name.source }})
@@ -102,8 +102,8 @@ onBeforeUnmount(() => {
                         </td>
                       </tr>
                       <tr v-if="building_item_properties.addresses">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Adressen</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td class="px-6 py-4 whitespace-nowrap font-bold">Adressen</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium">
                           <div class="flex flex-wrap gap-3.5">
                             <div
                                 v-for="address in building_item_properties.addresses"
@@ -121,42 +121,42 @@ onBeforeUnmount(() => {
                         </td>
                       </tr>
                       <tr v-if="building_item_properties.houseNumber">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Hausnummer</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.houseNumber }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-bold">Hausnummer</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium">{{ building_item_properties.houseNumber }}</td>
                       </tr>
                       <tr v-if="building_item_properties.partType">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Bauteil</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.partType }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-bold">Bauteil</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium">{{ building_item_properties.partType }}</td>
                       </tr>
                       <tr v-if="building_item_properties.specialStatus">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Sonderstatus</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.specialStatus }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-bold">Sonderstatus</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium">{{ building_item_properties.specialStatus }}</td>
                       </tr>
                       <tr v-if="building_item_properties.quarter">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Viertel</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <NuxtLink :to="`/quarters/${building_item_properties.quarter.id}`">{{ building_item_properties.quarter.name }}</NuxtLink>
+                        <td class="px-6 py-4 whitespace-nowrap font-bold">Viertel</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium">
+                          <NuxtLink :to="`/quarters/${building_item_properties.quarter.id}`" class="text-blue-700 p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md">{{ building_item_properties.quarter.name }}</NuxtLink>
                         </td>
                       </tr>
                       <tr v-if="building_item_properties.district">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Distrikt</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <NuxtLink :to="`/districts/${building_item_properties.district.id}`">{{ building_item_properties.district.name }}</NuxtLink>
+                        <td class="px-6 py-4 whitespace-nowrap font-bold">Distrikt</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium">
+                          <NuxtLink :to="`/districts/${building_item_properties.district.id}`" class="text-blue-700 p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md">{{ building_item_properties.district.name }}</NuxtLink>
                         </td>
                       </tr>
                       <tr v-if="building_item_properties.primarySources.length > 0">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Primärquellen</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td class="px-6 py-4 whitespace-nowrap font-bold">Primärquellen</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium">
                           <ul>
                             <li v-for="(source, index) in building_item_properties.primarySources" :key="index">
-                              <NuxtLink :to="`/sources/${source.id}`">{{ source.title }}</NuxtLink>
+                              <NuxtLink :to="`/sources/${source.id}`" class="text-blue-700">{{ source.title }}</NuxtLink>
                             </li>
                           </ul>
                         </td>
                       </tr>
                       <tr v-if="building_item_properties.secondarySources.length > 0">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Sekundärquellen</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td class="px-6 py-4 whitespace-nowrap font-bold">Sekundärquellen</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium">
                           <ul>
                             <li v-for="(source, index) in building_item_properties.secondarySources" :key="index">
                               <NuxtLink :to="`/sources/${source.id}`">{{ source.title }}</NuxtLink>
@@ -177,12 +177,12 @@ onBeforeUnmount(() => {
                       </Panel>
                       <Divider/>
                       <div class="flex flex-col">
-                        <div v-if="building_item_properties?.createdDate" class="flex flex-row space-x-2 text-sm text-black roboto-plain">
-                          <p>Erstellt am:</p>
+                        <div v-if="building_item_properties?.createdDate" class="flex flex-row space-x-2 text-black roboto-plain">
+                          <p class="font-bold">Erstellt am:</p>
                           <p>{{ new Date(building_item_properties.createdDate).toLocaleDateString() }}</p>
                         </div>
-                        <div v-if="building_item_properties?.lastModifiedDate" class="flex flex-row space-x-2 text-sm text-black roboto-plain">
-                          <p>Stand:</p>
+                        <div v-if="building_item_properties?.lastModifiedDate" class="flex flex-row space-x-2 text-black roboto-plain">
+                          <p class="font-bold">Stand:</p>
                           <p>{{ new Date(building_item_properties.lastModifiedDate).toLocaleDateString() }}</p>
                         </div>
                       </div>
