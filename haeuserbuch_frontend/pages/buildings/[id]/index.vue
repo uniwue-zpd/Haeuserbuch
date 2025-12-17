@@ -101,6 +101,25 @@ onBeforeUnmount(() => {
                           </ul>
                         </td>
                       </tr>
+                      <tr v-if="building_item_properties.addresses">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Adressen</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <div class="flex flex-wrap gap-3.5">
+                            <div
+                                v-for="address in building_item_properties.addresses"
+                                class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md"
+                            >
+                              <div class="flex flex-row space-x-2">
+                                <NuxtLink
+                                    :to="`/streets/${address.street?.id}`"
+                                    class="text-blue-700"
+                                >{{ address.street?.name }}</NuxtLink>
+                                <span>{{ address.houseNumber }}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
                       <tr v-if="building_item_properties.houseNumber">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">Hausnummer</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ building_item_properties.houseNumber }}</td>
