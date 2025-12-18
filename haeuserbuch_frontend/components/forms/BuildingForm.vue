@@ -376,11 +376,14 @@ onBeforeUnmount(() => {
           </FormKit>
         </div>
       </div>
-      <div class="border-solid border-2 rounded-md p-5 bg-[#F1F2F5] mb-2">
-        <div class="font-mono">geoJSON-Preview</div>
-        <hr>
-        <pre wrap class="text-sm">{{ value }}</pre>
-      </div>
+      <Fieldset class="mb-4">
+        <template #legend>
+          <div class="montserrat-headline font-semibold text-black text-xl">Eingabe-Vorschau</div>
+        </template>
+        <div class="max-h-[500px] overflow-y-auto bg-gray-100 border border-gray-300 rounded-md">
+          <pre wrap class="text-sm p-2">{{ value }}</pre>
+        </div>
+      </Fieldset>
       <FormKit
           type="submit"
           :label="props.action === 'create' ? 'Erstellen' : 'Ändern'"
