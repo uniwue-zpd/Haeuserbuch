@@ -37,6 +37,16 @@ const draw = new MaplibreTerradrawControl({
 const coordinates = ref<Position | Position[] | Position[][] | null>(null);
 const geometry_type = ref<string | null>(null);
 
+/* FormKit-friendly initial value */
+const initialValue = computed(() => {
+  if (!props.building) return {};
+  const clone = JSON.parse(JSON.stringify(props.building));
+  if (!clone.geometry || typeof clone.geometry !== 'object' || !clone.geometry.coordinates) {
+    delete clone.geometry;
+  }
+  return clone;
+});
+
 const submit = async (formData: Partial<Feature>) => {
   try {
     if (props.action === 'create') {
@@ -135,7 +145,7 @@ onBeforeUnmount(() => {
         submit-label="Erstellen"
         @submit="submit"
         :actions="false"
-        :value="props.building ? props.building : {}"
+        :value="initialValue"
         :key="props.building?.id || 'create'"
         #default="{ value }"
     >
@@ -373,7 +383,7 @@ onBeforeUnmount(() => {
       </div>
       <FormKit
           type="submit"
-          label="Erstellen"
+          :label="props.action === 'create' ? 'Erstellen' : 'Ändern'"
       />
     </FormKit>
   </div>
