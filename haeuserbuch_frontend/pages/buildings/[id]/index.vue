@@ -5,6 +5,7 @@ import { computed, ref, onMounted } from 'vue';
 import type { Feature, Polygon } from "~/utils/GeoJsonTypes";
 import '@watergis/maplibre-gl-terradraw/dist/maplibre-gl-terradraw.css';
 import { initMap } from "~/service/map_init";
+import BuildingSkeleton from "~/components/UI/skeletons/BuildingSkeleton.vue";
 
 const route = useRoute();
 const building_id = Number(route.params.id);
@@ -84,7 +85,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-4 p-4 rounded-md shadow-md">
+  <BuildingSkeleton v-if="loading"/>
+  <div v-else class="flex flex-col gap-4 p-4 rounded-md shadow-md">
     <h1 v-if="building_item_properties?.districtHouseNumber" class="text-3xl montserrat-headline font-bold">
       {{ building_item_properties?.districtHouseNumber }}
     </h1>
@@ -161,7 +163,7 @@ onBeforeUnmount(() => {
         <div class="flex flex-wrap gap-3.5">
           <div
               v-for="source in building_item_properties.primarySources"
-              class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md"
+              class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md max-w-[1/3]"
           >
               <NuxtLink
                   :to="`/sources/${source.id}`"
@@ -177,7 +179,7 @@ onBeforeUnmount(() => {
         <div class="flex flex-wrap gap-3.5">
           <div
               v-for="source in building_item_properties.secondarySources"
-              class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md"
+              class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md max-w-[1/3]"
           >
             <NuxtLink
                 :to="`/sources/${source.id}`"
@@ -193,7 +195,7 @@ onBeforeUnmount(() => {
         <p>{{ building_item_properties.generalNotes }}</p>
       </div>
     </div>
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-2 p-4 bg-gray-100 rounded-md shadow-md">
       <div class="flex flex-col">
         <div v-if="building_item_properties?.createdDate" class="flex flex-row space-x-2 text-black roboto-plain">
           <p class="font-bold">Erstellt am:</p>
