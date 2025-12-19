@@ -62,7 +62,7 @@ onMounted(async () => {
       'source': 'building',
       'layout': {},
       'paint': {
-        'fill-extrusion-color': 'rgba(255,250,0,0.8)',
+        'fill-extrusion-color': 'rgba(0,255,4,0.8)',
         'fill-extrusion-opacity': 0.8,
         'fill-extrusion-height': 10
       }
@@ -89,15 +89,15 @@ onBeforeUnmount(() => {
       {{ building_item_properties?.districtHouseNumber }}
     </h1>
     <div>
-      <div v-if="building_item_geometry" class="h-[500px] w-full rounded-md" id="map"/>
-      <div v-else class="flex flex-col gap-4 items-center justify-center h-[250px] bg-yellow-200 rounded-md w-1/2 mx-auto">
+      <div v-if="building_item_geometry" class="h-[300px] md:h-[500px] w-full rounded-md shadow-md" id="map"/>
+      <div v-else class="flex flex-col gap-4 items-center justify-center h-[250px] bg-yellow-200 rounded-md mx-auto p-2.5">
         <i class="pi pi-exclamation-circle text-5xl"/>
         <p class="roboto-plain text-center text-lg font-medium">Für dieses Gebäude sind bisher keine Geodaten hinterlegt</p>
       </div>
     </div>
-    <div v-if="building_item_properties" class="flex flex-col gap-4 p-3 bg-gray-100 rounded-md shadow-sm">
-      <h2 class="text-2xl text-black font-semibold montserrat-headline">Metadaten</h2>
-      <div v-if="building_item_properties.names.length > 0" class="grid grid-cols-2 gap-2">
+    <div v-if="building_item_properties" class="flex flex-col p-4 bg-gray-100 rounded-md shadow-md roboto-plain divide-y divide-gray-300">
+      <h2 class="text-2xl text-black font-semibold montserrat-headline pb-2">Metadaten</h2>
+      <div v-if="building_item_properties.names.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Namen</p>
         <ul class="list-disc list-inside">
           <li v-for="(name, index) in building_item_properties.names" :key="index">
@@ -105,7 +105,7 @@ onBeforeUnmount(() => {
           </li>
         </ul>
       </div>
-      <div v-if="building_item_properties.addresses" class="grid grid-cols-2 gap-2">
+      <div v-if="building_item_properties.addresses.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Adressen</p>
         <div class="flex flex-wrap gap-3.5">
           <div
@@ -122,19 +122,19 @@ onBeforeUnmount(() => {
           </div>
         </div>
       </div>
-      <div v-if="building_item_properties.houseNumber" class="grid grid-cols-2 gap-2">
+      <div v-if="building_item_properties.houseNumber" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Hausnummer</p>
         <p>{{ building_item_properties.houseNumber }}</p>
       </div>
-      <div v-if="building_item_properties.partType" class="grid grid-cols-2 gap-2">
+      <div v-if="building_item_properties.partType" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Bauteil</p>
         <p>{{ building_item_properties.partType }}</p>
       </div>
-      <div v-if="building_item_properties.specialStatus" class="grid grid-cols-2 gap-2">
+      <div v-if="building_item_properties.specialStatus" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Sonderstatus</p>
         <p>{{ building_item_properties.specialStatus }}</p>
       </div>
-      <div v-if="building_item_properties.quarter" class="grid grid-cols-2 gap-2">
+      <div v-if="building_item_properties.quarter" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Viertel</p>
         <div>
           <NuxtLink
@@ -145,7 +145,7 @@ onBeforeUnmount(() => {
           </NuxtLink>
         </div>
       </div>
-      <div v-if="building_item_properties.district" class="grid grid-cols-2 gap-2">
+      <div v-if="building_item_properties.district" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Distrikt</p>
         <div>
           <NuxtLink
@@ -156,7 +156,7 @@ onBeforeUnmount(() => {
           </NuxtLink>
         </div>
       </div>
-      <div v-if="building_item_properties.primarySources.length > 0" class="grid grid-cols-2 gap-2">
+      <div v-if="building_item_properties.primarySources.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Primärquellen</p>
         <div class="flex flex-wrap gap-3.5">
           <div
@@ -172,7 +172,7 @@ onBeforeUnmount(() => {
           </div>
         </div>
       </div>
-      <div v-if="building_item_properties.secondarySources.length > 0" class="grid grid-cols-2 gap-2">
+      <div v-if="building_item_properties.secondarySources.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Sekundärquellen</p>
         <div class="flex flex-wrap gap-3.5">
           <div
@@ -188,7 +188,7 @@ onBeforeUnmount(() => {
           </div>
         </div>
       </div>
-      <div v-if="building_item_properties.generalNotes" class="grid grid-cols-2 gap-2">
+      <div v-if="building_item_properties.generalNotes" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Notizen</p>
         <p>{{ building_item_properties.generalNotes }}</p>
       </div>
