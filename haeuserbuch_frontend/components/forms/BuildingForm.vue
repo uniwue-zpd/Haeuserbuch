@@ -37,6 +37,24 @@ const draw = new MaplibreTerradrawControl({
 const coordinates = ref<Position | Position[] | Position[][] | null>(null);
 const geometry_type = ref<string | null>(null);
 
+const center = computed<[number, number]>(() => {
+  if (!props.building || !props.building.geometry) {
+    console.warn('No building geometry, using default map center');
+    return DEFAULT_MAP_CENTER
+  }
+  const geom = props.building.geometry;
+  switch (geom.type) {
+    case 'Point':
+      return geom.coordinates as [number, number];
+    case 'Polygon':
+      return (geom.coordinates as number[][][])[0][0] as [number, number];
+    case 'MultiPolygon':
+      return (geom.coordinates as number[][][][])[0][0][0] as [number, number];
+    default:
+      return DEFAULT_MAP_CENTER;
+  }
+});
+
 /* FormKit-friendly initial value */
 const initialValue = computed(() => {
   if (!props.building) return {};
@@ -74,9 +92,10 @@ const submit = async (formData: Partial<Feature>) => {
 };
 
 onMounted(async () => {
+  await nextTick();
   map = initMap(
       'form_map_building',
-      DEFAULT_MAP_CENTER,
+      center.value,
       14,
       0,
       sources.value as Record<string, RasterSourceSpecification>,
