@@ -111,6 +111,7 @@ onBeforeUnmount(() => {
               <NuxtLink
                   :to="`/sources/${name.source?.id}`"
                   class="text-blue-700 line-clamp-1"
+                  :title="name.source?.title"
               >
                 (Quelle)
               </NuxtLink>
@@ -174,11 +175,12 @@ onBeforeUnmount(() => {
         <div class="flex flex-wrap gap-3.5">
           <div
               v-for="source in building_item_properties.primarySources"
-              class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md max-w-[1/3]"
+              class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md max-w-[30%]"
           >
               <NuxtLink
                   :to="`/sources/${source.id}`"
                   class="text-blue-700 line-clamp-1"
+                  :title="source.title"
               >
                 {{ source.title }}
               </NuxtLink>
@@ -190,11 +192,12 @@ onBeforeUnmount(() => {
         <div class="flex flex-wrap gap-3.5">
           <div
               v-for="source in building_item_properties.secondarySources"
-              class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md max-w-[1/3]"
+              class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md max-w-[30%]"
           >
             <NuxtLink
                 :to="`/sources/${source.id}`"
                 class="text-blue-700 line-clamp-1"
+                :title="source.title"
             >
               {{ source.title }}
             </NuxtLink>
