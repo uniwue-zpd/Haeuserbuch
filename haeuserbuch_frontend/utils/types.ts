@@ -9,6 +9,23 @@ export interface Auditable {
     generalNotes: string | null;
 }
 
+/* Represents an address of a building */
+export interface Address extends Auditable {
+    street: Street | null;
+    houseNumber: string | null;
+    fromDate: string | null;
+    toDate: string | null;
+}
+
+/* DTO projection of an Address object */
+export interface AddressDTO {
+    id: number | null;
+    street: StreetDTO | null;
+    houseNumber: string | null;
+    fromDate: string | null;
+    toDate: string | null;
+}
+
 /* Represents a small metadata subset of the {@link BuildingProperties} */
 export interface BuildingDTO {
     id: number | null;

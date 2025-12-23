@@ -21,12 +21,12 @@ public class Building extends BaseEntity {
     )
     private Set<BuildingName> names = new HashSet<>();
 
-    private String houseNumber;
-    private String currentHouseNumber;
-
-    @ManyToOne
-    @JoinColumn(name = "street_id")
-    private Street currentStreet;
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JoinColumn(name = "building_id")
+    private Set<Address> addresses = new HashSet<>();
 
     private String partType;
 
@@ -39,6 +39,8 @@ public class Building extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "district_id")
     private District district;
+
+    private String houseNumber;
 
     private String districtHouseNumber;
 

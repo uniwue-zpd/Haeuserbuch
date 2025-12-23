@@ -1,9 +1,9 @@
 import type {
+    AddressDTO,
     BuildingNameDTO,
     DistrictDTO,
     QuarterDTO,
     SourceDTO,
-    StreetDTO
 } from "~/utils/types";
 
 /* GeoJSON `Feature` */
@@ -54,13 +54,12 @@ export interface MultiPolygon {
 export interface BuildingProperties {
     type: string | null;
     names: BuildingNameDTO[] | [];
-    houseNumber: string | null;
-    currentHouseNumber: string | null;
-    currentStreet: StreetDTO | null;
+    addresses: AddressDTO[] | [];
     partType: string | null;
     specialStatus: string | null;
     quarter: QuarterDTO | null;
     district: DistrictDTO | null;
+    houseNumber: string | null;
     districtHouseNumber: string | null;
     primarySources: SourceDTO[] | [];
     secondarySources: SourceDTO[] | [];

@@ -21,6 +21,7 @@ const building_store = useBuildingStore();
 const source_store = useSourceStore();
 const district_store = useDistrictStore();
 const quarter_store = useQuarterStore();
+const street_store = useStreetStore();
 
 const tile_store = useTileStore();
 const sources = computed(() => tile_store.sources);
@@ -35,6 +36,34 @@ const draw = new MaplibreTerradrawControl({
 });
 const coordinates = ref<Position | Position[] | Position[][] | null>(null);
 const geometry_type = ref<string | null>(null);
+
+const center = computed<[number, number]>(() => {
+  if (!props.building || !props.building.geometry) {
+    console.warn('No building geometry, using default map center');
+    return DEFAULT_MAP_CENTER
+  }
+  const geom = props.building.geometry;
+  switch (geom.type) {
+    case 'Point':
+      return geom.coordinates as [number, number];
+    case 'Polygon':
+      return (geom.coordinates as number[][][])[0][0] as [number, number];
+    case 'MultiPolygon':
+      return (geom.coordinates as number[][][][])[0][0][0] as [number, number];
+    default:
+      return DEFAULT_MAP_CENTER;
+  }
+});
+
+/* FormKit-friendly initial value */
+const initialValue = computed(() => {
+  if (!props.building) return {};
+  const clone = JSON.parse(JSON.stringify(props.building));
+  if (!clone.geometry || typeof clone.geometry !== 'object' || !clone.geometry.coordinates) {
+    delete clone.geometry;
+  }
+  return clone;
+});
 
 const submit = async (formData: Partial<Feature>) => {
   try {
@@ -63,9 +92,10 @@ const submit = async (formData: Partial<Feature>) => {
 };
 
 onMounted(async () => {
+  await nextTick();
   map = initMap(
       'form_map_building',
-      DEFAULT_MAP_CENTER,
+      center.value,
       14,
       0,
       sources.value as Record<string, RasterSourceSpecification>,
@@ -134,7 +164,7 @@ onBeforeUnmount(() => {
         submit-label="Erstellen"
         @submit="submit"
         :actions="false"
-        :value="props.building ? props.building : {}"
+        :value="initialValue"
         :key="props.building?.id || 'create'"
         #default="{ value }"
     >
@@ -148,6 +178,7 @@ onBeforeUnmount(() => {
                 value="building"
                 contenteditable="false"
             />
+            <Divider/>
             <FormKit type="list" :value="[]" name="names" dynamic #default="{ items, node, value }">
               <FormKit
                   type="group"
@@ -155,37 +186,97 @@ onBeforeUnmount(() => {
                   :key="item"
                   :index="index"
               >
-                <div class="flex flex-row space-x-3 p-2 items-center">
-                  <FormKit
-                      type="text"
-                      name="name"
-                      label="Name"
-                      placeholder="Name eingeben"
-                      class="flex-1"
-                  />
-                  <FormKit
-                      type="text"
-                      name="source"
-                      label="Quelle"
-                      placeholder="Quelle eingeben"
-                      class="flex-1"
-                  />
+                <div class="flex flex-col gap-1 bg-gray-100 rounded-md shadow-md p-2 border border-gray-300">
+                  <div class="grid grid-cols-2 gap-2">
+                    <FormKit
+                        type="text"
+                        name="name"
+                        label="Name"
+                        placeholder="Name eingeben"
+                        outer-class="max-w-full"
+                    />
+                    <FormKit
+                        type="text"
+                        name="source"
+                        label="Quelle"
+                        placeholder="Quelle eingeben"
+                        outer-class="max-w-full"
+                    />
+                  </div>
                   <button
                       type="button"
                       @click="() => node.input(value?.filter((_, i) => i !== index))"
-                      class="border border-blue-600 text-blue-600 p-2 h-fit"
+                      class="border border-blue-600 text-blue-600 p-1 rounded-md shadow-sm hover:shadow-md bg-red-100 font-bold max-w-1/7 mx-auto"
                   >
-                    – Entfernen
+                    Entfernen
                   </button>
                 </div>
               </FormKit>
               <button
                   type="button"
                   @click="() => node.input(value?.concat({ name: '', quelle: '' }))"
-                  class="border border-blue-600 text-blue-600 p-2 rounded-md bg-blue-50 font-bold"
+                  class="border border-blue-600 text-blue-600 p-2 rounded-md shadow-sm hover:shadow-md bg-blue-50 font-bold max-w-1/6 mx-auto"
               >Namen hinzufügen</button>
             </FormKit>
-            <div class="flex flex-row space-x-5">
+            <Divider/>
+            <FormKit type="list" :value="[]" name="addresses" dynamic #default="{ items, node, value }">
+              <FormKit
+                  type="group"
+                  v-for="(item, index) in items"
+                  :key="item"
+                  :index="index"
+              >
+                <div class="flex flex-col gap-1 bg-gray-100 rounded-md shadow-md p-2 border border-gray-300">
+                  <div class="grid grid-cols-2 gap-2">
+                    <FormKit
+                        type="select"
+                        name="street"
+                        label="Straße"
+                        outer-class="max-w-full"
+                        select-icon="select"
+                        :options="[{ label: 'Keine Auswahl', value: null },
+                        ...street_store.streets.map(p => ({label: p.name, value: { id: p.id, name: p.name }})) as any
+                        ]"
+                    />
+                    <FormKit
+                        type="text"
+                        name="houseNumber"
+                        label="Hausnummer"
+                        placeholder="145"
+                        outer-class="max-w-full"
+                    />
+                    <FormKit
+                        type="text"
+                        name="fromDate"
+                        label="Von Datum"
+                        placeholder="1600"
+                        outer-class="max-w-full"
+                    />
+                    <FormKit
+                        type="text"
+                        name="toDate"
+                        label="Bis Datum"
+                        placeholder="1865"
+                        outer-class="max-w-full"
+                    />
+                  </div>
+                  <button
+                      type="button"
+                      @click="() => node.input(value?.filter((_, i) => i !== index))"
+                      class="border border-blue-600 text-blue-600 p-1 rounded-md shadow-sm hover:shadow-md bg-red-100 font-bold max-w-1/7 mx-auto"
+                  >
+                    Entfernen
+                  </button>
+                </div>
+              </FormKit>
+              <button
+                  type="button"
+                  @click="() => node.input(value?.concat({ street: {}, houseNumber: '', fromDate: '', toDate: '' }))"
+                  class="border border-blue-600 text-blue-600 p-2 rounded-md shadow-sm hover:shadow-md bg-blue-50 font-bold max-w-1/6 mx-auto"
+              >Adressen hinzufügen</button>
+            </FormKit>
+            <Divider/>
+            <div class="md:grid md:grid-cols-2 gap-2 flex flex-col">
               <FormKit
                   type="text"
                   name="partType"
@@ -201,8 +292,7 @@ onBeforeUnmount(() => {
                 outer-class="max-w-full"
               />
             </div>
-            <Divider/>
-            <div class="flex flex-row space-x-5">
+            <div class="md:grid md:grid-cols-2 gap-2 flex flex-col">
               <FormKit
                   type="select"
                   name="quarter"
@@ -224,7 +314,7 @@ onBeforeUnmount(() => {
                   ]"
               />
             </div>
-            <div class="flex flex-row space-x-5">
+            <div class="md:grid md:grid-cols-2 gap-2 flex flex-col">
               <FormKit
                   type="number"
                   number
@@ -241,17 +331,8 @@ onBeforeUnmount(() => {
                   outer-class="max-w-full"
                   help="Schreibweise: Distrikt/Historische Hausnummer"
               />
-              <FormKit
-                  type="number"
-                  number
-                  name="currentHouseNumber"
-                  label="Derzeitige Hausnummer"
-                  prefix-icon="number"
-                  outer-class="max-w-full"
-              />
             </div>
-            <Divider/>
-            <div class="flex flex-col gap-2">
+            <div class="md:grid md:grid-cols-2 flex flex-col gap-2">
               <FormKit
                   type="select"
                   multiple
@@ -277,7 +358,6 @@ onBeforeUnmount(() => {
                   help="Halten Sie die Strg-Taste gedrückt, um mehrere Quellen auszuwählen"
               />
             </div>
-            <Divider/>
             <div class="flex flex-col gap-2">
               <FormKit
                   type="textarea"
@@ -315,14 +395,17 @@ onBeforeUnmount(() => {
           </FormKit>
         </div>
       </div>
-      <div class="border-solid border-2 rounded-md p-5 bg-[#F1F2F5] mb-2">
-        <div class="font-mono">geoJSON-Preview</div>
-        <hr>
-        <pre wrap class="text-sm">{{ value }}</pre>
-      </div>
+      <Fieldset class="mb-4">
+        <template #legend>
+          <div class="montserrat-headline font-semibold text-black text-xl">Eingabe-Vorschau</div>
+        </template>
+        <div class="max-h-[500px] overflow-y-auto bg-gray-100 border border-gray-300 rounded-md">
+          <pre wrap class="text-sm p-2">{{ value }}</pre>
+        </div>
+      </Fieldset>
       <FormKit
           type="submit"
-          label="Erstellen"
+          :label="props.action === 'create' ? 'Erstellen' : 'Ändern'"
       />
     </FormKit>
   </div>

@@ -23,17 +23,17 @@ public class BuildingMapper {
     private final SourceMapper sourceMapper;
     private final DistrictMapper districtMapper;
     private final QuarterMapper quarterMapper;
-    private final StreetMapper streetMapper;
     private final BuildingNameMapper buildingNameMapper;
     private final BuildingRepository buildingRepository;
+    private final AddressMapper addressMapper;
 
-    public BuildingMapper(SourceMapper sourceMapper, DistrictMapper districtMapper, QuarterMapper quarterMapper, StreetMapper streetMapper, BuildingNameMapper buildingNameMapper, BuildingRepository buildingRepository) {
+    public BuildingMapper(SourceMapper sourceMapper, DistrictMapper districtMapper, QuarterMapper quarterMapper, BuildingNameMapper buildingNameMapper, BuildingRepository buildingRepository, AddressMapper addressMapper) {
         this.sourceMapper = sourceMapper;
         this.districtMapper = districtMapper;
         this.quarterMapper = quarterMapper;
-        this.streetMapper = streetMapper;
         this.buildingNameMapper = buildingNameMapper;
         this.buildingRepository = buildingRepository;
+        this.addressMapper = addressMapper;
     }
 
     public Feature BuildingToFeature(Building building) {
@@ -41,13 +41,12 @@ public class BuildingMapper {
         BuildingProperties properties = new BuildingProperties();
         feature.setId(building.getId());
         properties.setNames(buildingNameMapper.buildingNamesToBuildingNameDTOs(building.getNames()));
-        properties.setHouseNumber(building.getHouseNumber());
-        properties.setCurrentHouseNumber(building.getCurrentHouseNumber());
         properties.setPartType(building.getPartType());
         properties.setSpecialStatus(building.getSpecialStatus());
-        properties.setCurrentStreet(streetMapper.StreetToDTO(building.getCurrentStreet()));
+        properties.setAddresses(addressMapper.AddressesToDTOs(building.getAddresses()));
         properties.setQuarter(quarterMapper.QuarterToDTO(building.getQuarter()));
         properties.setDistrict(districtMapper.DistrictToDTO(building.getDistrict()));
+        properties.setHouseNumber(building.getHouseNumber());
         properties.setDistrictHouseNumber(building.getDistrictHouseNumber());
         properties.setPrimarySources(sourceMapper.SourcesToDTOs(building.getPrimarySources()));
         properties.setSecondarySources(sourceMapper.SourcesToDTOs(building.getSecondarySources()));
@@ -79,13 +78,12 @@ public class BuildingMapper {
         if (feature.getProperties() != null) {
             if (feature.getProperties() instanceof BuildingProperties properties) {
                 building.setNames(buildingNameMapper.buildingNameDTOsToBuildingNames(properties.getNames()));
-                building.setHouseNumber(properties.getHouseNumber());
-                building.setCurrentHouseNumber(properties.getCurrentHouseNumber());
                 building.setPartType(properties.getPartType());
                 building.setSpecialStatus(properties.getSpecialStatus());
-                building.setCurrentStreet(streetMapper.StreetDTOToStreet(properties.getCurrentStreet()));
+                building.setAddresses(addressMapper.AddressDTOsToAddresses(properties.getAddresses()));
                 building.setQuarter(quarterMapper.QuarterDTOToQuarter(properties.getQuarter()));
                 building.setDistrict(districtMapper.DistrictDTOToDistrict(properties.getDistrict()));
+                building.setHouseNumber(properties.getHouseNumber());
                 building.setDistrictHouseNumber(properties.getDistrictHouseNumber());
                 building.setPrimarySources(sourceMapper.SourceDTOsToSources(properties.getPrimarySources()));
                 building.setSecondarySources(sourceMapper.SourceDTOsToSources(properties.getSecondarySources()));
