@@ -1,6 +1,5 @@
 package de.uniwue.dachs.haeuserbuch_backend.specification;
 
-import de.uniwue.dachs.haeuserbuch_backend.embeddable.BuildingName;
 import de.uniwue.dachs.haeuserbuch_backend.model.Building;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -10,13 +9,6 @@ import org.springframework.data.jpa.domain.Specification;
  * Specifications for filtering Building entities based on various criteria.
  */
 public class BuildingSpecifications {
-    public static Specification<Building> hasName(String name) {
-        return (root, query, cb) -> {
-            Join<Building, BuildingName> namesJoin = root.joinSet("names");
-            return cb.like(cb.lower(namesJoin.get("name")), "%" + name.toLowerCase() + "%");
-        };
-    }
-
     public static Specification<Building> hasDistrictId(Long districtId) {
         return (root, query, cb) ->
                 cb.equal(root.get("district").get("id"), districtId);

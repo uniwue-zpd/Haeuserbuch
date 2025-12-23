@@ -4,6 +4,7 @@ import de.uniwue.dachs.haeuserbuch_backend.DTO.BuildingDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.*;
 import de.uniwue.dachs.haeuserbuch_backend.model.Address;
 import de.uniwue.dachs.haeuserbuch_backend.model.Building;
+import de.uniwue.dachs.haeuserbuch_backend.model.BuildingName;
 import de.uniwue.dachs.haeuserbuch_backend.repository.BuildingRepository;
 import de.uniwue.dachs.haeuserbuch_backend.specification.BuildingSpecifications;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.*;
@@ -63,7 +64,6 @@ public class BuildingService {
 
     // GET buildings based on search criteria
     public List<BuildingDTO> searchBuildings(
-            String name,
             Long districtId,
             String districtName,
             Long quarterId,
@@ -73,9 +73,6 @@ public class BuildingService {
     ) {
         Specification<Building> spec = Specification.where(null);
 
-        if (name != null && !name.isEmpty()) {
-            spec = spec.and(BuildingSpecifications.hasName(name));
-        }
         if (districtId != null) {
             spec = spec.and(BuildingSpecifications.hasDistrictId(districtId));
         }
@@ -114,9 +111,9 @@ public class BuildingService {
         buildingRepository.findById(id).map(entity -> {
             BuildingProperties properties = (BuildingProperties) updatedFeature.getProperties();
             if (properties != null) {
-                entity.setNames(properties.getNames() != null
-                        ? buildingNameMapper.buildingNameDTOsToBuildingNames(properties.getNames())
-                        : new HashSet<>());
+                Set<BuildingName> newNames = buildingNameMapper.BuildingNameDTOsToBuildingNames(properties.getNames());
+                entity.getNames().clear();
+                entity.getNames().addAll(newNames);
                 Set<Address> newAddresses = addressMapper.AddressDTOsToAddresses(properties.getAddresses());
                 entity.getAddresses().clear();
                 entity.getAddresses().addAll(newAddresses);
