@@ -189,17 +189,34 @@ onBeforeUnmount(() => {
                 <div class="flex flex-col gap-1 bg-gray-100 rounded-md shadow-md p-2 border border-gray-300">
                   <div class="grid grid-cols-2 gap-2">
                     <FormKit
+                        type="select"
+                        name="source"
+                        label="Quelle"
+                        outer-class="max-w-full"
+                        select-icon="select"
+                        :options="[{ label: 'Keine Auswahl', value: null },
+                        ...source_store.sources.map(p => ({label: p.title, value: { id: p.id, title: p.title }})) as any
+                  ]"
+                    />
+                    <FormKit
                         type="text"
                         name="name"
                         label="Name"
-                        placeholder="Name eingeben"
+                        placeholder="Zum goldenen Löwen"
                         outer-class="max-w-full"
                     />
                     <FormKit
                         type="text"
-                        name="source"
-                        label="Quelle"
-                        placeholder="Quelle eingeben"
+                        name="fromDate"
+                        label="Von Datum"
+                        placeholder="1600"
+                        outer-class="max-w-full"
+                    />
+                    <FormKit
+                        type="text"
+                        name="toDate"
+                        label="Bis Datum"
+                        placeholder="1865"
                         outer-class="max-w-full"
                     />
                   </div>
@@ -214,7 +231,7 @@ onBeforeUnmount(() => {
               </FormKit>
               <button
                   type="button"
-                  @click="() => node.input(value?.concat({ name: '', quelle: '' }))"
+                  @click="() => node.input(value?.concat({ source: {}, name: '', fromDate: '', toDate: '' }))"
                   class="border border-blue-600 text-blue-600 p-2 rounded-md shadow-sm hover:shadow-md bg-blue-50 font-bold max-w-1/6 mx-auto"
               >Namen hinzufügen</button>
             </FormKit>
