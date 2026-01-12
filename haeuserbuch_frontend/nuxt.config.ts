@@ -9,9 +9,10 @@ export default defineNuxtConfig({
     tileserverApiUrl: 'http://localhost:8081'
   },
   modules: [
-      '@primevue/nuxt-module',
-      '@formkit/nuxt',
-      '@pinia/nuxt'
+    '@primevue/nuxt-module',
+    '@formkit/nuxt',
+    '@pinia/nuxt',
+    '@nuxt/icon',
   ],
   primevue: {
     options: {
@@ -24,6 +25,11 @@ export default defineNuxtConfig({
   formkit: {
     configFile: './formkit.config.ts',
     autoImport: true
+  },
+  icon: {
+    clientBundle: {
+      scan: true,
+    }
   },
   css: ['~/assets/css/main.css'],
   postcss: {
