@@ -6,6 +6,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class BuildingNameDTO {
+    private Long id;
     private String name;
-    private String source;
+    private SourceDTO source;
+    private String fromDate;
+    private String toDate;
 }

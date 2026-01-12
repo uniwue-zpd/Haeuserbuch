@@ -101,11 +101,23 @@ onBeforeUnmount(() => {
       <h2 class="text-2xl text-black font-semibold montserrat-headline pb-2">Metadaten</h2>
       <div v-if="building_item_properties.names.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Namen</p>
-        <ul class="list-disc list-inside">
-          <li v-for="(name, index) in building_item_properties.names" :key="index">
-            {{ name.name }} (Quelle: {{ name.source }})
-          </li>
-        </ul>
+        <div class="flex flex-wrap gap-3.5">
+          <div
+              v-for="name in building_item_properties.names"
+              class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md"
+          >
+            <div class="flex flex-row space-x-2">
+              <span>{{ name.name }}</span>
+              <NuxtLink
+                  :to="`/sources/${name.source?.id}`"
+                  class="text-blue-700 line-clamp-1"
+                  :title="name.source?.title"
+              >
+                (Quelle)
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
       </div>
       <div v-if="building_item_properties.addresses.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Adressen</p>
@@ -163,11 +175,12 @@ onBeforeUnmount(() => {
         <div class="flex flex-wrap gap-3.5">
           <div
               v-for="source in building_item_properties.primarySources"
-              class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md max-w-[1/3]"
+              class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md max-w-[30%]"
           >
               <NuxtLink
                   :to="`/sources/${source.id}`"
                   class="text-blue-700 line-clamp-1"
+                  :title="source.title"
               >
                 {{ source.title }}
               </NuxtLink>
@@ -179,11 +192,12 @@ onBeforeUnmount(() => {
         <div class="flex flex-wrap gap-3.5">
           <div
               v-for="source in building_item_properties.secondarySources"
-              class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md max-w-[1/3]"
+              class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md max-w-[30%]"
           >
             <NuxtLink
                 :to="`/sources/${source.id}`"
                 class="text-blue-700 line-clamp-1"
+                :title="source.title"
             >
               {{ source.title }}
             </NuxtLink>

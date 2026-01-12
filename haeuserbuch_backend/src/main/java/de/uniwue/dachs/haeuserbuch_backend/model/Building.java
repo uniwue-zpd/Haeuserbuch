@@ -1,6 +1,5 @@
 package de.uniwue.dachs.haeuserbuch_backend.model;
 
-import de.uniwue.dachs.haeuserbuch_backend.embeddable.BuildingName;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,11 +13,11 @@ import java.util.Set;
 @Getter
 @Setter
 public class Building extends BaseEntity {
-    @ElementCollection
-    @CollectionTable(
-            name = "building_names",
-            joinColumns = @JoinColumn(name = "building_id")
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
     )
+    @JoinColumn(name = "building_id")
     private Set<BuildingName> names = new HashSet<>();
 
     @OneToMany(

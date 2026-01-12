@@ -44,10 +44,19 @@ export type FilterBuilding =
     | "sourceId"
     | "sourceName";
 
+export interface BuildingName extends Auditable {
+    name: string | null;
+    source: Source | null;
+    dateFrom: string | null;
+    dateTo: string | null;
+}
+
 /* Represents an object with data about a name of the {@link BuildingProperties} */
 export interface BuildingNameDTO {
     name: string | null;
-    source: string | null;
+    source: SourceDTO | null;
+    dateFrom: string | null;
+    dateTo: string | null;
 }
 
 /* Represents a naturalisation event listed in the citizen register */

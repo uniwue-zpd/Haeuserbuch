@@ -40,7 +40,7 @@ public class BuildingMapper {
         Feature feature = new Feature();
         BuildingProperties properties = new BuildingProperties();
         feature.setId(building.getId());
-        properties.setNames(buildingNameMapper.buildingNamesToBuildingNameDTOs(building.getNames()));
+        properties.setNames(buildingNameMapper.BuildingNamesToDTOs(building.getNames()));
         properties.setPartType(building.getPartType());
         properties.setSpecialStatus(building.getSpecialStatus());
         properties.setAddresses(addressMapper.AddressesToDTOs(building.getAddresses()));
@@ -77,7 +77,7 @@ public class BuildingMapper {
         Building building = new Building();
         if (feature.getProperties() != null) {
             if (feature.getProperties() instanceof BuildingProperties properties) {
-                building.setNames(buildingNameMapper.buildingNameDTOsToBuildingNames(properties.getNames()));
+                building.setNames(buildingNameMapper.BuildingNameDTOsToBuildingNames(properties.getNames()));
                 building.setPartType(properties.getPartType());
                 building.setSpecialStatus(properties.getSpecialStatus());
                 building.setAddresses(addressMapper.AddressDTOsToAddresses(properties.getAddresses()));
