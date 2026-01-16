@@ -31,6 +31,7 @@ public class SourceMapper {
 
     // Convert a Source object to a SourceDTO
     public SourceDTO SourceToDTO(Source source) {
+        if (source == null) return null;
         SourceDTO sourceDTO = new SourceDTO();
         sourceDTO.setId(source.getId());
         sourceDTO.setTitle(source.getTitle());
