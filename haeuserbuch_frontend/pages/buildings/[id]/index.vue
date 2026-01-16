@@ -6,6 +6,7 @@ import type { Feature, Polygon } from "~/utils/GeoJsonTypes";
 import '@watergis/maplibre-gl-terradraw/dist/maplibre-gl-terradraw.css';
 import { initMap } from "~/service/map_init";
 import BuildingSkeleton from "~/components/UI/skeletons/BuildingSkeleton.vue";
+import TaskBar from "~/components/UI/page_actions/TaskBar.vue";
 
 const route = useRoute();
 const building_id = Number(route.params.id);
@@ -87,9 +88,12 @@ onBeforeUnmount(() => {
 <template>
   <BuildingSkeleton v-if="loading"/>
   <div v-else class="flex flex-col gap-4 p-4 rounded-md shadow-md">
-    <h1 v-if="building_item_properties?.districtHouseNumber" class="text-3xl montserrat-headline font-bold">
-      {{ building_item_properties?.districtHouseNumber }}
-    </h1>
+    <div class="flex flex-row justify-between">
+      <h1 v-if="building_item_properties?.districtHouseNumber" class="text-3xl montserrat-headline font-bold">
+        {{ building_item_properties?.districtHouseNumber }}
+      </h1>
+      <TaskBar :id="building_id" entity_type="building" :page_url="route.fullPath"/>
+    </div>
     <div>
       <div v-if="building_item_geometry" class="h-[300px] md:h-[500px] w-full rounded-md shadow-md" id="map"/>
       <div v-else class="flex flex-col gap-4 items-center justify-center h-[250px] bg-yellow-200 rounded-md mx-auto p-2.5">
