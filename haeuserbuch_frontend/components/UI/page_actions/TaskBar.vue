@@ -4,7 +4,7 @@ import { PROJECT_DOMAIN } from "~/utils/constant_values";
 
 const props = defineProps<{
   id: number;
-  entity_type: 'buildings' | 'persons' | 'places';
+  entity_type: 'buildings' | 'persons' | 'places' | 'sources';
 }>();
 
 const confirm = useConfirm();
@@ -26,8 +26,8 @@ const place_store = usePlaceStore();
 // Delete Handlers
 const deleteHandlers: Record<string, (id: number) => Promise<void>> = {
   buildings: async (id: number) => { await building_store.deleteBuilding(id); },
-  persons: async (id: number) => { await person_store.deletePerson(id);},
-  places: async (id: number) => { await place_store.deletePlace(id);},
+  persons: async (id: number) => { await person_store.deletePerson(id); },
+  places: async (id: number) => { await place_store.deletePlace(id); },
 }
 
 const actions = {
