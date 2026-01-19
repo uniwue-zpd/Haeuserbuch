@@ -4,7 +4,7 @@ import { PROJECT_DOMAIN } from "~/utils/constant_values";
 
 const props = defineProps<{
   id: number;
-  entity_type: 'buildings' | 'persons' | 'places' | 'sources';
+  entity_type: 'buildings' | 'persons' | 'places' | 'sources' | 'streets';
 }>();
 
 const confirm = useConfirm();
@@ -22,12 +22,16 @@ const api_path = ref(`/api${ path.value }`);
 const building_store = useBuildingStore();
 const person_store = usePersonStore();
 const place_store = usePlaceStore();
+const source_store = useSourceStore();
+const street_store = useStreetStore();
 
 // Delete Handlers
 const deleteHandlers: Record<string, (id: number) => Promise<void>> = {
   buildings: async (id: number) => { await building_store.deleteBuilding(id); },
   persons: async (id: number) => { await person_store.deletePerson(id); },
   places: async (id: number) => { await place_store.deletePlace(id); },
+  sources: async (id: number) => { await source_store.deleteSource(id); },
+  streets: async (id: number) => { await street_store.deleteStreet(id); },
 }
 
 const actions = {

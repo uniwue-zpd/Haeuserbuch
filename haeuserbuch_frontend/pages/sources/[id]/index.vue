@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import TaskBar from "~/components/UI/page_actions/TaskBar.vue";
+
 const route = useRoute();
 const source_id = Number(route.params.id);
 const source_store = useSourceStore();
@@ -23,7 +25,10 @@ useHead({
   <Card>
     <template #title>
       <div class="flex flex-col gap-2 montserrat-headline">
-        <h1 class="text-3xl font-bold text-black">{{ source_item?.title }}</h1>
+        <div class="flex flex-row justify-between">
+          <h1 class="text-3xl font-bold text-black max-w-[80%]">{{ source_item?.title }}</h1>
+          <TaskBar :id="source_id" entity_type="sources"/>
+        </div>
         <h2 class="text-2xl font-semibold text-gray-600" v-show="source_item?.type">{{ source_item?.type }}</h2>
       </div>
     </template>
