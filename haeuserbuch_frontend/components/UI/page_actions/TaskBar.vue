@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { useConfirm } from 'primevue/useconfirm';
+import { PROJECT_DOMAIN } from "~/utils/constant_values";
 
 const props = defineProps<{
   id: number;
-  entity_type: 'building';
-  page_url: string;
+  entity_type: 'buildings' | 'persons' | 'places';
 }>();
 
 const confirm = useConfirm();
@@ -13,12 +13,21 @@ const toast = useToast();
 const router = useRouter();
 const show_toolbar = ref(false);
 
+// Paths
+const path = ref(`/${props.entity_type}/${props.id}`);
+const edit_path = ref(`${ path.value }/edit`);
+const api_path = ref(`/api${ path.value }`);
+
 // Stores
 const building_store = useBuildingStore();
+const person_store = usePersonStore();
+const place_store = usePlaceStore();
 
 // Delete Handlers
 const deleteHandlers: Record<string, (id: number) => Promise<void>> = {
-  building: async (id: number) => { await building_store.deleteBuilding(id); }
+  buildings: async (id: number) => { await building_store.deleteBuilding(id); },
+  persons: async (id: number) => { await person_store.deletePerson(id);},
+  places: async (id: number) => { await place_store.deletePlace(id);},
 }
 
 const actions = {
@@ -29,7 +38,7 @@ const actions = {
     toast.add({ severity: 'info', summary: 'Info', detail: 'Gehe zur API-Ansicht', life: 3000 });
   },
   copy_url: () => {
-    navigator.clipboard.writeText(props.page_url);
+    navigator.clipboard.writeText(`${ PROJECT_DOMAIN }${ path.value }`);
     toast.add({ severity: 'info', summary: 'Hinweis', detail: 'Seiten-Link erfolgreich kopiert!', life: 3000 });
   },
   delete_page: () => {
@@ -49,7 +58,7 @@ const actions = {
         try {
           await deleteHandlers[props.entity_type](props.id);
           toast.add({ severity: 'info', summary: 'Bestätigung', detail: 'Löschvorgang erfolgreich', life: 3000 });
-          await router.push('/buildings');
+          await router.push(props.entity_type);
         } catch (err) {
           toast.add({ severity: 'error', summary: 'Fehler', detail: 'Löschvorgang fehlgeschlagen', life: 3000 });
         }
@@ -75,28 +84,28 @@ const actions = {
     >
       <div v-if="show_toolbar" class="flex flex-row space-x-2">
         <NuxtLink
-            :to="`${ page_url }/edit`"
+            :to="edit_path"
             class="p-1 rounded-md leading-none bg-[#f1f5f9] hover:bg-[#e2e8f0] shadow-sm"
             @click="actions.edit_page()"
             title="Eintrag bearbeiten"
         >
-          <Icon name="material-symbols-edit-square-outline-sharp" class="text-xl"/>
+          <Icon name="material-symbols-edit-square-outline-sharp" class="text-xl text-black"/>
         </NuxtLink>
         <NuxtLink
-            :to="`/api${ page_url }`"
+            :to="api_path"
             class="p-1 rounded-md leading-none bg-[#f1f5f9] hover:bg-[#e2e8f0] shadow-sm"
             @click="actions.api_view()"
             title="API-Ansicht"
             target="_blank"
         >
-          <Icon name="material-symbols-code" class="text-xl"/>
+          <Icon name="material-symbols-code" class="text-xl text-black"/>
         </NuxtLink>
         <button
             @click="actions.copy_url()"
             class="p-1 rounded-md leading-none bg-[#f1f5f9] hover:bg-[#e2e8f0] shadow-sm"
             title="Seiten-URL teilen"
         >
-          <Icon name="material-symbols-share" class="text-xl"/>
+          <Icon name="material-symbols-share" class="text-xl text-black"/>
         </button>
         <ConfirmDialog/>
         <button
@@ -104,7 +113,7 @@ const actions = {
             class="p-1 rounded-md leading-none bg-[#f1f5f9] hover:bg-[#e2e8f0] shadow-sm"
             title="Eintrag löschen"
         >
-          <Icon name="material-symbols-delete-outline" class="text-xl"/>
+          <Icon name="material-symbols-delete-outline" class="text-xl text-black"/>
         </button>
       </div>
     </Transition>

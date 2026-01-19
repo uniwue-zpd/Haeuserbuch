@@ -92,7 +92,7 @@ onBeforeUnmount(() => {
       <h1 v-if="building_item_properties?.districtHouseNumber" class="text-3xl montserrat-headline font-bold">
         {{ building_item_properties?.districtHouseNumber }}
       </h1>
-      <TaskBar :id="building_id" entity_type="building" :page_url="route.fullPath"/>
+      <TaskBar :id="building_id" entity_type="buildings"/>
     </div>
     <div>
       <div v-if="building_item_geometry" class="h-[300px] md:h-[500px] w-full rounded-md shadow-md" id="map"/>
