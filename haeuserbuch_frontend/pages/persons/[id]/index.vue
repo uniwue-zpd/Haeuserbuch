@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
+import TaskBar from "~/components/UI/page_actions/TaskBar.vue";
 
 const person_store = usePersonStore();
 
@@ -19,7 +20,10 @@ useHead(() => ({
 <template>
   <Card v-show="person_item">
     <template #title>
-      <h1 class="text-3xl montserrat-headline font-bold text-black">{{ person_item?.fullName }}</h1>
+      <div class="flex flex-row justify-between">
+        <h1 class="text-3xl montserrat-headline font-bold text-black">{{ person_item?.fullName }}</h1>
+        <TaskBar :id="person_id" entity_type="persons"/>
+      </div>
     </template>
     <template #content>
       <table class="text-black roboto-plain w-full table-auto">
