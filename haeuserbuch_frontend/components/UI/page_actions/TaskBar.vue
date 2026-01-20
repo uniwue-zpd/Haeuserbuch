@@ -25,7 +25,7 @@ const place_store = usePlaceStore();
 const source_store = useSourceStore();
 const street_store = useStreetStore();
 
-// Delete Handlers
+// Delete handlers
 const deleteHandlers: Record<string, (id: number) => Promise<void>> = {
   buildings: async (id: number) => { await building_store.deleteBuilding(id); },
   persons: async (id: number) => { await person_store.deletePerson(id); },
@@ -34,16 +34,17 @@ const deleteHandlers: Record<string, (id: number) => Promise<void>> = {
   streets: async (id: number) => { await street_store.deleteStreet(id); },
 }
 
+// Page actions
 const actions = {
   edit_page: () => {
-    toast.add({ severity: 'info', summary: 'Info', detail: 'Gehe zum Editor-Ansicht', life: 3000 });
+    toast.add({ severity: 'info', summary: 'Info', detail: 'Wechle zur Editor-Ansicht', life: 3000 });
   },
   api_view: () => {
-    toast.add({ severity: 'info', summary: 'Info', detail: 'Gehe zur API-Ansicht', life: 3000 });
+    toast.add({ severity: 'info', summary: 'Info', detail: 'Wechsle zur API-Ansicht', life: 3000 });
   },
   copy_url: () => {
     navigator.clipboard.writeText(`${ PROJECT_DOMAIN }${ path.value }`);
-    toast.add({ severity: 'info', summary: 'Hinweis', detail: 'Seiten-Link erfolgreich kopiert!', life: 3000 });
+    toast.add({ severity: 'info', summary: 'Hinweis', detail: 'Link in die Zwischenablage kopiert', life: 3000 });
   },
   delete_page: () => {
     confirm.require({
@@ -76,7 +77,7 @@ const actions = {
 </script>
 
 <template>
-  <div class="flex items-center justify-center gap-3">
+  <div class="relative flex items-start">
     <Transition
         name="fade"
         enter-active-class="transform transition-transform transition-opacity duration-150 ease-linear"
@@ -86,47 +87,49 @@ const actions = {
         leave-from-class="translate-x-0 opacity-100"
         leave-to-class="translate-x-3 opacity-0"
     >
-      <div v-if="show_toolbar" class="flex flex-row space-x-2">
-        <NuxtLink
-            :to="edit_path"
-            class="p-1 rounded-md leading-none bg-[#f1f5f9] hover:bg-[#e2e8f0] shadow-sm"
-            @click="actions.edit_page()"
-            title="Eintrag bearbeiten"
-        >
-          <Icon name="material-symbols-edit-square-outline-sharp" class="text-xl text-black"/>
-        </NuxtLink>
-        <NuxtLink
-            :to="api_path"
-            class="p-1 rounded-md leading-none bg-[#f1f5f9] hover:bg-[#e2e8f0] shadow-sm"
-            @click="actions.api_view()"
-            title="API-Ansicht"
-            target="_blank"
-        >
-          <Icon name="material-symbols-code" class="text-xl text-black"/>
-        </NuxtLink>
-        <button
-            @click="actions.copy_url()"
-            class="p-1 rounded-md leading-none bg-[#f1f5f9] hover:bg-[#e2e8f0] shadow-sm"
-            title="Seiten-URL teilen"
-        >
-          <Icon name="material-symbols-share" class="text-xl text-black"/>
-        </button>
-        <ConfirmDialog/>
-        <button
-            @click="actions.delete_page()"
-            class="p-1 rounded-md leading-none bg-[#f1f5f9] hover:bg-[#e2e8f0] shadow-sm"
-            title="Eintrag löschen"
-        >
-          <Icon name="material-symbols-delete-outline" class="text-xl text-black"/>
-        </button>
+      <div v-if="show_toolbar" class="absolute right-full top-0 mr-2 z-50">
+        <div class="flex flex-col gap-1 p-1 border border-gray-300 rounded-md shadow-md bg-white whitespace-nowrap roboto-plain">
+          <NuxtLink
+              :to="edit_path"
+              class="flex flex-row space-x-2 p-1 rounded-md text-gray-600 hover:bg-[#f1f5f9] hover:text-black whitespace-nowrap items-center"
+              @click="actions.edit_page()"
+          >
+            <Icon name="material-symbols-edit-square-outline-sharp" class="text-xl"/>
+            <span class="text-sm">Bearbeiten</span>
+          </NuxtLink>
+          <NuxtLink
+              :to="api_path"
+              class="flex flex-row space-x-2 p-1 rounded-md text-gray-600 hover:bg-[#f1f5f9] hover:text-black whitespace-nowrap items-center"
+              @click="actions.api_view()"
+              target="_blank"
+          >
+            <Icon name="material-symbols-code" class="text-xl"/>
+            <span class="text-sm leading-none">API-Ansicht</span>
+          </NuxtLink>
+          <button
+              @click="actions.copy_url()"
+              class="flex flex-row space-x-2 p-1 rounded-md text-gray-600 hover:bg-[#f1f5f9] hover:text-black whitespace-nowrap items-center"
+          >
+            <Icon name="material-symbols-share-outline" class="text-xl"/>
+            <span class="text-sm leading none">Teilen</span>
+          </button>
+          <ConfirmDialog/>
+          <button
+              @click="actions.delete_page()"
+              class="flex flex-row space-x-2 p-1 rounded-md hover:bg-[#f1f5f9] text-red-600 hover:text-red-700 whitespace-nowrap items-center"
+          >
+            <Icon name="material-symbols-delete-outline" class="text-xl"/>
+            <span class="text-sm leading-none">Eintrag löschen</span>
+          </button>
+        </div>
       </div>
     </Transition>
     <button
         @click="show_toolbar = !show_toolbar"
-        class="p-1 leading-none rounded-md hover:shadow-md"
+        class="p-2 leading-none rounded-md hover:bg-[#f1f5f9]"
         title="Mehr Optionen"
     >
-      <Icon name="material-symbols-more-vert" class="text-2xl"/>
+      <Icon name="material-symbols-more-vert" class="text-xl" />
     </button>
   </div>
 </template>
