@@ -79,13 +79,12 @@ const actions = {
 <template>
   <div class="relative flex items-start">
     <Transition
-        name="fade"
-        enter-active-class="transform transition-transform transition-opacity duration-150 ease-linear"
-        enter-from-class="translate-x-3 opacity-0"
-        enter-to-class="translate-x-0 opacity-100"
-        leave-active-class="transform transition-transform transition-opacity duration-150 ease-linear"
-        leave-from-class="translate-x-0 opacity-100"
-        leave-to-class="translate-x-3 opacity-0"
+        enter-active-class="transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        enter-from-class="opacity-0 translate-x-2 scale-95"
+        enter-to-class="opacity-100 translate-x-0 scale-100"
+        leave-active-class="transition-all duration-150 ease-in"
+        leave-from-class="opacity-100 translate-x-0 scale-100"
+        leave-to-class="opacity-0 translate-x-2 scale-95"
     >
       <div v-if="show_toolbar" class="absolute right-full top-0 mr-2 z-50">
         <div class="flex flex-col gap-1 p-1 border border-gray-300 rounded-md shadow-md bg-white whitespace-nowrap roboto-plain">
@@ -95,7 +94,7 @@ const actions = {
               @click="actions.edit_page()"
           >
             <Icon name="material-symbols-edit-square-outline-sharp" class="text-xl"/>
-            <span class="text-sm">Bearbeiten</span>
+            <span class="text-sm leading-none">Bearbeiten</span>
           </NuxtLink>
           <NuxtLink
               :to="api_path"
@@ -111,7 +110,7 @@ const actions = {
               class="flex flex-row space-x-2 p-1 rounded-md text-gray-600 hover:bg-[#f1f5f9] hover:text-black whitespace-nowrap items-center"
           >
             <Icon name="material-symbols-share-outline" class="text-xl"/>
-            <span class="text-sm leading none">Teilen</span>
+            <span class="text-sm leading-none">Teilen</span>
           </button>
           <ConfirmDialog/>
           <button
