@@ -6,6 +6,7 @@ import { usePlaceStore } from "~/stores/PlaceStore";
 import { DEFAULT_MAP_CENTER } from "~/utils/constant_values";
 import type { Feature } from "~/utils/GeoJsonTypes";
 import {initMap} from "~/service/map_init";
+import TaskBar from "~/components/UI/page_actions/TaskBar.vue";
 
 const router = useRoute();
 const place_id = Number(router.params.id);
@@ -69,7 +70,10 @@ onMounted(async () => {
   <div v-show="place_item">
     <Card>
       <template #title>
-        <h1 class="text-3xl montserrat-headline text-black font-bold">{{ properties?.realName }}</h1>
+        <div class="flex flex-row justify-between">
+          <h1 class="text-3xl montserrat-headline text-black font-bold">{{ properties?.realName }}</h1>
+          <TaskBar :id="place_id" entity_type="places"/>
+        </div>
       </template>
       <template #content>
         <div class="flex flex-col gap-2">

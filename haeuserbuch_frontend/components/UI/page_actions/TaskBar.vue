@@ -63,7 +63,7 @@ const actions = {
         try {
           await deleteHandlers[props.entity_type](props.id);
           toast.add({ severity: 'info', summary: 'Bestätigung', detail: 'Löschvorgang erfolgreich', life: 3000 });
-          await router.push(props.entity_type);
+          await router.push(`/${ props.entity_type }`);
         } catch (err) {
           toast.add({ severity: 'error', summary: 'Fehler', detail: 'Löschvorgang fehlgeschlagen', life: 3000 });
         }

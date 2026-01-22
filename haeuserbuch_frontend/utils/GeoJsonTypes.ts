@@ -76,6 +76,7 @@ export interface PlaceProperties {
     type: string | null;
     realName: string | null;
     altNames: string[] | [];
+    isUncertain: boolean | null;
     internalNotes: string | null;
     generalNotes: string | null;
     createdDate: number | null;

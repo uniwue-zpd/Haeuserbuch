@@ -72,6 +72,8 @@ public class PlaceService {
                 } else {
                     throw new IllegalArgumentException("Unsupported geometry type");
                 }
+            } else {
+                entity.setCoordinates(null);
             }
             return placeRepository.save(entity);
         }).orElseThrow(() -> new NoSuchElementException("Place with ID " + id + " does not exist"));
