@@ -4,13 +4,12 @@ import { PROJECT_DOMAIN } from "~/utils/constant_values";
 
 const props = defineProps<{
   id: number;
-  entity_type: 'buildings' | 'persons' | 'places' | 'sources' | 'streets';
+  entity_type: 'buildings' | 'citizenships' | 'persons' | 'places' | 'sources' | 'streets';
 }>();
 
 const confirm = useConfirm();
 const toast = useToast();
 
-const router = useRouter();
 const show_toolbar = ref(false);
 
 // Paths
@@ -24,6 +23,7 @@ const person_store = usePersonStore();
 const place_store = usePlaceStore();
 const source_store = useSourceStore();
 const street_store = useStreetStore();
+const citizenship_store = useCitizenshipStore();
 
 // Delete handlers
 const deleteHandlers: Record<string, (id: number) => Promise<void>> = {
@@ -32,6 +32,7 @@ const deleteHandlers: Record<string, (id: number) => Promise<void>> = {
   places: async (id: number) => { await place_store.deletePlace(id); },
   sources: async (id: number) => { await source_store.deleteSource(id); },
   streets: async (id: number) => { await street_store.deleteStreet(id); },
+  citizenships: async (id: number) => { await citizenship_store.deleteCitizenship(id); },
 }
 
 // Page actions
@@ -63,7 +64,7 @@ const actions = {
         try {
           await deleteHandlers[props.entity_type](props.id);
           toast.add({ severity: 'info', summary: 'Bestätigung', detail: 'Löschvorgang erfolgreich', life: 3000 });
-          await router.push(`/${ props.entity_type }`);
+          navigateTo(`/${ props.entity_type }`);
         } catch (err) {
           toast.add({ severity: 'error', summary: 'Fehler', detail: 'Löschvorgang fehlgeschlagen', life: 3000 });
         }

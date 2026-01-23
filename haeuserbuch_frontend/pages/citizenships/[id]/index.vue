@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import TaskBar from "~/components/UI/page_actions/TaskBar.vue";
+
 const citizenship_store = useCitizenshipStore();
 
 const route = useRoute();
@@ -17,7 +19,10 @@ useHead(() => ({
 <template>
   <Card v-show="citizenship_item">
     <template #title>
-      <h1 class="text-3xl montserrat-headline font-bold text-black">{{ citizenship_item?.number }}</h1>
+      <div class="flex flex-row justify-between">
+        <h1 class="text-3xl montserrat-headline font-bold text-black">{{ citizenship_item?.signature }}  Nr.{{ citizenship_item?.number }}</h1>
+        <TaskBar :id="citizenship_id" entity_type="citizenships"/>
+      </div>
     </template>
     <template #content>
       <table class="text-black roboto-plain w-full table-auto">

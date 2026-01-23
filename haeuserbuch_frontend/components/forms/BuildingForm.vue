@@ -196,7 +196,7 @@ onBeforeUnmount(() => {
                         select-icon="select"
                         :options="[{ label: 'Keine Auswahl', value: null },
                         ...source_store.sources.map(p => ({label: p.title, value: { id: p.id, title: p.title }})) as any
-                  ]"
+                        ]"
                     />
                     <FormKit
                         type="text"
