@@ -59,10 +59,10 @@ export interface BuildingNameDTO {
     dateTo: string | null;
 }
 
-/* Represents a naturalisation event listed in the citizen register */
+/* Represents a naturalization event listed in the citizen register */
 export interface CitizenshipDTO extends Auditable {
     signature: string | null;
-    persons: PersonDTO[] | [];
+    persons: PersonPreviewDTO[] | [];
     source: SourceDTO;
     place: PlaceDTO | null;
     number: number | null;
@@ -108,6 +108,13 @@ export interface PersonDTO {
     isCitizen: boolean | null;
     confession: string | null;
     origin: PlaceDTO | null;
+}
+
+/* DTO projection of a {@link Person} object with only preview data */
+export interface PersonPreviewDTO {
+    id: number | null;
+    firstName: string | null;
+    lastName: string | null;
 }
 
 export interface PlaceDTO {

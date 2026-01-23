@@ -1,5 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.DTO;
 
+import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.PersonPreviewDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +13,7 @@ import java.util.Set;
 public class CitizenshipDTO {
     private Long id;
     private String signature;
-    private Set<PersonDTO> persons = new HashSet<>();
+    private Set<PersonPreviewDTO> persons = new HashSet<>();
     private SourceDTO source;
     private Long number;
     private String date;
