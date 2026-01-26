@@ -68,48 +68,42 @@ onMounted(async () => {
 
 <template>
   <div v-show="place_item">
-    <Card>
-      <template #title>
-        <div class="flex flex-row justify-between">
-          <h1 class="text-3xl montserrat-headline text-black font-bold">{{ properties?.realName }}</h1>
-          <TaskBar :id="place_id" entity_type="places"/>
-        </div>
-      </template>
-      <template #content>
-        <div class="flex flex-col gap-2">
-          <div id="map" v-show="place_item?.geometry" class="h-[500px] w-full rounded-md"/>
-          <div v-show="properties?.altNames" class="flex flex-col">
-            <h2 class="text-xl montserrat-headline text-black font-bold">Namensvarianten</h2>
-            <ul class="list-inside list-disc">
-              <li v-for="name in properties?.altNames">
-                <span class="text-lg text-black roboto-plain">{{ name }}</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </template>
-      <template #footer>
-        <div class="flex flex-col gap-2">
-          <Panel header="Notizen" toggleable v-show="properties?.generalNotes">
-            <template #header>
-              <p class="text-sm text-black roboto-plain font-bold">Notizen</p>
-            </template>
-            <p class="text-sm text-black roboto-plain">{{ properties?.generalNotes }}</p>
-          </Panel>
-          <Divider/>
-          <div class="flex flex-col">
-            <div v-if="properties?.createdDate" class="flex flex-row space-x-2 text-sm text-black roboto-plain">
-              <p>Erstellt am:</p>
-              <p>{{ new Date(properties?.createdDate).toLocaleDateString() }}</p>
-            </div>
-            <div v-if="properties?.lastModifiedDate" class="flex flex-row space-x-2 text-sm text-black roboto-plain">
-              <p>Stand:</p>
-              <p>{{ new Date(properties?.lastModifiedDate).toLocaleDateString() }}</p>
+    <div class="flex flex-col gap-4 p-4 rounded-md shadow-md">
+      <div class="flex flex-row justify-between">
+        <h1 class="text-3xl montserrat-headline text-black font-bold">{{ properties?.realName }}</h1>
+        <TaskBar :id="place_id" entity_type="places"/>
+      </div>
+      <div class="flex flex-col gap-2">
+        <div id="map" v-show="place_item?.geometry" class="h-[500px] w-full rounded-md"/>
+        <div v-show="properties?.altNames" class="flex flex-col gap-2">
+          <h2 class="text-xl montserrat-headline text-black font-bold">Namensvarianten</h2>
+          <div class="flex flex-wrap gap-3.5">
+            <div v-for="name in properties?.altNames">
+              <div class="p-1.5 bg-[#F1F2F2] rounded-md shadow-sm hover:shadow-md font-medium roboto-plain">{{ name }}</div>
             </div>
           </div>
         </div>
-      </template>
-    </Card>
+      </div>
+      <div class="flex flex-col gap-2">
+        <Panel header="Notizen" toggleable v-show="properties?.generalNotes">
+          <template #header>
+            <p class="text-sm text-black roboto-plain font-bold">Notizen</p>
+          </template>
+          <p class="text-sm text-black roboto-plain">{{ properties?.generalNotes }}</p>
+        </Panel>
+        <Divider/>
+        <div class="flex flex-col">
+          <div v-if="properties?.createdDate" class="flex flex-row space-x-2 text-sm text-black roboto-plain">
+            <p>Erstellt am:</p>
+            <p>{{ new Date(properties?.createdDate).toLocaleDateString() }}</p>
+          </div>
+          <div v-if="properties?.lastModifiedDate" class="flex flex-row space-x-2 text-sm text-black roboto-plain">
+            <p>Stand:</p>
+            <p>{{ new Date(properties?.lastModifiedDate).toLocaleDateString() }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 

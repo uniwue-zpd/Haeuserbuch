@@ -21,6 +21,10 @@ useHead(() => ({
   title: 'Orte - Orteverzeichnis',
 }));
 
+const show_datatable = computed(() => {
+  return places.value?.features && places.value.features.length > 0;
+});
+
 onMounted(async ()=> {
   map = initMap(
       'map',
@@ -89,7 +93,7 @@ onBeforeUnmount(() => {
     <h1 class="text-3xl montserrat-headline font-bold">Die Orte im Überblick</h1>
     <div id="map" class="h-[500px] w-full rounded-md"/>
     <Divider/>
-    <div v-show="places?.features?.length > 0">
+    <div v-show="show_datatable">
       <DataTable
           :value="place_store.places?.features"
           v-model:filters="filters" filter-display="row"
