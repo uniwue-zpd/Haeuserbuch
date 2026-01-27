@@ -5,15 +5,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 @Getter
 @Setter
 public class CitizenshipDTO {
     private Long id;
     private String signature;
-    private Set<PersonPreviewDTO> persons = new HashSet<>();
+    private PersonPreviewDTO person;
     private SourceDTO source;
     private Long number;
     private String date;

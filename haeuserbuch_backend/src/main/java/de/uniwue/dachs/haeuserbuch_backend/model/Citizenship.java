@@ -4,9 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @Entity
 @Table(name = "CITIZENSHIP")
 @Getter
@@ -14,13 +11,9 @@ import java.util.Set;
 public class Citizenship extends BaseEntity {
     private String signature;
 
-    @ManyToMany
-    @JoinTable(
-            name = "citizenship_person",
-            joinColumns = @JoinColumn(name = "citizenship_id"),
-            inverseJoinColumns = @JoinColumn(name = "person_id")
-    )
-    private Set<Person> persons = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "person_id")
+    private Person person;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "source_id", nullable = false)
