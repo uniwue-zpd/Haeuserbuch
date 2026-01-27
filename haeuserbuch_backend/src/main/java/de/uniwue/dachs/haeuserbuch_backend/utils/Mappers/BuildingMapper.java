@@ -119,6 +119,7 @@ public class BuildingMapper {
     }
 
     public BuildingDTO buildingToBuildingDTO(Building building) {
+        if (building == null) return null;
         BuildingDTO buildingDTO = new BuildingDTO();
         buildingDTO.setId(building.getId());
         buildingDTO.setDistrictHouseNumber(building.getDistrictHouseNumber());

@@ -7,6 +7,10 @@ import lombok.Setter;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Entity representing a person in the system, which may appear in various contexts such as citizen registries or
+ * ownership records
+ */
 @Entity
 @Table(name = "PERSON")
 @Getter

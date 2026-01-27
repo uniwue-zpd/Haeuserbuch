@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Entity representing a citizenship record associated with a person, including sources and relevant details
+ */
 @Entity
 @Table(name = "CITIZENSHIP")
 @Getter

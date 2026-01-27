@@ -6,6 +6,9 @@ import lombok.Setter;
 
 import java.util.Date;
 
+/**
+ * Data Transfer Object representing a citizenship record associated with a person
+ */
 @Getter
 @Setter
 public class CitizenshipDTO {
