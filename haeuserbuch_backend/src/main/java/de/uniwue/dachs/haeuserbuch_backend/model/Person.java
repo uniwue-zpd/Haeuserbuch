@@ -29,6 +29,10 @@ public class Person extends BaseEntity{
 
     private String occupationCategory;
 
+    @ManyToOne
+    @JoinColumn(name = "building_id")
+    private Building associatedBuilding;
+
     private Boolean isCitizen;
 
     private String confession;

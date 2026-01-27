@@ -17,6 +17,7 @@ public class PersonDTO {
     private String sex;
     private String occupation;
     private String occupationCategory;
+    private BuildingDTO associatedBuilding;
     private Boolean isCitizen;
     private String confession;
     private PlaceDTO origin;

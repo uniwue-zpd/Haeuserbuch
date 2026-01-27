@@ -3,6 +3,7 @@ package de.uniwue.dachs.haeuserbuch_backend.service;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PersonDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Person;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PersonRepository;
+import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.BuildingMapper;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PersonMapper;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PlaceMapper;
 import jakarta.persistence.EntityNotFoundException;
@@ -20,11 +21,13 @@ public class PersonService {
     private final PersonRepository personRepository;
     private final PlaceMapper placeMapper;
     private final PersonMapper personMapper;
+    private final BuildingMapper buildingMapper;
 
-    public PersonService(PersonRepository personRepository, PlaceMapper placeMapper, PersonMapper personMapper) {
+    public PersonService(PersonRepository personRepository, PlaceMapper placeMapper, PersonMapper personMapper, BuildingMapper buildingMapper) {
         this.personRepository = personRepository;
         this.placeMapper = placeMapper;
         this.personMapper = personMapper;
+        this.buildingMapper = buildingMapper;
     }
 
     // Get all persons
@@ -64,6 +67,7 @@ public class PersonService {
                     existingPerson.setSex(updatedPerson.getSex());
                     existingPerson.setOccupation(updatedPerson.getOccupation());
                     existingPerson.setOccupationCategory(updatedPerson.getOccupationCategory());
+                    existingPerson.setAssociatedBuilding(buildingMapper.buildingDTOToBuilding(updatedPerson.getAssociatedBuilding()));
                     existingPerson.setIsCitizen(updatedPerson.getIsCitizen());
                     existingPerson.setConfession(updatedPerson.getConfession());
                     existingPerson.setOrigin(placeMapper.PlaceDTOToPlace(updatedPerson.getOrigin()));

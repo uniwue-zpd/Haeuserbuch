@@ -14,10 +14,12 @@ import java.util.stream.Collectors;
 public class PersonMapper {
     private final PersonRepository personRepository;
     private final PlaceMapper placeMapper;
+    private final BuildingMapper buildingMapper;
 
-    public PersonMapper(PersonRepository personRepository, PlaceMapper placeMapper) {
+    public PersonMapper(PersonRepository personRepository, PlaceMapper placeMapper, BuildingMapper buildingMapper) {
         this.personRepository = personRepository;
         this.placeMapper = placeMapper;
+        this.buildingMapper = buildingMapper;
     }
 
     public Person PersonDTOToPerson(PersonDTO personDTO) {
@@ -35,6 +37,7 @@ public class PersonMapper {
             person.setSex(personDTO.getSex());
             person.setOccupation(personDTO.getOccupation());
             person.setOccupationCategory(personDTO.getOccupationCategory());
+            person.setAssociatedBuilding(buildingMapper.buildingDTOToBuilding(personDTO.getAssociatedBuilding()));
             person.setIsCitizen(personDTO.getIsCitizen());
             person.setConfession(personDTO.getConfession());
             person.setOrigin(placeMapper.PlaceDTOToPlace(personDTO.getOrigin()));
@@ -74,6 +77,7 @@ public class PersonMapper {
         personDTO.setSex(person.getSex());
         personDTO.setOccupation(person.getOccupation());
         personDTO.setOccupationCategory(person.getOccupationCategory());
+        personDTO.setAssociatedBuilding(buildingMapper.buildingToBuildingDTO(person.getAssociatedBuilding()));
         personDTO.setIsCitizen(person.getIsCitizen());
         personDTO.setConfession(person.getConfession());
         personDTO.setOrigin(placeMapper.PlaceToDTO(person.getOrigin()));
