@@ -31,6 +31,7 @@ public class PersonMapper {
             person.setFirstName(personDTO.getFirstName());
             person.setLastName(personDTO.getLastName());
             person.setFullName(personDTO.getFullName());
+            person.setAltNames(personDTO.getAltNames());
             person.setSex(personDTO.getSex());
             person.setOccupation(personDTO.getOccupation());
             person.setOccupationCategory(personDTO.getOccupationCategory());
@@ -69,6 +70,7 @@ public class PersonMapper {
         personDTO.setFirstName(person.getFirstName());
         personDTO.setLastName(person.getLastName());
         personDTO.setFullName(person.getFullName());
+        personDTO.setAltNames(person.getAltNames());
         personDTO.setSex(person.getSex());
         personDTO.setOccupation(person.getOccupation());
         personDTO.setOccupationCategory(person.getOccupationCategory());
@@ -83,6 +85,7 @@ public class PersonMapper {
     }
 
     public PersonPreviewDTO PersonToPreviewDTO(Person person) {
+        if (person == null) return null;
         PersonPreviewDTO previewDTO = new PersonPreviewDTO();
         previewDTO.setId(person.getId());
         previewDTO.setFirstName(person.getFirstName());

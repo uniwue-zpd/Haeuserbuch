@@ -3,6 +3,9 @@ package de.uniwue.dachs.haeuserbuch_backend.DTO;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 public class PersonDTO {
@@ -10,6 +13,7 @@ public class PersonDTO {
     private String firstName;
     private String lastName;
     private String fullName;
+    private Set<String> altNames = new HashSet<>();
     private String sex;
     private String occupation;
     private String occupationCategory;

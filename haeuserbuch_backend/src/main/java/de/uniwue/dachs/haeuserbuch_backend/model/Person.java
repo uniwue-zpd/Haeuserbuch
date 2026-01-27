@@ -1,11 +1,11 @@
 package de.uniwue.dachs.haeuserbuch_backend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "PERSON")
@@ -18,6 +18,10 @@ public class Person extends BaseEntity{
     private String lastName;
 
     private String fullName;
+
+    @ElementCollection(targetClass = String.class)
+    @CollectionTable(name = "person_alt_names", joinColumns = @JoinColumn(name = "person_id"))
+    private Set<String> altNames = new HashSet<>();
 
     private String sex;
 
