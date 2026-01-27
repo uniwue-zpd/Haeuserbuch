@@ -11,6 +11,8 @@ import lombok.Setter;
 public class Citizenship extends BaseEntity {
     private String signature;
 
+    private Long refNumber;
+
     @ManyToOne
     @JoinColumn(name = "person_id")
     private Person person;
@@ -22,8 +24,6 @@ public class Citizenship extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "secondary_source_id")
     private Source secondarySource;
-
-    private Long number;
 
     private String date;
 

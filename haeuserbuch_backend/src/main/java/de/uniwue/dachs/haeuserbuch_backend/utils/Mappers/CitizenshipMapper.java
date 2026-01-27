@@ -20,7 +20,7 @@ public class CitizenshipMapper {
         citizenship.setPerson(personMapper.PersonPreviewDTOToPerson(citizenshipDTO.getPerson()));
         citizenship.setPrimarySource(sourceMapper.SourceDTOToSource(citizenshipDTO.getPrimarySource()));
         citizenship.setSecondarySource(sourceMapper.SourceDTOToSource(citizenshipDTO.getSecondarySource()));
-        citizenship.setNumber(citizenshipDTO.getNumber());
+        citizenship.setRefNumber(citizenshipDTO.getRefNumber());
         citizenship.setDate(citizenshipDTO.getDate());
         citizenship.setEntryText(citizenshipDTO.getEntryText());
         citizenship.setAddendum(citizenshipDTO.getAddendum());
@@ -36,7 +36,7 @@ public class CitizenshipMapper {
         citizenshipDTO.setPerson(personMapper.PersonToPreviewDTO(citizenship.getPerson()));
         citizenshipDTO.setPrimarySource(sourceMapper.SourceToDTO(citizenship.getPrimarySource()));
         citizenshipDTO.setSecondarySource(sourceMapper.SourceToDTO(citizenship.getSecondarySource()));
-        citizenshipDTO.setNumber(citizenship.getNumber());
+        citizenshipDTO.setRefNumber(citizenship.getRefNumber());
         citizenshipDTO.setDate(citizenship.getDate());
         citizenshipDTO.setEntryText(citizenship.getEntryText());
         citizenshipDTO.setAddendum(citizenship.getAddendum());

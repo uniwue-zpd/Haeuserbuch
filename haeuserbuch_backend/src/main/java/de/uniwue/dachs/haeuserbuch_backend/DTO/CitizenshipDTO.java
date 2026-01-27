@@ -11,10 +11,10 @@ import java.util.Date;
 public class CitizenshipDTO {
     private Long id;
     private String signature;
+    private Long refNumber;
     private PersonPreviewDTO person;
     private SourceDTO primarySource;
     private SourceDTO secondarySource;
-    private Long number;
     private String date;
     private String entryText;
     private String addendum;
