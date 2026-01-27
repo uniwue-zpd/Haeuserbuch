@@ -16,8 +16,12 @@ public class Citizenship extends BaseEntity {
     private Person person;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "source_id", nullable = false)
-    private Source source;
+    @JoinColumn(name = "primary_source_id", nullable = false)
+    private Source primarySource;
+
+    @ManyToOne
+    @JoinColumn(name = "secondary_source_id")
+    private Source secondarySource;
 
     private Long number;
 

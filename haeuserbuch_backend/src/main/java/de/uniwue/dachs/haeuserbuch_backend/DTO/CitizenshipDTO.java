@@ -12,7 +12,8 @@ public class CitizenshipDTO {
     private Long id;
     private String signature;
     private PersonPreviewDTO person;
-    private SourceDTO source;
+    private SourceDTO primarySource;
+    private SourceDTO secondarySource;
     private Long number;
     private String date;
     private String entryText;
