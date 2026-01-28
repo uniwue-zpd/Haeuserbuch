@@ -1,5 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.model;
 
+import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonOrigin;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,7 +42,10 @@ public class Person extends BaseEntity{
 
     private String confession;
 
-    @ManyToOne
-    @JoinColumn(name = "place_id")
-    private Place origin;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "originalText", column = @Column(name = "origin_original_text")),
+            @AttributeOverride(name = "certainty", column = @Column(name = "origin_certainty"))
+    })
+    private PersonOrigin origin;
 }

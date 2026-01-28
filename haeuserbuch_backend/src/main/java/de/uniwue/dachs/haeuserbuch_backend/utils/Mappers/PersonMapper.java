@@ -13,13 +13,13 @@ import java.util.stream.Collectors;
 @Component
 public class PersonMapper {
     private final PersonRepository personRepository;
-    private final PlaceMapper placeMapper;
     private final BuildingMapper buildingMapper;
+    private final PersonOriginMapper personOriginMapper;
 
-    public PersonMapper(PersonRepository personRepository, PlaceMapper placeMapper, BuildingMapper buildingMapper) {
+    public PersonMapper(PersonRepository personRepository, BuildingMapper buildingMapper, PersonOriginMapper personOriginMapper) {
         this.personRepository = personRepository;
-        this.placeMapper = placeMapper;
         this.buildingMapper = buildingMapper;
+        this.personOriginMapper = personOriginMapper;
     }
 
     public Person PersonDTOToPerson(PersonDTO personDTO) {
@@ -40,7 +40,7 @@ public class PersonMapper {
             person.setAssociatedBuilding(buildingMapper.buildingDTOToBuilding(personDTO.getAssociatedBuilding()));
             person.setIsCitizen(personDTO.getIsCitizen());
             person.setConfession(personDTO.getConfession());
-            person.setOrigin(placeMapper.PlaceDTOToPlace(personDTO.getOrigin()));
+            person.setOrigin(personOriginMapper.DTOToPersonOrigin(personDTO.getOrigin()));
             personRepository.save(person);
             return person;
         }
@@ -80,7 +80,7 @@ public class PersonMapper {
         personDTO.setAssociatedBuilding(buildingMapper.buildingToBuildingDTO(person.getAssociatedBuilding()));
         personDTO.setIsCitizen(person.getIsCitizen());
         personDTO.setConfession(person.getConfession());
-        personDTO.setOrigin(placeMapper.PlaceToDTO(person.getOrigin()));
+        personDTO.setOrigin(personOriginMapper.PersonOriginToDTO(person.getOrigin()));
         return personDTO;
     }
 

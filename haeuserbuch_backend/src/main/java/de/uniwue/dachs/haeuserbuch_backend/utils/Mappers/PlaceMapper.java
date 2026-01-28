@@ -9,6 +9,8 @@ import de.uniwue.dachs.haeuserbuch_backend.repository.PlaceRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.*;
 
@@ -34,6 +36,11 @@ public class PlaceMapper {
         }
     }
 
+    public List<Place> PlaceDTOsToPlaces(List<PlaceDTO> placeDTOs) {
+        if (placeDTOs == null) return null;
+        return placeDTOs.stream().map(this::PlaceDTOToPlace).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
     public PlaceDTO PlaceToDTO(Place place) {
         if (place == null) {
             return null;
@@ -43,6 +50,11 @@ public class PlaceMapper {
         placeDTO.setRealName(place.getRealName());
         placeDTO.setAltNames(place.getAltNames());
         return placeDTO;
+    }
+
+    public List<PlaceDTO> PlacesToDTOs(List<Place> places) {
+        if (places == null) return null;
+        return places.stream().map(this::PlaceToDTO).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     public Place FeatureToPlace(Feature feature) {

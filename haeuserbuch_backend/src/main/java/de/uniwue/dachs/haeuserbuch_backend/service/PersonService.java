@@ -5,7 +5,7 @@ import de.uniwue.dachs.haeuserbuch_backend.model.Person;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PersonRepository;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.BuildingMapper;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PersonMapper;
-import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PlaceMapper;
+import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PersonOriginMapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.cache.annotation.CacheEvict;
@@ -19,15 +19,15 @@ import java.util.Optional;
 @Service
 public class PersonService {
     private final PersonRepository personRepository;
-    private final PlaceMapper placeMapper;
     private final PersonMapper personMapper;
     private final BuildingMapper buildingMapper;
+    private final PersonOriginMapper personOriginMapper;
 
-    public PersonService(PersonRepository personRepository, PlaceMapper placeMapper, PersonMapper personMapper, BuildingMapper buildingMapper) {
+    public PersonService(PersonRepository personRepository, PersonMapper personMapper, BuildingMapper buildingMapper, PersonOriginMapper personOriginMapper) {
         this.personRepository = personRepository;
-        this.placeMapper = placeMapper;
         this.personMapper = personMapper;
         this.buildingMapper = buildingMapper;
+        this.personOriginMapper = personOriginMapper;
     }
 
     // Get all persons
@@ -70,7 +70,7 @@ public class PersonService {
                     existingPerson.setAssociatedBuilding(buildingMapper.buildingDTOToBuilding(updatedPerson.getAssociatedBuilding()));
                     existingPerson.setIsCitizen(updatedPerson.getIsCitizen());
                     existingPerson.setConfession(updatedPerson.getConfession());
-                    existingPerson.setOrigin(placeMapper.PlaceDTOToPlace(updatedPerson.getOrigin()));
+                    existingPerson.setOrigin(personOriginMapper.DTOToPersonOrigin(updatedPerson.getOrigin()));
                     existingPerson.setInternalNotes(updatedPerson.getInternalNotes());
                     existingPerson.setGeneralNotes(updatedPerson.getGeneralNotes());
                     return personRepository.save(existingPerson);
