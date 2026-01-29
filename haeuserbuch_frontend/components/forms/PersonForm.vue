@@ -2,14 +2,14 @@
 const props = defineProps<{
   header: string;
   action: 'create' | 'edit';
-  person?: Person;
+  person?: PersonDTO;
 }>();
 
 const toast = useToast();
 const submitted = ref(false);
 
 const person_store = usePersonStore();
-type PersonInput = Omit<Person, 'id' | 'createdBy' | 'createdDate' | 'lastModifiedBy' | 'lastModifiedDate'>;
+type PersonInput = Omit<PersonDTO, 'id' | 'createdBy' | 'createdDate' | 'lastModifiedBy' | 'lastModifiedDate'>;
 
 const submit = async (formData: Partial<PersonInput>) => {
   try {

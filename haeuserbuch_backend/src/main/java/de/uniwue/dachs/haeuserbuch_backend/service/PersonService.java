@@ -97,7 +97,7 @@ public class PersonService {
      * @param id of the person to delete
      */
     @Transactional
-    @CacheEvict(value = "persons", key = "#id")
+    @CacheEvict(value = "persons", allEntries = true)
     public void deletePerson(Long id) {
         if (!personRepository.existsById(id)) throw new EntityNotFoundException("Person with ID " + id + " does not exist.");
         personRepository.deleteById(id);
