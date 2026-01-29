@@ -59,7 +59,7 @@ public class CitizenshipService {
         citizenshipRepository.findById(id)
                 .map(existingCitizenship -> {
                     existingCitizenship.setSignature(updatedCitizenshipDTO.getSignature());
-                    existingCitizenship.setPerson(personMapper.PersonPreviewDTOToPerson(updatedCitizenshipDTO.getPerson()));
+                    existingCitizenship.setPerson(personMapper.PreviewDTOToPerson(updatedCitizenshipDTO.getPerson()));
                     existingCitizenship.setPrimarySource(sourceMapper.SourceDTOToSource(updatedCitizenshipDTO.getPrimarySource()));
                     existingCitizenship.setSecondarySource(sourceMapper.SourceDTOToSource(updatedCitizenshipDTO.getSecondarySource()));
                     existingCitizenship.setRefNumber(updatedCitizenshipDTO.getRefNumber());

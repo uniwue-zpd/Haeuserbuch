@@ -6,6 +6,8 @@ import de.uniwue.dachs.haeuserbuch_backend.model.Person;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PersonRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,52 +24,30 @@ public class PersonMapper {
         this.personOriginMapper = personOriginMapper;
     }
 
-    public Person PersonDTOToPerson(PersonDTO personDTO) {
-        if (personDTO == null) {
-            return null;
-        }
-        if (personDTO.getId() != null) {
-            return personRepository.findById(personDTO.getId()).orElse(null);
-        } else {
-            Person person = new Person();
-            person.setFirstName(personDTO.getFirstName());
-            person.setLastName(personDTO.getLastName());
-            person.setFullName(personDTO.getFullName());
-            person.setAltNames(personDTO.getAltNames());
-            person.setSex(personDTO.getSex());
-            person.setOccupation(personDTO.getOccupation());
-            person.setOccupationCategory(personDTO.getOccupationCategory());
-            person.setAssociatedBuilding(buildingMapper.buildingDTOToBuilding(personDTO.getAssociatedBuilding()));
-            person.setIsCitizen(personDTO.getIsCitizen());
-            person.setConfession(personDTO.getConfession());
-            person.setOrigin(personOriginMapper.DTOToPersonOrigin(personDTO.getOrigin()));
-            personRepository.save(person);
-            return person;
-        }
+    public Person DTOToPerson(PersonDTO personDTO) {
+        if (personDTO == null) return null;
+        Person person = new Person();
+        person.setFirstName(personDTO.getFirstName());
+        person.setLastName(personDTO.getLastName());
+        person.setFullName(personDTO.getFullName());
+        person.setAltNames(personDTO.getAltNames());
+        person.setSex(personDTO.getSex());
+        person.setOccupation(personDTO.getOccupation());
+        person.setOccupationCategory(personDTO.getOccupationCategory());
+        person.setAssociatedBuilding(buildingMapper.buildingDTOToBuilding(personDTO.getAssociatedBuilding()));
+        person.setIsCitizen(personDTO.getIsCitizen());
+        person.setConfession(personDTO.getConfession());
+        person.setOrigin(personOriginMapper.DTOToPersonOrigin(personDTO.getOrigin()));
+        person.setInternalNotes(personDTO.getInternalNotes());
+        person.setGeneralNotes(personDTO.getGeneralNotes());
+        return person;
     }
 
-    public Set<Person> PersonDTOsToPersons(Set<PersonDTO> personDTOs) {
-        return personDTOs.stream().map(this::PersonDTOToPerson).filter(Objects::nonNull).collect(Collectors.toSet());
+    public Set<Person> DTOsToPersons(Set<PersonDTO> personDTOs) {
+        return personDTOs.stream().map(this::DTOToPerson).filter(Objects::nonNull).collect(Collectors.toSet());
     }
 
-    public Person PersonPreviewDTOToPerson(PersonPreviewDTO previewDTO) {
-        if (previewDTO == null) return null;
-        if (previewDTO.getId() != null) {
-            return personRepository.findById(previewDTO.getId()).orElse(null);
-        } else {
-            Person person = new Person();
-            person.setFirstName(previewDTO.getFirstName());
-            person.setLastName(previewDTO.getLastName());
-            personRepository.save(person);
-            return person;
-        }
-    }
-
-    public Set<Person> PersonPreviewDTOsToPersons(Set<PersonPreviewDTO> previewDTOs) {
-        return previewDTOs.stream().map(this::PersonPreviewDTOToPerson).filter(Objects::nonNull).collect(Collectors.toSet());
-    }
-
-    public PersonDTO PersonToPersonDTO(Person person) {
+    public PersonDTO PersonToDTO(Person person) {
         PersonDTO personDTO = new PersonDTO();
         personDTO.setId(person.getId());
         personDTO.setFirstName(person.getFirstName());
@@ -90,8 +70,25 @@ public class PersonMapper {
         return personDTO;
     }
 
-    public Set<PersonDTO> PersonsToPersonDTOs(Set<Person> persons) {
-        return persons.stream().map(this::PersonToPersonDTO).collect(Collectors.toSet());
+    public List<PersonDTO> PersonsToDTOs(List<Person> persons) {
+        return persons.stream()
+                .map(this::PersonToDTO)
+                .sorted(Comparator.comparing(PersonDTO::getId))
+                .collect(Collectors.toList());
+    }
+
+    public Person PreviewDTOToPerson(PersonPreviewDTO previewDTO) {
+        if (previewDTO == null) return null;
+        if (previewDTO.getId() != null) return personRepository.findById(previewDTO.getId()).orElse(null);
+        Person person = new Person();
+        person.setFirstName(previewDTO.getFirstName());
+        person.setLastName(previewDTO.getLastName());
+        personRepository.save(person);
+        return person;
+    }
+
+    public Set<Person> PreviewDTOsToPersons(Set<PersonPreviewDTO> previewDTOs) {
+        return previewDTOs.stream().map(this::PreviewDTOToPerson).filter(Objects::nonNull).collect(Collectors.toSet());
     }
 
     public PersonPreviewDTO PersonToPreviewDTO(Person person) {

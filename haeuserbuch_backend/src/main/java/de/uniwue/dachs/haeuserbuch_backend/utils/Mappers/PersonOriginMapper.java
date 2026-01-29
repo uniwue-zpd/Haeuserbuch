@@ -13,7 +13,7 @@ public class PersonOriginMapper {
     }
 
     public PersonOrigin DTOToPersonOrigin(PersonOriginDTO personOriginDTO) {
-        if (personOriginDTO == null) return null;
+        if (personOriginDTO == null) return new PersonOrigin();
         PersonOrigin personOrigin = new PersonOrigin();
         personOrigin.setPlaces(placeMapper.PlaceDTOsToPlaces(personOriginDTO.getPlaces()));
         personOrigin.setOriginalText(personOriginDTO.getOriginalText());
@@ -22,7 +22,7 @@ public class PersonOriginMapper {
     }
 
     public PersonOriginDTO PersonOriginToDTO(PersonOrigin personOrigin) {
-        if (personOrigin == null) return null;
+        if (personOrigin == null) return new PersonOriginDTO();
         PersonOriginDTO personOriginDTO = new PersonOriginDTO();
         personOriginDTO.setPlaces(placeMapper.PlacesToDTOs(personOrigin.getPlaces()));
         personOriginDTO.setOriginalText(personOrigin.getOriginalText());

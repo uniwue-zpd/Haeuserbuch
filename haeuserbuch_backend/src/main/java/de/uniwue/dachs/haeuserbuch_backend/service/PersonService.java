@@ -12,7 +12,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,34 +29,48 @@ public class PersonService {
         this.personOriginMapper = personOriginMapper;
     }
 
-    // Get all persons
+    /**
+     * GET all persons
+     * @return {@link List} of {@link PersonDTO}
+     */
     @Cacheable("persons")
     public List<PersonDTO> getAllPersons() {
-        return personRepository.findAll()
-                .stream()
-                .map(personMapper::PersonToPersonDTO)
-                .sorted(Comparator.comparing(PersonDTO::getId))
-                .toList();
+        return personMapper.PersonsToDTOs(personRepository.findAll());
     }
 
-    // Get person by ID
+    /**
+     * GET person by ID
+     * @param id of the person
+     * @return {@link Optional} of {@link PersonDTO}
+     */
     @Cacheable(value = "persons", key = "#id")
     public Optional<PersonDTO> getPersonById(Long id) {
         return personRepository.findById(id)
-                .map(personMapper::PersonToPersonDTO);
+                .map(personMapper::PersonToDTO);
     }
 
-    // POST create a new person
+    /**
+     * POST create a new person
+     * @param personDTO to create
+     * @return created {@link PersonDTO}
+     */
     @Transactional
     @CacheEvict(value = "persons", allEntries = true)
-    public void createPerson(PersonDTO personDTO) {
-        personMapper.PersonDTOToPerson(personDTO);
+    public PersonDTO createPerson(PersonDTO personDTO) {
+        return personMapper.PersonToDTO(
+                personRepository.save(personMapper.DTOToPerson(personDTO))
+        );
     }
 
-    // PUT update an existing person
+    /**
+     * PUT update an existing person
+     * @param id of the person to update
+     * @param updatedPerson with updated fields
+     * @return updated {@link PersonDTO}
+     */
     @Transactional
     @CacheEvict(value = "persons", allEntries = true)
-    public Person updatePerson(Long id, PersonDTO updatedPerson) {
+    public PersonDTO updatePerson(Long id, PersonDTO updatedPerson) {
         return personRepository.findById(id)
                 .map(existingPerson -> {
                     existingPerson.setFirstName(updatedPerson.getFirstName());
@@ -73,18 +86,20 @@ public class PersonService {
                     existingPerson.setOrigin(personOriginMapper.DTOToPersonOrigin(updatedPerson.getOrigin()));
                     existingPerson.setInternalNotes(updatedPerson.getInternalNotes());
                     existingPerson.setGeneralNotes(updatedPerson.getGeneralNotes());
-                    return personRepository.save(existingPerson);
+                    Person saved = personRepository.save(existingPerson);
+                    return personMapper.PersonToDTO(saved);
                 })
                 .orElseThrow(() -> new EntityNotFoundException("Person with ID " + id + " does not exist."));
     }
 
-    // DELETE a person by ID
+    /**
+     * DELETE a person by ID
+     * @param id of the person to delete
+     */
     @Transactional
     @CacheEvict(value = "persons", key = "#id")
     public void deletePerson(Long id) {
-        if (!personRepository.existsById(id)) {
-            throw new EntityNotFoundException("Person with ID " + id + " does not exist.");
-        }
+        if (!personRepository.existsById(id)) throw new EntityNotFoundException("Person with ID " + id + " does not exist.");
         personRepository.deleteById(id);
     }
 }
