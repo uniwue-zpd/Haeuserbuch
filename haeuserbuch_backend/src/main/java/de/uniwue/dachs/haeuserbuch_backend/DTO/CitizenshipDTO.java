@@ -1,18 +1,16 @@
 package de.uniwue.dachs.haeuserbuch_backend.DTO;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.PersonPreviewDTO;
+import de.uniwue.dachs.haeuserbuch_backend.model.BaseEntity;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Date;
 
 /**
  * Data Transfer Object representing a citizenship record associated with a person
  */
 @Getter
 @Setter
-public class CitizenshipDTO {
-    private Long id;
+public class CitizenshipDTO extends BaseEntity {
     private String signature;
     private Long refNumber;
     private PersonPreviewDTO person;
@@ -21,10 +19,4 @@ public class CitizenshipDTO {
     private String date;
     private String entryText;
     private String addendum;
-    private String internalNotes;
-    private String generalNotes;
-    private Date createdDate;
-    private String createdBy;
-    private Date lastModifiedDate;
-    private String lastModifiedBy;
 }

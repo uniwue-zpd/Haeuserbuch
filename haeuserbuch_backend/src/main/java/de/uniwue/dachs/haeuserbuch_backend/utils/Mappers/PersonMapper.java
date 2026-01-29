@@ -81,6 +81,12 @@ public class PersonMapper {
         personDTO.setIsCitizen(person.getIsCitizen());
         personDTO.setConfession(person.getConfession());
         personDTO.setOrigin(personOriginMapper.PersonOriginToDTO(person.getOrigin()));
+        personDTO.setInternalNotes(person.getInternalNotes());
+        personDTO.setGeneralNotes(person.getGeneralNotes());
+        personDTO.setCreatedDate(person.getCreatedDate());
+        personDTO.setLastModifiedDate(person.getLastModifiedDate());
+        personDTO.setCreatedBy(person.getCreatedBy());
+        personDTO.setLastModifiedBy(person.getLastModifiedBy());
         return personDTO;
     }
 

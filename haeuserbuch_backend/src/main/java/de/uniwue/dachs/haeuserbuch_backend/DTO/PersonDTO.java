@@ -1,5 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.DTO;
 
+import de.uniwue.dachs.haeuserbuch_backend.model.BaseEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,8 +9,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-public class PersonDTO {
-    private Long id;
+public class PersonDTO extends BaseEntity {
     private String firstName;
     private String lastName;
     private String fullName;
