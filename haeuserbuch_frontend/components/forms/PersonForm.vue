@@ -23,6 +23,20 @@ const places = computed(() => (place_store.places?.features ?? []).map(
       }
     }
 ));
+const building_store = useBuildingStore();
+const buildings = computed(() => (building_store.buildings?.features ?? []).map(
+    (b) => {
+      const props = b.properties as BuildingProperties;
+      return {
+        label: props.districtHouseNumber,
+        value: {
+          id: b.id,
+          districtHouseNumber: props.districtHouseNumber
+        }
+      }
+    }
+));
+
 type PersonInput = Omit<PersonDTO, 'id' | 'createdBy' | 'createdDate' | 'lastModifiedBy' | 'lastModifiedDate'>;
 
 const submit = async (formData: Partial<PersonInput>) => {
@@ -138,6 +152,16 @@ const submit = async (formData: Partial<PersonInput>) => {
               help="Standardisierte Berufskategorie"
           />
         </div>
+        <FormKit
+            type="select"
+            name="associatedBuilding"
+            label="Erwähntes Gebäude"
+            outer-class="max-w-full"
+            select-icon="select"
+            :options="[{ label: 'Keine Auswahl', value: null },
+            ...buildings as any
+            ]"
+        />
         <div class="flex flex-row space-x-5">
           <FormKit
               type="select"

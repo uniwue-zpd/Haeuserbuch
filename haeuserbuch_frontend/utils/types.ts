@@ -92,6 +92,7 @@ export interface PersonDTO extends Auditable{
     sex: "männlich" | "weiblich" | null;
     occupation: string | null;
     occupationCategory: string | null;
+    associatedBuilding: BuildingDTO | null;
     isCitizen: boolean | null;
     confession: string | null;
     origin: {

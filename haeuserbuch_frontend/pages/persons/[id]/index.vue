@@ -60,6 +60,17 @@ useHead(() => ({
           <td class="px-6 py-4 whitespace-nowrap font-bold">Kategorie des Berufs</td>
           <td class="px-6 py-4 whitespace-nowrap">{{ person_item?.occupationCategory }}</td>
         </tr>
+        <tr v-show="person_item?.associatedBuilding">
+          <td class="px-6 py-4 whitespace-nowrap font-bold">Bezug zum Gebäude</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <NuxtLink
+                :to="`/buildings/${ person_item?.associatedBuilding?.id }`"
+                class="p-1 bg-gray-300 rounded-md shadow-md hover:shadow-lg"
+            >
+              {{ person_item?.associatedBuilding?.districtHouseNumber }}
+            </NuxtLink>
+          </td>
+        </tr>
         <tr v-show="person_item?.isCitizen">
           <td class="px-6 py-4 whitespace-nowrap font-bold">Bürger</td>
           <td class="px-6 py-4 whitespace-nowrap">
