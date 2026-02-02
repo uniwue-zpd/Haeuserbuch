@@ -70,12 +70,12 @@ useHead(() => ({
               <InputText
                   v-model="filterModel.value"
                   type="text" @input="filterCallback()"
-                  placeholder="Nach Nummern suchen"
+                  placeholder="Durchsuchen"
               />
             </template>
           </Column>
-          <Column field="signature" header="Signatur" class="roboto-plain" :sortable="true" />
-          <Column field="person" header="Eingebürgerte Person" class="roboto-plain">
+          <Column field="signature" header="Signatur" class="roboto-plain" :sortable="true" style="width: 20%"/>
+          <Column field="person" header="Eingebürgerte Person" class="roboto-plain" style="width: 20%">
             <template #body="slotProps">
               <div v-if="slotProps.data.person">
                 <NuxtLink
@@ -86,28 +86,34 @@ useHead(() => ({
                   {{ slotProps.data.person.firstName }} {{ slotProps.data.person.lastName }}
                 </NuxtLink>
               </div>
-              <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
+              <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
             </template>
           </Column>
-          <Column field="date" header="Datum" class="roboto-plain" :sortable="true" />
-          <Column field="primarySource.title" header="Primärquelle" class="roboto-plain" :sortable="true">
+          <Column field="date" header="Datum" class="roboto-plain" :sortable="true" style="width: 15%"/>
+          <Column field="primarySource.title" header="Primärquelle" class="roboto-plain" :sortable="true" style="width: 15%">
             <template #body="slotProps">
               <div v-if="slotProps.data.primarySource">
-                <NuxtLink :to="`/sources/${ slotProps.data.primarySource.id }`">
+                <NuxtLink
+                    :to="`/sources/${ slotProps.data.primarySource.id }`"
+                    class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md"
+                >
                   {{ slotProps.data.primarySource.title }}
                 </NuxtLink>
               </div>
-              <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
+              <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
             </template>
           </Column>
-          <Column field="secondarySource" header="Sekundärquelle" class="roboto-plain" :sortable="true">
+          <Column field="secondarySource" header="Sekundärquelle" class="roboto-plain" :sortable="true" style="width: 15%">
             <template #body="slotProps">
               <div v-if="slotProps.data.secondarySource">
-                <NuxtLink :to="`/sources/${ slotProps.data.secondarySource.id }`">
+                <NuxtLink
+                    :to="`/sources/${ slotProps.data.secondarySource.id }`"
+                    class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md"
+                >
                   {{ slotProps.data.secondarySource.title }}
                 </NuxtLink>
               </div>
-              <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
+              <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
             </template>
           </Column>
         </DataTable>
