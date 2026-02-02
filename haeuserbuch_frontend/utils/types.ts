@@ -62,10 +62,10 @@ export interface BuildingNameDTO {
 /* Represents a naturalization event listed in the citizen register */
 export interface CitizenshipDTO extends Auditable {
     signature: string | null;
-    persons: PersonPreviewDTO[] | [];
-    source: SourceDTO;
-    place: PlaceDTO | null;
-    number: number | null;
+    person: PersonPreviewDTO | null;
+    primarySource: SourceDTO;
+    secondarySource: SourceDTO | null;
+    refNumber: number | null;
     date: string | null;
     entryText: string | null;
     addendum: string | null;
