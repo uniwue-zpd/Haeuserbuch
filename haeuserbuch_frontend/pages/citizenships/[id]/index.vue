@@ -26,19 +26,19 @@ useHead(() => ({
       <table class="text-black roboto-plain w-full table-auto">
         <tbody v-if="citizenship_item" class="divide-y divide-gray-200">
         <tr v-if="citizenship_item.signature">
-          <td class="py-4 whitespace-nowrap font-bold">Signatur</td>
+          <td class="py-4 pr-4 whitespace-nowrap font-bold">Signatur</td>
           <td class="py-4 whitespace-nowrap">{{ citizenship_item.signature }}</td>
         </tr>
         <tr v-if="citizenship_item.refNumber">
-          <td class="py-4 whitespace-nowrap font-bold">Referenz Mayer-Erlach</td>
+          <td class="py-4 pr-4 whitespace-nowrap font-bold">Referenz Mayer-Erlach</td>
           <td class="py-4 whitespace-nowrap">{{ citizenship_item.refNumber }}</td>
         </tr>
         <tr v-if="citizenship_item.date">
-          <td class="py-4 whitespace-nowrap font-bold">Datum</td>
+          <td class="py-4 pr-4 whitespace-nowrap font-bold">Datum</td>
           <td class="py-4 whitespace-nowrap">{{ citizenship_item.date }}</td>
         </tr>
         <tr v-if="citizenship_item.person">
-          <td class="py-4 whitespace-nowrap font-bold">Eingebürgerte Person</td>
+          <td class="py-4 pr-4 whitespace-nowrap font-bold">Eingebürgerte Person</td>
           <td class="py-4 whitespace-nowrap">
             <NuxtLink :to="`/persons/${ citizenship_item.person.id }`" class="rounded-md shadow-md hover:shadow-lg p-2 bg-gray-200 font-medium">
               {{ citizenship_item.person.firstName }} {{ citizenship_item.person.lastName }}
@@ -46,7 +46,7 @@ useHead(() => ({
           </td>
         </tr>
         <tr v-if="citizenship_item.primarySource">
-          <td class="py-4 whitespace-nowrap font-bold">Primärquelle</td>
+          <td class="py-4 pr-4 whitespace-nowrap font-bold">Primärquelle</td>
           <td class="py-4 whitespace-nowrap">
             <NuxtLink :to="`/sources/${ citizenship_item.primarySource.id }`" class="rounded-md shadow-md hover:shadow-lg p-2 bg-gray-200 font-medium">
               {{ citizenship_item.primarySource.title }}
@@ -54,7 +54,7 @@ useHead(() => ({
           </td>
         </tr>
         <tr v-if="citizenship_item.secondarySource">
-          <td class="py-4 whitespace-nowrap font-bold">Sekundärquelle</td>
+          <td class="py-4 pr-4 whitespace-nowrap font-bold">Sekundärquelle</td>
           <td class="py-4 whitespace-nowrap">
             <NuxtLink :to="`/sources/${ citizenship_item.secondarySource.id }`" class="rounded-md shadow-md hover:shadow-lg p-2 bg-gray-200 font-medium">
               {{ citizenship_item.secondarySource.title }}
@@ -62,11 +62,11 @@ useHead(() => ({
           </td>
         </tr>
         <tr v-if="citizenship_item.entryText">
-          <td class="py-4 whitespace-nowrap font-bold">Text des Eintrags</td>
+          <td class="py-4 pr-4 whitespace-nowrap font-bold">Text des Eintrags</td>
           <td class="py-4">{{ citizenship_item.entryText }}</td>
         </tr>
         <tr v-if="citizenship_item.addendum">
-          <td class="py-4 whitespace-nowrap font-bold">Nachtrag</td>
+          <td class="py-4 pr-4 whitespace-nowrap font-bold">Nachtrag</td>
           <td class="py-4">{{ citizenship_item.addendum }}</td>
         </tr>
         </tbody>

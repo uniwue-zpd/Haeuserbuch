@@ -44,7 +44,7 @@ const submit = async (formData: Partial<CitizenshipInput>) => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-2">
+  <div class="flex flex-col gap-2 w-[80%] mx-auto">
     <h1 class="text-2xl montserrat-headline-headline text-black font-bold">{{ props.header }}</h1>
     <p class="roboto-plain">Füllen Sie bitte die untenstehenden Felder aus, um ein Objekt zu erstellen oder anzupassen.</p>
     <FormKit
@@ -57,23 +57,25 @@ const submit = async (formData: Partial<CitizenshipInput>) => {
         :key="props.citizenship?.id || 'create'"
         #default="{ value }"
     >
-      <div class="flex flex-col gap-2 p-2 bg-[#F3F4F6] rounded-md shadow-md">
-        <div class="flex flex-col gap-2 md:flex-row md:space-x-5">
+      <div class="flex flex-col gap-4 p-4 bg-gray-100 rounded-md shadow-md border border-gray-200 mb-4">
+        <div class="flex flex-col gap-3">
+          <p class="montserrat-headline font-semibold text-black text-xl">Informationen zum Eintrag</p>
+          <FormKit
+              type="select"
+              name="primarySource"
+              label="Primärquelle"
+              outer-class="max-w-full"
+              select-icon="select"
+              :options="[{ label: 'Keine Auswahl', value: null },
+              ...sources as any
+              ]"
+          />
           <FormKit
               type="text"
               name="signature"
               label="Signatur"
               placeholder="StAWü RB 207, 9"
               prefix-icon="text"
-              outer-class="max-w-full"
-          />
-          <FormKit
-              type="number"
-              number
-              name="number"
-              label="Nummer"
-              placeholder="65"
-              prefix-icon="number"
               outer-class="max-w-full"
           />
           <FormKit
@@ -84,42 +86,44 @@ const submit = async (formData: Partial<CitizenshipInput>) => {
               prefix-icon="text"
               outer-class="max-w-full"
           />
-        </div>
-        <Divider/>
-        <div class="flex flex-col gap-2 md:grid md:grid-cols-2 md:space-x-5">
-          <div class="flex flex-col">
-            <FormKit
-                type="select"
-                multiple
-                name="persons"
-                label="Eingebürgerte Personen"
-                outer-class="max-w-full"
-                select-icon="select"
-                :options="[{ label: 'Keine Auswahl', value: null },
-              ...persons as any
-              ]"
-                help="Halten Sie die Strg-Taste gedrückt, um mehrere Quellen auszuwählen"
-            />
-            <button type="button" @click="value.persons = []" class="border border-blue-600 text-blue-600 p-1 rounded-md shadow-sm hover:shadow-md bg-red-100 font-bold max-w-1/7 mx-auto">Alle Personen entfernen</button>
-          </div>
           <FormKit
               type="select"
-              name="source"
-              label="Quelle"
+              name="person"
+              label="Eingebürgerte Person"
+              outer-class="max-w-full"
+              select-icon="select"
+              :options="[{ label: 'Keine Auswahl', value: null },
+              ...persons as any
+              ]"
+          />
+          <FormKit
+              type="textarea"
+              name="entryText"
+              label="Text des Eintrags"
+              prefix-icon="list"
+              outer-class="max-w-full"
+          />
+        </div>
+        <Divider/>
+        <div class="flex flex-col gap-3">
+          <p class="montserrat-headline font-semibold text-black text-xl">Ergänzende Informationen</p>
+          <FormKit
+              type="select"
+              name="secondarySource"
+              label="Sekundärquelle"
               outer-class="max-w-full"
               select-icon="select"
               :options="[{ label: 'Keine Auswahl', value: null },
               ...sources as any
               ]"
           />
-        </div>
-        <Divider/>
-        <div class="flex flex-col gap-2 md:flex-row md:space-x-5">
           <FormKit
-              type="textarea"
-              name="entryText"
-              label="Eintrag als Fließtext"
-              prefix-icon="list"
+              type="number"
+              number
+              name="refNumber"
+              label="Referenz Mayer-Erlach"
+              placeholder="65"
+              prefix-icon="number"
               outer-class="max-w-full"
           />
           <FormKit
@@ -129,9 +133,6 @@ const submit = async (formData: Partial<CitizenshipInput>) => {
               prefix-icon="list"
               outer-class="max-w-full"
           />
-        </div>
-        <Divider/>
-        <div class="flex flex-col gap-2 md:flex-row md:space-x-5">
           <FormKit
               type="textarea"
               name="internalNotes"
@@ -153,7 +154,7 @@ const submit = async (formData: Partial<CitizenshipInput>) => {
         <template #legend>
           <div class="montserrat-headline font-semibold text-black text-xl">Eingabe-Vorschau</div>
         </template>
-        <div class="max-h-[500px] overflow-y-auto bg-gray-100 border border-gray-300 rounded-md">
+        <div class="max-h-[30vh] overflow-y-auto bg-gray-100 border border-gray-200 rounded-md">
           <pre wrap class="text-sm p-2">{{ value }}</pre>
         </div>
       </Fieldset>
