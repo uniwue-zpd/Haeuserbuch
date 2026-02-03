@@ -57,9 +57,10 @@ public class CitizenshipService {
      */
     @Transactional
     @CacheEvict(value = "citizenships", allEntries = true)
-    public void createCitizenship(CitizenshipDTO citizenshipDTO) {
-        Citizenship citizenship = citizenshipMapper.CitizenshipDTOToCitizenship(citizenshipDTO);
-        citizenshipRepository.save(citizenship);
+    public CitizenshipDTO createCitizenship(CitizenshipDTO citizenshipDTO) {
+        return citizenshipMapper.CitizenshipToDTO(
+                citizenshipRepository.save(citizenshipMapper.DTOToCitizenship(citizenshipDTO))
+        );
     }
 
     /**
@@ -69,8 +70,8 @@ public class CitizenshipService {
      */
     @Transactional
     @CacheEvict(value = "citizenships", allEntries = true)
-    public void updateCitizenship(Long id, CitizenshipDTO updatedCitizenshipDTO) {
-        citizenshipRepository.findById(id)
+    public CitizenshipDTO updateCitizenship(Long id, CitizenshipDTO updatedCitizenshipDTO) {
+        return citizenshipRepository.findById(id)
                 .map(existingCitizenship -> {
                     existingCitizenship.setSignature(updatedCitizenshipDTO.getSignature());
                     existingCitizenship.setPerson(personMapper.PreviewDTOToPerson(updatedCitizenshipDTO.getPerson()));
@@ -82,7 +83,8 @@ public class CitizenshipService {
                     existingCitizenship.setAddendum(updatedCitizenshipDTO.getAddendum());
                     existingCitizenship.setInternalNotes(updatedCitizenshipDTO.getInternalNotes());
                     existingCitizenship.setGeneralNotes(updatedCitizenshipDTO.getGeneralNotes());
-                    return citizenshipRepository.save(existingCitizenship);
+                    Citizenship saved = citizenshipRepository.save(existingCitizenship);
+                    return citizenshipMapper.CitizenshipToDTO(saved);
                 })
                 .orElseThrow(() -> new EntityNotFoundException("Citizenship with id '" + id + "' does not exist"));
     }

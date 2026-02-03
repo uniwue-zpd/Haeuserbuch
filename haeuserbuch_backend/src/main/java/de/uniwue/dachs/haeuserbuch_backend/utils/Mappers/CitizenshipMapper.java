@@ -14,7 +14,7 @@ public class CitizenshipMapper {
         this.sourceMapper = sourceMapper;
     }
 
-    public Citizenship CitizenshipDTOToCitizenship(CitizenshipDTO citizenshipDTO) {
+    public Citizenship DTOToCitizenship(CitizenshipDTO citizenshipDTO) {
         Citizenship citizenship = new Citizenship();
         citizenship.setSignature(citizenshipDTO.getSignature());
         citizenship.setPerson(personMapper.PreviewDTOToPerson(citizenshipDTO.getPerson()));

@@ -1,7 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.controller;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.CitizenshipDTO;
-import de.uniwue.dachs.haeuserbuch_backend.model.Citizenship;
 import de.uniwue.dachs.haeuserbuch_backend.service.CitizenshipService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,19 +30,19 @@ public class CitizenshipController {
     }
 
     @PostMapping
-    public ResponseEntity<Citizenship> createCitizenship(@RequestBody CitizenshipDTO citizenshipDTO) {
-        citizenshipService.createCitizenship(citizenshipDTO);
-        return ResponseEntity.status(201).build();
+    public ResponseEntity<CitizenshipDTO> createCitizenship(@RequestBody CitizenshipDTO citizenshipDTO) {
+        CitizenshipDTO createdCitizenship = citizenshipService.createCitizenship(citizenshipDTO);
+        return ResponseEntity.status(201).body(createdCitizenship);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateCitizenship(@PathVariable Long id, @RequestBody CitizenshipDTO citizenshipDTO) {
+    public ResponseEntity<CitizenshipDTO> updateCitizenship(@PathVariable Long id, @RequestBody CitizenshipDTO citizenshipDTO) {
         try {
-            citizenshipService.updateCitizenship(id, citizenshipDTO);
+            CitizenshipDTO citizenship = citizenshipService.updateCitizenship(id, citizenshipDTO);
+            return ResponseEntity.status(200).body(citizenship);
         } catch (Exception e) {
             return ResponseEntity.status(404).build();
         }
-        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
