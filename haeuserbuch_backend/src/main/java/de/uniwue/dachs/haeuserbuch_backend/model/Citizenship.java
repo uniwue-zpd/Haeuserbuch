@@ -4,9 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.Set;
-
+/**
+ * Entity representing a citizenship record associated with a person, including sources and relevant details
+ */
 @Entity
 @Table(name = "CITIZENSHIP")
 @Getter
@@ -14,19 +14,19 @@ import java.util.Set;
 public class Citizenship extends BaseEntity {
     private String signature;
 
-    @ManyToMany
-    @JoinTable(
-            name = "citizenship_person",
-            joinColumns = @JoinColumn(name = "citizenship_id"),
-            inverseJoinColumns = @JoinColumn(name = "person_id")
-    )
-    private Set<Person> persons = new HashSet<>();
+    private Long refNumber;
+
+    @ManyToOne
+    @JoinColumn(name = "person_id")
+    private Person person;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "source_id", nullable = false)
-    private Source source;
+    @JoinColumn(name = "primary_source_id", nullable = false)
+    private Source primarySource;
 
-    private Long number;
+    @ManyToOne
+    @JoinColumn(name = "secondary_source_id")
+    private Source secondarySource;
 
     private String date;
 

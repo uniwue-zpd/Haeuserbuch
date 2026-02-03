@@ -1,7 +1,7 @@
 export const usePersonStore = defineStore("person", () => {
     // State
-    const persons = ref<Person[]>([]);
-    const current_person = ref<Person | null>(null);
+    const persons = ref<PersonDTO[]>([]);
+    const current_person = ref<PersonDTO | null>(null);
 
     // Getters
     const isLoaded = computed(() => persons.value.length > 0);
@@ -15,7 +15,7 @@ export const usePersonStore = defineStore("person", () => {
                 console.error("Error fetching persons:", error.value);
                 return;
             }
-            persons.value = data.value as Person[];
+            persons.value = data.value as PersonDTO[];
         }
     }
 
@@ -31,13 +31,13 @@ export const usePersonStore = defineStore("person", () => {
                     console.error(`Error fetching person by ID: ${ id }`, error.value);
                     return;
                 }
-                current_person.value = data.value as Person;
+                current_person.value = data.value as PersonDTO;
             }
         }
     }
 
         // Create new person
-    async function createPerson(payload: Partial<Person>) {
+    async function createPerson(payload: Partial<PersonDTO>) {
         const { data, error } = await useFetch('/api/persons', {
             method: 'POST',
             body: payload,
@@ -46,17 +46,17 @@ export const usePersonStore = defineStore("person", () => {
             console.error("Error creating person:", error.value);
             return;
         }
-        persons.value.push(data.value as Person);
+        persons.value.push(data.value as PersonDTO);
         return data.value;
     }
 
         // Update existing person
-    async function updatePerson(payload: Partial<Person>, id: number) {
+    async function updatePerson(payload: Partial<PersonDTO>, id: number) {
         if (persons.value.length === 0) {
             console.error("Persons data is not loaded");
             return;
         }
-        const { data, error } = await useFetch<Person>(`/api/persons/${id}`, {
+        const { data, error } = await useFetch<PersonDTO>(`/api/persons/${id}`, {
             method: 'PUT',
             body: payload,
         });
@@ -64,7 +64,7 @@ export const usePersonStore = defineStore("person", () => {
             console.error("Error updating person:", error.value);
             return;
         }
-        const updatedPerson = data.value as Person;
+        const updatedPerson = data.value as PersonDTO;
         const index = persons.value.findIndex(person => person.id === id);
         if (index !== -1) persons.value[index] = updatedPerson;
         if (current_person.value?.id === id) current_person.value = updatedPerson;

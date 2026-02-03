@@ -2,14 +2,42 @@
 const props = defineProps<{
   header: string;
   action: 'create' | 'edit';
-  person?: Person;
+  person?: PersonDTO;
 }>();
 
 const toast = useToast();
 const submitted = ref(false);
 
 const person_store = usePersonStore();
-type PersonInput = Omit<Person, 'id' | 'createdBy' | 'createdDate' | 'lastModifiedBy' | 'lastModifiedDate'>;
+const place_store = usePlaceStore();
+const places = computed(() => (place_store.places?.features ?? []).map(
+    (p) => {
+      const props = p.properties as PlaceProperties;
+      return {
+        label: props.realName,
+        value: {
+          id: p.id,
+          realName: props.realName,
+          altNames: props.altNames,
+        }
+      }
+    }
+));
+const building_store = useBuildingStore();
+const buildings = computed(() => (building_store.buildings?.features ?? []).map(
+    (b) => {
+      const props = b.properties as BuildingProperties;
+      return {
+        label: props.districtHouseNumber,
+        value: {
+          id: b.id,
+          districtHouseNumber: props.districtHouseNumber
+        }
+      }
+    }
+));
+
+type PersonInput = Omit<PersonDTO, 'id' | 'createdBy' | 'createdDate' | 'lastModifiedBy' | 'lastModifiedDate'>;
 
 const submit = async (formData: Partial<PersonInput>) => {
   try {
@@ -51,7 +79,7 @@ const submit = async (formData: Partial<PersonInput>) => {
         :key="props.person?.id || 'create'"
         #default="{ value }"
     >
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-2 p-2 bg-gray-100 border border-gray-300 rounded-md shadow-md">
         <div class="flex flex-row space-x-5">
           <FormKit
               type="text"
@@ -76,13 +104,32 @@ const submit = async (formData: Partial<PersonInput>) => {
             outer-class="max-w-full"
             help="Tragen Sie hier den vollen Namen der Person ein, auch wenn dieser mit dem Vor- und Nachnamen identisch ist"
         />
+        <div class="max-h-[30vh] overflow-y-auto border border-gray-300 rounded-md p-2 bg-gray-200">
+          <FormKit type="list" :value="[]" name="altNames" dynamic #default="{ items, node, value }">
+            <FormKit
+                v-for="(item, index) in items"
+                :key="item"
+                :index="index"
+                label="Namensvariationen"
+                suffix-icon="trash"
+                @suffix-icon-click="() => node.input(value?.filter((_, i) => i !== index))"
+                :sections-schema="{ suffixIcon: { $el: 'button', attrs: { type: 'button' } } }"
+                outer-class="max-w-full"
+            />
+            <button
+                type="button"
+                @click="() => node.input(value?.concat(''))"
+                class="border border-blue-600 text-blue-600 p-1 rounded-md shadow-sm hover:shadow-md bg-red-100 font-bold max-w-1/7 mx-auto"
+            >Weitere Namen hinzufügen</button>
+          </FormKit>
+        </div>
         <FormKit
             type="select"
             name="sex"
             label="Geschlecht"
             :options="[
                     { label: 'unbekannt', value: null },
-                    { label: 'männlich', value: 'mänlich' },
+                    { label: 'männlich', value: 'männlich' },
                     { label: 'weiblich', value: 'weiblich' }
                   ]"
             select-icon="select"
@@ -105,6 +152,16 @@ const submit = async (formData: Partial<PersonInput>) => {
               help="Standardisierte Berufskategorie"
           />
         </div>
+        <FormKit
+            type="select"
+            name="associatedBuilding"
+            label="Erwähntes Gebäude"
+            outer-class="max-w-full"
+            select-icon="select"
+            :options="[{ label: 'Keine Auswahl', value: null },
+            ...buildings as any
+            ]"
+        />
         <div class="flex flex-row space-x-5">
           <FormKit
               type="select"
@@ -126,6 +183,42 @@ const submit = async (formData: Partial<PersonInput>) => {
               outer-class="max-w-full"
           />
         </div>
+        <FormKit type="group" name="origin">
+          <div class="flex flex-col gap-2 p-2 bg-gray-200 border border-gray-300 rounded-md shadow-sm">
+            <FormKit
+                type="text"
+                name="originalText"
+                label="Eingetragener Ortsname"
+                prefix-icon="text"
+                outer-class="max-w-full"
+            />
+            <FormKit
+                type="select"
+                multiple
+                name="places"
+                label="Mögliche Herkunftsorte"
+                outer-class="max-w-full"
+                select-icon="select"
+                :options="[{ label: 'Keine Auswahl', value: null },
+                ...places as any
+                ]"
+                help="Halten Sie die Strg-Taste gedrückt, um mehrere Orte auszuwählen"
+            />
+            <FormKit
+                type="select"
+                name="certainty"
+                label="Herkunftsort lokalisierbar"
+                :options="[
+                    { label: 'Unbekannt', value: null },
+                    { label: 'Nicht identifizierbar', value: 'UNKNOWN' },
+                    { label: 'Unsicher', value: 'AMBIGUOUS' },
+                    { label: 'Sicher', value: 'IDENTIFIED' }
+                  ]"
+                select-icon="select"
+                outer-class="max-w-full"
+            />
+          </div>
+        </FormKit>
         <FormKit
             type="textarea"
             name="internalNotes"
@@ -140,16 +233,20 @@ const submit = async (formData: Partial<PersonInput>) => {
             prefix-icon="list"
             outer-class="max-w-full"
         />
-        <div class="border-solid border-2 rounded-md p-5 bg-[#F1F2F5] mb-2">
-          <div class="font-mono">JSON-Preview</div>
-          <hr>
-          <pre wrap class="text-sm">{{ value }}</pre>
-        </div>
-        <FormKit
-            type="submit"
-            label="Erstellen"
-        />
       </div>
+      <!-- Preview of the input values -->
+      <Fieldset class="mb-4 mt-4">
+        <template #legend>
+          <div class="montserrat-headline font-semibold text-black text-xl">Eingabe-Vorschau</div>
+        </template>
+        <div class="max-h-[500px] overflow-y-auto bg-gray-100 border border-gray-300 rounded-md">
+          <pre wrap class="text-sm p-2">{{ value }}</pre>
+        </div>
+      </Fieldset>
+      <FormKit
+          type="submit"
+          :label="props.action === 'create' ? 'Erstellen' : 'Ändern'"
+      />
     </FormKit>
   </div>
 </template>

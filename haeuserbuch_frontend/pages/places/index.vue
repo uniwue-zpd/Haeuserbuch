@@ -8,6 +8,17 @@ import {FilterMatchMode} from "@primevue/core";
 const place_store = usePlaceStore();
 const tile_store = useTileStore();
 const places = computed(() => place_store.places);
+const places_datatable = computed(() => (place_store.places?.features ?? []).map(
+    (p) => {
+      const props = p.properties as PlaceProperties;
+      return {
+        type: 'Feature',
+        id: p.id,
+        properties: props,
+        geometry: p.geometry as Point
+      }
+    }
+));
 const sources = computed(() => tile_store.sources);
 const layers = computed(() => tile_store.layers);
 let map: maplibregl.Map | null = null;
@@ -95,7 +106,7 @@ onBeforeUnmount(() => {
     <Divider/>
     <div v-show="show_datatable">
       <DataTable
-          :value="place_store.places?.features"
+          :value="places_datatable"
           v-model:filters="filters" filter-display="row"
           :global-filter-fields="['properties.realName']"
           paginator :rows="10" stripedRows
@@ -151,7 +162,7 @@ onBeforeUnmount(() => {
             :sortable="true"
         >
           <template #body="slotProps">
-            <i :class="[slotProps.data.geometry.coordinates ? 'pi pi-check text-green-500' : 'pi pi-times text-red-500']"/>
+            <i :class="[slotProps.data.geometry ? 'pi pi-check text-green-500' : 'pi pi-times text-red-500']"/>
           </template>
         </Column>
       </DataTable>

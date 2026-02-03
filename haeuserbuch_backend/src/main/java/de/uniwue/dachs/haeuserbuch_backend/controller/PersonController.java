@@ -1,7 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.controller;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PersonDTO;
-import de.uniwue.dachs.haeuserbuch_backend.model.Person;
 import de.uniwue.dachs.haeuserbuch_backend.service.PersonService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,17 +30,17 @@ public class PersonController {
     }
 
     @PostMapping
-    public ResponseEntity<Person> createPerson(@RequestBody PersonDTO personDTO) {
-        personService.createPerson(personDTO);
-        return ResponseEntity.status(201).build();
+    public ResponseEntity<PersonDTO> createPerson(@RequestBody PersonDTO personDTO) {
+        PersonDTO createdPerson = personService.createPerson(personDTO);
+        return ResponseEntity.status(201).body(createdPerson);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Person> updatePerson(@PathVariable Long id, @RequestBody PersonDTO updatedPerson) {
-        Person person = personService.updatePerson(id, updatedPerson);
-        if (person != null) {
-            return ResponseEntity.status(201).body(person);
-        } else {
+    public ResponseEntity<PersonDTO> updatePerson(@PathVariable Long id, @RequestBody PersonDTO updatedPerson) {
+        try {
+            PersonDTO person = personService.updatePerson(id, updatedPerson);
+            return ResponseEntity.status(200).body(person);
+        } catch (Exception e) {
             return ResponseEntity.status(404).build();
         }
     }

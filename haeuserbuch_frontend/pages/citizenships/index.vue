@@ -6,9 +6,7 @@ const citizenship_store = useCitizenshipStore();
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  number: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  'source.title': { value: null, matchMode: FilterMatchMode.CONTAINS },
-  'place.realName': { value: null, matchMode: FilterMatchMode.CONTAINS },
+  refNumber: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
 useHead(() => ({
@@ -40,7 +38,7 @@ useHead(() => ({
         <DataTable
             v-model:filters="filters"
             :value="citizenship_store.citizenships"
-            :global-filter-fields="['signature', 'source.title', 'place.realName', 'number', 'date']"
+            :global-filter-fields="['signature', 'primarySource.title', 'refNumber', 'date']"
             filter-display="row"
             paginator :rows="10"
         >
@@ -58,46 +56,64 @@ useHead(() => ({
               </IconField>
             </div>
           </template>
-          <Column field="number" header="Nummer" :sortable="true">
+          <Column field="refNumber" header="Nummer (Mayer-Erlach)" :sortable="true">
             <template #body="slotProps">
               <NuxtLink
-                  :to="`/citizenships/${slotProps.data.id}`"
+                  :to="`/citizenships/${ slotProps.data.id }`"
                   class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md"
                   prefetch
               >
-                {{ slotProps.data.number }}
+                {{ slotProps.data.refNumber }}
               </NuxtLink>
             </template>
             <template #filter="{ filterModel, filterCallback }">
               <InputText
                   v-model="filterModel.value"
                   type="text" @input="filterCallback()"
-                  placeholder="Nach Nummern suchen"
+                  placeholder="Durchsuchen"
               />
             </template>
           </Column>
-          <Column field="signature" header="Signatur" class="roboto-plain" :sortable="true" />
-          <Column field="persons" header="Personen" class="roboto-plain">
+          <Column field="signature" header="Signatur" class="roboto-plain" :sortable="true" style="width: 20%"/>
+          <Column field="person" header="Eingebürgerte Person" class="roboto-plain" style="width: 20%">
             <template #body="slotProps">
-              <div v-if="slotProps.data.persons.length > 0">
-                <ul class="list-disc list-inside">
-                  <li v-for="(person, index) in slotProps.data.persons" :key="index">
-                    <NuxtLink :to="`/persons/${person.id}`">{{ person.fullName }}</NuxtLink>
-                  </li>
-                </ul>
-              </div>
-              <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
-            </template>
-          </Column>
-          <Column field="date" header="Datum" class="roboto-plain" :sortable="true" />
-          <Column field="source" header="Quelle" class="roboto-plain" :sortable="true">
-            <template #body="slotProps">
-              <div v-if="slotProps.data.source">
-                <NuxtLink :to="`/sources/${slotProps.data.source.id}`">
-                  {{ slotProps.data.source.title }}
+              <div v-if="slotProps.data.person">
+                <NuxtLink
+                    :to="`/persons/${ slotProps.data.person.id }`"
+                    class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md"
+                    prefetch
+                >
+                  {{ slotProps.data.person.firstName }} {{ slotProps.data.person.lastName }}
                 </NuxtLink>
               </div>
-              <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
+              <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
+            </template>
+          </Column>
+          <Column field="date" header="Datum" class="roboto-plain" :sortable="true" style="width: 15%"/>
+          <Column field="primarySource.title" header="Primärquelle" class="roboto-plain" :sortable="true" style="width: 15%">
+            <template #body="slotProps">
+              <div v-if="slotProps.data.primarySource">
+                <NuxtLink
+                    :to="`/sources/${ slotProps.data.primarySource.id }`"
+                    class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md"
+                >
+                  {{ slotProps.data.primarySource.title }}
+                </NuxtLink>
+              </div>
+              <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
+            </template>
+          </Column>
+          <Column field="secondarySource" header="Sekundärquelle" class="roboto-plain" :sortable="true" style="width: 15%">
+            <template #body="slotProps">
+              <div v-if="slotProps.data.secondarySource">
+                <NuxtLink
+                    :to="`/sources/${ slotProps.data.secondarySource.id }`"
+                    class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md"
+                >
+                  {{ slotProps.data.secondarySource.title }}
+                </NuxtLink>
+              </div>
+              <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
             </template>
           </Column>
         </DataTable>

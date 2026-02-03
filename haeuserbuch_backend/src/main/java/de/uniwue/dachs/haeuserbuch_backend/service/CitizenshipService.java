@@ -28,7 +28,10 @@ public class CitizenshipService {
         this.personMapper = personMapper;
     }
 
-    // GET all citizenships
+    /**
+     * GET all citizenships
+     * @return List of {@link CitizenshipDTO} objects
+     */
     @Cacheable("citizenships")
     public List<CitizenshipDTO> getAllCitizenships() {
         return citizenshipRepository.findAll().stream()
@@ -37,14 +40,21 @@ public class CitizenshipService {
                 .toList();
     }
 
-    // GET citizenship by ID
+    /**
+     * GET citizenship by id
+     * @param id of the citizenship
+     * @return Optional of {@link CitizenshipDTO}
+     */
     @Cacheable(value = "citizenships", key = "#id")
     public Optional<CitizenshipDTO> getCitizenshipById(Long id) {
         return citizenshipRepository.findById(id)
                 .map(citizenshipMapper::CitizenshipToDTO);
     }
 
-    // POST
+    /**
+     * POST create new citizenship
+     * @param citizenshipDTO to create
+     */
     @Transactional
     @CacheEvict(value = "citizenships", allEntries = true)
     public void createCitizenship(CitizenshipDTO citizenshipDTO) {
@@ -52,16 +62,21 @@ public class CitizenshipService {
         citizenshipRepository.save(citizenship);
     }
 
-    // PUT
+    /**
+     * PUT update existing citizenship
+     * @param id of the citizenship to update
+     * @param updatedCitizenshipDTO with updated data
+     */
     @Transactional
     @CacheEvict(value = "citizenships", allEntries = true)
     public void updateCitizenship(Long id, CitizenshipDTO updatedCitizenshipDTO) {
         citizenshipRepository.findById(id)
                 .map(existingCitizenship -> {
                     existingCitizenship.setSignature(updatedCitizenshipDTO.getSignature());
-                    existingCitizenship.setPersons(personMapper.PersonPreviewDTOsToPersons(updatedCitizenshipDTO.getPersons()));
-                    existingCitizenship.setSource(sourceMapper.SourceDTOToSource(updatedCitizenshipDTO.getSource()));
-                    existingCitizenship.setNumber(updatedCitizenshipDTO.getNumber());
+                    existingCitizenship.setPerson(personMapper.PreviewDTOToPerson(updatedCitizenshipDTO.getPerson()));
+                    existingCitizenship.setPrimarySource(sourceMapper.SourceDTOToSource(updatedCitizenshipDTO.getPrimarySource()));
+                    existingCitizenship.setSecondarySource(sourceMapper.SourceDTOToSource(updatedCitizenshipDTO.getSecondarySource()));
+                    existingCitizenship.setRefNumber(updatedCitizenshipDTO.getRefNumber());
                     existingCitizenship.setDate(updatedCitizenshipDTO.getDate());
                     existingCitizenship.setEntryText(updatedCitizenshipDTO.getEntryText());
                     existingCitizenship.setAddendum(updatedCitizenshipDTO.getAddendum());
@@ -72,7 +87,10 @@ public class CitizenshipService {
                 .orElseThrow(() -> new EntityNotFoundException("Citizenship with id '" + id + "' does not exist"));
     }
 
-    // DELETE
+    /**
+     * DELETE citizenship by id
+     * @param id of the citizenship to delete
+     */
     @Transactional
     @CacheEvict(value = "citizenships", allEntries = true)
     public void deleteCitizenship(Long id) {

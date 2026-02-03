@@ -17,9 +17,10 @@ public class CitizenshipMapper {
     public Citizenship CitizenshipDTOToCitizenship(CitizenshipDTO citizenshipDTO) {
         Citizenship citizenship = new Citizenship();
         citizenship.setSignature(citizenshipDTO.getSignature());
-        citizenship.setPersons(personMapper.PersonPreviewDTOsToPersons(citizenshipDTO.getPersons()));
-        citizenship.setSource(sourceMapper.SourceDTOToSource(citizenshipDTO.getSource()));
-        citizenship.setNumber(citizenshipDTO.getNumber());
+        citizenship.setPerson(personMapper.PreviewDTOToPerson(citizenshipDTO.getPerson()));
+        citizenship.setPrimarySource(sourceMapper.SourceDTOToSource(citizenshipDTO.getPrimarySource()));
+        citizenship.setSecondarySource(sourceMapper.SourceDTOToSource(citizenshipDTO.getSecondarySource()));
+        citizenship.setRefNumber(citizenshipDTO.getRefNumber());
         citizenship.setDate(citizenshipDTO.getDate());
         citizenship.setEntryText(citizenshipDTO.getEntryText());
         citizenship.setAddendum(citizenshipDTO.getAddendum());
@@ -32,9 +33,10 @@ public class CitizenshipMapper {
         CitizenshipDTO citizenshipDTO = new CitizenshipDTO();
         citizenshipDTO.setId(citizenship.getId());
         citizenshipDTO.setSignature(citizenship.getSignature());
-        citizenshipDTO.setPersons(personMapper.PersonsToPreviewDTOs(citizenship.getPersons()));
-        citizenshipDTO.setSource(sourceMapper.SourceToDTO(citizenship.getSource()));
-        citizenshipDTO.setNumber(citizenship.getNumber());
+        citizenshipDTO.setPerson(personMapper.PersonToPreviewDTO(citizenship.getPerson()));
+        citizenshipDTO.setPrimarySource(sourceMapper.SourceToDTO(citizenship.getPrimarySource()));
+        citizenshipDTO.setSecondarySource(sourceMapper.SourceToDTO(citizenship.getSecondarySource()));
+        citizenshipDTO.setRefNumber(citizenship.getRefNumber());
         citizenshipDTO.setDate(citizenship.getDate());
         citizenshipDTO.setEntryText(citizenship.getEntryText());
         citizenshipDTO.setAddendum(citizenship.getAddendum());
