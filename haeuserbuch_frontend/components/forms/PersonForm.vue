@@ -66,7 +66,7 @@ const submit = async (formData: Partial<PersonInput>) => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-2">
+  <div class="flex flex-col gap-2 w-[80%] mx-auto">
     <h1 class="text-2xl montserrat-headline-headline text-black font-bold">{{ props.header }}</h1>
     <p class="roboto-plain">Füllen Sie bitte die untenstehenden Felder aus, um ein Objekt zu erstellen oder anzupassen.</p>
     <FormKit
@@ -79,7 +79,7 @@ const submit = async (formData: Partial<PersonInput>) => {
         :key="props.person?.id || 'create'"
         #default="{ value }"
     >
-      <div class="flex flex-col gap-2 p-2 bg-gray-100 border border-gray-300 rounded-md shadow-md">
+      <div class="flex flex-col gap-3 p-4 bg-gray-100 border border-gray-200 rounded-md shadow-md">
         <div class="flex flex-row space-x-5">
           <FormKit
               type="text"
@@ -104,7 +104,7 @@ const submit = async (formData: Partial<PersonInput>) => {
             outer-class="max-w-full"
             help="Tragen Sie hier den vollen Namen der Person ein, auch wenn dieser mit dem Vor- und Nachnamen identisch ist"
         />
-        <div class="max-h-[30vh] overflow-y-auto border border-gray-300 rounded-md p-2 bg-gray-200">
+        <div class="max-h-[30vh] overflow-y-auto border border-gray-300 rounded-md p-4 bg-gray-200">
           <FormKit type="list" :value="[]" name="altNames" dynamic #default="{ items, node, value }">
             <FormKit
                 v-for="(item, index) in items"
@@ -184,7 +184,7 @@ const submit = async (formData: Partial<PersonInput>) => {
           />
         </div>
         <FormKit type="group" name="origin">
-          <div class="flex flex-col gap-2 p-2 bg-gray-200 border border-gray-300 rounded-md shadow-sm">
+          <div class="flex flex-col gap-2 p-4 bg-gray-200 border border-gray-300 rounded-md shadow-sm">
             <FormKit
                 type="text"
                 name="originalText"
@@ -239,7 +239,7 @@ const submit = async (formData: Partial<PersonInput>) => {
         <template #legend>
           <div class="montserrat-headline font-semibold text-black text-xl">Eingabe-Vorschau</div>
         </template>
-        <div class="max-h-[500px] overflow-y-auto bg-gray-100 border border-gray-300 rounded-md">
+        <div class="max-h-[500px] overflow-y-auto bg-gray-100 border border-gray-200 rounded-md">
           <pre wrap class="text-sm p-2">{{ value }}</pre>
         </div>
       </Fieldset>
