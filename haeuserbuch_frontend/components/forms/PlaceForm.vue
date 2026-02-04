@@ -70,6 +70,9 @@ const submit = async (formData: Partial<Feature>) => {
       toast.add({severity: 'success', summary: 'Erfolg', detail: 'Erfolgreich erstellt', life: 3000});
       const form = getNode('place_creation');
       form?.reset();
+      coordinates.value = null;
+      marker?.remove();
+      marker = null;
     } else if (props.action === 'edit' && props.place?.id) {
       const id = props.place.id;
       await place_store.updatePlace(formData, props.place.id);
@@ -132,7 +135,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-2">
+  <div class="flex flex-col gap-2 w-[80%] mx-auto">
     <h1 class="text-2xl montserrat-headline-headline text-black font-bold">{{ props.header }}</h1>
     <p class="roboto-plain">
       Füllen Sie bitte die untenstehenden Felder aus, um ein Objekt zu erstellen oder anzupassen.
@@ -149,7 +152,7 @@ onBeforeUnmount(() => {
         :key="props.place?.id || 'create'"
         #default="{ value }"
     >
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-2 rounded-md shadow-md border border-gray-200 mb-4 p-4 bg-gray-100">
         <FormKit type="hidden" name="type" value="Feature" />
         <FormKit type="group" name="properties">
           <div class="flex flex-col gap-2">
@@ -166,7 +169,7 @@ onBeforeUnmount(() => {
                 placeholder="Estenfeld"
                 outer-class="max-w-full"
             />
-            <div class="max-h-[30vh] overflow-y-auto border border-gray-300 rounded-md p-2 bg-[#F9F9F9]">
+            <div class="max-h-[30vh] overflow-y-auto border border-gray-300 rounded-md p-4 bg-gray-200">
               <FormKit type="list" :value="[]" name="altNames" dynamic #default="{ items, node, value }">
                 <FormKit
                     v-for="(item, index) in items"
