@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {ref} from "vue";
 import {FilterMatchMode} from "@primevue/core";
+import {title_shortener} from "~/utils/helpers";
 
 const citizenship_store = useCitizenshipStore();
 
@@ -74,13 +75,13 @@ useHead(() => ({
               />
             </template>
           </Column>
-          <Column field="signature" header="Signatur" class="roboto-plain" :sortable="true" style="width: 20%"/>
-          <Column field="person" header="Eingebürgerte Person" class="roboto-plain" style="width: 20%">
+          <Column field="signature" header="Signatur" class="roboto-plain text-nowrap" :sortable="true"/>
+          <Column field="person" header="Eingebürgerte Person" class="roboto-plain">
             <template #body="slotProps">
               <div v-if="slotProps.data.person">
                 <NuxtLink
                     :to="`/persons/${ slotProps.data.person.id }`"
-                    class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md"
+                    class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md text-nowrap"
                     prefetch
                 >
                   {{ slotProps.data.person.firstName }} {{ slotProps.data.person.lastName }}
@@ -89,28 +90,35 @@ useHead(() => ({
               <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
             </template>
           </Column>
-          <Column field="date" header="Datum" class="roboto-plain" :sortable="true" style="width: 15%"/>
-          <Column field="primarySource.title" header="Primärquelle" class="roboto-plain" :sortable="true" style="width: 15%">
+          <Column field="date" header="Datum" class="roboto-plain" :sortable="true">
+            <template #body="slotProps">
+              <div v-if="slotProps.data.date" class="text-nowrap">
+                {{ slotProps.data.date }}
+              </div>
+              <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
+            </template>
+          </Column>
+          <Column field="primarySource.title" header="Primärquelle" class="roboto-plain" :sortable="true">
             <template #body="slotProps">
               <div v-if="slotProps.data.primarySource">
                 <NuxtLink
                     :to="`/sources/${ slotProps.data.primarySource.id }`"
-                    class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md"
+                    class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md text-nowrap"
                 >
-                  {{ slotProps.data.primarySource.title }}
+                  {{ title_shortener(slotProps.data.primarySource.title) }}
                 </NuxtLink>
               </div>
               <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
             </template>
           </Column>
-          <Column field="secondarySource" header="Sekundärquelle" class="roboto-plain" :sortable="true" style="width: 15%">
+          <Column field="secondarySource" header="Sekundärquelle" class="roboto-plain" :sortable="true">
             <template #body="slotProps">
               <div v-if="slotProps.data.secondarySource">
                 <NuxtLink
                     :to="`/sources/${ slotProps.data.secondarySource.id }`"
-                    class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md"
+                    class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md text-nowrap"
                 >
-                  {{ slotProps.data.secondarySource.title }}
+                  {{ title_shortener(slotProps.data.secondarySource.title) }}
                 </NuxtLink>
               </div>
               <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>

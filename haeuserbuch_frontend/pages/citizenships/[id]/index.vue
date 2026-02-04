@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import TaskBar from "~/components/UI/page_actions/TaskBar.vue";
+import {title_shortener} from "~/utils/helpers";
 
 const citizenship_store = useCitizenshipStore();
 
@@ -49,7 +50,7 @@ useHead(() => ({
           <td class="py-4 pr-4 whitespace-nowrap font-bold">Primärquelle</td>
           <td class="py-4 whitespace-nowrap">
             <NuxtLink :to="`/sources/${ citizenship_item.primarySource.id }`" class="rounded-md shadow-md hover:shadow-lg p-2 bg-gray-200 font-medium">
-              {{ citizenship_item.primarySource.title }}
+              {{ citizenship_item.primarySource.title ? title_shortener(citizenship_item.primarySource.title) : citizenship_item.primarySource.title }}
             </NuxtLink>
           </td>
         </tr>
@@ -57,7 +58,7 @@ useHead(() => ({
           <td class="py-4 pr-4 whitespace-nowrap font-bold">Sekundärquelle</td>
           <td class="py-4 whitespace-nowrap">
             <NuxtLink :to="`/sources/${ citizenship_item.secondarySource.id }`" class="rounded-md shadow-md hover:shadow-lg p-2 bg-gray-200 font-medium">
-              {{ citizenship_item.secondarySource.title }}
+              {{ citizenship_item.secondarySource.title ? title_shortener(citizenship_item.secondarySource.title, 4) : citizenship_item.secondarySource.title }}
             </NuxtLink>
           </td>
         </tr>
