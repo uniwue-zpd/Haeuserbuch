@@ -49,16 +49,15 @@ public class PlaceService {
     // POST Create new place
     @Transactional
     @CacheEvict(value = "places", allEntries = true)
-    public void createPlace(Feature feature) {
-        Place place = placeMapper.FeatureToPlace(feature);
-        placeRepository.save(place);
+    public Feature createPlace(Feature feature) {
+        return placeMapper.PlaceToFeature(placeRepository.save(placeMapper.FeatureToPlace(feature)));
     }
 
     // PUT Update existing place
     @Transactional
     @CacheEvict(value = "places", allEntries = true)
-    public void updatePlace(Long id, Feature updatedFeature) {
-        placeRepository.findById(id).map(entity -> {
+    public Feature updatePlace(Long id, Feature updatedFeature) {
+        return placeRepository.findById(id).map(entity -> {
             PlaceProperties properties = (PlaceProperties) updatedFeature.getProperties();
             entity.setRealName(properties != null ? properties.getRealName() : null);
             entity.setAltNames(properties != null ? properties.getAltNames() : null);
@@ -75,7 +74,8 @@ public class PlaceService {
             } else {
                 entity.setCoordinates(null);
             }
-            return placeRepository.save(entity);
+            Place updatedPlace = placeRepository.save(entity);
+            return placeMapper.PlaceToFeature(updatedPlace);
         }).orElseThrow(() -> new NoSuchElementException("Place with ID " + id + " does not exist"));
     }
 

@@ -29,23 +29,19 @@ public class PlaceController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createPlace(@RequestBody Feature feature) {
-        try {
-            placeService.createPlace(feature);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(400).build();
-        }
-        return ResponseEntity.status(201).build();
+    public ResponseEntity<Feature> createPlace(@RequestBody Feature feature) {
+        Feature createdPlace = placeService.createPlace(feature);
+        return ResponseEntity.status(201).body(createdPlace);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updatePlace(@PathVariable Long id, @RequestBody Feature feature) {
+    public ResponseEntity<Feature> updatePlace(@PathVariable Long id, @RequestBody Feature feature) {
         try {
-            placeService.updatePlace(id, feature);
+            Feature updatedPlace = placeService.updatePlace(id, feature);
+            return ResponseEntity.status(200).body(updatedPlace);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(404).build();
         }
-        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
