@@ -78,13 +78,8 @@ public class PersonMapper {
     }
 
     public Person PreviewDTOToPerson(PersonPreviewDTO previewDTO) {
-        if (previewDTO == null) return null;
-        if (previewDTO.getId() != null) return personRepository.findById(previewDTO.getId()).orElse(null);
-        Person person = new Person();
-        person.setFirstName(previewDTO.getFirstName());
-        person.setLastName(previewDTO.getLastName());
-        personRepository.save(person);
-        return person;
+        if (previewDTO == null || previewDTO.getId() == null) return null;
+        return personRepository.findById(previewDTO.getId()).orElse(null);
     }
 
     public Set<Person> PreviewDTOsToPersons(Set<PersonPreviewDTO> previewDTOs) {

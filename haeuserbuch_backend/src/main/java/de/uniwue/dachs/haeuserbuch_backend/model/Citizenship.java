@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Entity representing a citizenship record associated with a person, including sources and relevant details
  */
@@ -19,6 +22,14 @@ public class Citizenship extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "person_id")
     private Person person;
+
+    @ManyToMany
+    @JoinTable(
+            name = "citizenship_mentioned_person",
+            joinColumns = @JoinColumn(name = "citizenship_id"),
+            inverseJoinColumns = @JoinColumn(name = "person_id")
+    )
+    private Set<Person> mentionedPersons = new HashSet<>();
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "primary_source_id", nullable = false)
