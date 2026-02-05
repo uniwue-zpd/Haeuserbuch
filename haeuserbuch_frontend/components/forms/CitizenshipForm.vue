@@ -16,6 +16,11 @@ type CitizenshipInput = Omit<CitizenshipDTO, 'id' | 'createdBy' | 'createdDate' 
 const sources = computed(() => source_store.sources.map(s => ({ label: s.title, value: { id: s.id, title: s.title } })));
 const persons = computed(() => person_store.persons.map(p => ({ label: `${p.firstName} ${p.lastName}`, value: { id: p.id, firstName: p.firstName, lastName: p.lastName } })));
 
+const mentionedPersonsInput = ref();
+const clearMentionedPersons = () => {
+  mentionedPersonsInput.value.node.input([]);
+}
+
 const submit = async (formData: Partial<CitizenshipInput>) => {
   try {
     if (props.action === 'create') {
@@ -96,6 +101,26 @@ const submit = async (formData: Partial<CitizenshipInput>) => {
               ...persons as any
               ]"
           />
+          <div class="flex flex-col gap-2 p-4 bg-gray-200 rounded-md border border-gray-300">
+            <FormKit
+                type="select"
+                ref="mentionedPersonsInput"
+                multiple
+                name="mentionedPersons"
+                label="Erwähnte Personen"
+                outer-class="max-w-full"
+                select-icon="select"
+                :options="persons as any"
+                help="Halten Sie die Strg-Taste gedrückt, um mehrere Quellen auszuwählen"
+            />
+            <button
+                type="button"
+                @click="clearMentionedPersons"
+                class="text-sm roboto-plain border border-red-600 text-red-600 p-1 rounded-md shadow-sm hover:shadow-md bg-white font-medium max-w-1/7 mx-auto"
+            >
+              Liste leeren
+            </button>
+          </div>
           <FormKit
               type="textarea"
               name="entryText"
