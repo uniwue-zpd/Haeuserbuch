@@ -53,6 +53,7 @@ useHead(() => ({
             :value="person_store.persons"
             :global-filter-fields="['fullName', 'sex', 'occupation', 'occupationCategory', 'confession', 'origin.realName']"
             filter-display="row"
+            paginator :rows="10" stripedRows
         >
           <template #header>
             <div class="flex flex-row justify-end">

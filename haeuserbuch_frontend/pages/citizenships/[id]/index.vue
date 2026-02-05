@@ -46,6 +46,18 @@ useHead(() => ({
             </NuxtLink>
           </td>
         </tr>
+        <tr v-if="citizenship_item.mentionedPersons.length > 0">
+          <td class="py-4 pr-4 whitespace-nowrap font-bold">Weitere erwähnte Personen</td>
+          <td class="py-4 whitespace-nowrap">
+            <div class="flex flex-wrap gap-5">
+              <div v-for="person in citizenship_item.mentionedPersons">
+                <NuxtLink :to="`/persons/${ person.id }`" class="rounded-md shadow-md hover:shadow-lg p-2 bg-gray-200 font-medium">
+                  {{ person.firstName }} {{ person.lastName }}
+                </NuxtLink>
+              </div>
+            </div>
+          </td>
+        </tr>
         <tr v-if="citizenship_item.primarySource">
           <td class="py-4 pr-4 whitespace-nowrap font-bold">Primärquelle</td>
           <td class="py-4 whitespace-nowrap">

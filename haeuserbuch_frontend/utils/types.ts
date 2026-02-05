@@ -63,6 +63,7 @@ export interface BuildingNameDTO {
 export interface CitizenshipDTO extends Auditable {
     signature: string | null;
     person: PersonPreviewDTO | null;
+    mentionedPersons: PersonPreviewDTO[] | [];
     primarySource: SourceDTO;
     secondarySource: SourceDTO | null;
     refNumber: number | null;
