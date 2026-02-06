@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -56,23 +57,25 @@ public class BuildingController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createBuilding(@RequestBody Feature feature) {
+    public ResponseEntity<Feature> createBuilding(@RequestBody Feature feature) {
         try {
-            buildingService.createBuilding(feature);
+            Feature createdFeature = buildingService.createBuilding(feature);
+            return ResponseEntity.status(201).body(createdFeature);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(400).build();
         }
-        return ResponseEntity.status(201).build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateBuilding(@PathVariable Long id, @RequestBody Feature feature) {
+    public ResponseEntity<Feature> updateBuilding(@PathVariable Long id, @RequestBody Feature feature) {
         try {
-            buildingService.updateBuilding(id, feature);
-        } catch (IllegalArgumentException e) {
+            Feature updatedFeature = buildingService.updateBuilding(id, feature);
+            return ResponseEntity.status(200).body(updatedFeature);
+        } catch (NoSuchElementException e) {
             return ResponseEntity.status(404).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).build();
         }
-        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
@@ -80,7 +83,7 @@ public class BuildingController {
         try {
             buildingService.deleteBuilding(id);
             return ResponseEntity.status(204).build();
-        } catch (Exception e) {
+        } catch (NoSuchElementException e) {
             return ResponseEntity.status(404).build();
         }
     }

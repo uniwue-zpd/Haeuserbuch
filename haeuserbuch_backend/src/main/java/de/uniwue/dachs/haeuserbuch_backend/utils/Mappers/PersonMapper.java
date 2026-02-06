@@ -34,7 +34,7 @@ public class PersonMapper {
         person.setSex(personDTO.getSex());
         person.setOccupation(personDTO.getOccupation());
         person.setOccupationCategory(personDTO.getOccupationCategory());
-        person.setAssociatedBuilding(buildingMapper.buildingDTOToBuilding(personDTO.getAssociatedBuilding()));
+        person.setAssociatedBuilding(buildingMapper.DTOToBuilding(personDTO.getAssociatedBuilding()));
         person.setIsCitizen(personDTO.getIsCitizen());
         person.setConfession(personDTO.getConfession());
         person.setOrigin(personOriginMapper.DTOToPersonOrigin(personDTO.getOrigin()));
@@ -57,7 +57,7 @@ public class PersonMapper {
         personDTO.setSex(person.getSex());
         personDTO.setOccupation(person.getOccupation());
         personDTO.setOccupationCategory(person.getOccupationCategory());
-        personDTO.setAssociatedBuilding(buildingMapper.buildingToBuildingDTO(person.getAssociatedBuilding()));
+        personDTO.setAssociatedBuilding(buildingMapper.buildingToDTO(person.getAssociatedBuilding()));
         personDTO.setIsCitizen(person.getIsCitizen());
         personDTO.setConfession(person.getConfession());
         personDTO.setOrigin(personOriginMapper.PersonOriginToDTO(person.getOrigin()));

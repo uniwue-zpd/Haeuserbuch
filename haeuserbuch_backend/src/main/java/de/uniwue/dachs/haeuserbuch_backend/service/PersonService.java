@@ -80,7 +80,7 @@ public class PersonService {
                     existingPerson.setSex(updatedPerson.getSex());
                     existingPerson.setOccupation(updatedPerson.getOccupation());
                     existingPerson.setOccupationCategory(updatedPerson.getOccupationCategory());
-                    existingPerson.setAssociatedBuilding(buildingMapper.buildingDTOToBuilding(updatedPerson.getAssociatedBuilding()));
+                    existingPerson.setAssociatedBuilding(buildingMapper.DTOToBuilding(updatedPerson.getAssociatedBuilding()));
                     existingPerson.setIsCitizen(updatedPerson.getIsCitizen());
                     existingPerson.setConfession(updatedPerson.getConfession());
                     existingPerson.setOrigin(personOriginMapper.DTOToPersonOrigin(updatedPerson.getOrigin()));

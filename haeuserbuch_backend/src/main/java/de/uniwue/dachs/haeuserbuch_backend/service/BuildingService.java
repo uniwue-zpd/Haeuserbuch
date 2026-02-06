@@ -43,26 +43,38 @@ public class BuildingService {
         this.addressMapper = addressMapper;
     }
 
-    // GET all buildings as feature collection
+    /**
+     * GET all buildings
+     * @return {@link FeatureCollection} containing all buildings as features or an empty {@link List} if no buildings are found
+     */
     @Cacheable("buildings")
     public FeatureCollection getAllBuildings() {
         FeatureCollection featureCollection = new FeatureCollection();
-        featureCollection.setFeatures(
-                buildingRepository.findAll().stream()
-                        .map(buildingMapper::BuildingToFeature)
-                        .sorted(Comparator.comparing(Feature::getId))
-                        .toList()
-        );
+        List<Building> buildings = buildingRepository.findAll();
+        featureCollection.setFeatures(buildingMapper.BuildingsToFeatures(buildings));
         return featureCollection;
     }
 
-    // GET building by its ID
+    /**
+     * GET building by ID
+     * @param id of the building
+     * @return {@link Optional} of {@link Feature} representing the building or an empty {@link Optional} if no building with the given ID is found
+     */
     @Cacheable(value = "buildings", key = "#id")
     public Optional<Feature> getBuildingById(Long id) {
         return buildingRepository.findById(id).map(buildingMapper::BuildingToFeature);
     }
 
-    // GET buildings based on search criteria
+    /**
+     * GET search buildings by district, quarter, or source
+     * @param districtId ID of the district
+     * @param districtName Name of the district
+     * @param quarterId ID of the quarter
+     * @param quarterName Name of the quarter
+     * @param sourceId ID of the source
+     * @param sourceName Name of the source
+     * @return {@link List} of {@link BuildingDTO} matching the search criteria or an empty {@link List} if no buildings match the criteria
+     */
     public List<BuildingDTO> searchBuildings(
             Long districtId,
             String districtName,
@@ -93,22 +105,36 @@ public class BuildingService {
         }
 
         List<Building> response = buildingRepository.findAll(spec);
-        return buildingMapper.buildingsToBuildingDTOs(response);
+        return buildingMapper.buildingsToDTOs(response);
     }
 
-    // POST Create new building
+    /**
+     * POST create a new building
+     * @param feature is a {@link Feature} object representing the building to create
+     * @return the created building as a {@link Feature} object or throws a {@link RuntimeException} if the creation fails due to invalid input data
+     */
     @Transactional
     @CacheEvict(value = "buildings", allEntries = true)
-    public void createBuilding(Feature feature) {
-        Building building = buildingMapper.FeatureToBuilding(feature);
-        buildingRepository.save(building);
+    public Feature createBuilding(Feature feature) {
+        try {
+            Building building = buildingMapper.FeatureToBuilding(feature);
+            Building savedBuilding = buildingRepository.save(building);
+            return buildingMapper.BuildingToFeature(savedBuilding);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Failed to create building: " + e.getMessage());
+        }
     }
 
-    // PUT Update existing building
+    /**
+     * PUT update an existing building
+     * @param id of the building to update
+     * @param updatedFeature is a {@link Feature} object containing the updated data for the building
+     * @return the updated building as a {@link Feature} object or throws a {@link NoSuchElementException} if no building with the given ID exists or a {@link IllegalArgumentException} if the update fails due to invalid input data
+     */
     @Transactional
     @CacheEvict(value = "buildings", allEntries = true)
-    public void updateBuilding(Long id, Feature updatedFeature) {
-        buildingRepository.findById(id).map(entity -> {
+    public Feature updateBuilding(Long id, Feature updatedFeature) {
+        return buildingRepository.findById(id).map(entity -> {
             BuildingProperties properties = (BuildingProperties) updatedFeature.getProperties();
             if (properties != null) {
                 Set<BuildingName> newNames = buildingNameMapper.BuildingNameDTOsToBuildingNames(properties.getNames());
@@ -141,16 +167,21 @@ public class BuildingService {
                     throw new IllegalArgumentException("Unsupported geometry type");
                 }
             }
-            return buildingRepository.save(entity);
+            Building updatedEntity = buildingRepository.save(entity);
+            return buildingMapper.BuildingToFeature(updatedEntity);
         }).orElseThrow(() -> new NoSuchElementException("Building with ID " + id + " does not exist"));
     }
 
-    // DELETE building by ID
+    /**
+     * DELETE a building by ID
+     * @param id of the building to delete
+     * @throws RuntimeException if no building with the given ID exists
+     */
     @Transactional
     @CacheEvict(value = "buildings", allEntries = true)
     public void deleteBuilding(Long id) {
         if (!buildingRepository.existsById(id)) {
-            throw new RuntimeException("Building with id '" + id + "' does not exist");
+            throw new NoSuchElementException("Building with id '" + id + "' does not exist");
         }
         buildingRepository.deleteById(id);
     }

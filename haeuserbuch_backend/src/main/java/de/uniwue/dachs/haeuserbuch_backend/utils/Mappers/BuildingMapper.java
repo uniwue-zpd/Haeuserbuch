@@ -73,6 +73,10 @@ public class BuildingMapper {
         return feature;
     }
 
+    public List<Feature> BuildingsToFeatures(List<Building> buildings) {
+        return buildings.stream().map(this::BuildingToFeature).filter(Objects::nonNull).toList();
+    }
+
     public Building FeatureToBuilding(Feature feature) {
         Building building = new Building();
         if (feature.getProperties() != null) {
@@ -107,18 +111,14 @@ public class BuildingMapper {
         return building;
     }
 
-    public Building buildingDTOToBuilding(BuildingDTO buildingDTO) {
+    public Building DTOToBuilding(BuildingDTO buildingDTO) {
         if (buildingDTO == null || buildingDTO.getId() == null) {
             return null;
         }
         return buildingRepository.findById(buildingDTO.getId()).orElse(null);
     }
 
-    public List<Building> buildingDTOsToBuildings(List<BuildingDTO> buildingDTOs) {
-        return buildingDTOs.stream().map(this::buildingDTOToBuilding).filter(Objects::nonNull).toList();
-    }
-
-    public BuildingDTO buildingToBuildingDTO(Building building) {
+    public BuildingDTO buildingToDTO(Building building) {
         if (building == null) return null;
         BuildingDTO buildingDTO = new BuildingDTO();
         buildingDTO.setId(building.getId());
@@ -126,9 +126,9 @@ public class BuildingMapper {
         return buildingDTO;
     }
 
-    public List<BuildingDTO> buildingsToBuildingDTOs(List<Building> buildings) {
+    public List<BuildingDTO> buildingsToDTOs(List<Building> buildings) {
         return buildings.stream()
-                .map(this::buildingToBuildingDTO)
+                .map(this::buildingToDTO)
                 .sorted(Comparator.comparing(BuildingDTO::getId))
                 .toList();
     }
