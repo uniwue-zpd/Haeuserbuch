@@ -65,6 +65,16 @@ const initialValue = computed(() => {
   return clone;
 });
 
+const primarySourcesRef = ref();
+const secondarySourcesRef = ref();
+const clearSources = (which: 'primary' | 'secondary') => {
+  if (which === 'primary') {
+    primarySourcesRef.value.node.input([]);
+  } else {
+    secondarySourcesRef.value.node.input([]);
+  }
+}
+
 const submit = async (formData: Partial<Feature>) => {
   try {
     if (props.action === 'create') {
@@ -96,7 +106,7 @@ onMounted(async () => {
   map = initMap(
       'form_map_building',
       center.value,
-      14,
+      17,
       0,
       sources.value as Record<string, RasterSourceSpecification>,
       // @ts-ignore
@@ -148,7 +158,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-2">
+  <div class="flex flex-col gap-4 w-[80%] mx-auto">
     <h1 class="text-2xl montserrat-headline-headline text-black font-bold">{{ props.header }}</h1>
     <p class="roboto-plain">
       Füllen Sie bitte die untenstehenden Felder aus, um ein Objekt zu erstellen oder anzupassen.
@@ -168,7 +178,7 @@ onBeforeUnmount(() => {
         :key="props.building?.id || 'create'"
         #default="{ value }"
     >
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-2 bg-gray-100 rounded-md shadow-md p-4 border border-gray-200 mb-4">
         <FormKit type="hidden" name="type" value="Feature" />
         <FormKit type="group" name="properties">
           <div class="flex flex-col gap-2">
@@ -178,7 +188,6 @@ onBeforeUnmount(() => {
                 value="building"
                 contenteditable="false"
             />
-            <Divider/>
             <FormKit type="list" :value="[]" name="names" dynamic #default="{ items, node, value }">
               <FormKit
                   type="group"
@@ -186,7 +195,7 @@ onBeforeUnmount(() => {
                   :key="item"
                   :index="index"
               >
-                <div class="flex flex-col gap-1 bg-gray-100 rounded-md shadow-md p-2 border border-gray-300">
+                <div class="flex flex-col gap-1 bg-gray-200 rounded-md p-4 border border-gray-300">
                   <div class="grid grid-cols-2 gap-2">
                     <FormKit
                         type="select"
@@ -223,7 +232,7 @@ onBeforeUnmount(() => {
                   <button
                       type="button"
                       @click="() => node.input(value?.filter((_, i) => i !== index))"
-                      class="border border-blue-600 text-blue-600 p-1 rounded-md shadow-sm hover:shadow-md bg-red-100 font-bold max-w-1/7 mx-auto"
+                      class="text-sm roboto-plain border border-red-600 text-red-600 p-1 rounded-md shadow-sm hover:shadow-md bg-blue-50 font-medium max-w-1/7 mx-auto"
                   >
                     Entfernen
                   </button>
@@ -232,7 +241,7 @@ onBeforeUnmount(() => {
               <button
                   type="button"
                   @click="() => node.input(value?.concat({ source: {}, name: '', fromDate: '', toDate: '' }))"
-                  class="border border-blue-600 text-blue-600 p-2 rounded-md shadow-sm hover:shadow-md bg-blue-50 font-bold max-w-1/6 mx-auto"
+                  class="text-sm roboto-plain border border-blue-600 text-blue-600 p-1 rounded-md bg-blue-50 font-medium max-w-1/6 mx-auto"
               >Namen hinzufügen</button>
             </FormKit>
             <Divider/>
@@ -243,7 +252,7 @@ onBeforeUnmount(() => {
                   :key="item"
                   :index="index"
               >
-                <div class="flex flex-col gap-1 bg-gray-100 rounded-md shadow-md p-2 border border-gray-300">
+                <div class="flex flex-col gap-1 bg-gray-200 rounded-md shadow-md p-4 border border-gray-300">
                   <div class="grid grid-cols-2 gap-2">
                     <FormKit
                         type="select"
@@ -280,7 +289,7 @@ onBeforeUnmount(() => {
                   <button
                       type="button"
                       @click="() => node.input(value?.filter((_, i) => i !== index))"
-                      class="border border-blue-600 text-blue-600 p-1 rounded-md shadow-sm hover:shadow-md bg-red-100 font-bold max-w-1/7 mx-auto"
+                      class="text-sm roboto-plain border border-red-600 text-red-600 p-1 rounded-md shadow-sm hover:shadow-md bg-blue-50 font-medium max-w-1/7 mx-auto"
                   >
                     Entfernen
                   </button>
@@ -289,7 +298,7 @@ onBeforeUnmount(() => {
               <button
                   type="button"
                   @click="() => node.input(value?.concat({ street: {}, houseNumber: '', fromDate: '', toDate: '' }))"
-                  class="border border-blue-600 text-blue-600 p-2 rounded-md shadow-sm hover:shadow-md bg-blue-50 font-bold max-w-1/6 mx-auto"
+                  class="text-sm roboto-plain border border-blue-600 text-blue-600 p-1 rounded-md bg-blue-50 font-medium max-w-1/6 mx-auto"
               >Adressen hinzufügen</button>
             </FormKit>
             <Divider/>
@@ -350,30 +359,46 @@ onBeforeUnmount(() => {
               />
             </div>
             <div class="md:grid md:grid-cols-2 flex flex-col gap-2">
-              <FormKit
-                  type="select"
-                  multiple
-                  name="primarySources"
-                  label="Primärquellen"
-                  outer-class="max-w-full"
-                  select-icon="select"
-                  :options="[{ label: 'Keine Auswahl', value: null },
-                  ...source_store.sources.map(p => ({label: p.title, value: { id: p.id, title: p.title }})) as any
-                  ]"
-                  help="Halten Sie die Strg-Taste gedrückt, um mehrere Quellen auszuwählen"
-              />
-              <FormKit
-                  type="select"
-                  multiple
-                  name="secondarySources"
-                  label="Sekundärquellen"
-                  outer-class="max-w-full"
-                  select-icon="select"
-                  :options="[{ label: 'Keine Auswahl', value: null },
-                  ...source_store.sources.map(p => ({label: p.title, value: { id: p.id, title: p.title }})) as any
-                  ]"
-                  help="Halten Sie die Strg-Taste gedrückt, um mehrere Quellen auszuwählen"
-              />
+              <div class="flex flex-col gap-2 p-4 bg-gray-200 rounded-md border border-gray-300">
+                <FormKit
+                    ref="primarySourcesRef"
+                    type="select"
+                    multiple
+                    name="primarySources"
+                    label="Primärquellen"
+                    outer-class="max-w-full"
+                    select-icon="select"
+                    :options="source_store.sources.map(p => ({label: p.title, value: { id: p.id, title: p.title }})) as any"
+                    help="Halten Sie die Strg-Taste gedrückt, um mehrere Quellen auszuwählen"
+                />
+                <button
+                    type="button"
+                    @click="clearSources('primary')"
+                    class="text-sm roboto-plain border border-red-600 text-red-600 p-1 rounded-md shadow-sm hover:shadow-md bg-white font-medium max-w-1/7 mx-auto"
+                >
+                  Liste leeren
+                </button>
+              </div>
+              <div class="flex flex-col gap-2 p-4 bg-gray-200 rounded-md border border-gray-300">
+                <FormKit
+                    ref="secondarySourcesRef"
+                    type="select"
+                    multiple
+                    name="secondarySources"
+                    label="Sekundärquellen"
+                    outer-class="max-w-full"
+                    select-icon="select"
+                    :options="source_store.sources.map(p => ({label: p.title, value: { id: p.id, title: p.title }})) as any"
+                    help="Halten Sie die Strg-Taste gedrückt, um mehrere Quellen auszuwählen"
+                />
+                <button
+                    type="button"
+                    @click="clearSources('secondary')"
+                    class="text-sm roboto-plain border border-red-600 text-red-600 p-1 rounded-md shadow-sm hover:shadow-md bg-white font-medium max-w-1/7 mx-auto"
+                >
+                  Liste leeren
+                </button>
+              </div>
             </div>
             <div class="flex flex-col gap-2">
               <FormKit
