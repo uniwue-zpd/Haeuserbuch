@@ -35,7 +35,6 @@ onMounted(async () => {
   } finally {
     loading.value = false;
   }
-  console.log(building_item.value);
   await nextTick();
   if (!document.getElementById('map')) return;
   center.value = [

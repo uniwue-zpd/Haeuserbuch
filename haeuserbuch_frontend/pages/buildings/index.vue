@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import maplibregl, {LngLat, type RasterLayerSpecification, type RasterSourceSpecification} from 'maplibre-gl';
+import maplibregl, { type RasterLayerSpecification, type RasterSourceSpecification} from 'maplibre-gl';
 import "maplibre-gl/dist/maplibre-gl.css";
 import { computed, onMounted } from 'vue';
 import type { FeatureCollection } from "~/utils/GeoJsonTypes";
@@ -80,23 +80,17 @@ onMounted(async () => {
       console.warn('No features found');
       return;
     }
-    const feature = e.features[0];
-    const geometry = feature.geometry as Polygon;
-    const coordinates = new LngLat(
-        (geometry.coordinates[0][1][0]),
-        (geometry.coordinates[0][1][1])
-    );
+    const popup_html = `<div class="cursor-pointer text-center montserrat-headline font-semibold text-black">${e.features[0].properties?.districtHouseNumber}</div>`;
+    const popup_link = `/buildings/${ e.features[0].id }`;
     const popup = new maplibregl.Popup()
-        .setLngLat(coordinates)
-        .setHTML(`<div class="flex flex-col cursor-pointer items-center montserrat-headline font-semibold text-black">
-<div>${(feature.properties.districtHouseNumber)}</div>
-</div>`)
+        .setLngLat(e.lngLat)
+        .setHTML(popup_html)
         .addTo(map!);
-    popup.getElement().addEventListener('click', ()=> {
-      router.push(`/buildings/${feature.id}`)
+    popup.getElement().addEventListener('click', () => {
+      router.push(popup_link);
     });
     map!.flyTo({
-      center: coordinates,
+      center: e.lngLat,
       zoom: 17
     });
   });
