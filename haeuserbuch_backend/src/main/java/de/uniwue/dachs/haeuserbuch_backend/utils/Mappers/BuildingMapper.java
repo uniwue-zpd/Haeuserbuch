@@ -74,7 +74,11 @@ public class BuildingMapper {
     }
 
     public List<Feature> BuildingsToFeatures(List<Building> buildings) {
-        return buildings.stream().map(this::BuildingToFeature).filter(Objects::nonNull).toList();
+        return buildings.stream()
+                .sorted(Comparator.comparing(Building::getDistrictHouseNumber))
+                .map(this::BuildingToFeature)
+                .filter(Objects::nonNull)
+                .toList();
     }
 
     public Building FeatureToBuilding(Feature feature) {
