@@ -7,6 +7,7 @@ import '@watergis/maplibre-gl-terradraw/dist/maplibre-gl-terradraw.css';
 import { initMap } from "~/service/map_init";
 import BuildingSkeleton from "~/components/UI/skeletons/BuildingSkeleton.vue";
 import TaskBar from "~/components/UI/page_actions/TaskBar.vue";
+import { title_shortener } from "~/utils/helpers";
 
 const route = useRoute();
 const building_id = Number(route.params.id);
@@ -109,7 +110,7 @@ onBeforeUnmount(() => {
               v-for="name in building_item_properties.names"
               class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md"
           >
-            <div class="flex flex-row space-x-2">
+            <div class="flex flex-row space-x-2 font-medium">
               <span>{{ name.name }}</span>
               <NuxtLink
                   :to="`/sources/${name.source?.id}`"
@@ -129,7 +130,7 @@ onBeforeUnmount(() => {
               v-for="address in building_item_properties.addresses"
               class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md"
           >
-            <div class="flex flex-row space-x-2">
+            <div class="flex flex-row space-x-2 font-medium">
               <NuxtLink
                   :to="`/streets/${address.street?.id}`"
                   class="text-blue-700"
@@ -156,7 +157,7 @@ onBeforeUnmount(() => {
         <div>
           <NuxtLink
               :to="`/quarters/${building_item_properties.quarter.id}`"
-              class="text-blue-700 p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md"
+              class="text-blue-700 p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md font-medium"
           >
             {{ building_item_properties.quarter.name }}
           </NuxtLink>
@@ -167,7 +168,7 @@ onBeforeUnmount(() => {
         <div>
           <NuxtLink
               :to="`/districts/${building_item_properties.district.id}`"
-              class="text-blue-700 p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md"
+              class="text-blue-700 p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md font-medium"
           >
             {{ building_item_properties.district.name }}
           </NuxtLink>
@@ -178,14 +179,14 @@ onBeforeUnmount(() => {
         <div class="flex flex-wrap gap-3.5">
           <div
               v-for="source in building_item_properties.primarySources"
-              class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md max-w-[30%]"
+              class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md"
           >
               <NuxtLink
                   :to="`/sources/${source.id}`"
-                  class="text-blue-700 line-clamp-1"
+                  class="text-blue-700 line-clamp-1 font-medium"
                   :title="source.title"
               >
-                {{ source.title }}
+                {{ source.title ? title_shortener(source.title, 4) : 'Unbenannte Quelle' }}
               </NuxtLink>
           </div>
         </div>
@@ -199,10 +200,10 @@ onBeforeUnmount(() => {
           >
             <NuxtLink
                 :to="`/sources/${source.id}`"
-                class="text-blue-700 line-clamp-1"
+                class="text-blue-700 line-clamp-1 font-medium"
                 :title="source.title"
             >
-              {{ source.title }}
+              {{ source.title ? title_shortener(source.title, 4) : 'Unbenannte Quelle' }}
             </NuxtLink>
           </div>
         </div>
