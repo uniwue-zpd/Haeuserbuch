@@ -1,8 +1,31 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import TaskBar from "~/components/UI/page_actions/TaskBar.vue";
+import { initMap } from "~/service/map_init";
+import maplibregl, {type RasterLayerSpecification, type RasterSourceSpecification} from "maplibre-gl";
+import { DEFAULT_MAP_CENTER } from "~/utils/constant_values";
 
 const person_store = usePersonStore();
+const place_store = usePlaceStore();
+const tile_store = useTileStore();
+
+// Display map
+const place_features = computed(() => {
+  const p = person_item.value;
+  if (!p || !p.origin?.places) {
+    return null;
+  }
+  const place_ids = p.origin.places.map(pl => pl.id);
+  return {
+    type: 'FeatureCollection',
+    features: place_store.places?.features.filter((f) => f.id != null && place_ids.includes(f.id)) || []
+  }
+});
+
+let map: maplibregl.Map | null = null;
+
+const sources = computed(() => tile_store.sources);
+const layers = computed(() => tile_store.layers);
 
 const route = useRoute();
 const person_id = Number(route.params.id);
@@ -16,6 +39,34 @@ const originCertainty = ref<Record<string, { label: string; color: string }>>({
 
 onMounted(async () => {
   await person_store.fetchPersonById(person_id);
+  map = initMap(
+      'origin_map',
+      DEFAULT_MAP_CENTER,
+      4,
+      0,
+      sources.value as Record<string, RasterSourceSpecification>,
+      // @ts-ignore
+      layers.value as RasterLayerSpecification[]
+  );
+  map.on('load', () => {
+    if (!place_features.value) return;
+    console.log('Adding place source and layer to map:', place_features.value);
+    map!.addSource('place', {
+      type: 'geojson',
+      // @ts-ignore
+      data: place_features.value,
+    });
+    map!.addLayer({
+      id: 'place',
+      type: 'circle',
+      source: 'place',
+      paint: {
+        'circle-radius': 7,
+        'circle-color': '#3254a8',
+        'circle-opacity': 0.9,
+      },
+    });
+  });
 });
 
 useHead(() => ({
@@ -65,7 +116,7 @@ useHead(() => ({
           <td class="px-6 py-4 whitespace-nowrap">
             <NuxtLink
                 :to="`/buildings/${ person_item?.associatedBuilding?.id }`"
-                class="p-1 bg-gray-300 rounded-md shadow-md hover:shadow-lg"
+                class="p-1.5 bg-gray-300 rounded-md shadow-md hover:shadow-lg font-medium"
             >
               {{ person_item?.associatedBuilding?.districtHouseNumber }}
             </NuxtLink>
@@ -84,7 +135,7 @@ useHead(() => ({
         <tr v-show="person_origin?.originalText">
           <td class="px-6 py-4 whitespace-nowrap font-bold">Herkunft</td>
           <td class="px-6 py-4 whitespace-nowrap">
-            <div class="flex flex-col gap-1 rounded-md shadow-md p-2 bg-gray-200">
+            <div class="flex flex-col gap-1.5 rounded-md shadow-md p-2 bg-gray-200">
               <div v-if="person_origin?.originalText" class="flex flex-row space-x-3">
                 <span class="font-bold">Eingetragener Ort:</span>
                 <span>{{ person_origin.originalText }}</span>
@@ -95,7 +146,7 @@ useHead(() => ({
                   <div v-for="place in person_origin.places">
                     <NuxtLink
                         :to="`/places/${ place.id }`"
-                        class="p-1 bg-gray-300 rounded-md shadow-md hover:shadow-lg"
+                        class="p-1.5 bg-gray-300 rounded-md shadow-md hover:shadow-lg font-medium"
                     >
                       {{ place.realName }}
                     </NuxtLink>
@@ -103,9 +154,10 @@ useHead(() => ({
                 </div>
               </div>
               <div v-if="person_origin?.certainty" class="flex flex-row space-x-3 items-center">
-                <span class="font-bold">Unsicherheitsfaktor:</span>
+                <span class="font-bold">Grad der Lokalisierbarkeit:</span>
                 <div :class="`h-[19px] w-[19px] rounded-full shadow-md border border-black ${ originCertainty[person_origin.certainty].color }`"></div>
               </div>
+              <div class="rounded-md w-full h-[200px]" id="origin_map"/>
             </div>
           </td>
         </tr>

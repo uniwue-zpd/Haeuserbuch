@@ -160,10 +160,8 @@ useHead(() => ({
           </Column>
           <Column field="origin" header="Herkunft" class="roboto-plain" :sortable="true">
             <template #body="slotProps">
-              <div v-if="slotProps.data.origin">
-                <NuxtLink :to="`/places/${slotProps.data.origin?.id}`" class="rounded-md shadow-md hover:shadow-lg p-2 bg-[#F1F2F2]">
-                  {{ slotProps.data.origin?.realName }}
-                </NuxtLink>
+              <div v-if="slotProps.data.origin.originalText">
+                <div>{{ slotProps.data.origin.originalText }}</div>
               </div>
               <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
             </template>
