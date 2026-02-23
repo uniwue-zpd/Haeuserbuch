@@ -1,7 +1,9 @@
 package de.uniwue.dachs.haeuserbuch_backend.service;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PersonDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.PersonPreviewDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Person;
+import de.uniwue.dachs.haeuserbuch_backend.model.PlaceCertainty;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PersonRepository;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.BuildingMapper;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PersonMapper;
@@ -10,10 +12,13 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class PersonService {
@@ -47,6 +52,52 @@ public class PersonService {
     public Optional<PersonDTO> getPersonById(Long id) {
         return personRepository.findById(id)
                 .map(personMapper::PersonToDTO);
+    }
+
+    /**
+     * GET filter persons by various attributes. At least one parameter must be provided, otherwise a bad request response is returned.
+     * @param name matches full name, first name, last name or any of the alternative names (case-insensitive, partial match)
+     * @param sex matches the sex field (case-insensitive, partial match)
+     * @param occupation matches the occupation field (case-insensitive, partial match)
+     * @param associatedBuildingId matches the ID of the associated building
+     * @param isCitizen matches the isCitizen field
+     * @param placeOfOriginId matches the ID of any place in the person's origin
+     * @param originCertainty matches the certainty of the person's origin
+     * @return {@link Set} of {@link PersonPreviewDTO} matching the provided criteria or an empty {@link Set} if no matches are found
+     */
+    public Set<PersonPreviewDTO> filterPersons(
+            String name,
+            String sex,
+            String occupation,
+            Long associatedBuildingId,
+            Boolean isCitizen,
+            Long placeOfOriginId,
+            PlaceCertainty originCertainty
+    ) {
+        Specification<Person> spec = Specification.where(null);
+        if (name != null && !name.isBlank()) {
+            spec = spec.and(de.uniwue.dachs.haeuserbuch_backend.specification.PersonSpecification.hasName(name));
+        }
+        if (sex != null && !sex.isBlank()) {
+            spec = spec.and(de.uniwue.dachs.haeuserbuch_backend.specification.PersonSpecification.hasSex(sex));
+        }
+        if (occupation != null && !occupation.isBlank()) {
+            spec = spec.and(de.uniwue.dachs.haeuserbuch_backend.specification.PersonSpecification.hasOccupation(occupation));
+        }
+        if (associatedBuildingId != null) {
+            spec = spec.and(de.uniwue.dachs.haeuserbuch_backend.specification.PersonSpecification.hasAssociatedBuildingId(associatedBuildingId));
+        }
+        if (isCitizen != null) {
+            spec = spec.and(de.uniwue.dachs.haeuserbuch_backend.specification.PersonSpecification.isCitizen(isCitizen));
+        }
+        if (placeOfOriginId != null) {
+            spec = spec.and(de.uniwue.dachs.haeuserbuch_backend.specification.PersonSpecification.hasPlaceOfOriginId(placeOfOriginId));
+        }
+        if (originCertainty != null) {
+            spec = spec.and(de.uniwue.dachs.haeuserbuch_backend.specification.PersonSpecification.hasOriginCertainty(originCertainty));
+        }
+        Set<Person> results = new HashSet<>(personRepository.findAll(spec));
+        return personMapper.PersonsToPreviewDTOs(results);
     }
 
     /**
