@@ -11,7 +11,7 @@ const related_buildings = ref<BuildingDTO[]>([]);
 
 onMounted(async () => {
   await street_store.fetchStreetById(street_id);
-  related_buildings.value = await building_store.filterBuildingsByPropertyId("streetId", street_id);
+  related_buildings.value = await building_store.filterBuildings({ streetId: street_id });
 });
 
 useHead(() => ({

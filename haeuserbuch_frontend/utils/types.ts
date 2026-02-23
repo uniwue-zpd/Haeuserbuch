@@ -32,17 +32,18 @@ export interface BuildingDTO {
     districtHouseNumber: string | null;
 }
 
-/* Available filters for buildings. Applies only to the `filterBuildingsByPropertyId` action in the {@link useBuildingStore} */
-export type FilterBuilding =
-    | "name"
-    | "districtId"
-    | "districtName"
-    | "streetId"
-    | "streetName"
-    | "quarterId"
-    | "quarterName"
-    | "sourceId"
-    | "sourceName";
+/* Available filters for buildings. Applies only to the `filterBuildings` action in the {@link useBuildingStore} */
+export interface FilterBuilding {
+    name?: string;
+    districtId?: number;
+    districtName?: string;
+    streetId?: number;
+    streetName?: string;
+    quarterId?: number;
+    quarterName?: string;
+    sourceId?: number;
+    sourceName?: string;
+}
 
 export interface BuildingName extends Auditable {
     name: string | null;

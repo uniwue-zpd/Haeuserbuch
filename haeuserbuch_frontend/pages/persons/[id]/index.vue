@@ -50,7 +50,6 @@ onMounted(async () => {
   );
   map.on('load', () => {
     if (!place_features.value) return;
-    console.log('Adding place source and layer to map:', place_features.value);
     map!.addSource('place', {
       type: 'geojson',
       // @ts-ignore

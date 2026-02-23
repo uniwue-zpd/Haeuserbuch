@@ -10,7 +10,7 @@ const related_buildings = ref<BuildingDTO[]>([]);
 
 onMounted(async () => {
   await quarter_store.fetchQuarterById(quarter_id);
-  related_buildings.value = await building_store.filterBuildingsByPropertyId("quarterId", quarter_id);
+  related_buildings.value = await building_store.filterBuildings({ quarterId: quarter_id });
 });
 
 useHead(() => ({

@@ -42,16 +42,14 @@ export const useBuildingStore = defineStore('building', () => {
     }
 
         // Filter buildings by IDs of some properties
-    async function filterBuildingsByPropertyId(filter: FilterBuilding, id: number) {
-        if (!isLoaded.value) {
+    async function filterBuildings(params: FilterBuilding): Promise<BuildingDTO[]> {
+        try {
+            const data = await $fetch('/api/buildings/filter', { query: params });
+            return data as BuildingDTO[];
+        } catch (err) {
+            console.error('Error fetching buildings by params:', err);
             return [];
         }
-        const {data, error} = await useFetch(`/api/buildings/filter?${filter}=${id}`);
-        if (error.value) {
-            console.error(`Error fetching buildings by ${filter} ID :${id}`, error.value);
-            return [];
-        }
-        return data.value as BuildingDTO[];
     }
 
         // Create new building
@@ -114,7 +112,7 @@ export const useBuildingStore = defineStore('building', () => {
         current_building,
         fetchBuildings,
         fetchBuildingById,
-        filterBuildingsByPropertyId,
+        filterBuildings,
         createBuilding,
         updateBuilding,
         deleteBuilding,
