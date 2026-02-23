@@ -45,6 +45,17 @@ export interface FilterBuilding {
     sourceName?: string;
 }
 
+/* Available filters for people. Applies only to the `filterPeople` action in the {@link usePersonStore} */
+export interface FilterPerson {
+    name?: string;
+    sex?: "männlich" | "weiblich";
+    occupation?: string;
+    'asscociated-building-id'?: number;
+    'is-citizen'?: boolean;
+    'place-of-origin-id'?: number;
+    'origin-certainty'?: OriginCertainty;
+}
+
 export interface BuildingName extends Auditable {
     name: string | null;
     source: Source | null;

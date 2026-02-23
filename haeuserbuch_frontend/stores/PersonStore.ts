@@ -1,3 +1,5 @@
+import type {FilterPerson} from "~/utils/types";
+
 export const usePersonStore = defineStore("person", () => {
     // State
     const persons = ref<PersonDTO[]>([]);
@@ -33,6 +35,17 @@ export const usePersonStore = defineStore("person", () => {
                 }
                 current_person.value = data.value as PersonDTO;
             }
+        }
+    }
+
+        // Filter persons by params
+    async function filterPersons(params: FilterPerson): Promise<PersonPreviewDTO[]> {
+        try {
+            const data = await $fetch('/api/persons/filter', { query: params });
+            return data as PersonPreviewDTO[];
+        } catch (err) {
+            console.error('Error fetching persons by params:', err);
+            return [];
         }
     }
 
@@ -96,6 +109,7 @@ export const usePersonStore = defineStore("person", () => {
         current_person,
         fetchPersons,
         fetchPersonById,
+        filterPersons,
         createPerson,
         updatePerson,
         deletePerson,

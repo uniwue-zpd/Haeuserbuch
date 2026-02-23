@@ -11,6 +11,7 @@ import TaskBar from "~/components/UI/page_actions/TaskBar.vue";
 const router = useRoute();
 const place_id = Number(router.params.id);
 const place_store = usePlaceStore();
+const person_store = usePersonStore();
 const place_item = computed(() => place_store.current_place);
 const tile_store = useTileStore();
 const geometry = computed(() => place_item.value?.geometry as Point | null);
@@ -20,6 +21,7 @@ const layers = computed(() => tile_store.layers);
 
 let map: maplibregl.Map | null = null;
 const center = ref<[number, number] | null>(null);
+const associated_people = ref<PersonPreviewDTO[] | []>([]);
 
 useHead(() => ({
   title: place_item.value ? `${properties.value?.realName} - Orteverzeichnis` : 'Nicht gefunden',
@@ -63,6 +65,7 @@ onMounted(async () => {
       speed: 0.2
     })
   });
+  associated_people.value = await person_store.filterPersons({ "place-of-origin-id": place_id });
 });
 </script>
 
@@ -75,12 +78,25 @@ onMounted(async () => {
       </div>
       <div class="flex flex-col gap-2">
         <div id="map" v-show="place_item?.geometry" class="h-[500px] w-full rounded-md"/>
-        <div v-show="properties?.altNames" class="flex flex-col gap-2">
+        <div v-if="properties && properties.altNames.length > 0" class="flex flex-col gap-2">
           <h2 class="text-xl montserrat-headline text-black font-bold">Namensvarianten</h2>
           <div class="flex flex-wrap gap-3.5">
             <div v-for="name in properties?.altNames">
               <div class="p-1.5 bg-[#F1F2F2] rounded-md shadow-sm hover:shadow-md font-medium roboto-plain">{{ name }}</div>
             </div>
+          </div>
+        </div>
+        <div v-if="associated_people.length > 0" class="flex flex-col gap-2">
+          <h2 class="text-xl montserrat-headline text-black font-bold">Möglicher Herkunftsort von</h2>
+          <div class="flex flex-wrap gap-3.5">
+            <span v-for="person in associated_people" :key="person.id">
+              <NuxtLink
+                  :to="`/persons/${ person.id }`"
+                  class="p-1.5 bg-[#F1F2F2] rounded-md shadow-sm hover:shadow-md font-medium roboto-plain"
+              >
+                {{ person.firstName }} {{ person.lastName }}
+              </NuxtLink>
+            </span>
           </div>
         </div>
       </div>

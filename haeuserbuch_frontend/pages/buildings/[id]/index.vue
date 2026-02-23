@@ -15,6 +15,7 @@ const building_id = Number(route.params.id);
 const loading = ref(true);
 
 const building_store = useBuildingStore();
+const person_store = usePersonStore();
 const tile_store = useTileStore();
 const building_item = ref<Feature | null>(null);
 const building_item_properties = computed(() => building_item.value?.properties as BuildingProperties ?? null);
@@ -24,6 +25,7 @@ const layers = computed(() => tile_store.layers);
 
 let map: maplibregl.Map | null = null;
 const center = ref<[number, number] | null>(null);
+const associated_people = ref<PersonPreviewDTO[] | []>([]);
 
 useHead(() => ({
   title: building_item.value ? `${building_item_properties.value?.districtHouseNumber} - Gebäudeverzeichnis` : 'Nicht gefunden',
@@ -31,6 +33,7 @@ useHead(() => ({
 
 onMounted(async () => {
   try {
+    associated_people.value = await person_store.filterPersons({ "asscociated-building-id": building_id });
     await building_store.fetchBuildingById(building_id);
     building_item.value = building_store.current_building;
   } finally {
@@ -211,6 +214,22 @@ onBeforeUnmount(() => {
       <div v-if="building_item_properties.generalNotes" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Notizen</p>
         <p>{{ building_item_properties.generalNotes }}</p>
+      </div>
+      <div v-if="associated_people.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
+        <p class="font-bold">Assoziierte Personen</p>
+        <div class="flex flex-wrap gap-3.5">
+          <span
+              v-for="person in associated_people"
+              :key="person.id"
+          >
+            <NuxtLink
+                :to="`/persons/${ person.id }`"
+                class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md text-blue-700 line-clamp-1 font-medium"
+            >
+              {{ person.firstName }} {{ person.lastName }}
+            </NuxtLink>
+          </span>
+        </div>
       </div>
     </div>
     <div class="flex flex-col gap-2 p-4 bg-gray-100 rounded-md shadow-md">
