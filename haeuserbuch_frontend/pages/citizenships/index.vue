@@ -90,10 +90,10 @@ useHead(() => ({
               <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
             </template>
           </Column>
-          <Column field="date" header="Datum" class="roboto-plain" :sortable="true">
+          <Column field="dateNaturalization" header="Einbürgerung" class="roboto-plain" :sortable="true">
             <template #body="slotProps">
-              <div v-if="slotProps.data.date" class="text-nowrap">
-                {{ slotProps.data.date }}
+              <div v-if="slotProps.data.dateNaturalization" class="text-nowrap">
+                {{ slotProps.data.dateNaturalization }}
               </div>
               <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
             </template>

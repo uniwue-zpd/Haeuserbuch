@@ -79,7 +79,8 @@ public class CitizenshipService {
                     existingCitizenship.setPrimarySource(sourceMapper.SourceDTOToSource(updatedCitizenshipDTO.getPrimarySource()));
                     existingCitizenship.setSecondarySource(sourceMapper.SourceDTOToSource(updatedCitizenshipDTO.getSecondarySource()));
                     existingCitizenship.setRefNumber(updatedCitizenshipDTO.getRefNumber());
-                    existingCitizenship.setDate(updatedCitizenshipDTO.getDate());
+                    existingCitizenship.setDateNaturalization(updatedCitizenshipDTO.getDateNaturalization());
+                    existingCitizenship.setDateMisc(updatedCitizenshipDTO.getDateMisc());
                     existingCitizenship.setEntryText(updatedCitizenshipDTO.getEntryText());
                     existingCitizenship.setAddendum(updatedCitizenshipDTO.getAddendum());
                     existingCitizenship.setInternalNotes(updatedCitizenshipDTO.getInternalNotes());

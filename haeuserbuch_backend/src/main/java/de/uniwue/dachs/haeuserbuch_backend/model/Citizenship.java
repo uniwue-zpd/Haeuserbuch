@@ -39,7 +39,9 @@ public class Citizenship extends BaseEntity {
     @JoinColumn(name = "secondary_source_id")
     private Source secondarySource;
 
-    private String date;
+    private String dateNaturalization;
+
+    private String dateMisc;
 
     @Column(columnDefinition = "TEXT")
     private String entryText;

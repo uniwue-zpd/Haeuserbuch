@@ -85,9 +85,17 @@ const submit = async (formData: Partial<CitizenshipInput>) => {
           />
           <FormKit
               type="text"
-              name="date"
-              label="Datum"
+              name="dateNaturalization"
+              label="Datum der Einbürgerung"
               placeholder="08.04.1412"
+              prefix-icon="text"
+              outer-class="max-w-full"
+          />
+          <FormKit
+              type="text"
+              name="dateMisc"
+              label="Andere Datumsangaben"
+              placeholder="z.B. Datum der Heirat"
               prefix-icon="text"
               outer-class="max-w-full"
           />

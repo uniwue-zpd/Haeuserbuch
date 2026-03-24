@@ -43,9 +43,13 @@ useHead(() => ({
             <td class="py-4 pr-4 whitespace-nowrap font-bold">Referenz Mayer-Erlach</td>
             <td class="py-4 whitespace-nowrap">{{ citizenship_item.refNumber }}</td>
           </tr>
-          <tr v-if="citizenship_item.date">
-            <td class="py-4 pr-4 whitespace-nowrap font-bold">Datum</td>
-            <td class="py-4 whitespace-nowrap">{{ citizenship_item.date }}</td>
+          <tr v-if="citizenship_item.dateNaturalization">
+            <td class="py-4 pr-4 whitespace-nowrap font-bold">Datum der Einbürgerung</td>
+            <td class="py-4 whitespace-nowrap">{{ citizenship_item.dateNaturalization }}</td>
+          </tr>
+          <tr v-if="citizenship_item.dateMisc">
+            <td class="py-4 pr-4 whitespace-nowrap font-bold">Andere Datumsangaben</td>
+            <td class="py-4 whitespace-nowrap">{{ citizenship_item.dateMisc }}</td>
           </tr>
           <tr v-if="citizenship_item.person">
             <td class="py-4 pr-4 whitespace-nowrap font-bold">Eingebürgerte Person</td>
