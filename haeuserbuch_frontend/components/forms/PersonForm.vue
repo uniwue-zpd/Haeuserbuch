@@ -9,6 +9,7 @@ const toast = useToast();
 const submitted = ref(false);
 
 const person_store = usePersonStore();
+
 const place_store = usePlaceStore();
 const places = computed(() => (place_store.places?.features ?? []).map(
     (p) => {
@@ -23,6 +24,7 @@ const places = computed(() => (place_store.places?.features ?? []).map(
       }
     }
 ));
+
 const building_store = useBuildingStore();
 const buildings = computed(() => (building_store.buildings?.features ?? []).map(
     (b) => {
@@ -36,6 +38,20 @@ const buildings = computed(() => (building_store.buildings?.features ?? []).map(
       }
     }
 ));
+
+const occupationStore = useOccupationStore();
+const occupations = computed(() => (occupationStore.occupations).map(
+    (occupation) => {
+      return {
+        label: occupation.name,
+        value: {
+          id: occupation.id,
+          name: occupation.name,
+          description: occupation.description
+        }
+      }
+    }
+))
 
 type PersonInput = Omit<PersonDTO, 'id' | 'createdBy' | 'createdDate' | 'lastModifiedBy' | 'lastModifiedDate'>;
 
@@ -80,6 +96,7 @@ const submit = async (formData: Partial<PersonInput>) => {
         #default="{ value }"
     >
       <div class="flex flex-col gap-3 p-4 bg-gray-100 border border-gray-200 rounded-md shadow-md">
+        <div class="text-center roboto-plain font-bold text-2xl">Allgemeine Angaben</div>
         <div class="flex flex-row space-x-5">
           <FormKit
               type="text"
@@ -137,33 +154,6 @@ const submit = async (formData: Partial<PersonInput>) => {
         />
         <div class="flex flex-row space-x-5">
           <FormKit
-              type="text"
-              name="occupation"
-              label="Beruf"
-              prefix-icon="text"
-              outer-class="max-w-full"
-          />
-          <FormKit
-              type="text"
-              name="occupationCategory"
-              label="Berufskategorie"
-              prefix-icon="text"
-              outer-class="max-w-full"
-              help="Standardisierte Berufskategorie"
-          />
-        </div>
-        <FormKit
-            type="select"
-            name="associatedBuilding"
-            label="Erwähntes Gebäude"
-            outer-class="max-w-full"
-            select-icon="select"
-            :options="[{ label: 'Keine Auswahl', value: null },
-            ...buildings as any
-            ]"
-        />
-        <div class="flex flex-row space-x-5">
-          <FormKit
               type="select"
               name="isCitizen"
               label="Bürger"
@@ -178,11 +168,45 @@ const submit = async (formData: Partial<PersonInput>) => {
           <FormKit
               type="text"
               name="confession"
-              label="Religion"
+              label="Glaube"
               prefix-icon="text"
               outer-class="max-w-full"
           />
         </div>
+        <div class="text-center roboto-plain font-bold text-2xl">Berufliche Situation</div>
+        <FormKit type="group" name="occupation">
+          <div class="flex flex-col gap-2 p-4 bg-gray-200 border border-gray-300 rounded-md shadow-sm">
+            <FormKit
+                type="text"
+                name="originalText"
+                label="Eingetragener Beruf"
+                prefix-icon="text"
+                outer-class="max-w-full"
+            />
+            <FormKit
+                type="select"
+                name="occupationCategory"
+                label="Standardisierte Berufskategorie"
+                outer-class="max-w-full"
+                select-icon="select"
+                :options="[{ label: 'Keine Auswahl', value: null },
+                ...occupations as any
+                ]"
+            />
+          </div>
+        </FormKit>
+        <div class="text-center roboto-plain font-bold text-2xl">Bezug zum Gebäude</div>
+        <FormKit
+            type="select"
+            name="associatedBuilding"
+            label="Erwähntes Gebäude"
+            outer-class="max-w-full"
+            select-icon="select"
+            :options="[{ label: 'Keine Auswahl', value: null },
+            ...buildings as any
+            ]"
+        />
+        <div class="text-center roboto-plain font-bold text-2xl">Herkunft</div>
         <FormKit type="group" name="origin">
           <div class="flex flex-col gap-2 p-4 bg-gray-200 border border-gray-300 rounded-md shadow-sm">
             <FormKit
@@ -219,6 +243,7 @@ const submit = async (formData: Partial<PersonInput>) => {
             />
           </div>
         </FormKit>
+        <div class="text-center roboto-plain font-bold text-2xl">Notizen</div>
         <FormKit
             type="textarea"
             name="internalNotes"
