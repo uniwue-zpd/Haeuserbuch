@@ -8,4 +8,5 @@ import lombok.Setter;
 public class OccupationDTO {
     private Long id;
     private String name;
+    private String description;
 }
