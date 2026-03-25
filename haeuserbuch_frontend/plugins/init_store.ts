@@ -11,14 +11,22 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     const streetStore = useStreetStore();
     const quarterStore = useQuarterStore();
     const citizenshipStore = useCitizenshipStore();
+    const occupationStore = useOccupationStore();
 
-    await buildingStore.fetchBuildings();
-    await placeStore.fetchPlaces();
-    await personStore.fetchPersons();
-    await sourceStore.fetchSources();
-    await tileStore.fetchTiles();
-    await districtStore.fetchDistricts();
-    await streetStore.fetchStreets();
-    await quarterStore.fetchQuarters();
-    await citizenshipStore.fetchCitizenships();
+    try {
+        await Promise.all([
+            buildingStore.fetchBuildings(),
+            placeStore.fetchPlaces(),
+            personStore.fetchPersons(),
+            sourceStore.fetchSources(),
+            tileStore.fetchTiles(),
+            districtStore.fetchDistricts(),
+            streetStore.fetchStreets(),
+            quarterStore.fetchQuarters(),
+            citizenshipStore.fetchCitizenships(),
+            occupationStore.fetchOccupations()
+        ]);
+    } catch (error) {
+        console.error("Error initializing stores:", error);
+    }
 });

@@ -203,3 +203,8 @@ export interface Tile {
     center: [number, number, number];
     tilejson: string;
 }
+
+export interface Occupation extends Auditable {
+    name: string | null;
+    description: string | null;
+}
