@@ -117,7 +117,7 @@ useHead(() => ({
           </Column>
           <Column field="occupation" header="Beruf" class="roboto-plain" :sortable="true">
             <template #body="slotProps">
-              <div v-if="slotProps.data.occupation">{{ slotProps.data.occupation }}</div>
+              <div v-if="slotProps.data.occupation.originalText">{{ slotProps.data.occupation.originalText }}</div>
               <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
             </template>
           </Column>
