@@ -17,11 +17,13 @@ public class PersonMapper {
     private final PersonRepository personRepository;
     private final BuildingMapper buildingMapper;
     private final PersonOriginMapper personOriginMapper;
+    private final PersonOccupationMapper personOccupationMapper;
 
-    public PersonMapper(PersonRepository personRepository, BuildingMapper buildingMapper, PersonOriginMapper personOriginMapper) {
+    public PersonMapper(PersonRepository personRepository, BuildingMapper buildingMapper, PersonOriginMapper personOriginMapper, PersonOccupationMapper personOccupationMapper) {
         this.personRepository = personRepository;
         this.buildingMapper = buildingMapper;
         this.personOriginMapper = personOriginMapper;
+        this.personOccupationMapper = personOccupationMapper;
     }
 
     public Person DTOToPerson(PersonDTO personDTO) {
@@ -32,8 +34,7 @@ public class PersonMapper {
         person.setFullName(personDTO.getFullName());
         person.setAltNames(personDTO.getAltNames());
         person.setSex(personDTO.getSex());
-        person.setOccupation(personDTO.getOccupation());
-        person.setOccupationCategory(personDTO.getOccupationCategory());
+        person.setOccupation(personOccupationMapper.DTOToPersonOccupation(personDTO.getOccupation()));
         person.setAssociatedBuilding(buildingMapper.DTOToBuilding(personDTO.getAssociatedBuilding()));
         person.setIsCitizen(personDTO.getIsCitizen());
         person.setConfession(personDTO.getConfession());
@@ -55,8 +56,7 @@ public class PersonMapper {
         personDTO.setFullName(person.getFullName());
         personDTO.setAltNames(person.getAltNames());
         personDTO.setSex(person.getSex());
-        personDTO.setOccupation(person.getOccupation());
-        personDTO.setOccupationCategory(person.getOccupationCategory());
+        personDTO.setOccupation(personOccupationMapper.PersonOccupationToDTO(person.getOccupation()));
         personDTO.setAssociatedBuilding(buildingMapper.buildingToDTO(person.getAssociatedBuilding()));
         personDTO.setIsCitizen(person.getIsCitizen());
         personDTO.setConfession(person.getConfession());

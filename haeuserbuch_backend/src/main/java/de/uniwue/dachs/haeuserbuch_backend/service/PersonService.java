@@ -7,6 +7,7 @@ import de.uniwue.dachs.haeuserbuch_backend.model.PlaceCertainty;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PersonRepository;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.BuildingMapper;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PersonMapper;
+import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PersonOccupationMapper;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PersonOriginMapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -26,12 +27,14 @@ public class PersonService {
     private final PersonMapper personMapper;
     private final BuildingMapper buildingMapper;
     private final PersonOriginMapper personOriginMapper;
+    private final PersonOccupationMapper personOccupationMapper;
 
-    public PersonService(PersonRepository personRepository, PersonMapper personMapper, BuildingMapper buildingMapper, PersonOriginMapper personOriginMapper) {
+    public PersonService(PersonRepository personRepository, PersonMapper personMapper, BuildingMapper buildingMapper, PersonOriginMapper personOriginMapper, PersonOccupationMapper personOccupationMapper) {
         this.personRepository = personRepository;
         this.personMapper = personMapper;
         this.buildingMapper = buildingMapper;
         this.personOriginMapper = personOriginMapper;
+        this.personOccupationMapper = personOccupationMapper;
     }
 
     /**
@@ -129,8 +132,7 @@ public class PersonService {
                     existingPerson.setFullName(updatedPerson.getFullName());
                     existingPerson.setAltNames(updatedPerson.getAltNames());
                     existingPerson.setSex(updatedPerson.getSex());
-                    existingPerson.setOccupation(updatedPerson.getOccupation());
-                    existingPerson.setOccupationCategory(updatedPerson.getOccupationCategory());
+                    existingPerson.setOccupation(personOccupationMapper.DTOToPersonOccupation(updatedPerson.getOccupation()));
                     existingPerson.setAssociatedBuilding(buildingMapper.DTOToBuilding(updatedPerson.getAssociatedBuilding()));
                     existingPerson.setIsCitizen(updatedPerson.getIsCitizen());
                     existingPerson.setConfession(updatedPerson.getConfession());

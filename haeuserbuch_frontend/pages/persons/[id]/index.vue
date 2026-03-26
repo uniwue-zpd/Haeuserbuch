@@ -31,6 +31,7 @@ const route = useRoute();
 const person_id = Number(route.params.id);
 const person_item = computed(() => person_store.current_person);
 const person_origin = computed(() => person_item.value?.origin);
+const person_occupation = computed(() => person_item.value?.occupation);
 const originCertainty = ref<Record<string, { label: string; color: string }>>({
   IDENTIFIED: { label: 'Identifiziert', color: 'bg-green-600' },
   AMBIGUOUS: { label: 'Mehrdeutig', color: 'bg-yellow-300' },
@@ -102,13 +103,25 @@ useHead(() => ({
           <td class="px-6 py-4 whitespace-nowrap font-bold">Geschlecht</td>
           <td class="px-6 py-4 whitespace-nowrap">{{ person_item?.sex }}</td>
         </tr>
-        <tr v-show="person_item?.occupation">
-          <td class="px-6 py-4 whitespace-nowrap font-bold">Beruf</td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ person_item?.occupation }}</td>
-        </tr>
-        <tr v-show="person_item?.occupationCategory">
-          <td class="px-6 py-4 whitespace-nowrap font-bold">Kategorie des Berufs</td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ person_item?.occupationCategory }}</td>
+        <tr v-if="person_occupation?.originalText">
+          <td class="px-6 py-4 whitespace-nowrap font-bold">Berufliche Situation</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex flex-col gap-1.5 rounded-md shadow-md p-2 bg-gray-200">
+              <div class="flex flex-row space-x-3">
+                <span class="font-bold">Eingetragener Beruf:</span>
+                <span>{{ person_occupation.originalText }}</span>
+              </div>
+              <div v-if="person_occupation.occupationCategory" class="flex flex-row space-x-3 items-center">
+                <span class="font-bold">Standardisierte Berufskategorie:</span>
+                <NuxtLink
+                    :to="`/occupations/${ person_occupation.occupationCategory.id }`"
+                    class="p-1.5 bg-gray-300 rounded-md shadow-md hover:shadow-lg font-medium"
+                >
+                  {{ person_occupation.occupationCategory.name }}
+                </NuxtLink>
+              </div>
+            </div>
+          </td>
         </tr>
         <tr v-show="person_item?.associatedBuilding">
           <td class="px-6 py-4 whitespace-nowrap font-bold">Bezug zum Gebäude</td>

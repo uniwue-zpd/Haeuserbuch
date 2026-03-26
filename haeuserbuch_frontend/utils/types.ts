@@ -104,8 +104,10 @@ export interface PersonDTO extends Auditable{
     fullName: string | null;
     altNames: string[] | [];
     sex: "männlich" | "weiblich" | null;
-    occupation: string | null;
-    occupationCategory: string | null;
+    occupation: {
+        originalText: string | null;
+        occupationCategory: OccupationDTO | null;
+    }
     associatedBuilding: BuildingDTO | null;
     isCitizen: boolean | null;
     confession: string | null;
@@ -203,4 +205,15 @@ export interface Tile {
     bounds: [number, number, number, number];
     center: [number, number, number];
     tilejson: string;
+}
+
+export interface Occupation extends Auditable {
+    name: string | null;
+    description: string | null;
+}
+
+export interface OccupationDTO {
+    id: number | null;
+    name: string | null;
+    description: string | null;
 }

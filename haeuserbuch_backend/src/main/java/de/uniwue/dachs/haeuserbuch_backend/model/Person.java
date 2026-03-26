@@ -1,5 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.model;
 
+import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonOccupation;
 import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonOrigin;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -30,10 +31,6 @@ public class Person extends BaseEntity{
 
     private String sex;
 
-    private String occupation;
-
-    private String occupationCategory;
-
     @ManyToOne
     @JoinColumn(name = "building_id")
     private Building associatedBuilding;
@@ -48,4 +45,10 @@ public class Person extends BaseEntity{
             @AttributeOverride(name = "certainty", column = @Column(name = "origin_certainty"))
     })
     private PersonOrigin origin;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "originalText", column = @Column(name = "occupation_original_text"))
+    })
+    private PersonOccupation occupation;
 }
