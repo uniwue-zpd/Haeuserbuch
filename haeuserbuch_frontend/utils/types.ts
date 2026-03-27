@@ -104,17 +104,20 @@ export interface PersonDTO extends Auditable{
     fullName: string | null;
     altNames: string[] | [];
     sex: "männlich" | "weiblich" | null;
-    occupation: {
-        originalText: string | null;
-        occupationCategory: OccupationDTO | null;
-    }
     associatedBuilding: BuildingDTO | null;
     isCitizen: boolean | null;
-    confession: string | null;
     origin: {
         places: PlaceDTO[] | [];
         originalText: string | null;
         certainty: OriginCertainty | null;
+    };
+    occupation: {
+        originalText: string | null;
+        occupationCategory: OccupationDTO | null;
+    };
+    religion: {
+        originalText: string | null;
+        religionCategory: ReligionDTO | null;
     };
 }
 
@@ -213,6 +216,17 @@ export interface Occupation extends Auditable {
 }
 
 export interface OccupationDTO {
+    id: number | null;
+    name: string | null;
+    description: string | null;
+}
+
+export interface Religion extends Auditable {
+    name: string | null;
+    description: string | null;
+}
+
+export interface ReligionDTO {
     id: number | null;
     name: string | null;
     description: string | null;
