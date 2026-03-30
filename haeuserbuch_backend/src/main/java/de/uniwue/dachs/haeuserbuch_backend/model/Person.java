@@ -2,6 +2,7 @@ package de.uniwue.dachs.haeuserbuch_backend.model;
 
 import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonOccupation;
 import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonOrigin;
+import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonWeapons;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,4 +52,10 @@ public class Person extends BaseEntity{
             @AttributeOverride(name = "originalText", column = @Column(name = "occupation_original_text"))
     })
     private PersonOccupation occupation;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "originalNames", column = @Column(name = "weapon_original_names"))
+    })
+    private PersonWeapons weapons;
 }

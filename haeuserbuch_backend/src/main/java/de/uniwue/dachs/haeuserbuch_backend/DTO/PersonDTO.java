@@ -19,6 +19,7 @@ public class PersonDTO extends BaseEntity {
     private BuildingDTO associatedBuilding;
     private Boolean isCitizen;
     private String confession;
+    private PersonWeaponsDTO weapons;
     private PersonOriginDTO origin;
     private String internalNotes;
     private String generalNotes;
