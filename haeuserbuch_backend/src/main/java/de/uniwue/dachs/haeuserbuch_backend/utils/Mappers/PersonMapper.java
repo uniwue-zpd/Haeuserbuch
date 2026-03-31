@@ -21,7 +21,7 @@ public class PersonMapper {
     private final PersonReligionMapper personReligionMapper;
     private final WeaponryMapper weaponryMapper;
 
-    public PersonMapper(PersonRepository personRepository, BuildingMapper buildingMapper, PersonOriginMapper personOriginMapper, PersonOccupationMapper personOccupationMapper, PersonReligionMapper personReligionMapper, PersonWeaponryMapper personWeaponryMapper) {
+    public PersonMapper(PersonRepository personRepository, BuildingMapper buildingMapper, PersonOriginMapper personOriginMapper, PersonOccupationMapper personOccupationMapper, PersonReligionMapper personReligionMapper, WeaponryMapper weaponryMapper) {
         this.personRepository = personRepository;
         this.buildingMapper = buildingMapper;
         this.personOriginMapper = personOriginMapper;
