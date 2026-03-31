@@ -28,8 +28,8 @@ public class PersonService {
     private final PersonOccupationMapper personOccupationMapper;
     private final PersonReligionMapper personReligionMapper;
     private final WeaponryMapper weaponryMapper;
-  
-    public PersonService(PersonRepository personRepository, PersonMapper personMapper, BuildingMapper buildingMapper, PersonOriginMapper personOriginMapper, PersonOccupationMapper personOccupationMapper, WeaponryMapper weaponryMapper) {
+
+    public PersonService(PersonRepository personRepository, PersonMapper personMapper, BuildingMapper buildingMapper, PersonOriginMapper personOriginMapper, PersonOccupationMapper personOccupationMapper, PersonReligionMapper personReligionMapper, WeaponryMapper weaponryMapper) {
         this.personRepository = personRepository;
         this.personMapper = personMapper;
         this.buildingMapper = buildingMapper;
