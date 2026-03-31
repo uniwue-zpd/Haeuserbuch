@@ -105,57 +105,6 @@ useHead(() => ({
           <td class="px-6 py-4 whitespace-nowrap font-bold">Geschlecht</td>
           <td class="px-6 py-4 whitespace-nowrap">{{ person_item?.sex }}</td>
         </tr>
-        <tr v-if="person_religion?.originalText">
-          <td class="px-6 py-4 whitespace-nowrap font-bold">Religiöse Zugehörigkeit</td>
-          <td class="px-6 py-4 whitespace-nowrap">
-            <div class="flex flex-col gap-1.5 rounded-md shadow-md p-2 bg-gray-200">
-              <div class="flex flex-row space-x-3">
-                <span class="font-bold">Eingetragene Religion:</span>
-                <span>{{ person_religion.originalText }}</span>
-              </div>
-              <div v-if="person_religion.religionCategory" class="flex flex-row space-x-3 items-center">
-                <span class="font-bold">Standardisierte Religionskategorie:</span>
-                <NuxtLink
-                    :to="`/religions/${ person_religion.religionCategory.id }`"
-                    class="p-1.5 bg-gray-300 rounded-md shadow-md hover:shadow-lg font-medium"
-                >
-                  {{ person_religion.religionCategory.name }}
-                </NuxtLink>
-              </div>
-            </div>
-          </td>
-        </tr>
-        <tr v-if="person_occupation?.originalText">
-          <td class="px-6 py-4 whitespace-nowrap font-bold">Berufliche Situation</td>
-          <td class="px-6 py-4 whitespace-nowrap">
-            <div class="flex flex-col gap-1.5 rounded-md shadow-md p-2 bg-gray-200">
-              <div class="flex flex-row space-x-3">
-                <span class="font-bold">Eingetragener Beruf:</span>
-                <span>{{ person_occupation.originalText }}</span>
-              </div>
-              <div v-if="person_occupation.occupationCategory" class="flex flex-row space-x-3 items-center">
-                <span class="font-bold">Standardisierte Berufskategorie:</span>
-                <NuxtLink
-                    :to="`/occupations/${ person_occupation.occupationCategory.id }`"
-                    class="p-1.5 bg-gray-300 rounded-md shadow-md hover:shadow-lg font-medium"
-                >
-                  {{ person_occupation.occupationCategory.name }}
-                </NuxtLink>
-              </div>
-            </div>
-          </td>
-        </tr>
-        <tr v-show="person_item?.associatedBuilding">
-          <td class="px-6 py-4 whitespace-nowrap font-bold">Bezug zum Gebäude</td>
-          <td class="px-6 py-4 whitespace-nowrap">
-            <NuxtLink
-                :to="`/buildings/${ person_item?.associatedBuilding?.id }`"
-                class="p-1.5 bg-gray-300 rounded-md shadow-md hover:shadow-lg font-medium"
-            >
-              {{ person_item?.associatedBuilding?.districtHouseNumber }}
-            </NuxtLink>
-          </td>
-        </tr>
         <tr v-show="person_item?.isCitizen">
           <td class="px-6 py-4 whitespace-nowrap font-bold">Bürger</td>
           <td class="px-6 py-4 whitespace-nowrap">
@@ -191,8 +140,59 @@ useHead(() => ({
             </div>
           </td>
         </tr>
+        <tr v-show="person_item?.associatedBuilding">
+          <td class="px-6 py-4 whitespace-nowrap font-bold">Bezug zum Gebäude</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <NuxtLink
+                :to="`/buildings/${ person_item?.associatedBuilding?.id }`"
+                class="p-1.5 bg-gray-300 rounded-md shadow-md hover:shadow-lg font-medium"
+            >
+              {{ person_item?.associatedBuilding?.districtHouseNumber }}
+            </NuxtLink>
+          </td>
+        </tr>
+        <tr v-if="person_occupation?.originalText">
+          <td class="px-6 py-4 whitespace-nowrap font-bold">Berufliche Situation</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex flex-col gap-1.5 rounded-md shadow-md p-2 bg-gray-200">
+              <div class="flex flex-row space-x-3">
+                <span class="font-bold">Eingetragener Beruf:</span>
+                <span>{{ person_occupation.originalText }}</span>
+              </div>
+              <div v-if="person_occupation.occupationCategory" class="flex flex-row space-x-3 items-center">
+                <span class="font-bold">Standardisierte Berufskategorie:</span>
+                <NuxtLink
+                    :to="`/occupations/${ person_occupation.occupationCategory.id }`"
+                    class="p-1.5 bg-gray-300 rounded-md shadow-md hover:shadow-lg font-medium"
+                >
+                  {{ person_occupation.occupationCategory.name }}
+                </NuxtLink>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr v-if="person_religion?.originalText">
+          <td class="px-6 py-4 whitespace-nowrap font-bold">Religiöse Zugehörigkeit</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex flex-col gap-1.5 rounded-md shadow-md p-2 bg-gray-200">
+              <div class="flex flex-row space-x-3">
+                <span class="font-bold">Eingetragene Religion:</span>
+                <span>{{ person_religion.originalText }}</span>
+              </div>
+              <div v-if="person_religion.religionCategory" class="flex flex-row space-x-3 items-center">
+                <span class="font-bold">Standardisierte Religionskategorie:</span>
+                <NuxtLink
+                    :to="`/religions/${ person_religion.religionCategory.id }`"
+                    class="p-1.5 bg-gray-300 rounded-md shadow-md hover:shadow-lg font-medium"
+                >
+                  {{ person_religion.religionCategory.name }}
+                </NuxtLink>
+              </div>
+            </div>
+          </td>
+        </tr>
         <tr v-if="person_weapons && person_weapons.length > 0">
-          <td class="px-6 py-4 whitespace-nowrap font-bold">Waffen</td>
+          <td class="px-6 py-4 whitespace-nowrap font-bold">Bewaffnung</td>
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="flex flex-wrap gap-2">
               <div v-for="weapon_item in person_weapons">
