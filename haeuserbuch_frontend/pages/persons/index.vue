@@ -121,12 +121,6 @@ useHead(() => ({
               <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
             </template>
           </Column>
-          <Column field="occupationCategory" header="Berufskategorie" class="roboto-plain" :sortable="true">
-            <template #body="slotProps">
-              <div v-if="slotProps.data.occupationCategory">{{ slotProps.data.occupationCategory }}</div>
-              <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
-            </template>
-          </Column>
           <Column
               field="isCitizen" filterField="isCitizen"
               header="Bürger"
@@ -152,17 +146,15 @@ useHead(() => ({
               </MultiSelect>
             </template>
           </Column>
-          <Column field="confession" header="Religion" class="roboto-plain" :sortable="true">
+          <Column field="religion" header="Religion" class="roboto-plain" :sortable="true">
             <template #body="slotProps">
-              <div v-if="slotProps.data.confession">{{ slotProps.data.confession }}</div>
+              <div v-if="slotProps.data.religion.originalText">{{ slotProps.data.religion.originalText }}</div>
               <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
             </template>
           </Column>
           <Column field="origin" header="Herkunft" class="roboto-plain" :sortable="true">
             <template #body="slotProps">
-              <div v-if="slotProps.data.origin.originalText">
-                <div>{{ slotProps.data.origin.originalText }}</div>
-              </div>
+              <div v-if="slotProps.data.origin.originalText">{{ slotProps.data.origin.originalText }}</div>
               <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
             </template>
           </Column>

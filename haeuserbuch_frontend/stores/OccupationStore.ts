@@ -82,6 +82,8 @@ export const useOccupationStore = defineStore("occupation", () => {
             });
             const index = occupations.value.findIndex(occupation => occupation.id === id);
             if (index !== -1) occupations.value[index] = updatedOccupation;
+            if (currentOccupation.value && currentOccupation.value.id === id) currentOccupation.value = updatedOccupation;
+            return updatedOccupation;
         } catch (err) {
             console.error("Error updating occupation:", err);
             return;
@@ -101,6 +103,7 @@ export const useOccupationStore = defineStore("occupation", () => {
         try {
             await $fetch(`/api/occupations/${id}`, { method: 'DELETE' });
             occupations.value = occupations.value.filter(occupation => occupation.id !== id);
+            if (currentOccupation.value && currentOccupation.value.id === id) currentOccupation.value = null;
         } catch (err) {
             console.error('Error deleting occupation:', err);
             return;

@@ -5,10 +5,7 @@ import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.PersonPreviewDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Person;
 import de.uniwue.dachs.haeuserbuch_backend.model.PlaceCertainty;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PersonRepository;
-import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.BuildingMapper;
-import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PersonMapper;
-import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PersonOccupationMapper;
-import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PersonOriginMapper;
+import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.cache.annotation.CacheEvict;
@@ -28,13 +25,15 @@ public class PersonService {
     private final BuildingMapper buildingMapper;
     private final PersonOriginMapper personOriginMapper;
     private final PersonOccupationMapper personOccupationMapper;
+    private final PersonReligionMapper personReligionMapper;
 
-    public PersonService(PersonRepository personRepository, PersonMapper personMapper, BuildingMapper buildingMapper, PersonOriginMapper personOriginMapper, PersonOccupationMapper personOccupationMapper) {
+    public PersonService(PersonRepository personRepository, PersonMapper personMapper, BuildingMapper buildingMapper, PersonOriginMapper personOriginMapper, PersonOccupationMapper personOccupationMapper, PersonReligionMapper personReligionMapper) {
         this.personRepository = personRepository;
         this.personMapper = personMapper;
         this.buildingMapper = buildingMapper;
         this.personOriginMapper = personOriginMapper;
         this.personOccupationMapper = personOccupationMapper;
+        this.personReligionMapper = personReligionMapper;
     }
 
     /**
@@ -132,11 +131,11 @@ public class PersonService {
                     existingPerson.setFullName(updatedPerson.getFullName());
                     existingPerson.setAltNames(updatedPerson.getAltNames());
                     existingPerson.setSex(updatedPerson.getSex());
-                    existingPerson.setOccupation(personOccupationMapper.DTOToPersonOccupation(updatedPerson.getOccupation()));
                     existingPerson.setAssociatedBuilding(buildingMapper.DTOToBuilding(updatedPerson.getAssociatedBuilding()));
                     existingPerson.setIsCitizen(updatedPerson.getIsCitizen());
-                    existingPerson.setConfession(updatedPerson.getConfession());
                     existingPerson.setOrigin(personOriginMapper.DTOToPersonOrigin(updatedPerson.getOrigin()));
+                    existingPerson.setOccupation(personOccupationMapper.DTOToPersonOccupation(updatedPerson.getOccupation()));
+                    existingPerson.setReligion(personReligionMapper.DTOToPersonReligion(updatedPerson.getReligion()));
                     existingPerson.setInternalNotes(updatedPerson.getInternalNotes());
                     existingPerson.setGeneralNotes(updatedPerson.getGeneralNotes());
                     Person saved = personRepository.save(existingPerson);
