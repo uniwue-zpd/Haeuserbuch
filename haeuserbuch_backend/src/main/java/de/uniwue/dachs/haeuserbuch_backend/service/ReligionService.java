@@ -1,0 +1,76 @@
+package de.uniwue.dachs.haeuserbuch_backend.service;
+
+import de.uniwue.dachs.haeuserbuch_backend.model.Religion;
+import de.uniwue.dachs.haeuserbuch_backend.repository.ReligionRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class ReligionService {
+    private final ReligionRepository religionRepository;
+
+    public ReligionService(ReligionRepository religionRepository) {
+        this.religionRepository = religionRepository;
+    }
+
+    /**
+     * GET all religions
+     * @return {@link List} of all {@link Religion} objects
+     */
+    public List<Religion> getAllReligions() {
+        return religionRepository.findAll();
+    }
+
+    /**
+     * GET religion by ID
+     * @param id of the religion
+     * @return {@link Optional} of {@link Religion}
+     */
+    public Optional<Religion> getReligionById(Long id) {
+        return religionRepository.findById(id);
+    }
+
+    /**
+     * POST create a new religion
+     * @param religion {@link Religion} to be created
+     * @return the created {@link Religion}
+     */
+    @Transactional
+    public Religion createReligion(Religion religion) {
+        return religionRepository.save(religion);
+    }
+
+    /**
+     * PUT update an existing religion
+     * @param religion {@link Religion} with updated data
+     * @return the updated {@link Religion}
+     * @throws EntityNotFoundException if the religion with the given ID does not exist
+     */
+    @Transactional
+    public Religion updateReligion(Long id, Religion religion) {
+        return religionRepository.findById(id)
+                .map(existingEntity -> {
+                    existingEntity.setName(religion.getName());
+                    existingEntity.setDescription(religion.getDescription());
+                    return religionRepository.save(existingEntity);
+                })
+                .orElseThrow(() -> new EntityNotFoundException("Religion with id " + id + " does not exist."));
+    }
+
+    /**
+     * DELETE a religion by ID
+     * @param id of the religion to be deleted
+     * @throws EntityNotFoundException if the religion with the given ID does not exist
+     */
+    @Transactional
+    public void deleteReligion(Long id) {
+        if (!religionRepository.existsById(id)) {
+            throw new EntityNotFoundException("Religion with id " + id + " does not exist.");
+        }
+        religionRepository.deleteById(id);
+    }
+}

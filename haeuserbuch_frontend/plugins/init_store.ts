@@ -12,6 +12,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     const quarterStore = useQuarterStore();
     const citizenshipStore = useCitizenshipStore();
     const occupationStore = useOccupationStore();
+    const religionStore = useReligionStore();
     const weaponStore = useWeaponStore();
 
     try {
@@ -26,6 +27,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             quarterStore.fetchQuarters(),
             citizenshipStore.fetchCitizenships(),
             occupationStore.fetchOccupations(),
+            religionStore.fetchReligions(),
             weaponStore.fetchWeapons()
         ]);
     } catch (error) {

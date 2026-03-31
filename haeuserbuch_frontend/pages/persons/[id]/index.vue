@@ -31,13 +31,14 @@ const route = useRoute();
 const person_id = Number(route.params.id);
 const person_item = computed(() => person_store.current_person);
 const person_origin = computed(() => person_item.value?.origin);
-const person_occupation = computed(() => person_item.value?.occupation);
-const person_weapons = computed(() => person_item.value?.weapons);
 const originCertainty = ref<Record<string, { label: string; color: string }>>({
   IDENTIFIED: { label: 'Identifiziert', color: 'bg-green-600' },
   AMBIGUOUS: { label: 'Mehrdeutig', color: 'bg-yellow-300' },
   UNKNOWN: { label: 'Unbekannt', color: 'bg-red-600' }
 });
+const person_occupation = computed(() => person_item.value?.occupation);
+const person_religion = computed(() => person_item.value?.religion);
+const person_weapons = computed(() => person_item.value?.weapons);
 
 onMounted(async () => {
   await person_store.fetchPersonById(person_id);
@@ -104,6 +105,26 @@ useHead(() => ({
           <td class="px-6 py-4 whitespace-nowrap font-bold">Geschlecht</td>
           <td class="px-6 py-4 whitespace-nowrap">{{ person_item?.sex }}</td>
         </tr>
+        <tr v-if="person_religion?.originalText">
+          <td class="px-6 py-4 whitespace-nowrap font-bold">Religiöse Zugehörigkeit</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex flex-col gap-1.5 rounded-md shadow-md p-2 bg-gray-200">
+              <div class="flex flex-row space-x-3">
+                <span class="font-bold">Eingetragene Religion:</span>
+                <span>{{ person_religion.originalText }}</span>
+              </div>
+              <div v-if="person_religion.religionCategory" class="flex flex-row space-x-3 items-center">
+                <span class="font-bold">Standardisierte Religionskategorie:</span>
+                <NuxtLink
+                    :to="`/religions/${ person_religion.religionCategory.id }`"
+                    class="p-1.5 bg-gray-300 rounded-md shadow-md hover:shadow-lg font-medium"
+                >
+                  {{ person_religion.religionCategory.name }}
+                </NuxtLink>
+              </div>
+            </div>
+          </td>
+        </tr>
         <tr v-if="person_occupation?.originalText">
           <td class="px-6 py-4 whitespace-nowrap font-bold">Berufliche Situation</td>
           <td class="px-6 py-4 whitespace-nowrap">
@@ -140,10 +161,6 @@ useHead(() => ({
           <td class="px-6 py-4 whitespace-nowrap">
             <i class="pi pi-check" style="color: green"/>
           </td>
-        </tr>
-        <tr v-show="person_item?.confession">
-          <td class="px-6 py-4 whitespace-nowrap font-bold">Religion</td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ person_item?.confession }}</td>
         </tr>
         <tr v-show="person_origin?.originalText">
           <td class="px-6 py-4 whitespace-nowrap font-bold">Herkunft</td>

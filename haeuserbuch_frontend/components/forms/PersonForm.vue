@@ -53,6 +53,20 @@ const occupations = computed(() => (occupationStore.occupations).map(
     }
 ));
 
+const religionStore = useReligionStore();
+const religions = computed(() => (religionStore.religions).map(
+    (religion) => {
+      return {
+        label: religion.name,
+        value: {
+          id: religion.id,
+          name: religion.name,
+          description: religion.description
+        }
+      }
+    }
+));
+  
 const weapon_store = useWeaponStore();
 const weapons = computed(() => weapon_store.weapons.map(
     (weapon) => {
@@ -166,27 +180,40 @@ const submit = async (formData: Partial<PersonInput>) => {
             select-icon="select"
             outer-class="max-w-full"
         />
-        <div class="flex flex-row space-x-5">
-          <FormKit
-              type="select"
-              name="isCitizen"
-              label="Bürger"
-              :options="[
+        <FormKit
+            type="select"
+            name="isCitizen"
+            label="Bürger"
+            :options="[
                     { label: 'unbekannt', value: null },
                     { label: 'ja', value: true },
                     { label: 'nein', value: false }
                   ]"
-              select-icon="select"
-              outer-class="max-w-full"
-          />
-          <FormKit
-              type="text"
-              name="confession"
-              label="Glaube"
-              prefix-icon="text"
-              outer-class="max-w-full"
-          />
-        </div>
+            select-icon="select"
+            outer-class="max-w-full"
+        />
+        <div class="text-center roboto-plain font-bold text-2xl">Religiöse Zugehörigkeit</div>
+        <FormKit type="group" name="religion">
+          <div class="flex flex-col gap-2 p-4 bg-gray-200 border border-gray-300 rounded-md shadow-sm">
+            <FormKit
+                type="text"
+                name="originalText"
+                label="Eingetragener Beruf"
+                prefix-icon="text"
+                outer-class="max-w-full"
+            />
+            <FormKit
+                type="select"
+                name="religionCategory"
+                label="Standardisierte Religionskategorie"
+                outer-class="max-w-full"
+                select-icon="select"
+                :options="[{ label: 'Keine Auswahl', value: null },
+                ...religions as any
+                ]"
+            />
+          </div>
+        </FormKit>
         <div class="text-center roboto-plain font-bold text-2xl">Berufliche Situation</div>
         <FormKit type="group" name="occupation">
           <div class="flex flex-col gap-2 p-4 bg-gray-200 border border-gray-300 rounded-md shadow-sm">

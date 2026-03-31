@@ -15,12 +15,10 @@ public class PersonDTO extends BaseEntity {
     private String fullName;
     private Set<String> altNames = new HashSet<>();
     private String sex;
-    private PersonOccupationDTO occupation;
     private BuildingDTO associatedBuilding;
     private Boolean isCitizen;
-    private String confession;
-    private Set<WeaponryDTO> weapons = new HashSet<>();
     private PersonOriginDTO origin;
-    private String internalNotes;
-    private String generalNotes;
+    private PersonOccupationDTO occupation;
+    private PersonReligionDTO religion;
+    private Set<WeaponryDTO> weapons = new HashSet<>();
 }

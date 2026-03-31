@@ -106,17 +106,20 @@ export interface PersonDTO extends Auditable {
     fullName: string | null;
     altNames: string[] | [];
     sex: "männlich" | "weiblich" | null;
-    occupation: {
-        originalText: string | null;
-        occupationCategory: OccupationDTO | null;
-    }
     associatedBuilding: BuildingDTO | null;
     isCitizen: boolean | null;
-    confession: string | null;
     origin: {
         places: PlaceDTO[] | [];
         originalText: string | null;
         certainty: OriginCertainty | null;
+    };
+    occupation: {
+        originalText: string | null;
+        occupationCategory: OccupationDTO | null;
+    };
+    religion: {
+        originalText: string | null;
+        religionCategory: ReligionDTO | null;
     };
     weapons: WeaponryDTO[] | [];
 }
@@ -221,21 +224,32 @@ export interface OccupationDTO {
     description: string | null;
 }
 
+export interface Religion extends Auditable {
+    name: string | null;
+    description: string | null;
+}
+
+export interface ReligionDTO {
+    id: number | null;
+    name: string | null;
+    description: string | null;
+}
+
 /**
  * Represents a weapon type, e.g. "Schwert" etc.
  */
 export interface Weapon extends Auditable {
-    name: string | null;
-    description: string | null;
+  name: string | null;
+  description: string | null;
 }
 
 /**
  * Represents a DTO of a weapon.
  */
 export interface WeaponDTO {
-    id: number | null;
-    name: string | null;
-    description: string | null;
+  id: number | null;
+  name: string | null;
+  description: string | null;
 }
 
 /**

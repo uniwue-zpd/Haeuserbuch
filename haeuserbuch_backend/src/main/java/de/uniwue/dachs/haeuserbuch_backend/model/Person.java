@@ -2,6 +2,7 @@ package de.uniwue.dachs.haeuserbuch_backend.model;
 
 import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonOccupation;
 import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonOrigin;
+import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonReligion;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,8 +38,6 @@ public class Person extends BaseEntity{
 
     private Boolean isCitizen;
 
-    private String confession;
-
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "originalText", column = @Column(name = "origin_original_text")),
@@ -52,6 +51,12 @@ public class Person extends BaseEntity{
     })
     private PersonOccupation occupation;
 
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "originalText", column = @Column(name = "religion_original_text"))
+    })
+    private PersonReligion religion;
+  
     @OneToMany(
             cascade = CascadeType.ALL,
             orphanRemoval = true
