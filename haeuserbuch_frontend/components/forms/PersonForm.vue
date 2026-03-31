@@ -66,6 +66,20 @@ const religions = computed(() => (religionStore.religions).map(
       }
     }
 ));
+  
+const weapon_store = useWeaponStore();
+const weapons = computed(() => weapon_store.weapons.map(
+    (weapon) => {
+      return {
+        label: weapon.name,
+        value: {
+          id: weapon.id,
+          name: weapon.name,
+          description: weapon.description
+        }
+      }
+    }
+));
 
 type PersonInput = Omit<PersonDTO, 'id' | 'createdBy' | 'createdDate' | 'lastModifiedBy' | 'lastModifiedDate'>;
 
@@ -269,6 +283,49 @@ const submit = async (formData: Partial<PersonInput>) => {
                 outer-class="max-w-full"
             />
           </div>
+        </FormKit>
+        <div class="text-center roboto-plain font-bold text-2xl">Bewaffnung</div>
+        <FormKit type="list" :value="[]" name="weapons" dynamic #default="{ items, node, value }">
+          <FormKit
+              type="group"
+              v-for="(item, index) in items"
+              :key="item"
+              :index="index"
+          >
+            <div class="flex flex-col gap-1 bg-gray-200 rounded-md shadow-md p-4 border border-gray-300">
+              <div class="grid grid-cols-2 gap-2">
+                <FormKit
+                    type="select"
+                    name="weapon"
+                    label="Waffe"
+                    outer-class="max-w-full"
+                    select-icon="select"
+                    :options="[{ label: 'Keine Auswahl', value: null },
+                    ...weapons as any
+                    ]"
+                />
+                <FormKit
+                    type="text"
+                    name="originalText"
+                    label="Originaler Text"
+                    placeholder="Spitzhacke"
+                    outer-class="max-w-full"
+                />
+              </div>
+              <button
+                  type="button"
+                  @click="() => node.input(value?.filter((_, i) => i !== index))"
+                  class="text-sm roboto-plain border border-red-600 text-red-600 p-1 rounded-md shadow-sm hover:shadow-md bg-blue-50 font-medium max-w-1/7 mx-auto"
+              >
+                Entfernen
+              </button>
+            </div>
+          </FormKit>
+          <button
+              type="button"
+              @click="() => node.input(value?.concat({ weapon: {}, originalText: '' }))"
+              class="text-sm roboto-plain border border-blue-600 text-blue-600 p-1 rounded-md bg-blue-50 font-medium max-w-1/6 mx-auto"
+          >Waffen hinzufügen</button>
         </FormKit>
         <div class="text-center roboto-plain font-bold text-2xl">Notizen</div>
         <FormKit

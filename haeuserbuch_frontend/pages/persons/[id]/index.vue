@@ -38,6 +38,7 @@ const originCertainty = ref<Record<string, { label: string; color: string }>>({
 });
 const person_occupation = computed(() => person_item.value?.occupation);
 const person_religion = computed(() => person_item.value?.religion);
+const person_weapons = computed(() => person_item.value?.weapons);
 
 onMounted(async () => {
   await person_store.fetchPersonById(person_id);
@@ -187,6 +188,26 @@ useHead(() => ({
                 <div :class="`h-[19px] w-[19px] rounded-full shadow-md border border-black ${ originCertainty[person_origin.certainty].color }`"></div>
               </div>
               <div class="rounded-md w-full h-[200px]" id="origin_map"/>
+            </div>
+          </td>
+        </tr>
+        <tr v-if="person_weapons && person_weapons.length > 0">
+          <td class="px-6 py-4 whitespace-nowrap font-bold">Waffen</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex flex-wrap gap-2">
+              <div v-for="weapon_item in person_weapons">
+                <NuxtLink
+                  v-if="weapon_item.weapon"
+                  :to="`/weapons/${ weapon_item.weapon.id }`"
+                  class="flex flex-row space-x-2 p-1.5 bg-gray-300 rounded-md shadow-md hover:shadow-lg"
+                >
+                  <span class="font-light">{{ weapon_item.originalText }}</span>
+                  <span class="font-medium">({{ weapon_item.weapon.name }})</span>
+                </NuxtLink>
+                <span v-else class="p-1.5 bg-gray-300 rounded-md shadow-md font-light">
+                  {{ weapon_item.originalText }}
+                </span>
+              </div>
             </div>
           </td>
         </tr>

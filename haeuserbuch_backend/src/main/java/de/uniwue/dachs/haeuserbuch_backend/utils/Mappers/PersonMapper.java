@@ -19,13 +19,15 @@ public class PersonMapper {
     private final PersonOriginMapper personOriginMapper;
     private final PersonOccupationMapper personOccupationMapper;
     private final PersonReligionMapper personReligionMapper;
+    private final WeaponryMapper weaponryMapper;
 
-    public PersonMapper(PersonRepository personRepository, BuildingMapper buildingMapper, PersonOriginMapper personOriginMapper, PersonOccupationMapper personOccupationMapper, PersonReligionMapper personReligionMapper) {
+    public PersonMapper(PersonRepository personRepository, BuildingMapper buildingMapper, PersonOriginMapper personOriginMapper, PersonOccupationMapper personOccupationMapper, PersonReligionMapper personReligionMapper, WeaponryMapper weaponryMapper) {
         this.personRepository = personRepository;
         this.buildingMapper = buildingMapper;
         this.personOriginMapper = personOriginMapper;
         this.personOccupationMapper = personOccupationMapper;
         this.personReligionMapper = personReligionMapper;
+        this.weaponryMapper = weaponryMapper;
     }
 
     public Person DTOToPerson(PersonDTO personDTO) {
@@ -41,6 +43,7 @@ public class PersonMapper {
         person.setOrigin(personOriginMapper.DTOToPersonOrigin(personDTO.getOrigin()));
         person.setOccupation(personOccupationMapper.DTOToPersonOccupation(personDTO.getOccupation()));
         person.setReligion(personReligionMapper.DTOToPersonReligion(personDTO.getReligion()));
+        person.setWeapons(weaponryMapper.DTOsToWeaponries(personDTO.getWeapons()));
         person.setInternalNotes(personDTO.getInternalNotes());
         person.setGeneralNotes(personDTO.getGeneralNotes());
         return person;
@@ -63,6 +66,7 @@ public class PersonMapper {
         personDTO.setOrigin(personOriginMapper.PersonOriginToDTO(person.getOrigin()));
         personDTO.setOccupation(personOccupationMapper.PersonOccupationToDTO(person.getOccupation()));
         personDTO.setReligion(personReligionMapper.PersonReligionToDTO(person.getReligion()));
+        personDTO.setWeapons(weaponryMapper.WeaponriesToDTOs(person.getWeapons()));
         personDTO.setInternalNotes(person.getInternalNotes());
         personDTO.setGeneralNotes(person.getGeneralNotes());
         personDTO.setCreatedDate(person.getCreatedDate());

@@ -13,6 +13,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     const citizenshipStore = useCitizenshipStore();
     const occupationStore = useOccupationStore();
     const religionStore = useReligionStore();
+    const weaponStore = useWeaponStore();
 
     try {
         await Promise.all([
@@ -27,6 +28,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             citizenshipStore.fetchCitizenships(),
             occupationStore.fetchOccupations(),
             religionStore.fetchReligions(),
+            weaponStore.fetchWeapons()
         ]);
     } catch (error) {
         console.error("Error initializing stores:", error);

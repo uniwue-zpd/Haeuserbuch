@@ -97,8 +97,10 @@ export interface Ownership extends Auditable {
     entryText: string | null;
 }
 
-/* DTO projection of a {@link Person} object */
-export interface PersonDTO extends Auditable{
+/**
+ * Represents a DTO of a person object mentioned in the sources.
+ */
+export interface PersonDTO extends Auditable {
     firstName: string | null;
     lastName: string | null;
     fullName: string | null;
@@ -119,6 +121,7 @@ export interface PersonDTO extends Auditable{
         originalText: string | null;
         religionCategory: ReligionDTO | null;
     };
+    weapons: WeaponryDTO[] | [];
 }
 
 export enum OriginCertainty {
@@ -230,4 +233,31 @@ export interface ReligionDTO {
     id: number | null;
     name: string | null;
     description: string | null;
+}
+
+/**
+ * Represents a weapon type, e.g. "Schwert" etc.
+ */
+export interface Weapon extends Auditable {
+  name: string | null;
+  description: string | null;
+}
+
+/**
+ * Represents a DTO of a weapon.
+ */
+export interface WeaponDTO {
+  id: number | null;
+  name: string | null;
+  description: string | null;
+}
+
+/**
+ * Represents a weapon mentioned in the sources.
+ * It contains the `ID`, `originalText` and a reference to the standardized {@link WeaponDTO} object.
+ */
+export interface WeaponryDTO {
+    id: number | null;
+    weapon: WeaponDTO | null;
+    originalText: string | null;
 }

@@ -56,4 +56,11 @@ public class Person extends BaseEntity{
             @AttributeOverride(name = "originalText", column = @Column(name = "religion_original_text"))
     })
     private PersonReligion religion;
+  
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JoinColumn(name = "person_id")
+    private Set<Weaponry> weapons = new HashSet<>();
 }

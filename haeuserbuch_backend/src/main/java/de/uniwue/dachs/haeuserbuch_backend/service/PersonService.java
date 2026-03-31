@@ -4,6 +4,7 @@ import de.uniwue.dachs.haeuserbuch_backend.DTO.PersonDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.PersonPreviewDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Person;
 import de.uniwue.dachs.haeuserbuch_backend.model.PlaceCertainty;
+import de.uniwue.dachs.haeuserbuch_backend.model.Weaponry;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PersonRepository;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,14 +27,16 @@ public class PersonService {
     private final PersonOriginMapper personOriginMapper;
     private final PersonOccupationMapper personOccupationMapper;
     private final PersonReligionMapper personReligionMapper;
+    private final WeaponryMapper weaponryMapper;
 
-    public PersonService(PersonRepository personRepository, PersonMapper personMapper, BuildingMapper buildingMapper, PersonOriginMapper personOriginMapper, PersonOccupationMapper personOccupationMapper, PersonReligionMapper personReligionMapper) {
+    public PersonService(PersonRepository personRepository, PersonMapper personMapper, BuildingMapper buildingMapper, PersonOriginMapper personOriginMapper, PersonOccupationMapper personOccupationMapper, PersonReligionMapper personReligionMapper, WeaponryMapper weaponryMapper) {
         this.personRepository = personRepository;
         this.personMapper = personMapper;
         this.buildingMapper = buildingMapper;
         this.personOriginMapper = personOriginMapper;
         this.personOccupationMapper = personOccupationMapper;
         this.personReligionMapper = personReligionMapper;
+        this.weaponryMapper = weaponryMapper;
     }
 
     /**
@@ -136,6 +139,9 @@ public class PersonService {
                     existingPerson.setOrigin(personOriginMapper.DTOToPersonOrigin(updatedPerson.getOrigin()));
                     existingPerson.setOccupation(personOccupationMapper.DTOToPersonOccupation(updatedPerson.getOccupation()));
                     existingPerson.setReligion(personReligionMapper.DTOToPersonReligion(updatedPerson.getReligion()));
+                    Set<Weaponry> newWeaponry = weaponryMapper.DTOsToWeaponries(updatedPerson.getWeapons());
+                    existingPerson.getWeapons().clear();
+                    existingPerson.getWeapons().addAll(newWeaponry);
                     existingPerson.setInternalNotes(updatedPerson.getInternalNotes());
                     existingPerson.setGeneralNotes(updatedPerson.getGeneralNotes());
                     Person saved = personRepository.save(existingPerson);
