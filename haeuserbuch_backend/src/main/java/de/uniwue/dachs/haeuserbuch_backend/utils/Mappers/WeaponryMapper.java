@@ -21,13 +21,18 @@ public class WeaponryMapper {
 
     public Weaponry DTOToWeaponry(WeaponryDTO weaponryDTO) {
         if (weaponryDTO == null) return null;
-        if (weaponryDTO.getId() == null) {
+        if (weaponryDTO.getId() != null) {
+            return weaponryRepository.findById(weaponryDTO.getId())
+                    .map(existing -> {
+                        existing.setWeapon(weaponMapper.DTOToWeapon(weaponryDTO.getWeapon()));
+                        existing.setOriginalText(weaponryDTO.getOriginalText());
+                        return existing;
+                    }).orElse(null);
+        } else {
             Weaponry weaponry = new Weaponry();
             weaponry.setWeapon(weaponMapper.DTOToWeapon(weaponryDTO.getWeapon()));
             weaponry.setOriginalText(weaponryDTO.getOriginalText());
             return weaponry;
-        } else {
-            return weaponryRepository.findById(weaponryDTO.getId()).orElse(null);
         }
     }
 
