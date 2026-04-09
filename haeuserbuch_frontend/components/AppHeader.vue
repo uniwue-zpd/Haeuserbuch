@@ -7,7 +7,7 @@ const toggle = (event: any) => op.value.toggle(event)
 </script>
 
 <template>
-  <header class="bg-[#2C3E50]">
+  <header class="bg-stone-400">
     <div class="flex flex-row justify-between items-center max-w-[1140px] mx-auto p-3">
       <NuxtLink to="/">
         <img src="../public/WUE_LOGO_Skyline_260408_HQ.svg" alt="Häuserbuch-Logo" class="h-[40px] w-auto"/>
