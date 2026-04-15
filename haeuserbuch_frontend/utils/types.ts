@@ -78,7 +78,7 @@ export interface CitizenshipDTO extends Auditable {
     mentionedPersons: PersonPreviewDTO[] | [];
     primarySource: SourceDTO;
     secondarySource: SourceDTO | null;
-    refNumber: number | null;
+    refNumber: string | null;
     dateNaturalization: string | null;
     dateMisc: string | null;
     entryText: string | null;
