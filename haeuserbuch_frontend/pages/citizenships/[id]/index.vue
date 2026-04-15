@@ -40,7 +40,7 @@ useHead(() => ({
             <td class="py-4 whitespace-nowrap">{{ citizenship_item.signature }}</td>
           </tr>
           <tr v-if="citizenship_item.refNumber">
-            <td class="py-4 pr-4 whitespace-nowrap font-bold">Referenz Mayer-Erlach</td>
+            <td class="py-4 pr-4 whitespace-nowrap font-bold">Referenz Meyer-Erlach</td>
             <td class="py-4 whitespace-nowrap">{{ citizenship_item.refNumber }}</td>
           </tr>
           <tr v-if="citizenship_item.dateNaturalization">
