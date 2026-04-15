@@ -14,7 +14,7 @@ import java.util.Set;
 @Setter
 public class CitizenshipDTO extends BaseEntity {
     private String signature;
-    private Long refNumber;
+    private String refNumber;
     private PersonPreviewDTO person;
     private Set<PersonPreviewDTO> mentionedPersons;
     private SourceDTO primarySource;
