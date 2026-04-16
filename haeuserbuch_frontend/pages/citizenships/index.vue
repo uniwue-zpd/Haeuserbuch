@@ -57,7 +57,7 @@ useHead(() => ({
               </IconField>
             </div>
           </template>
-          <Column field="refNumber" header="Nummer (Mayer-Erlach)" :sortable="true">
+          <Column field="refNumber" header="Meyer-Erlach-Referenz" :sortable="true">
             <template #body="slotProps">
               <NuxtLink
                   :to="`/citizenships/${ slotProps.data.id }`"

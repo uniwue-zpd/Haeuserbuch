@@ -151,10 +151,9 @@ const submit = async (formData: Partial<CitizenshipInput>) => {
               ]"
           />
           <FormKit
-              type="number"
-              number
+              type="text"
               name="refNumber"
-              label="Referenz Mayer-Erlach"
+              label="Referenz Meyer-Erlach"
               placeholder="65"
               prefix-icon="number"
               outer-class="max-w-full"

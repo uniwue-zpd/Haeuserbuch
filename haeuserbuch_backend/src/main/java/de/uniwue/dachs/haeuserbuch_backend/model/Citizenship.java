@@ -17,7 +17,7 @@ import java.util.Set;
 public class Citizenship extends BaseEntity {
     private String signature;
 
-    private Long refNumber;
+    private String refNumber;
 
     @ManyToOne
     @JoinColumn(name = "person_id")
