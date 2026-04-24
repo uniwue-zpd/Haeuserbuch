@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PersonOccupationDTO {
+public class PersonJobDTO {
     private String originalText;
-    private OccupationDTO occupationCategory;
+    private JobDTO jobCategory;
 }

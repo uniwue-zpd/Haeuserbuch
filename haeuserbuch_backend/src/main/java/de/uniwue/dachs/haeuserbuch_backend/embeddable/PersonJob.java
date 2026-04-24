@@ -1,6 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.embeddable;
 
-import de.uniwue.dachs.haeuserbuch_backend.model.Occupation;
+import de.uniwue.dachs.haeuserbuch_backend.model.Job;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -10,10 +10,10 @@ import lombok.Setter;
 @Embeddable
 @Getter
 @Setter
-public class PersonOccupation {
+public class PersonJob {
     private String originalText;
 
     @ManyToOne
     @JoinColumn(name = "occupation_category_id")
-    private Occupation occupationCategory;
+    private Job jobCategory;
 }
