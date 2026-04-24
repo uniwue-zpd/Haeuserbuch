@@ -36,7 +36,7 @@ const originCertainty = ref<Record<string, { label: string; color: string }>>({
   AMBIGUOUS: { label: 'Mehrdeutig', color: 'bg-yellow-300' },
   UNKNOWN: { label: 'Unbekannt', color: 'bg-red-600' }
 });
-const person_occupation = computed(() => person_item.value?.occupation);
+const person_job = computed(() => person_item.value?.job);
 const person_religion = computed(() => person_item.value?.religion);
 const person_weapons = computed(() => person_item.value?.weapons);
 
@@ -151,21 +151,21 @@ useHead(() => ({
             </NuxtLink>
           </td>
         </tr>
-        <tr v-if="person_occupation?.originalText">
+        <tr v-if="person_job?.originalText">
           <td class="px-6 py-4 whitespace-nowrap font-bold">Berufliche Situation</td>
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="flex flex-col gap-1.5 rounded-md shadow-md p-2 bg-gray-200">
               <div class="flex flex-row space-x-3">
                 <span class="font-bold">Eingetragener Beruf:</span>
-                <span>{{ person_occupation.originalText }}</span>
+                <span>{{ person_job.originalText }}</span>
               </div>
-              <div v-if="person_occupation.occupationCategory" class="flex flex-row space-x-3 items-center">
+              <div v-if="person_job.jobCategory" class="flex flex-row space-x-3 items-center">
                 <span class="font-bold">Standardisierte Berufskategorie:</span>
                 <NuxtLink
-                    :to="`/occupations/${ person_occupation.occupationCategory.id }`"
+                    :to="`/jobs/${ person_job.jobCategory.id }`"
                     class="p-1.5 bg-gray-300 rounded-md shadow-md hover:shadow-lg font-medium"
                 >
-                  {{ person_occupation.occupationCategory.name }}
+                  {{ person_job.jobCategory.name }}
                 </NuxtLink>
               </div>
             </div>

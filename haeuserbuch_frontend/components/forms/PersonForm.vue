@@ -39,15 +39,15 @@ const buildings = computed(() => (building_store.buildings?.features ?? []).map(
     }
 ));
 
-const occupationStore = useOccupationStore();
-const occupations = computed(() => (occupationStore.occupations).map(
-    (occupation) => {
+const jobStore = useJobStore();
+const jobs = computed(() => (jobStore.jobs).map(
+    (job) => {
       return {
-        label: occupation.name,
+        label: job.name,
         value: {
-          id: occupation.id,
-          name: occupation.name,
-          description: occupation.description
+          id: job.id,
+          name: job.name,
+          description: job.description
         }
       }
     }
@@ -241,7 +241,7 @@ const submit = async (formData: Partial<PersonInput>) => {
             ]"
         />
         <div class="text-center roboto-plain font-bold text-2xl">Berufliche Situation</div>
-        <FormKit type="group" name="occupation">
+        <FormKit type="group" name="job">
           <div class="flex flex-col gap-2 p-4 bg-gray-200 border border-gray-300 rounded-md shadow-sm">
             <FormKit
                 type="text"
@@ -252,12 +252,12 @@ const submit = async (formData: Partial<PersonInput>) => {
             />
             <FormKit
                 type="select"
-                name="occupationCategory"
+                name="jobCategory"
                 label="Standardisierte Berufskategorie"
                 outer-class="max-w-full"
                 select-icon="select"
                 :options="[{ label: 'Keine Auswahl', value: null },
-                ...occupations as any
+                ...jobs as any
                 ]"
             />
           </div>
