@@ -14,6 +14,6 @@ public class PersonJob {
     private String originalText;
 
     @ManyToOne
-    @JoinColumn(name = "occupation_category_id")
+    @JoinColumn(name = "job_category_id")
     private Job jobCategory;
 }
