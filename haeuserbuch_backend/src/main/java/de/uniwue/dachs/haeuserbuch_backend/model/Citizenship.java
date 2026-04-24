@@ -31,8 +31,8 @@ public class Citizenship extends BaseEntity {
     )
     private Set<Person> mentionedPersons = new HashSet<>();
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "primary_source_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "primary_source_id")
     private Source primarySource;
 
     @ManyToOne
