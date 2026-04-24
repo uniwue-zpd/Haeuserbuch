@@ -11,7 +11,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     const streetStore = useStreetStore();
     const quarterStore = useQuarterStore();
     const citizenshipStore = useCitizenshipStore();
-    const occupationStore = useOccupationStore();
+    const jobStore = useJobStore();
     const religionStore = useReligionStore();
     const weaponStore = useWeaponStore();
 
@@ -26,7 +26,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             streetStore.fetchStreets(),
             quarterStore.fetchQuarters(),
             citizenshipStore.fetchCitizenships(),
-            occupationStore.fetchOccupations(),
+            jobStore.fetchJobs(),
             religionStore.fetchReligions(),
             weaponStore.fetchWeapons()
         ]);

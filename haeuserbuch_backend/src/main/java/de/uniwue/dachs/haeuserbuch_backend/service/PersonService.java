@@ -25,16 +25,16 @@ public class PersonService {
     private final PersonMapper personMapper;
     private final BuildingMapper buildingMapper;
     private final PersonOriginMapper personOriginMapper;
-    private final PersonOccupationMapper personOccupationMapper;
+    private final PersonJobMapper personJobMapper;
     private final PersonReligionMapper personReligionMapper;
     private final WeaponryMapper weaponryMapper;
 
-    public PersonService(PersonRepository personRepository, PersonMapper personMapper, BuildingMapper buildingMapper, PersonOriginMapper personOriginMapper, PersonOccupationMapper personOccupationMapper, PersonReligionMapper personReligionMapper, WeaponryMapper weaponryMapper) {
+    public PersonService(PersonRepository personRepository, PersonMapper personMapper, BuildingMapper buildingMapper, PersonOriginMapper personOriginMapper, PersonJobMapper personJobMapper, PersonReligionMapper personReligionMapper, WeaponryMapper weaponryMapper) {
         this.personRepository = personRepository;
         this.personMapper = personMapper;
         this.buildingMapper = buildingMapper;
         this.personOriginMapper = personOriginMapper;
-        this.personOccupationMapper = personOccupationMapper;
+        this.personJobMapper = personJobMapper;
         this.personReligionMapper = personReligionMapper;
         this.weaponryMapper = weaponryMapper;
     }
@@ -137,7 +137,7 @@ public class PersonService {
                     existingPerson.setAssociatedBuilding(buildingMapper.DTOToBuilding(updatedPerson.getAssociatedBuilding()));
                     existingPerson.setIsCitizen(updatedPerson.getIsCitizen());
                     existingPerson.setOrigin(personOriginMapper.DTOToPersonOrigin(updatedPerson.getOrigin()));
-                    existingPerson.setOccupation(personOccupationMapper.DTOToPersonOccupation(updatedPerson.getOccupation()));
+                    existingPerson.setJob(personJobMapper.DTOToPersonJob(updatedPerson.getJob()));
                     existingPerson.setReligion(personReligionMapper.DTOToPersonReligion(updatedPerson.getReligion()));
                     Set<Weaponry> newWeaponry = weaponryMapper.DTOsToWeaponries(updatedPerson.getWeapons());
                     existingPerson.getWeapons().clear();

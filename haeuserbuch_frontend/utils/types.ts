@@ -49,7 +49,6 @@ export interface FilterBuilding {
 export interface FilterPerson {
     name?: string;
     sex?: "männlich" | "weiblich";
-    occupation?: string;
     'asscociated-building-id'?: number;
     'is-citizen'?: boolean;
     'place-of-origin-id'?: number;
@@ -113,9 +112,9 @@ export interface PersonDTO extends Auditable {
         originalText: string | null;
         certainty: OriginCertainty | null;
     };
-    occupation: {
+    job: {
         originalText: string | null;
-        occupationCategory: OccupationDTO | null;
+        jobCategory: JobDTO | null;
     };
     religion: {
         originalText: string | null;
@@ -213,12 +212,13 @@ export interface Tile {
     tilejson: string;
 }
 
-export interface Occupation extends Auditable {
+export interface Job extends Auditable {
     name: string | null;
+    altNames: string[] | [];
     description: string | null;
 }
 
-export interface OccupationDTO {
+export interface JobDTO {
     id: number | null;
     name: string | null;
     description: string | null;

@@ -18,7 +18,7 @@ public class PersonDTO extends BaseEntity {
     private BuildingDTO associatedBuilding;
     private Boolean isCitizen;
     private PersonOriginDTO origin;
-    private PersonOccupationDTO occupation;
+    private PersonJobDTO job;
     private PersonReligionDTO religion;
     private Set<WeaponryDTO> weapons = new HashSet<>();
 }

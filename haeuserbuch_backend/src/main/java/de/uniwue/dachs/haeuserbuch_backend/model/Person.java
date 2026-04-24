@@ -1,6 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.model;
 
-import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonOccupation;
+import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonJob;
 import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonOrigin;
 import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonReligion;
 import jakarta.persistence.*;
@@ -47,16 +47,16 @@ public class Person extends BaseEntity{
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "originalText", column = @Column(name = "occupation_original_text"))
+            @AttributeOverride(name = "originalText", column = @Column(name = "job_original_text"))
     })
-    private PersonOccupation occupation;
+    private PersonJob job;
 
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "originalText", column = @Column(name = "religion_original_text"))
     })
     private PersonReligion religion;
-  
+
     @OneToMany(
             cascade = CascadeType.ALL,
             orphanRemoval = true

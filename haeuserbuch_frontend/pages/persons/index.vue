@@ -51,7 +51,7 @@ useHead(() => ({
         <DataTable
             v-model:filters="filters"
             :value="person_store.persons"
-            :global-filter-fields="['fullName', 'sex', 'occupation', 'occupationCategory', 'confession', 'origin.realName']"
+            :global-filter-fields="['fullName', 'sex', 'job', 'occupationCategory', 'confession', 'origin.realName']"
             filter-display="row"
             paginator :rows="10" stripedRows
         >
@@ -115,9 +115,9 @@ useHead(() => ({
               </MultiSelect>
             </template>
           </Column>
-          <Column field="occupation" header="Beruf" class="roboto-plain" :sortable="true">
+          <Column field="job" header="Beruf" class="roboto-plain" :sortable="true">
             <template #body="slotProps">
-              <div v-if="slotProps.data.occupation.originalText">{{ slotProps.data.occupation.originalText }}</div>
+              <div v-if="slotProps.data.job.originalText">{{ slotProps.data.job.originalText }}</div>
               <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
             </template>
           </Column>
