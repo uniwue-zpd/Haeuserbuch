@@ -81,4 +81,13 @@ public class PersonController {
             return ResponseEntity.status(404).build();
         }
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<PersonPreviewDTO>> searchPeople(@RequestParam String query) {
+        if (query == null || query.trim().length() < 3) {
+            return ResponseEntity.ok(List.of());
+        }
+        List<PersonPreviewDTO> personPreviewDTOS = personService.searchPeople(query);
+        return ResponseEntity.ok(personPreviewDTOS);
+    }
 }

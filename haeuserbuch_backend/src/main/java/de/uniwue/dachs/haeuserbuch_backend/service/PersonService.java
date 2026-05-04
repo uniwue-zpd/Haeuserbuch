@@ -14,10 +14,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class PersonService {
@@ -159,5 +156,17 @@ public class PersonService {
     public void deletePerson(Long id) {
         if (!personRepository.existsById(id)) throw new EntityNotFoundException("Person with ID " + id + " does not exist.");
         personRepository.deleteById(id);
+    }
+
+    /**
+     * Allows searching for people by their names and alternative spellings of their names
+     * @param query to be used
+     * @return a {@link List} of {@link PersonPreviewDTO} matching the query
+     */
+    public List<PersonPreviewDTO> searchPeople(String query) {
+        return personRepository.searchPeople(query).stream()
+                .map(personMapper::PersonToPreviewDTO)
+                .filter(Objects::nonNull)
+                .toList();
     }
 }
