@@ -8,15 +8,12 @@ useHead(() => ({
 const route = useRoute();
 const citizenship_id = Number(route.params.id);
 const citizenship_store = useCitizenshipStore();
-const citizenship_item = computed(() => citizenship_store.current_citizenship);
 
-onMounted(async () => {
-  await citizenship_store.fetchCitizenshipById(citizenship_id);
-});
+const { data: citizenshipItem, status } = await useAsyncData(`citizenship-${ citizenship_id }`, () => citizenship_store.fetchCitizenshipById(citizenship_id));
 </script>
 
 <template>
-  <CitizenshipForm header="Bürgermatrikel bearbeiten" action="edit" :citizenship="citizenship_item ?? undefined"/>
+  <CitizenshipForm header="Bürgermatrikel bearbeiten" action="edit" :citizenship="citizenshipItem ?? undefined"/>
 </template>
 
 <style scoped>
