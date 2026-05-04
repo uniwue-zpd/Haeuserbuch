@@ -2,6 +2,10 @@ package de.uniwue.dachs.haeuserbuch_backend.controller;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.CitizenshipDTO;
 import de.uniwue.dachs.haeuserbuch_backend.service.CitizenshipService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,9 +20,18 @@ public class CitizenshipController {
         this.citizenshipService = citizenshipService;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<CitizenshipDTO>> getAllCitizenships() {
         List<CitizenshipDTO> citizenships = citizenshipService.getAllCitizenships();
+        return ResponseEntity.ok(citizenships);
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<CitizenshipDTO>> getPagedCitizenships(
+            @PageableDefault(sort = "id", direction = Sort.Direction.ASC)
+            Pageable pageable
+    ) {
+        Page<CitizenshipDTO> citizenships = citizenshipService.getPagedCitizenships(pageable);
         return ResponseEntity.ok(citizenships);
     }
 
