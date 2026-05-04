@@ -1,5 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.controller;
 
+import de.uniwue.dachs.haeuserbuch_backend.DTO.JobDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Job;
 import de.uniwue.dachs.haeuserbuch_backend.service.JobService;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,27 +20,27 @@ public class JobController {
 
     @GetMapping
     public ResponseEntity<List<Job>> getOccupations() {
-        List<Job> jobs = jobService.getAllOccupations();
+        List<Job> jobs = jobService.getAllJobs();
         return ResponseEntity.ok(jobs);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Job> getOccupationById(@PathVariable Long id) {
-        return jobService.getOccupationById(id)
+    public ResponseEntity<Job> getJobById(@PathVariable Long id) {
+        return jobService.getJobById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.status(404).build());
     }
 
     @PostMapping
-    public ResponseEntity<Job> createOccupation(@RequestBody Job job) {
-        Job createdJob = jobService.createOccupation(job);
+    public ResponseEntity<Job> createJob(@RequestBody Job job) {
+        Job createdJob = jobService.createJob(job);
         return ResponseEntity.status(201).body(createdJob);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Job> updateOccupation(@PathVariable Long id, @RequestBody Job updatedJob) {
+    public ResponseEntity<Job> updateJob(@PathVariable Long id, @RequestBody Job updatedJob) {
         try {
-            Job job = jobService.updateOccupation(id, updatedJob);
+            Job job = jobService.updateJob(id, updatedJob);
             return ResponseEntity.ok(job);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(404).build();
@@ -49,10 +50,19 @@ public class JobController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOccupation(@PathVariable Long id) {
         try {
-            jobService.deleteOccupation(id);
+            jobService.deleteJob(id);
             return ResponseEntity.status(204).build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(404).build();
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<JobDTO>> searchJobs(@RequestParam String query) {
+        if (query == null || query.trim().length() < 3) {
+            return ResponseEntity.ok(List.of());
+        }
+        List<JobDTO> jobDTOs = jobService.searchJobs(query);
+        return ResponseEntity.ok(jobDTOs);
     }
 }
