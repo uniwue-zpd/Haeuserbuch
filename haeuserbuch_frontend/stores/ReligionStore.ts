@@ -106,6 +106,20 @@ export const useReligionStore = defineStore("religion", () => {
         }
     }
 
+    /**
+     * Fetches an array of religions based on a search query.
+     * @param query Query to be used for searching religions.
+     * @returns An array of `ReligionDTO` matching the search query.
+     */
+    async function searchReligions(query: string): Promise<ReligionDTO[]> {
+        try {
+            return await $fetch<ReligionDTO[]>('/api/religions/search', { query: { query: query } });
+        } catch (err) {
+            console.error('Error searching religions', err);
+            return [];
+        }
+    }
+
     return {
         religions,
         currentReligion,
@@ -114,6 +128,7 @@ export const useReligionStore = defineStore("religion", () => {
         fetchReligionById,
         createReligion,
         updateReligion,
-        deleteReligion
+        deleteReligion,
+        searchReligions
     };
 });
