@@ -11,6 +11,8 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +45,16 @@ public class PersonService {
     @Cacheable("persons")
     public List<PersonDTO> getAllPersons() {
         return personMapper.PersonsToDTOs(personRepository.findAll());
+    }
+
+    /**
+     * GET paged persons
+     * @param pageable pagination and sorting information
+     * @return {@link Page} of {@link PersonDTO}
+     */
+    public Page<PersonDTO> getPagedPeople(Pageable pageable) {
+        return personRepository.findAll(pageable)
+                .map(personMapper::PersonToDTO);
     }
 
     /**

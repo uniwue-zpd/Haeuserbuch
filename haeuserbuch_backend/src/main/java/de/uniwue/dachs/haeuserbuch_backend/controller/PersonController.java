@@ -4,6 +4,10 @@ import de.uniwue.dachs.haeuserbuch_backend.DTO.PersonDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.PersonPreviewDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.PlaceCertainty;
 import de.uniwue.dachs.haeuserbuch_backend.service.PersonService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,10 +25,19 @@ public class PersonController {
         this.personService = personService;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<PersonDTO>> getPersons() {
         List<PersonDTO> persons = personService.getAllPersons();
         return ResponseEntity.ok(persons);
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<PersonDTO>> getPagedPeople(
+            @PageableDefault(sort = "id", direction = Sort.Direction.ASC)
+            Pageable pageable
+    ) {
+        Page<PersonDTO> people = personService.getPagedPeople(pageable);
+        return ResponseEntity.ok(people);
     }
 
     @GetMapping("/{id}")
