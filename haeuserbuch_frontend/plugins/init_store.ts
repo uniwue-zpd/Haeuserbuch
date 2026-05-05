@@ -4,7 +4,6 @@
 export default defineNuxtPlugin(async (nuxtApp) => {
     const buildingStore = useBuildingStore();
     const placeStore = usePlaceStore();
-    const personStore = usePersonStore();
     const sourceStore = useSourceStore();
     const tileStore = useTileStore();
     const districtStore = useDistrictStore();
@@ -18,7 +17,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         await Promise.all([
             buildingStore.fetchBuildings(),
             placeStore.fetchPlaces(),
-            personStore.fetchPersons(),
             sourceStore.fetchSources(),
             tileStore.fetchTiles(),
             districtStore.fetchDistricts(),
