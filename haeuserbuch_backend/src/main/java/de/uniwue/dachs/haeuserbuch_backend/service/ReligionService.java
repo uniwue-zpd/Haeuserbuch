@@ -1,20 +1,25 @@
 package de.uniwue.dachs.haeuserbuch_backend.service;
 
+import de.uniwue.dachs.haeuserbuch_backend.DTO.ReligionDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Religion;
 import de.uniwue.dachs.haeuserbuch_backend.repository.ReligionRepository;
+import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.ReligionMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class ReligionService {
     private final ReligionRepository religionRepository;
+    private final ReligionMapper religionMapper;
 
-    public ReligionService(ReligionRepository religionRepository) {
+    public ReligionService(ReligionRepository religionRepository, ReligionMapper religionMapper) {
         this.religionRepository = religionRepository;
+        this.religionMapper = religionMapper;
     }
 
     /**
@@ -72,5 +77,17 @@ public class ReligionService {
             throw new EntityNotFoundException("Religion with id " + id + " does not exist.");
         }
         religionRepository.deleteById(id);
+    }
+
+    /**
+     * Allows searching for religions based on a search term.
+     * @param query Search term.
+     * @return A {@link List} of {@link ReligionDTO} objects matching the search criteria.
+     */
+    public List<ReligionDTO> searchReligions(String query) {
+        return religionRepository.searchReligions(query).stream()
+                .map(religionMapper::ReligionToDTO)
+                .filter(Objects::nonNull)
+                .toList();
     }
 }
