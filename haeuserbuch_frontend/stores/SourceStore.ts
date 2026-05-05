@@ -93,6 +93,20 @@ export const useSourceStore = defineStore("source", () => {
         currentSource.value = null;
     }
 
+    /**
+     * Allows searching for sources
+     * @param query The search query string
+     * @returns A promise that resolves to an array of SourceDTOs matching the search query
+     */
+    async function searchSources(query: string): Promise<SourceDTO[]> {
+        try {
+            return await $fetch<SourceDTO[]>(`/api/sources/search`, { params: { query: query } });
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    }
+
     return {
         sources,
         currentSource,
@@ -101,6 +115,7 @@ export const useSourceStore = defineStore("source", () => {
         createSource,
         updateSource,
         deleteSource,
-        clearCurrentSource
+        clearCurrentSource,
+        searchSources,
     }
 });
