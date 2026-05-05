@@ -1,5 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.controller;
 
+import de.uniwue.dachs.haeuserbuch_backend.DTO.SourceDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Source;
 import de.uniwue.dachs.haeuserbuch_backend.service.SourceService;
 import org.springframework.http.ResponseEntity;
@@ -53,5 +54,14 @@ public class SourceController {
         } catch (Exception e) {
             return ResponseEntity.status(404).build();
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<SourceDTO>> searchSources(@RequestParam String query) {
+        if (query == null || query.trim().length() < 3) {
+            return ResponseEntity.ok(List.of());
+        }
+        List<SourceDTO> results = sourceService.searchSources(query);
+        return ResponseEntity.ok(results);
     }
 }
