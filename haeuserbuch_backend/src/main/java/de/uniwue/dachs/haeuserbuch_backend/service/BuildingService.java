@@ -11,6 +11,7 @@ import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.*;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -184,5 +185,17 @@ public class BuildingService {
             throw new NoSuchElementException("Building with id '" + id + "' does not exist");
         }
         buildingRepository.deleteById(id);
+    }
+
+    /**
+     * Allows searching for buildings based on a search term.
+     * @param query Search term.
+     * @return A {@link List} of {@link BuildingDTO} matching the search term or an empty {@link List} if no buildings match the search term.
+     */
+    public List<BuildingDTO> searchBuildings(@Param("query") String query) {
+        return buildingRepository.searchBuildings(query).stream()
+                .map(buildingMapper::buildingToDTO)
+                .filter(Objects::nonNull)
+                .toList();
     }
 }

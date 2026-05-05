@@ -87,4 +87,14 @@ public class BuildingController {
             return ResponseEntity.status(404).build();
         }
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<BuildingDTO>> searchBuildings(@RequestParam String query) {
+        if (query == null || query.trim().length() < 3) {
+            return ResponseEntity.ok(List.of());
+        }
+        List<BuildingDTO> results = buildingService.searchBuildings(query);
+        return ResponseEntity.ok(results);
+
+    }
 }
