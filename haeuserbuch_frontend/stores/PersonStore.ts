@@ -2,43 +2,46 @@ import type {FilterPerson} from "~/utils/types";
 
 export const usePersonStore = defineStore("person", () => {
     // State
-    const persons = ref<PersonDTO[]>([]);
-    const current_person = ref<PersonDTO | null>(null);
-
-    // Getters
-    const isLoaded = computed(() => persons.value.length > 0);
+    const cache = ref<Record<number, PersonDTO>>({});
+    const loading = ref(false);
 
     // Actions
-        // Fetch persons from the API
-    async function fetchPersons() {
-        if (!isLoaded.value) {
-            const { data, error } = await useFetch("/api/persons");
-            if (error.value) {
-                console.error("Error fetching persons:", error.value);
-                return;
-            }
-            persons.value = data.value as PersonDTO[];
+
+    /**
+     * Fetches persons using pageable parameters
+     * @param params and sorting parameters: page, size, sort
+     * @return Promise resolving to paged person data
+     */
+    async function fetchPersons(params?: Partial<{page: number; size: number; sort: string}>) {
+        loading.value = true;
+        try {
+            return await $fetch(`/api/persons`, { params });
+        } finally {
+            loading.value = false;
         }
     }
 
-        // Fetch person by ID
-    async function fetchPersonById(id: number) {
-        if (!current_person.value || current_person.value.id !== id) {
-            const cachedPerson = persons.value.find(person => person.id === id);
-            if (cachedPerson) {
-                current_person.value = cachedPerson;
-            } else {
-                const { data, error } = await useFetch(`/api/persons/${id}`);
-                if (error.value) {
-                    console.error(`Error fetching person by ID: ${ id }`, error.value);
-                    return;
-                }
-                current_person.value = data.value as PersonDTO;
-            }
+    /**
+     * Fetches single person item
+     * @param id ID of the entry
+     */
+    async function fetchPersonById(id: number): Promise<PersonDTO | null> {
+        if (cache.value[id]) return cache.value[id];
+        try {
+            const data = await $fetch(`/api/persons/${id}`);
+            cache.value[id] = data;
+            return data;
+        } catch (error) {
+            console.error(`Error fetching person with ID ${ id }:`, error);
+            return null;
         }
     }
 
-        // Filter persons by params
+    /**
+     * Fetches an array of people based on various filter parameters.
+     * @param params Params to be used
+     * @returns An array of `PersonPreviewDTO` matching the filter parameters.
+     */
     async function filterPersons(params: FilterPerson): Promise<PersonPreviewDTO[]> {
         try {
             const data = await $fetch('/api/persons/filter', { query: params });
@@ -49,59 +52,47 @@ export const usePersonStore = defineStore("person", () => {
         }
     }
 
-        // Create new person
-    async function createPerson(payload: Partial<PersonDTO>) {
-        const { data, error } = await useFetch('/api/persons', {
+    /**
+     * Creates a new entry in person register
+     * @param payload data to be inserted
+     * @return Promise resolving to created person data
+     */
+    async function createPerson(payload: Partial<PersonDTO>): Promise<PersonDTO> {
+        const data = await $fetch<PersonDTO>('/api/persons', {
             method: 'POST',
-            body: payload,
+            body: payload
         });
-        if (error.value) {
-            console.error("Error creating person:", error.value);
-            return;
-        }
-        persons.value.push(data.value as PersonDTO);
-        return data.value;
+        cache.value[data.id] = data;
+        return data;
     }
 
-        // Update existing person
-    async function updatePerson(payload: Partial<PersonDTO>, id: number) {
-        if (persons.value.length === 0) {
-            console.error("Persons data is not loaded");
-            return;
-        }
-        const { data, error } = await useFetch<PersonDTO>(`/api/persons/${id}`, {
+    /**
+     * Updates an entry in person register
+     * @param id ID of the entry to be updated
+     * @param payload data to be updated
+     * @return Promise resolving to updated person data
+     */
+    async function updatePerson(id: number, payload: Partial<PersonDTO>): Promise<PersonDTO> {
+        const data = await $fetch<PersonDTO>(`/api/persons/${id}`, {
             method: 'PUT',
-            body: payload,
+            body: payload
         });
-        if (error.value) {
-            console.error("Error updating person:", error.value);
-            return;
-        }
-        const updatedPerson = data.value as PersonDTO;
-        const index = persons.value.findIndex(person => person.id === id);
-        if (index !== -1) persons.value[index] = updatedPerson;
-        if (current_person.value?.id === id) current_person.value = updatedPerson;
-        return updatedPerson;
+        cache.value[data.id] = data;
+        return data;
     }
 
-        // Delete person
+    /**
+     * Deletes an entry in person register
+     * @param id ID of the entry
+     */
     async function deletePerson(id: number) {
-        if (!persons.value) {
-            console.error("Persons data is not loaded");
+        try {
+            await $fetch(`/api/persons/${id}`, { method: 'DELETE' });
+            delete cache.value[id];
+        } catch (error) {
+            console.error("An error appeared: ", error);
             return;
         }
-        const { error } = await useFetch(`/api/persons/${id}`, { method: 'DELETE' });
-        if (error.value) {
-            console.error('Error deleting person:', error.value);
-            return;
-        }
-        persons.value = persons.value.filter(p => p.id !== id);
-        if (current_person.value?.id === id) current_person.value = null;
-    }
-
-        // Clear current person
-    function clearCurrentPerson() {
-        current_person.value = null;
     }
 
     /**
@@ -119,15 +110,12 @@ export const usePersonStore = defineStore("person", () => {
     }
 
     return {
-        persons,
-        current_person,
         fetchPersons,
         fetchPersonById,
         filterPersons,
         createPerson,
         updatePerson,
         deletePerson,
-        clearCurrentPerson,
         searchPeople
     }
 });

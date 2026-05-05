@@ -11,7 +11,7 @@ const tile_store = useTileStore();
 
 // Display map
 const place_features = computed(() => {
-  const p = person_item.value;
+  const p = personItem.value;
   if (!p || !p.origin?.places) {
     return null;
   }
@@ -28,20 +28,20 @@ const sources = computed(() => tile_store.sources);
 const layers = computed(() => tile_store.layers);
 
 const route = useRoute();
-const person_id = Number(route.params.id);
-const person_item = computed(() => person_store.current_person);
-const person_origin = computed(() => person_item.value?.origin);
+const personId = Number(route.params.id);
+const person_origin = computed(() => personItem.value?.origin);
 const originCertainty = ref<Record<string, { label: string; color: string }>>({
   IDENTIFIED: { label: 'Identifiziert', color: 'bg-green-600' },
   AMBIGUOUS: { label: 'Mehrdeutig', color: 'bg-yellow-300' },
   UNKNOWN: { label: 'Unbekannt', color: 'bg-red-600' }
 });
-const person_job = computed(() => person_item.value?.job);
-const person_religion = computed(() => person_item.value?.religion);
-const person_weapons = computed(() => person_item.value?.weapons);
+const person_job = computed(() => personItem.value?.job);
+const person_religion = computed(() => personItem.value?.religion);
+const person_weapons = computed(() => personItem.value?.weapons);
+
+const { data: personItem, status } = await useAsyncData(`person-${ personId }`, () => person_store.fetchPersonById(personId));
 
 onMounted(async () => {
-  await person_store.fetchPersonById(person_id);
   map = initMap(
       'origin_map',
       DEFAULT_MAP_CENTER,
@@ -72,40 +72,40 @@ onMounted(async () => {
 });
 
 useHead(() => ({
-  title: person_item.value ? `${person_item.value.fullName} - Personenverzeichnis` : 'Nicht gefunden',
+  title: personItem.value ? `${personItem.value.fullName} - Personenverzeichnis` : 'Nicht gefunden',
 }));
 </script>
 
 <template>
   <div class="flex flex-col gap-4 rounded-md shadow-md p-4">
     <div class="flex flex-row justify-between">
-      <h1 class="text-3xl montserrat-headline font-bold text-black">{{ person_item?.fullName }}</h1>
-      <TaskBar :id="person_id" entity_type="persons"/>
+      <h1 class="text-3xl montserrat-headline font-bold text-black">{{ personItem?.fullName }}</h1>
+      <TaskBar :id="personId" entity_type="persons"/>
     </div>
     <div class="p-4 rounded-md shadow-md bg-gray-100">
       <table class="text-black roboto-plain w-full table-auto">
         <tbody class="divide-y divide-gray-200">
-        <tr v-show="person_item?.firstName">
+        <tr v-show="personItem?.firstName">
           <td class="px-6 py-4 whitespace-nowrap font-bold">Vorname</td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ person_item?.firstName }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ personItem?.firstName }}</td>
         </tr>
-        <tr v-show="person_item?.lastName">
+        <tr v-show="personItem?.lastName">
           <td class="px-6 py-4 whitespace-nowrap font-bold">Nachname</td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ person_item?.lastName }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ personItem?.lastName }}</td>
         </tr>
-        <tr v-show="person_item?.altNames && person_item?.altNames.length > 0">
+        <tr v-show="personItem?.altNames && personItem?.altNames.length > 0">
           <td class="px-6 py-4 whitespace-nowrap font-bold">Namensvarianten</td>
           <td class="px-6 py-4 whitespace-nowrap">
             <ul class="list-disc list-inside">
-              <li v-for="name in person_item?.altNames" :key="name">{{ name }}</li>
+              <li v-for="name in personItem?.altNames" :key="name">{{ name }}</li>
             </ul>
           </td>
         </tr>
-        <tr v-show="person_item?.sex">
+        <tr v-show="personItem?.sex">
           <td class="px-6 py-4 whitespace-nowrap font-bold">Geschlecht</td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ person_item?.sex }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ personItem?.sex }}</td>
         </tr>
-        <tr v-show="person_item?.isCitizen">
+        <tr v-show="personItem?.isCitizen">
           <td class="px-6 py-4 whitespace-nowrap font-bold">Bürger</td>
           <td class="px-6 py-4 whitespace-nowrap">
             <i class="pi pi-check" style="color: green"/>
@@ -140,14 +140,14 @@ useHead(() => ({
             </div>
           </td>
         </tr>
-        <tr v-show="person_item?.associatedBuilding">
+        <tr v-show="personItem?.associatedBuilding">
           <td class="px-6 py-4 whitespace-nowrap font-bold">Bezug zum Gebäude</td>
           <td class="px-6 py-4 whitespace-nowrap">
             <NuxtLink
-                :to="`/buildings/${ person_item?.associatedBuilding?.id }`"
+                :to="`/buildings/${ personItem?.associatedBuilding?.id }`"
                 class="p-1.5 bg-gray-300 rounded-md shadow-md hover:shadow-lg font-medium"
             >
-              {{ person_item?.associatedBuilding?.districtHouseNumber }}
+              {{ personItem?.associatedBuilding?.districtHouseNumber }}
             </NuxtLink>
           </td>
         </tr>
@@ -215,20 +215,20 @@ useHead(() => ({
       </table>
     </div>
     <div class="flex flex-col gap-2 p-4 rounded-md shadow-md bg-gray-100">
-      <Panel header="Notizen" toggleable v-show="person_item?.generalNotes">
+      <Panel header="Notizen" toggleable v-show="personItem?.generalNotes">
         <template #header>
           <p class="text-sm text-black roboto-plain font-bold">Notizen</p>
         </template>
-        <p class="text-sm text-black roboto-plain">{{ person_item?.generalNotes }}</p>
+        <p class="text-sm text-black roboto-plain">{{ personItem?.generalNotes }}</p>
       </Panel>
       <div class="flex flex-col">
-        <div v-if="person_item?.createdDate" class="flex flex-row space-x-2 text-black roboto-plain">
+        <div v-if="personItem?.createdDate" class="flex flex-row space-x-2 text-black roboto-plain">
           <p class="font-bold">Erstellt am:</p>
-          <p>{{ new Date(person_item?.createdDate).toLocaleDateString() }}</p>
+          <p>{{ new Date(personItem?.createdDate).toLocaleDateString() }}</p>
         </div>
-        <div v-if="person_item?.lastModifiedDate" class="flex flex-row space-x-2 text-black roboto-plain">
+        <div v-if="personItem?.lastModifiedDate" class="flex flex-row space-x-2 text-black roboto-plain">
           <p class="font-bold">Stand:</p>
-          <p>{{ new Date(person_item?.lastModifiedDate).toLocaleDateString() }}</p>
+          <p>{{ new Date(personItem?.lastModifiedDate).toLocaleDateString() }}</p>
         </div>
       </div>
     </div>
