@@ -10,34 +10,6 @@ const submitted = ref(false);
 
 const personStore = usePersonStore();
 
-const religionStore = useReligionStore();
-const religions = computed(() => (religionStore.religions).map(
-    (religion) => {
-      return {
-        label: religion.name,
-        value: {
-          id: religion.id,
-          name: religion.name,
-          description: religion.description
-        }
-      }
-    }
-));
-
-const weapon_store = useWeaponStore();
-const weapons = computed(() => weapon_store.weapons.map(
-    (weapon) => {
-      return {
-        label: weapon.name,
-        value: {
-          id: weapon.id,
-          name: weapon.name,
-          description: weapon.description
-        }
-      }
-    }
-));
-
 type PersonInput = Omit<PersonDTO, 'id' | 'createdBy' | 'createdDate' | 'lastModifiedBy' | 'lastModifiedDate'>;
 
 const submit = async (formData: Partial<PersonInput>) => {
