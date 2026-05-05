@@ -107,6 +107,20 @@ export const useBuildingStore = defineStore('building', () => {
         current_building.value = null;
     }
 
+    /**
+     * Fetches an array of buildings based on a search query.
+     * @param query Query to be used for searching buildings.
+     * @returns An array of `BuildingDTO` matching the search query.
+     */
+    async function searchBuildings(query: string): Promise<BuildingDTO[]> {
+        try {
+            return await $fetch<BuildingDTO[]>('/api/buildings/search', { query: { query: query } });
+        } catch (err) {
+            console.error('Error searching buildings', err);
+            return [];
+        }
+    }
+
     return {
         buildings,
         current_building,
@@ -116,6 +130,7 @@ export const useBuildingStore = defineStore('building', () => {
         createBuilding,
         updateBuilding,
         deleteBuilding,
-        clearCurrentBuilding
+        clearCurrentBuilding,
+        searchBuildings
     }
 })

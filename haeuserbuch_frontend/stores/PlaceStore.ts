@@ -95,6 +95,20 @@ export const usePlaceStore = defineStore("place", () => {
         current_place.value = null;
     }
 
+    /**
+     * Fetches an array of places based on a search query.
+     * @param query Query to be used for searching places.
+     * @returns An array of `PlaceDTO` matching the search query.
+     */
+    async function searchPlaces(query: string): Promise<PlaceDTO[]> {
+        try {
+            return await $fetch<PlaceDTO[]>('/api/places/search', { query: { query: query } });
+        } catch (err) {
+            console.error('Error searching places', err);
+            return [];
+        }
+    }
+
     return {
         places,
         current_place,
@@ -103,6 +117,7 @@ export const usePlaceStore = defineStore("place", () => {
         createPlace,
         updatePlace,
         deletePlace,
-        clearCurrentPlace
+        clearCurrentPlace,
+        searchPlaces
     }
 });

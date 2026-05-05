@@ -110,6 +110,15 @@ export const useJobStore = defineStore("job", () => {
         }
     }
 
+    async function searchJobs(query: string): Promise<JobDTO[]> {
+        try {
+            return await $fetch<JobDTO[]>(`/api/jobs/search`, { params: { query: query } });
+        } catch (err) {
+            console.error('Error searching jobs:', err);
+            return [];
+        }
+    }
+
     return {
         jobs,
         currentJob,
@@ -118,6 +127,7 @@ export const useJobStore = defineStore("job", () => {
         fetchJobById,
         createJob,
         updateJob,
-        deleteJob
+        deleteJob,
+        searchJobs
     };
 });
