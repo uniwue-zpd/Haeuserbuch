@@ -132,8 +132,7 @@ export enum OriginCertainty {
 /* DTO projection of a {@link Person} object with only preview data */
 export interface PersonPreviewDTO {
     id: number | null;
-    firstName: string | null;
-    lastName: string | null;
+    fullName: string | null;
 }
 
 export interface PlaceDTO {

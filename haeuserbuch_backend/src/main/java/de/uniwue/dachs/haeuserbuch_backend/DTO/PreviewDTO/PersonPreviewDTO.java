@@ -10,6 +10,5 @@ import lombok.Setter;
 @Setter
 public class PersonPreviewDTO {
     private Long id;
-    private String firstName;
-    private String lastName;
+    private String fullName;
 }

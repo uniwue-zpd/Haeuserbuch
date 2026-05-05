@@ -110,7 +110,7 @@ useHead(() => ({
                     class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md text-nowrap"
                     prefetch
                 >
-                  {{ slotProps.data.person.firstName }} {{ slotProps.data.person.lastName }}
+                  {{ slotProps.data.person.fullName }}
                 </NuxtLink>
               </div>
               <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>

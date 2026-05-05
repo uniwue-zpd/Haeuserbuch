@@ -48,7 +48,7 @@ useHead(() => ({
             <td class="py-4 pr-4 whitespace-nowrap font-bold">Eingebürgerte Person</td>
             <td class="py-4 whitespace-nowrap">
               <NuxtLink :to="`/persons/${ citizenshipItem.person.id }`" class="rounded-md shadow-md hover:shadow-lg p-2 bg-gray-200 font-medium">
-                {{ citizenshipItem.person.firstName }} {{ citizenshipItem.person.lastName }}
+                {{ citizenshipItem.person.fullName }}
               </NuxtLink>
             </td>
           </tr>
@@ -58,7 +58,7 @@ useHead(() => ({
               <div class="flex flex-wrap gap-5">
                 <div v-for="person in citizenshipItem.mentionedPersons">
                   <NuxtLink :to="`/persons/${ person.id }`" class="rounded-md shadow-md hover:shadow-lg p-2 bg-gray-200 font-medium">
-                    {{ person.firstName }} {{ person.lastName }}
+                    {{ person.fullName }}
                   </NuxtLink>
                 </div>
               </div>

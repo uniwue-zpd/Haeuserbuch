@@ -96,8 +96,7 @@ public class PersonMapper {
         if (person == null) return null;
         PersonPreviewDTO previewDTO = new PersonPreviewDTO();
         previewDTO.setId(person.getId());
-        previewDTO.setFirstName(person.getFirstName());
-        previewDTO.setLastName(person.getLastName());
+        previewDTO.setFullName(person.getFullName());
         return previewDTO;
     }
 
