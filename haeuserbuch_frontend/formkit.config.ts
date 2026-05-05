@@ -2,6 +2,9 @@ import { defaultConfig, createInput } from '@formkit/vue'
 import { rootClasses } from './formkit.theme'
 import PersonSearch from "~/components/forms/custom_inputs/PersonSearch.vue";
 import SourceSearch from "~/components/forms/custom_inputs/SourceSearch.vue";
+import BuildingSearch from "~/components/forms/custom_inputs/BuildingSearch.vue";
+import JobSearch from "~/components/forms/custom_inputs/JobSearch.vue";
+import PlaceSearch from "~/components/forms/custom_inputs/PlaceSearch.vue";
 
 const formkitConfig = defaultConfig({
     config: {
@@ -9,7 +12,10 @@ const formkitConfig = defaultConfig({
     },
     inputs: {
         personAutocomplete: createInput(PersonSearch, { props: ['isMultiple'] }),
-        sourceAutocomplete: createInput(SourceSearch)
+        sourceAutocomplete: createInput(SourceSearch),
+        buildingAutocomplete: createInput(BuildingSearch),
+        jobAutocomplete: createInput(JobSearch),
+        placeAutocomplete: createInput(PlaceSearch, { props: ['isMultiple'] })
     }
 });
 
