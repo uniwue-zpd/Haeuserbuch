@@ -104,6 +104,20 @@ export const usePersonStore = defineStore("person", () => {
         current_person.value = null;
     }
 
+    /**
+     * Fetches an array of people based on a search query.
+     * @param query Query to be used for searching people.
+     * @returns An array of `PersonPreviewDTO` matching the search query.
+     */
+    async function searchPeople(query: string): Promise<PersonPreviewDTO[]> {
+        try {
+            return await $fetch<PersonPreviewDTO[]>(`/api/persons/search`, { params: { query: query } });
+        } catch (err) {
+            console.error('Error searching people:', err);
+            return [];
+        }
+    }
+
     return {
         persons,
         current_person,
@@ -113,6 +127,7 @@ export const usePersonStore = defineStore("person", () => {
         createPerson,
         updatePerson,
         deletePerson,
-        clearCurrentPerson
+        clearCurrentPerson,
+        searchPeople
     }
 });
