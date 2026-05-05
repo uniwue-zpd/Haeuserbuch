@@ -2,7 +2,7 @@
 
 import CitizenshipForm from "~/components/forms/CitizenshipForm.vue";
 import PlaceForm from "~/components/forms/PlaceForm.vue";
-import PersonForm from "~/components/forms/person/PersonForm.vue";
+import PersonForm from "~/components/forms/PersonForm.vue";
 </script>
 
 <template>
