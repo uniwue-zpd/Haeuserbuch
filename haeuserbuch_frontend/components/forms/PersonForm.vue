@@ -8,50 +8,7 @@ const props = defineProps<{
 const toast = useToast();
 const submitted = ref(false);
 
-const person_store = usePersonStore();
-
-const place_store = usePlaceStore();
-const places = computed(() => (place_store.places?.features ?? []).map(
-    (p) => {
-      const props = p.properties as PlaceProperties;
-      return {
-        label: props.realName,
-        value: {
-          id: p.id,
-          realName: props.realName,
-          altNames: props.altNames,
-        }
-      }
-    }
-));
-
-const building_store = useBuildingStore();
-const buildings = computed(() => (building_store.buildings?.features ?? []).map(
-    (b) => {
-      const props = b.properties as BuildingProperties;
-      return {
-        label: props.districtHouseNumber,
-        value: {
-          id: b.id,
-          districtHouseNumber: props.districtHouseNumber
-        }
-      }
-    }
-));
-
-const jobStore = useJobStore();
-const jobs = computed(() => (jobStore.jobs).map(
-    (job) => {
-      return {
-        label: job.name,
-        value: {
-          id: job.id,
-          name: job.name,
-          description: job.description
-        }
-      }
-    }
-));
+const personStore = usePersonStore();
 
 const religionStore = useReligionStore();
 const religions = computed(() => (religionStore.religions).map(
@@ -86,27 +43,38 @@ type PersonInput = Omit<PersonDTO, 'id' | 'createdBy' | 'createdDate' | 'lastMod
 const submit = async (formData: Partial<PersonInput>) => {
   try {
     if (props.action === 'create') {
-      await person_store.createPerson(formData);
-      submitted.value = true;
-      toast.add({severity: 'success', summary: 'Erfolg', detail: 'Erfolgreich erstellt', life: 3000});
+      await personStore.createPerson(formData);
+      toast.add({
+        severity: 'success',
+        summary: 'Erfolg',
+        detail: 'Erfolgreich erstellt',
+        life: 3000
+      });
       const form = getNode('person_creation');
       form?.reset();
-    } else if (props.action === 'edit' && props.person?.id) {
-      await person_store.updatePerson(formData, props.person.id);
-      submitted.value = true;
-      toast.add({severity: 'success', summary: 'Erfolg', detail: 'Erfolgreich upgedated', life: 3000});
-      navigateTo(`/persons/${props.person?.id}`);
     }
+    else if (props.action === 'edit' && props.person?.id) {
+      const id = props.person.id;
+      await personStore.updatePerson(id, formData);
+      toast.add({
+        severity: 'success',
+        summary: 'Erfolg',
+        detail: 'Erfolgreich upgedated',
+        life: 3000
+      });
+      navigateTo(`/persons/${id}`);
+    }
+    submitted.value = true
   } catch (error) {
-    console.log(error)
+    console.error(error);
     toast.add({
       severity: 'error',
       summary: 'Fehler',
-      detail: 'Fehler beim Erstellen des Person-Objektes',
+      detail: 'Fehler beim Speichern des Eintrags',
       life: 3000
     });
   }
-};
+}
 </script>
 
 <template>
@@ -203,16 +171,11 @@ const submit = async (formData: Partial<PersonInput>) => {
                 outer-class="max-w-full"
             />
             <FormKit
-                type="select"
-                multiple
+                type="placeAutocomplete"
+                :isMultiple="true"
                 name="places"
                 label="Mögliche Herkunftsorte"
                 outer-class="max-w-full"
-                select-icon="select"
-                :options="[{ label: 'Keine Auswahl', value: null },
-                ...places as any
-                ]"
-                help="Halten Sie die Strg-Taste gedrückt, um mehrere Orte auszuwählen"
             />
             <FormKit
                 type="select"
@@ -231,14 +194,10 @@ const submit = async (formData: Partial<PersonInput>) => {
         </FormKit>
         <div class="text-center roboto-plain font-bold text-2xl">Bezug zum Gebäude</div>
         <FormKit
-            type="select"
+            type="buildingAutocomplete"
             name="associatedBuilding"
             label="Erwähntes Gebäude"
             outer-class="max-w-full"
-            select-icon="select"
-            :options="[{ label: 'Keine Auswahl', value: null },
-            ...buildings as any
-            ]"
         />
         <div class="text-center roboto-plain font-bold text-2xl">Berufliche Situation</div>
         <FormKit type="group" name="job">
@@ -251,14 +210,10 @@ const submit = async (formData: Partial<PersonInput>) => {
                 outer-class="max-w-full"
             />
             <FormKit
-                type="select"
+                type="jobAutocomplete"
                 name="jobCategory"
                 label="Standardisierte Berufskategorie"
                 outer-class="max-w-full"
-                select-icon="select"
-                :options="[{ label: 'Keine Auswahl', value: null },
-                ...jobs as any
-                ]"
             />
           </div>
         </FormKit>
@@ -268,19 +223,15 @@ const submit = async (formData: Partial<PersonInput>) => {
             <FormKit
                 type="text"
                 name="originalText"
-                label="Eingetragener Beruf"
+                label="Eingetragene Religion"
                 prefix-icon="text"
                 outer-class="max-w-full"
             />
             <FormKit
-                type="select"
+                type="religionAutocomplete"
                 name="religionCategory"
                 label="Standardisierte Religionskategorie"
                 outer-class="max-w-full"
-                select-icon="select"
-                :options="[{ label: 'Keine Auswahl', value: null },
-                ...religions as any
-                ]"
             />
           </div>
         </FormKit>
@@ -295,20 +246,16 @@ const submit = async (formData: Partial<PersonInput>) => {
             <div class="flex flex-col gap-1 bg-gray-200 rounded-md shadow-md p-4 border border-gray-300">
               <div class="grid grid-cols-2 gap-2">
                 <FormKit
-                    type="select"
-                    name="weapon"
-                    label="Waffe"
-                    outer-class="max-w-full"
-                    select-icon="select"
-                    :options="[{ label: 'Keine Auswahl', value: null },
-                    ...weapons as any
-                    ]"
-                />
-                <FormKit
                     type="text"
                     name="originalText"
                     label="Originaler Text"
                     placeholder="Spitzhacke"
+                    outer-class="max-w-full"
+                />
+                <FormKit
+                    type="weaponAutocomplete"
+                    name="weapon"
+                    label="Waffe"
                     outer-class="max-w-full"
                 />
               </div>
