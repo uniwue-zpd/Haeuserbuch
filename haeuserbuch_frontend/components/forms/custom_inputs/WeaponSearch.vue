@@ -3,14 +3,14 @@ const props = defineProps({
   context: Object,
 });
 
-const religionStore = useReligionStore();
+const weaponStore = useWeaponStore();
 
-const suggestions = ref<ReligionDTO[]>([]);
+const suggestions = ref<WeaponDTO[]>([]);
 const loading = ref(false);
 
 const debouncedSearch = debounce(async (query: string) => {
   loading.value = true;
-  suggestions.value = await religionStore.searchReligions(query);
+  suggestions.value = await weaponStore.searchWeapons(query);
   loading.value = false;
 }, 300);
 

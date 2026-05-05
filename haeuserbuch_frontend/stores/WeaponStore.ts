@@ -108,6 +108,20 @@ export const useWeaponStore = defineStore('weapon', () => {
         }
     }
 
+    /**
+     * GET an array of weapons based on a search query.
+     * @param query Query to be used for searching weapons.
+     * @returns An array of `WeaponDTO` matching the search query.
+     */
+    async function searchWeapons(query: string): Promise<WeaponDTO[]> {
+        try {
+            return await $fetch<WeaponDTO[]>('/api/weapons/search', { query: { query: query } });
+        } catch (err) {
+            console.error('Error searching weapons', err);
+            return [];
+        }
+    }
+
     return {
         weapons,
         currentWeapon,
@@ -117,5 +131,6 @@ export const useWeaponStore = defineStore('weapon', () => {
         createWeapon,
         updateWeapon,
         deleteWeapon,
+        searchWeapons
     };
 });
