@@ -14,7 +14,7 @@ const formkitConfig = defaultConfig({
     },
     inputs: {
         personAutocomplete: createInput(PersonSearch, { props: ['isMultiple'] }),
-        sourceAutocomplete: createInput(SourceSearch),
+        sourceAutocomplete: createInput(SourceSearch, { props: ['isMultiple'] }),
         buildingAutocomplete: createInput(BuildingSearch),
         jobAutocomplete: createInput(JobSearch),
         placeAutocomplete: createInput(PlaceSearch, { props: ['isMultiple'] }),

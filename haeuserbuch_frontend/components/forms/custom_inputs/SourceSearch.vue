@@ -3,6 +3,8 @@ const props = defineProps({
   context: Object,
 });
 
+const isMultiple = props.context?.isMultiple;
+
 const sourceStore = useSourceStore();
 
 const suggestions = ref<SourceDTO[]>([]);
@@ -30,11 +32,12 @@ const value = computed({
       :suggestions="suggestions"
       :loading="loading"
       @complete="onComplete"
-      @clear="props.context?.node.input(null)"
+      @clear="isMultiple ? props.context?.node.input([]) : props.context?.node.input(null)"
       optionLabel="title"
-      dropdown
-      showClear
       class="min-w-full"
+      :dropdown="!isMultiple"
+      showClear
+      :multiple="isMultiple"
   />
 </template>
 
