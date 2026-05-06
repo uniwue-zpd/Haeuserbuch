@@ -7,7 +7,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     const sourceStore = useSourceStore();
     const tileStore = useTileStore();
     const streetStore = useStreetStore();
-    const weaponStore = useWeaponStore();
 
     try {
         await Promise.all([
@@ -15,8 +14,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             placeStore.fetchPlaces(),
             sourceStore.fetchSources(),
             tileStore.fetchTiles(),
-            streetStore.fetchStreets(),
-            weaponStore.fetchWeapons()
+            streetStore.fetchStreets()
         ]);
     } catch (error) {
         console.error("Error initializing stores:", error);
