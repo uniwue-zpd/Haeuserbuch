@@ -7,7 +7,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     const sourceStore = useSourceStore();
     const tileStore = useTileStore();
     const streetStore = useStreetStore();
-    const jobStore = useJobStore();
     const religionStore = useReligionStore();
     const weaponStore = useWeaponStore();
 
@@ -18,7 +17,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             sourceStore.fetchSources(),
             tileStore.fetchTiles(),
             streetStore.fetchStreets(),
-            jobStore.fetchJobs(),
             religionStore.fetchReligions(),
             weaponStore.fetchWeapons()
         ]);
