@@ -59,7 +59,7 @@ public class DistrictController {
 
     @GetMapping("/search")
     public ResponseEntity<List<DistrictDTO>> searchDistricts(@RequestParam String query) {
-        if (query == null || query.trim().length() < 3) {
+        if (query == null || query.trim().isEmpty()) {
             return ResponseEntity.ok(List.of());
         }
         List<DistrictDTO> districtDTOs = districtService.searchDistricts(query);
