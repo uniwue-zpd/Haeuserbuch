@@ -1,5 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.controller;
 
+import de.uniwue.dachs.haeuserbuch_backend.DTO.StreetDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Street;
 import de.uniwue.dachs.haeuserbuch_backend.service.StreetService;
 import jakarta.persistence.EntityNotFoundException;
@@ -54,5 +55,14 @@ public class StreetController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(404).build();
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<StreetDTO>> searchStreets(@RequestParam String query) {
+        if (query == null || query.trim().length() < 3) {
+            return ResponseEntity.ok(List.of());
+        }
+        List<StreetDTO> streetDTOs = streetService.searchStreets(query);
+        return ResponseEntity.ok(streetDTOs);
     }
 }
