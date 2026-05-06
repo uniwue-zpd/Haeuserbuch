@@ -1,9 +1,7 @@
 <script setup lang="ts">
-const quarters = ref<Quarter[]>([]);
+const quarterStore = useQuarterStore();
 
-onMounted(async () => {
-  quarters.value = useQuarterStore().quarters.sort((a, b) => a.name.localeCompare(b.name));
-});
+const { data: quarters } = useAsyncData('quarters', () => quarterStore.fetchQuarters());
 
 useHead(() => ({
   title: 'Viertel - Verzeichnis der Viertel'
