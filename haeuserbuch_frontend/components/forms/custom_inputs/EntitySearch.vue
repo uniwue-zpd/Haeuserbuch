@@ -5,7 +5,17 @@ const props = defineProps({
 
 const loading = ref(false);
 
-type EntityTypes = 'building' | 'job' | 'person' | 'place' | 'religion' | 'source' | 'weapon';
+type EntityTypes =
+    'building'
+    | 'district'
+    | 'job'
+    | 'person'
+    | 'place'
+    | 'quarter'
+    | 'religion'
+    | 'source'
+    | 'street'
+    | 'weapon';
 
 const entityType: EntityTypes = props.context?.entityType;
 const isMultiple: boolean = props.context?.isMultiple;
@@ -14,11 +24,14 @@ const optionLabel: string = props.context?.optionLabel;
 const suggestions = ref<any[]>([]);
 
 const buildingStore = useBuildingStore();
+const districtStore = useDistrictStore();
 const jobStore = useJobStore();
 const personStore = usePersonStore();
 const placeStore = usePlaceStore();
+const quarterStore = useQuarterStore();
 const religionStore = useReligionStore();
 const sourceStore = useSourceStore();
+const streetStore = useStreetStore();
 const weaponStore = useWeaponStore();
 
 const debouncedSearch = debounce(async (query: string) => {
@@ -26,6 +39,9 @@ const debouncedSearch = debounce(async (query: string) => {
   switch (entityType) {
     case 'building':
       suggestions.value = await buildingStore.searchBuildings(query);
+      break;
+    case 'district':
+      suggestions.value = await districtStore.searchDistricts(query);
       break;
     case 'job':
       suggestions.value = await jobStore.searchJobs(query);
@@ -36,11 +52,17 @@ const debouncedSearch = debounce(async (query: string) => {
     case 'place':
       suggestions.value = await placeStore.searchPlaces(query);
       break;
+    case 'quarter':
+      suggestions.value = await quarterStore.searchQuarters(query);
+      break;
     case 'religion':
       suggestions.value = await religionStore.searchReligions(query);
       break;
     case 'source':
       suggestions.value = await sourceStore.searchSources(query);
+      break;
+    case 'street':
+      suggestions.value = await streetStore.searchStreets(query);
       break;
     case 'weapon':
       suggestions.value = await weaponStore.searchWeapons(query);
