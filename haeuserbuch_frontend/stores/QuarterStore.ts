@@ -94,6 +94,20 @@ export const useQuarterStore = defineStore("quarter", () => {
         current_quarter.value = null;
     }
 
+    /**
+     * GET An array of quarters based on a search query.
+     * @param query Search term.
+     * @returns An array of QuarterDTO objects matching the search query.
+     */
+    async function searchQuarters(query: string): Promise<QuarterDTO[]> {
+        try {
+            return await $fetch<QuarterDTO[]>(`/api/quarters/search`, { params: { query: query } });
+        } catch (err) {
+            console.error('Error searching quarters:', err);
+            return [];
+        }
+    }
+
     return {
         quarters,
         current_quarter,
@@ -103,6 +117,7 @@ export const useQuarterStore = defineStore("quarter", () => {
         createQuarter,
         updateQuarter,
         deleteQuarter,
-        clearCurrentQuarter
+        clearCurrentQuarter,
+        searchQuarters
     }
 });

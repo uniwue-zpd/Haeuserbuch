@@ -94,6 +94,20 @@ export const useDistrictStore = defineStore("district", () => {
         current_district.value = null;
     }
 
+    /**
+     * GET An array of districts based on a search query.
+     * @param query Search term.
+     * @returns An array of DistrictDTO objects matching the search query.
+     */
+    async function searchDistricts(query: string): Promise<DistrictDTO[]> {
+        try {
+            return await $fetch<DistrictDTO[]>(`/api/districts/search`, { params: { query: query } });
+        } catch (err) {
+            console.error('Error searching districts:', err);
+            return [];
+        }
+    }
+
     return {
         districts,
         current_district,
@@ -103,6 +117,7 @@ export const useDistrictStore = defineStore("district", () => {
         createDistrict,
         updateDistrict,
         deleteDistrict,
-        clearCurrentDistrict
+        clearCurrentDistrict,
+        searchDistricts
     };
 });

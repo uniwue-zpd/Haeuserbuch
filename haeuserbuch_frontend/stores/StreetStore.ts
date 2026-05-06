@@ -94,6 +94,20 @@ export const useStreetStore = defineStore("street", () => {
         current_street.value = null;
     }
 
+    /**
+     * GET An array of streets based on a search query.
+     * @param query Search term.
+     * @returns An array of StreetDTO objects matching the search query.
+     */
+    async function searchStreets(query: string): Promise<StreetDTO[]> {
+        try {
+            return await $fetch<StreetDTO[]>(`/api/streets/search`, { params: { query: query } });
+        } catch (err) {
+            console.error('Error searching streets:', err);
+            return [];
+        }
+    }
+
     return {
         streets,
         current_street,
@@ -103,6 +117,7 @@ export const useStreetStore = defineStore("street", () => {
         createStreet,
         updateStreet,
         deleteStreet,
-        clearCurrentStreet
+        clearCurrentStreet,
+        searchStreets
     }
 });
