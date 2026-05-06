@@ -66,7 +66,9 @@ const submit = async (formData: Partial<CitizenshipInput>) => {
         <div class="flex flex-col gap-3">
           <p class="montserrat-headline font-semibold text-black text-xl">Informationen zum Eintrag</p>
           <FormKit
-              type="sourceAutocomplete"
+              type="entityAutocomplete"
+              entityType="source"
+              optionLabel="title"
               label="Primärquelle"
               name="primarySource"
               outer-class="max-w-full"
@@ -96,13 +98,17 @@ const submit = async (formData: Partial<CitizenshipInput>) => {
               outer-class="max-w-full"
           />
           <FormKit
-              type="personAutocomplete"
+              type="entityAutocomplete"
+              entityType="person"
+              optionLabel="fullName"
               label="Eingebürgerte Person"
               name="person"
               outer-class="max-w-full"
           />
           <FormKit
-              type="personAutocomplete"
+              type="entityAutocomplete"
+              entityType="person"
+              optionLabel="fullName"
               :isMultiple="true"
               label="Erwähnte Personen (Mehrfachauswahl)"
               name="mentionedPersons"
@@ -120,8 +126,10 @@ const submit = async (formData: Partial<CitizenshipInput>) => {
         <div class="flex flex-col gap-3">
           <p class="montserrat-headline font-semibold text-black text-xl">Ergänzende Informationen</p>
           <FormKit
-              type="sourceAutocomplete"
-              label="Sekundärquelle"
+              type="entityAutocomplete"
+              entityType="source"
+              optionLabel="title"
+              label="Sekundärrquelle"
               name="secondarySource"
               outer-class="max-w-full"
           />
