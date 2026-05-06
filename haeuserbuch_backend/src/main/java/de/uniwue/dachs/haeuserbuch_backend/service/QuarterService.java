@@ -1,20 +1,25 @@
 package de.uniwue.dachs.haeuserbuch_backend.service;
 
+import de.uniwue.dachs.haeuserbuch_backend.DTO.QuarterDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Quarter;
 import de.uniwue.dachs.haeuserbuch_backend.repository.QuarterRepository;
+import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.QuarterMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class QuarterService {
     private final QuarterRepository quarterRepository;
+    private final QuarterMapper quarterMapper;
 
-    public QuarterService(QuarterRepository quarterRepository) {
+    public QuarterService(QuarterRepository quarterRepository, QuarterMapper quarterMapper) {
         this.quarterRepository = quarterRepository;
+        this.quarterMapper = quarterMapper;
     }
 
     // GET all quarters
@@ -54,5 +59,17 @@ public class QuarterService {
             throw new EntityNotFoundException("Quarter with ID " + id + " does not exist.");
         }
         quarterRepository.deleteById(id);
+    }
+
+    /**
+     * GET An array of quarters based on a search query.
+     * @param query Search term.
+     * @return A {@link List} of {@link QuarterDTO} objects matching the search term.
+     */
+    public List<QuarterDTO> searchQuarters(String query) {
+        return quarterRepository.searchQuarters(query).stream()
+                .map(quarterMapper::QuarterToDTO)
+                .filter(Objects::nonNull)
+                .toList();
     }
 }
