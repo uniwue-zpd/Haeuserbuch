@@ -143,7 +143,9 @@ const submit = async (formData: Partial<PersonInput>) => {
                 outer-class="max-w-full"
             />
             <FormKit
-                type="placeAutocomplete"
+                type="entityAutocomplete"
+                entityType="place"
+                optionLabel="realName"
                 :isMultiple="true"
                 name="places"
                 label="Mögliche Herkunftsorte"
@@ -166,7 +168,9 @@ const submit = async (formData: Partial<PersonInput>) => {
         </FormKit>
         <div class="text-center roboto-plain font-bold text-2xl">Bezug zum Gebäude</div>
         <FormKit
-            type="buildingAutocomplete"
+            type="entityAutocomplete"
+            entityType="building"
+            optionLabel="districtHouseNumber"
             name="associatedBuilding"
             label="Erwähntes Gebäude"
             outer-class="max-w-full"
@@ -182,7 +186,9 @@ const submit = async (formData: Partial<PersonInput>) => {
                 outer-class="max-w-full"
             />
             <FormKit
-                type="jobAutocomplete"
+                type="entityAutocomplete"
+                entityType="job"
+                optionLabel="name"
                 name="jobCategory"
                 label="Standardisierte Berufskategorie"
                 outer-class="max-w-full"
@@ -200,7 +206,9 @@ const submit = async (formData: Partial<PersonInput>) => {
                 outer-class="max-w-full"
             />
             <FormKit
-                type="religionAutocomplete"
+                type="entityAutocomplete"
+                entityType="religion"
+                optionLabel="name"
                 name="religionCategory"
                 label="Standardisierte Religionskategorie"
                 outer-class="max-w-full"
@@ -225,7 +233,9 @@ const submit = async (formData: Partial<PersonInput>) => {
                     outer-class="max-w-full"
                 />
                 <FormKit
-                    type="weaponAutocomplete"
+                    type="entityAutocomplete"
+                    entityType="weapon"
+                    optionLabel="name"
                     name="weapon"
                     label="Waffe"
                     outer-class="max-w-full"
