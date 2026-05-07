@@ -20,7 +20,7 @@ const submit = async (formData: Partial<StreetInput>) => {
       const form = getNode('street_creation');
       form?.reset();
     } else if (props.action === 'edit' && props.street?.id) {
-      await street_store.updateStreet(formData, props.street.id);
+      await street_store.updateStreet(props.street.id, formData);
       submitted.value = true;
       toast.add({severity: 'success', summary: 'Erfolg', detail: 'Erfolgreich upgedated', life: 3000});
       navigateTo(`/streets/${props.street?.id}`);
