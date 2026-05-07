@@ -74,6 +74,8 @@ public class BuildingService {
      * @param quarterName Name of the quarter
      * @param sourceId ID of the source
      * @param sourceName Name of the source
+     * @param streetId ID of the street
+     * @param streetName Name of the street
      * @return {@link List} of {@link BuildingDTO} matching the search criteria or an empty {@link List} if no buildings match the criteria
      */
     public List<BuildingDTO> searchBuildings(
@@ -82,7 +84,9 @@ public class BuildingService {
             Long quarterId,
             String quarterName,
             Long sourceId,
-            String sourceName
+            String sourceName,
+            Long streetId,
+            String streetName
     ) {
         Specification<Building> spec = Specification.where(null);
 
@@ -103,6 +107,12 @@ public class BuildingService {
         }
         if (sourceName != null && !sourceName.isEmpty()) {
             spec = spec.and(BuildingSpecifications.hasSourceName(sourceName));
+        }
+        if (streetId != null) {
+            spec = spec.and(BuildingSpecifications.hasStreetId(streetId));
+        }
+        if (streetName != null && !streetName.isEmpty()) {
+            spec = spec.and(BuildingSpecifications.hasAddressStreetName(streetName));
         }
 
         List<Building> response = buildingRepository.findAll(spec);

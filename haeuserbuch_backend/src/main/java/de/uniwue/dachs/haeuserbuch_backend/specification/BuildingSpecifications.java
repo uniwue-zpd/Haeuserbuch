@@ -34,15 +34,23 @@ public class BuildingSpecifications {
     }
 
     public static Specification<Building> hasStreetId(Long streetId) {
-        return (root, query, cb) ->
-                cb.equal(root.get("currentStreet").get("id"), streetId);
+        return (root, query, cb) -> {
+            if (streetId == null) return null;
+            assert query != null;
+            query.distinct(true);
+            Join<Object, Object> addressJoin = root.joinSet("addresses", JoinType.LEFT);
+            return cb.equal(addressJoin.get("street").get("id"), streetId);
+        };
     }
 
-    public static Specification<Building> hasStreet(String streetName) {
-        return (root, query, cb) ->
-                cb.like(
-                        cb.lower(root.get("currentStreet").get("name")), "%" + streetName.toLowerCase() + "%"
-                );
+    public static Specification<Building> hasAddressStreetName(String streetName) {
+        return (root, query, cb) -> {
+            if (streetName == null || streetName.isBlank()) return null;
+            assert query != null;
+            query.distinct(true);
+            Join<Object, Object> addressJoin = root.joinSet("addresses", JoinType.LEFT);
+            return cb.like(cb.lower(addressJoin.get("street").get("name")), "%" + streetName.toLowerCase() + "%");
+        };
     }
 
     public static Specification<Building> hasSourceId(Long sourceId) {
