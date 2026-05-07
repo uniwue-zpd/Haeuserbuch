@@ -20,7 +20,7 @@ const submit = async (formData: Partial<SourceInput>) => {
       const form = getNode('source_create');
       form?.reset();
     } else if (props.action === 'edit' && props.source?.id) {
-      await source_store.updateSource(formData, props.source.id);
+      await source_store.updateSource(props.source.id, formData);
       submitted.value = true;
       toast.add({severity: 'success', summary: 'Erfolg', detail: 'Erfolgreich upgedated', life: 3000});
       const form = getNode('source_edit');
@@ -40,7 +40,7 @@ const submit = async (formData: Partial<SourceInput>) => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-2">
+  <div class="flex flex-col gap-2 w-[80%] mx-auto">
     <h1 class="text-2xl montserrat-headline-headline text-black font-bold">{{ props.header }}</h1>
     <p class="roboto-plain">Füllen Sie bitte die untenstehenden Felder aus, um ein Objekt zu erstellen oder anzupassen.</p>
     <div class="p-3 bg-[#F1F2F2] shadow-md rounded-md">

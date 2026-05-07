@@ -2,13 +2,10 @@
 import SourceForm from "~/components/forms/SourceForm.vue";
 
 const route = useRoute();
-const source_id = Number(route.params.id);
+const sourceId = Number(route.params.id);
 const source_store = useSourceStore();
-const source_item = computed(() => source_store.currentSource);
 
-onMounted(async () => {
-  await source_store.fetchSourceById(source_id);
-});
+const { data: source_item } = await useAsyncData(`source-${ sourceId }`, () => source_store.fetchSourceById(sourceId));
 
 useHead(() => ({
   title: `Quelle bearbeiten`
