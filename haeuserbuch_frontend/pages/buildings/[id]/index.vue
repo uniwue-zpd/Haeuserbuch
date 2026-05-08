@@ -226,7 +226,7 @@ onBeforeUnmount(() => {
                 :to="`/persons/${ person.id }`"
                 class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md text-blue-700 line-clamp-1 font-medium"
             >
-              {{ person.firstName }} {{ person.lastName }}
+              {{ person.fullName }}
             </NuxtLink>
           </span>
         </div>
