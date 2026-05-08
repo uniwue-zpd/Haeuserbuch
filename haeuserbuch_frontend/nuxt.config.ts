@@ -25,7 +25,12 @@ export default defineNuxtConfig({
     head: {
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/WUE_LOGO_Skyline_260408_HQ.svg' },
-      ]
+      ],
+      // Prevent the maps being blocked by the OSM tile server due to missing referrer information
+      meta: [{
+        name: 'referrer',
+        content: 'strict-origin-when-cross-origin'
+      }]
     }
   },
   compatibilityDate: '2024-11-01',
