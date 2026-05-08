@@ -56,7 +56,7 @@ const submit = async (formData: Partial<SourceInput>) => {
       >
         <div class="flex flex-col gap-2">
           <FormKit
-              type="text"
+              type="textarea"
               name="title"
               label="Titel"
               prefix-icon="text"
@@ -69,19 +69,13 @@ const submit = async (formData: Partial<SourceInput>) => {
               prefix-icon="text"
               outer-class="max-w-full"
           />
-          <FormKit type="list" :value="[]" name="authors" dynamic #default="{ items, node, value }">
-            <FormKit
-                v-for="(item, index) in items"
-                :key="item"
-                :index="index"
-                label="Autoren"
-                suffix-icon="trash"
-                @suffix-icon-click="() => node.input(value?.filter((_, i) => i !== index))"
-                :sections-schema="{ suffixIcon: { $el: 'button', attrs: { type: 'button' } } }"
-                outer-class="max-w-full"
-            />
-            <FormKit type="button" @click="() => node.input(value?.concat(''))">Autoren hinzufügen</FormKit>
-          </FormKit>
+          <FormKit
+              type="textInput"
+              name="authors"
+              :isMultiple="true"
+              label="Autoren"
+              outer-class="max-w-full"
+          />
           <FormKit
               type="text"
               name="signature"
@@ -96,19 +90,13 @@ const submit = async (formData: Partial<SourceInput>) => {
               prefix-icon="text"
               outer-class="max-w-full"
           />
-          <FormKit type="list" :value="[]" name="links" dynamic #default="{ items, node, value }">
-            <FormKit
-                v-for="(item, index) in items"
-                :key="item"
-                :index="index"
-                label="Weiterführende Links"
-                suffix-icon="trash"
-                @suffix-icon-click="() => node.input(value?.filter((_, i) => i !== index))"
-                :sections-schema="{ suffixIcon: { $el: 'button', attrs: { type: 'button' } } }"
-                outer-class="max-w-full"
-            />
-            <FormKit type="button" @click="() => node.input(value?.concat(''))">Links hinzufügen</FormKit>
-          </FormKit>
+          <FormKit
+              type="textInput"
+              name="links"
+              :isMultiple="true"
+              label="Weiterführende Links"
+              outer-class="max-w-full"
+          />
           <FormKit
               type="textarea"
               name="internalNotes"

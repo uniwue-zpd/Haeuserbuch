@@ -89,25 +89,13 @@ const submit = async (formData: Partial<PersonInput>) => {
             outer-class="max-w-full"
             help="Tragen Sie hier den vollen Namen der Person ein, auch wenn dieser mit dem Vor- und Nachnamen identisch ist"
         />
-        <div class="max-h-[30vh] overflow-y-auto border border-gray-300 rounded-md p-4 bg-gray-200">
-          <FormKit type="list" :value="[]" name="altNames" dynamic #default="{ items, node, value }">
-            <FormKit
-                v-for="(item, index) in items"
-                :key="item"
-                :index="index"
-                label="Namensvariationen"
-                suffix-icon="trash"
-                @suffix-icon-click="() => node.input(value?.filter((_, i) => i !== index))"
-                :sections-schema="{ suffixIcon: { $el: 'button', attrs: { type: 'button' } } }"
-                outer-class="max-w-full"
-            />
-            <button
-                type="button"
-                @click="() => node.input(value?.concat(''))"
-                class="border border-blue-600 text-blue-600 p-1 rounded-md shadow-sm hover:shadow-md bg-red-100 font-bold max-w-1/7 mx-auto"
-            >Weitere Namen hinzufügen</button>
-          </FormKit>
-        </div>
+        <FormKit
+            type="textInput"
+            name="altNames"
+            :isMultiple="true"
+            label="Namensvarianten"
+            outer-class="max-w-full"
+        />
         <FormKit
             type="select"
             name="sex"
