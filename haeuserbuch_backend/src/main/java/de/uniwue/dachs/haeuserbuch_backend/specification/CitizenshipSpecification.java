@@ -11,7 +11,7 @@ public class CitizenshipSpecification {
 
     public static Specification<Citizenship> hasSignature(String signature) {
         return (root, query, criteriaBuilder) ->
-                criteriaBuilder.like(criteriaBuilder.lower(root.get("signature")), signature);
+                criteriaBuilder.like(criteriaBuilder.lower(root.get("signature")), "%" + signature.toLowerCase() + "%");
     }
 
     public static Specification<Citizenship> hasNaturalizedPerson(String naturalizedPerson) {

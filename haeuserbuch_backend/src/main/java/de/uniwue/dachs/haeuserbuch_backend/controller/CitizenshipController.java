@@ -34,8 +34,8 @@ public class CitizenshipController {
             @RequestParam(required = false) String signature,
             @RequestParam(required = false, value="naturalizedperson") String naturalizedPerson,
             @RequestParam(required = false, value="datenaturalization") String dateNaturalization,
-            @RequestParam(required = false, value="primarySource") String primarySource,
-            @RequestParam(required = false, value="secondarySource") String secondarySource
+            @RequestParam(required = false, value="primarysource") String primarySource,
+            @RequestParam(required = false, value="secondarysource") String secondarySource
     ) {
         Page<CitizenshipDTO> citizenships = citizenshipService
                 .getPagedCitizenships(pageable, refNumber, signature, naturalizedPerson, dateNaturalization, primarySource, secondarySource);
