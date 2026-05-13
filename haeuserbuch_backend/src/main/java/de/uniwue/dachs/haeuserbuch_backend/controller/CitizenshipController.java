@@ -29,9 +29,16 @@ public class CitizenshipController {
     @GetMapping
     public ResponseEntity<Page<CitizenshipDTO>> getPagedCitizenships(
             @PageableDefault(sort = "id", direction = Sort.Direction.ASC)
-            Pageable pageable
+            Pageable pageable,
+            @RequestParam(required = false, value="refnumber") String refNumber,
+            @RequestParam(required = false) String signature,
+            @RequestParam(required = false, value="naturalizedperson") String naturalizedPerson,
+            @RequestParam(required = false, value="datenaturalization") String dateNaturalization,
+            @RequestParam(required = false, value="primarySource") String primarySource,
+            @RequestParam(required = false, value="secondarySource") String secondarySource
     ) {
-        Page<CitizenshipDTO> citizenships = citizenshipService.getPagedCitizenships(pageable);
+        Page<CitizenshipDTO> citizenships = citizenshipService
+                .getPagedCitizenships(pageable, refNumber, signature, naturalizedPerson, dateNaturalization, primarySource, secondarySource);
         return ResponseEntity.ok(citizenships);
     }
 
