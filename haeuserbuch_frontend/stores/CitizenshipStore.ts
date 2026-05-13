@@ -1,3 +1,5 @@
+import type {FilterCitizenship} from "~/utils/types";
+
 export const useCitizenshipStore = defineStore("citizenship", () => {
     // State
     const cache = ref<Record<number, CitizenshipDTO>>({});
@@ -7,10 +9,10 @@ export const useCitizenshipStore = defineStore("citizenship", () => {
 
     /**
      * Fetches citizenships using pageable parameters
-     * @param params and sorting parameters: page, size, sort
+     * @param params {@link FilterCitizenship} parameters for filtering and pagination
      * @return Promise resolving to paged citizenship data
      */
-    async function fetchCitizenships(params?: Partial<{page: number; size: number; sort: string}>) {
+    async function fetchCitizenships(params?: FilterCitizenship) {
         loading.value = true;
         try {
             return await $fetch(`/api/citizenships`, { params });

@@ -45,6 +45,18 @@ export interface FilterBuilding {
     sourceName?: string;
 }
 
+export interface FilterCitizenship {
+    page?: number;
+    size?: number;
+    sort?: string;
+    refnumber?: string;
+    signature?: string;
+    naturalizedperson?: string;
+    datenaturalization?: string;
+    primarysource?: string;
+    secondarysource?: string;
+}
+
 /* Available filters for people. Applies only to the `filterPeople` action in the {@link usePersonStore} */
 export interface FilterPerson {
     name?: string;

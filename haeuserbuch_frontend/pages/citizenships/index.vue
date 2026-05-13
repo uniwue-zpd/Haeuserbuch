@@ -1,19 +1,27 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { title_shortener } from '~/utils/helpers';
+import { FilterMatchMode } from "@primevue/core";
 
 const citizenship_store = useCitizenshipStore();
 
 const rows = ref<CitizenshipDTO[]>([]);
 const loading = ref(false);
-
 const page = ref(0);
 const rowsPerPage = ref(10);
+const rowsPerPageOptions = [5, 10, 25, 50, 100];
 const totalRecords = ref(0);
 const sortField = ref<string | null>(null);
 const sortOrder = ref<1 | -1 | null>(null);
 
-const rowsPerPageOptions = [5, 10, 25, 50];
+const filters = ref({
+  refNumber: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  signature: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  'person.fullName': { value: null, matchMode: FilterMatchMode.CONTAINS },
+  dateNaturalization: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  'primarySource.title': { value: null, matchMode: FilterMatchMode.CONTAINS },
+  'secondarySource.title': { value: null, matchMode: FilterMatchMode.CONTAINS }
+});
 
 const loadData = async () => {
   loading.value = true;
@@ -24,42 +32,59 @@ const loadData = async () => {
     const res = await citizenship_store.fetchCitizenships({
       page: page.value,
       size: rowsPerPage.value,
-      sort
+      sort,
+      refnumber: filters.value.refNumber?.value || undefined,
+      signature: filters.value.signature?.value || undefined,
+      naturalizedperson: filters.value['person.fullName']?.value || undefined,
+      datenaturalization: filters.value.dateNaturalization?.value || undefined,
+      primarysource: filters.value['primarySource.title']?.value || undefined,
+      secondarysource: filters.value['secondarySource.title']?.value || undefined
     });
     rows.value = res.content;
     totalRecords.value = res.totalElements;
   } finally {
     loading.value = false;
   }
-}
+};
 
 const onPage = (event: any) => {
   page.value = event.page;
   rowsPerPage.value = event.rows;
   loadData();
-}
+};
 
 const onSort = (event: any) => {
   sortField.value = event.sortField;
   sortOrder.value = event.sortOrder;
   loadData();
-}
+};
+
+const onFilter = (event: any) => {
+  filters.value = event.filters;
+  page.value = 0;
+  debouncedLoadData();
+};
+
+// Applies only if additional params are set
+const debouncedLoadData = debounce(() => {
+  loadData();
+}, 1000);
 
 onMounted(() => {
   loadData();
 });
-
-useHead(() => ({
-  title: 'Bürgermatrikel - Matrikelverzeichnis'
-}));
 </script>
 
 <template>
   <Card>
     <template #title>
       <div class="flex flex-col gap-2">
-        <h1 class="text-3xl font-bold text-black montserrat-headline">Bürgermatrikel</h1>
-        <p class="text-lg roboto-plain font-medium">Einträge insgesamt: {{ totalRecords }}</p>
+        <h1 class="text-3xl font-bold text-black montserrat-headline">
+          Bürgermatrikel
+        </h1>
+        <p class="text-lg roboto-plain font-medium">
+          Einträge insgesamt: {{ totalRecords }}
+        </p>
       </div>
     </template>
     <template #content>
@@ -78,31 +103,49 @@ useHead(() => ({
           </AccordionPanel>
         </Accordion>
         <DataTable
+            v-model:filters="filters"
             :value="rows"
             paginator
             lazy
+            filterDisplay="row"
             :rows="rowsPerPage"
             :rowsPerPageOptions="rowsPerPageOptions"
             :totalRecords="totalRecords"
             :loading="loading"
             stripedRows
-            @page="onPage($event)"
-            @sort="onSort($event)"
+            @page="onPage"
+            @sort="onSort"
+            @filter="onFilter"
             removableSort
         >
           <Column field="refNumber" header="Meyer-Erlach-Referenz" :sortable="true">
             <template #body="slotProps">
               <NuxtLink
-                  :to="`/citizenships/${ slotProps.data.id }`"
+                  :to="`/citizenships/${slotProps.data.id}`"
                   class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md"
                   prefetch
               >
                 {{ slotProps.data.refNumber }}
               </NuxtLink>
             </template>
+            <template #filter="{ filterModel, filterCallback }">
+              <InputText
+                  v-model="filterModel.value"
+                  placeholder="Suche Referenz"
+                  @input="filterCallback()"
+              />
+            </template>
           </Column>
-          <Column field="signature" header="Signatur" class="roboto-plain text-nowrap" :sortable="true"/>
-          <Column field="person" header="Eingebürgerte Person" class="roboto-plain">
+          <Column field="signature" header="Signatur" class="roboto-plain text-nowrap" :sortable="true">
+            <template #filter="{ filterModel, filterCallback }">
+              <InputText
+                  v-model="filterModel.value"
+                  placeholder="Suche Signatur"
+                  @input="filterCallback()"
+              />
+            </template>
+          </Column>
+          <Column field="person" filterField="person.fullName" header="Eingebürgerte Person" class="roboto-plain">
             <template #body="slotProps">
               <div v-if="slotProps.data.person">
                 <NuxtLink
@@ -115,6 +158,13 @@ useHead(() => ({
               </div>
               <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
             </template>
+            <template #filter="{ filterModel, filterCallback }">
+              <InputText
+                  v-model="filterModel.value"
+                  placeholder="Suche Person"
+                  @input="filterCallback()"
+              />
+            </template>
           </Column>
           <Column field="dateNaturalization" header="Einbürgerung" class="roboto-plain" :sortable="true">
             <template #body="slotProps">
@@ -123,8 +173,15 @@ useHead(() => ({
               </div>
               <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
             </template>
+            <template #filter="{ filterModel, filterCallback }">
+              <InputText
+                  v-model="filterModel.value"
+                  placeholder="Suche Datum"
+                  @input="filterCallback()"
+              />
+            </template>
           </Column>
-          <Column field="primarySource.title" header="Primärquelle" class="roboto-plain" :sortable="true">
+          <Column field="primarySource" filterField="primarySource.title" header="Primärquelle" class="roboto-plain" :sortable="true">
             <template #body="slotProps">
               <div v-if="slotProps.data.primarySource">
                 <NuxtLink
@@ -136,8 +193,15 @@ useHead(() => ({
               </div>
               <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
             </template>
+            <template #filter="{ filterModel, filterCallback }">
+              <InputText
+                  v-model="filterModel.value"
+                  placeholder="Suche Quelle"
+                  @input="filterCallback()"
+              />
+            </template>
           </Column>
-          <Column field="secondarySource" header="Sekundärquelle" class="roboto-plain" :sortable="true">
+          <Column field="secondarySource" filterField="secondarySource.title" header="Sekundärquelle" class="roboto-plain" :sortable="true">
             <template #body="slotProps">
               <div v-if="slotProps.data.secondarySource">
                 <NuxtLink
@@ -148,6 +212,13 @@ useHead(() => ({
                 </NuxtLink>
               </div>
               <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
+            </template>
+            <template #filter="{ filterModel, filterCallback }">
+              <InputText
+                  v-model="filterModel.value"
+                  placeholder="Suche Quelle"
+                  @input="filterCallback()"
+              />
             </template>
           </Column>
         </DataTable>
