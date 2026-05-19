@@ -33,7 +33,7 @@ public class PersonController {
 
     @GetMapping
     public ResponseEntity<Page<PersonDTO>> getPagedPeople(
-            @PageableDefault(sort = "id", direction = Sort.Direction.ASC)
+            @PageableDefault(sort = "fullName", direction = Sort.Direction.ASC)
             Pageable pageable,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String sex,
