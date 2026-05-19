@@ -59,12 +59,23 @@ export interface FilterCitizenship {
 
 /* Available filters for people. Applies only to the `filterPeople` action in the {@link usePersonStore} */
 export interface FilterPerson {
+    page?: number;
+    size?: number;
+    sort?: string;
     name?: string;
     sex?: "männlich" | "weiblich";
-    'asscociated-building-id'?: number;
+    job?: string;
+    'job-id'?: number;
+    'associated-building'?: string;
+    'associated-building-id'?: number;
     'is-citizen'?: boolean;
+    'place-of-origin'?: string;
     'place-of-origin-id'?: number;
     'origin-certainty'?: OriginCertainty;
+    religion?: string;
+    'religion-id'?: number;
+    weapon?: string;
+    'weapon-id'?: number;
 }
 
 export interface BuildingName extends Auditable {

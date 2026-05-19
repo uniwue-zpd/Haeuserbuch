@@ -118,7 +118,7 @@ onMounted(() => {
             @filter="onFilter"
             removableSort
         >
-          <Column field="refNumber" header="Meyer-Erlach-Referenz" :sortable="true">
+          <Column field="refNumber" header="Meyer-Erlach-Referenz" :sortable="true" :showFilterMenu="false">
             <template #body="slotProps">
               <NuxtLink
                   :to="`/citizenships/${slotProps.data.id}`"
@@ -136,7 +136,7 @@ onMounted(() => {
               />
             </template>
           </Column>
-          <Column field="signature" header="Signatur" class="roboto-plain text-nowrap" :sortable="true">
+          <Column field="signature" header="Signatur" class="roboto-plain text-nowrap" :sortable="true" :showFilterMenu="false">
             <template #filter="{ filterModel, filterCallback }">
               <InputText
                   v-model="filterModel.value"
@@ -145,7 +145,7 @@ onMounted(() => {
               />
             </template>
           </Column>
-          <Column field="person" filterField="person.fullName" header="Eingebürgerte Person" class="roboto-plain">
+          <Column field="person" filterField="person.fullName" header="Eingebürgerte Person" class="roboto-plain" :showFilterMenu="false">
             <template #body="slotProps">
               <div v-if="slotProps.data.person">
                 <NuxtLink
@@ -166,7 +166,7 @@ onMounted(() => {
               />
             </template>
           </Column>
-          <Column field="dateNaturalization" header="Einbürgerung" class="roboto-plain" :sortable="true">
+          <Column field="dateNaturalization" header="Einbürgerung" class="roboto-plain" :sortable="true" :showFilterMenu="false">
             <template #body="slotProps">
               <div v-if="slotProps.data.dateNaturalization" class="text-nowrap">
                 {{ slotProps.data.dateNaturalization }}
@@ -181,7 +181,7 @@ onMounted(() => {
               />
             </template>
           </Column>
-          <Column field="primarySource" filterField="primarySource.title" header="Primärquelle" class="roboto-plain" :sortable="true">
+          <Column field="primarySource" filterField="primarySource.title" header="Primärquelle" class="roboto-plain" :sortable="true" :showFilterMenu="false">
             <template #body="slotProps">
               <div v-if="slotProps.data.primarySource">
                 <NuxtLink
@@ -201,7 +201,7 @@ onMounted(() => {
               />
             </template>
           </Column>
-          <Column field="secondarySource" filterField="secondarySource.title" header="Sekundärquelle" class="roboto-plain" :sortable="true">
+          <Column field="secondarySource" filterField="secondarySource.title" header="Sekundärquelle" class="roboto-plain" :sortable="true" :showFilterMenu="false">
             <template #body="slotProps">
               <div v-if="slotProps.data.secondarySource">
                 <NuxtLink

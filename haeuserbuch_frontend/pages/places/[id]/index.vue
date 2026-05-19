@@ -94,7 +94,7 @@ onMounted(async () => {
                   :to="`/persons/${ person.id }`"
                   class="p-1.5 bg-[#F1F2F2] rounded-md shadow-sm hover:shadow-md font-medium roboto-plain"
               >
-                {{ person.firstName }} {{ person.lastName }}
+                {{ person.fullName }}
               </NuxtLink>
             </span>
           </div>

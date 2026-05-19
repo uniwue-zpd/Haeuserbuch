@@ -33,7 +33,7 @@ useHead(() => ({
 
 onMounted(async () => {
   try {
-    associated_people.value = await person_store.filterPersons({ "asscociated-building-id": building_id });
+    associated_people.value = await person_store.filterPersons({ "associated-building-id": building_id });
     await building_store.fetchBuildingById(building_id);
     building_item.value = building_store.current_building;
   } finally {

@@ -12,7 +12,7 @@ export const usePersonStore = defineStore("person", () => {
      * @param params and sorting parameters: page, size, sort
      * @return Promise resolving to paged person data
      */
-    async function fetchPersons(params?: Partial<{page: number; size: number; sort: string}>) {
+    async function fetchPersons(params?: FilterPerson) {
         loading.value = true;
         try {
             return await $fetch(`/api/persons`, { params });
