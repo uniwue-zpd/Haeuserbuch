@@ -1,6 +1,7 @@
 package de.uniwue.dachs.haeuserbuch_backend.controller;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.CitizenshipDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.CitizenshipPreviewDTO;
 import de.uniwue.dachs.haeuserbuch_backend.service.CitizenshipService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/citizenships")
@@ -33,12 +36,32 @@ public class CitizenshipController {
             @RequestParam(required = false, value="refnumber") String refNumber,
             @RequestParam(required = false) String signature,
             @RequestParam(required = false, value="naturalizedperson") String naturalizedPerson,
+            @RequestParam(required = false, value="naturalizedperson-id") Long naturalizedPersonId,
             @RequestParam(required = false, value="datenaturalization") String dateNaturalization,
             @RequestParam(required = false, value="primarysource") String primarySource,
             @RequestParam(required = false, value="secondarysource") String secondarySource
     ) {
         Page<CitizenshipDTO> citizenships = citizenshipService
-                .getPagedCitizenships(pageable, refNumber, signature, naturalizedPerson, dateNaturalization, primarySource, secondarySource);
+                .getPagedCitizenships(pageable, refNumber, signature, naturalizedPerson, naturalizedPersonId, dateNaturalization, primarySource, secondarySource);
+        return ResponseEntity.ok(citizenships);
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<CitizenshipPreviewDTO>> getFilteredCitizenships(
+            @RequestParam(required = false, value="refnumber") String refNumber,
+            @RequestParam(required = false) String signature,
+            @RequestParam(required = false, value="naturalizedperson") String naturalizedPerson,
+            @RequestParam(required = false, value="naturalizedperson-id") Long naturalizedPersonId,
+            @RequestParam(required = false, value="datenaturalization") String dateNaturalization,
+            @RequestParam(required = false, value="primarysource") String primarySource,
+            @RequestParam(required = false, value="secondarysource") String secondarySource
+    ) {
+        List<Object> paramsCount = Stream.<Object>of(refNumber, signature, naturalizedPerson, naturalizedPersonId, dateNaturalization, primarySource, secondarySource)
+                .filter(Objects::nonNull).toList();
+        if (paramsCount.isEmpty()) return ResponseEntity.badRequest().build();
+        List<CitizenshipPreviewDTO> citizenships = citizenshipService.filterCitizenships(
+                refNumber, signature, naturalizedPerson, naturalizedPersonId, dateNaturalization, primarySource, secondarySource
+        );
         return ResponseEntity.ok(citizenships);
     }
 

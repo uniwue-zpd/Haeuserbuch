@@ -1,6 +1,9 @@
 package de.uniwue.dachs.haeuserbuch_backend.specification;
 
 import de.uniwue.dachs.haeuserbuch_backend.model.Citizenship;
+import de.uniwue.dachs.haeuserbuch_backend.model.Person;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 
 public class CitizenshipSpecification {
@@ -15,8 +18,18 @@ public class CitizenshipSpecification {
     }
 
     public static Specification<Citizenship> hasNaturalizedPerson(String naturalizedPerson) {
-        return (root, query, criteriaBuilder) ->
-                criteriaBuilder.like(criteriaBuilder.lower(root.join("person").get("fullName")), "%" + naturalizedPerson.toLowerCase() + "%");
+        return (root, query, criteriaBuilder) -> {
+            Join<Citizenship, Person> personJoin = root.join("person", JoinType.LEFT);
+            String pattern = "%" + naturalizedPerson.strip().toLowerCase() + "%";
+            return criteriaBuilder.like(criteriaBuilder.lower(personJoin.get("fullName")), pattern);
+        };
+    }
+
+    public static Specification<Citizenship> hasNaturalizedPersonId(Long naturalizedPersonId) {
+        return (root, query, criteriaBuilder) -> {
+            Join<Citizenship, Person> personJoin = root.join("person", JoinType.LEFT);
+            return criteriaBuilder.equal(personJoin.get("id"), naturalizedPersonId);
+        };
     }
 
     public static Specification<Citizenship> hasDateNaturalization(String dateNaturalization) {
