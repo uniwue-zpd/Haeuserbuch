@@ -1,75 +1,23 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
 import TaskBar from "~/components/UI/page_actions/TaskBar.vue";
-import { initMap } from "~/service/map_init";
-import maplibregl, {type RasterLayerSpecification, type RasterSourceSpecification} from "maplibre-gl";
-import { DEFAULT_MAP_CENTER } from "~/utils/constant_values";
+import CitizenshipPreview from "~/components/UI/preview_cards/CitizenshipPreview.vue";
+import PersonJobPreview from "~/components/UI/preview_cards/PersonJobPreview.vue";
+import PersonReligionPreview from "~/components/UI/preview_cards/PersonReligionPreview.vue";
+import PersonWeaponsPreview from "~/components/UI/preview_cards/PersonWeaponsPreview.vue";
+import PersonOriginPreview from "~/components/UI/preview_cards/PersonOriginPreview.vue";
 
 const person_store = usePersonStore();
-const place_store = usePlaceStore();
-const tile_store = useTileStore();
-
-// Display map
-const place_features = computed(() => {
-  const p = personItem.value;
-  if (!p || !p.origin?.places) {
-    return null;
-  }
-  const place_ids = p.origin.places.map(pl => pl.id);
-  return {
-    type: 'FeatureCollection',
-    features: place_store.places?.features.filter((f) => f.id != null && place_ids.includes(f.id)) || []
-  }
-});
-
-let map: maplibregl.Map | null = null;
-
-const sources = computed(() => tile_store.sources);
-const layers = computed(() => tile_store.layers);
+const citizenshipStore = useCitizenshipStore();
 
 const route = useRoute();
 const personId = Number(route.params.id);
 const person_origin = computed(() => personItem.value?.origin);
-const originCertainty = ref<Record<string, { label: string; color: string }>>({
-  IDENTIFIED: { label: 'Identifiziert', color: 'bg-green-600' },
-  AMBIGUOUS: { label: 'Mehrdeutig', color: 'bg-yellow-300' },
-  UNKNOWN: { label: 'Unbekannt', color: 'bg-red-600' }
-});
 const person_job = computed(() => personItem.value?.job);
 const person_religion = computed(() => personItem.value?.religion);
 const person_weapons = computed(() => personItem.value?.weapons);
 
-const { data: personItem, status } = await useAsyncData(`person-${ personId }`, () => person_store.fetchPersonById(personId));
-
-onMounted(async () => {
-  map = initMap(
-      'origin_map',
-      DEFAULT_MAP_CENTER,
-      4,
-      0,
-      sources.value as Record<string, RasterSourceSpecification>,
-      // @ts-ignore
-      layers.value as RasterLayerSpecification[]
-  );
-  map.on('load', () => {
-    if (!place_features.value) return;
-    map!.addSource('place', {
-      type: 'geojson',
-      // @ts-ignore
-      data: place_features.value,
-    });
-    map!.addLayer({
-      id: 'place',
-      type: 'circle',
-      source: 'place',
-      paint: {
-        'circle-radius': 7,
-        'circle-color': '#3254a8',
-        'circle-opacity': 0.9,
-      },
-    });
-  });
-});
+const { data: personItem } = await useAsyncData(`person-${ personId }`, () => person_store.fetchPersonById(personId));
+const { data: naturalizationEntry } = await useAsyncData(`person-${ personId }-naturalization`, () => citizenshipStore.filterCitizenships({'naturalizedperson-id': personId}));
 
 useHead(() => ({
   title: personItem.value ? `${personItem.value.fullName} - Personenverzeichnis` : 'Nicht gefunden',
@@ -82,7 +30,7 @@ useHead(() => ({
       <h1 class="text-3xl montserrat-headline font-bold text-black">{{ personItem?.fullName }}</h1>
       <TaskBar :id="personId" entity_type="persons"/>
     </div>
-    <div class="p-4 rounded-md shadow-md bg-gray-100">
+    <div class="p-4 rounded-md shadow-md bg-gray-100 border border-gray-200">
       <table class="text-black roboto-plain w-full table-auto">
         <tbody class="divide-y divide-gray-200">
         <tr v-show="personItem?.firstName">
@@ -111,33 +59,16 @@ useHead(() => ({
             <i class="pi pi-check" style="color: green"/>
           </td>
         </tr>
-        <tr v-show="person_origin?.originalText">
-          <td class="px-6 py-4 whitespace-nowrap font-bold">Herkunft</td>
+        <tr v-if="naturalizationEntry && naturalizationEntry.length > 0">
+          <td class="px-6 py-4 whitespace-nowrap font-bold align-top">Nachweis der Einbürgerung</td>
           <td class="px-6 py-4 whitespace-nowrap">
-            <div class="flex flex-col gap-1.5 rounded-md shadow-md p-2 bg-gray-200">
-              <div v-if="person_origin?.originalText" class="flex flex-row space-x-3">
-                <span class="font-bold">Eingetragener Ort:</span>
-                <span>{{ person_origin.originalText }}</span>
-              </div>
-              <div v-if="person_origin?.places && person_origin?.places.length > 0" class="flex flex-row space-x-3">
-                <span class="font-bold">Möglicherweise:</span>
-                <div class="flex flex-wrap gap-2">
-                  <div v-for="place in person_origin.places">
-                    <NuxtLink
-                        :to="`/places/${ place.id }`"
-                        class="p-1.5 bg-gray-300 rounded-md shadow-md hover:shadow-lg font-medium"
-                    >
-                      {{ place.realName }}
-                    </NuxtLink>
-                  </div>
-                </div>
-              </div>
-              <div v-if="person_origin?.certainty" class="flex flex-row space-x-3 items-center">
-                <span class="font-bold">Grad der Lokalisierbarkeit:</span>
-                <div :class="`h-[19px] w-[19px] rounded-full shadow-md border border-black ${ originCertainty[person_origin.certainty].color }`"></div>
-              </div>
-              <div class="rounded-md w-full h-[200px]" id="origin_map"/>
-            </div>
+            <CitizenshipPreview :citizenship="naturalizationEntry[0]"/>
+          </td>
+        </tr>
+        <tr v-show="person_origin?.originalText">
+          <td class="px-6 py-4 whitespace-nowrap font-bold align-top">Herkunft</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <PersonOriginPreview v-if="personItem && personItem.origin" :personId="personId" :personOrigin="personItem.origin"/>
           </td>
         </tr>
         <tr v-show="personItem?.associatedBuilding">
@@ -152,69 +83,27 @@ useHead(() => ({
           </td>
         </tr>
         <tr v-if="person_job?.originalText">
-          <td class="px-6 py-4 whitespace-nowrap font-bold">Berufliche Situation</td>
+          <td class="px-6 py-4 whitespace-nowrap font-bold align-top">Berufliche Situation</td>
           <td class="px-6 py-4 whitespace-nowrap">
-            <div class="flex flex-col gap-1.5 rounded-md shadow-md p-2 bg-gray-200">
-              <div class="flex flex-row space-x-3">
-                <span class="font-bold">Eingetragener Beruf:</span>
-                <span>{{ person_job.originalText }}</span>
-              </div>
-              <div v-if="person_job.jobCategory" class="flex flex-row space-x-3 items-center">
-                <span class="font-bold">Standardisierte Berufskategorie:</span>
-                <NuxtLink
-                    :to="`/jobs/${ person_job.jobCategory.id }`"
-                    class="p-1.5 bg-gray-300 rounded-md shadow-md hover:shadow-lg font-medium"
-                >
-                  {{ person_job.jobCategory.name }}
-                </NuxtLink>
-              </div>
-            </div>
+            <PersonJobPreview :job="person_job"/>
           </td>
         </tr>
         <tr v-if="person_religion?.originalText">
-          <td class="px-6 py-4 whitespace-nowrap font-bold">Religiöse Zugehörigkeit</td>
+          <td class="px-6 py-4 whitespace-nowrap font-bold align-top">Religiöse Zugehörigkeit</td>
           <td class="px-6 py-4 whitespace-nowrap">
-            <div class="flex flex-col gap-1.5 rounded-md shadow-md p-2 bg-gray-200">
-              <div class="flex flex-row space-x-3">
-                <span class="font-bold">Eingetragene Religion:</span>
-                <span>{{ person_religion.originalText }}</span>
-              </div>
-              <div v-if="person_religion.religionCategory" class="flex flex-row space-x-3 items-center">
-                <span class="font-bold">Standardisierte Religionskategorie:</span>
-                <NuxtLink
-                    :to="`/religions/${ person_religion.religionCategory.id }`"
-                    class="p-1.5 bg-gray-300 rounded-md shadow-md hover:shadow-lg font-medium"
-                >
-                  {{ person_religion.religionCategory.name }}
-                </NuxtLink>
-              </div>
-            </div>
+            <PersonReligionPreview :religion="person_religion"/>
           </td>
         </tr>
         <tr v-if="person_weapons && person_weapons.length > 0">
-          <td class="px-6 py-4 whitespace-nowrap font-bold">Bewaffnung</td>
+          <td class="px-6 py-4 whitespace-nowrap font-bold align-top">Bewaffnung</td>
           <td class="px-6 py-4 whitespace-nowrap">
-            <div class="flex flex-wrap gap-2">
-              <div v-for="weapon_item in person_weapons">
-                <NuxtLink
-                  v-if="weapon_item.weapon"
-                  :to="`/weapons/${ weapon_item.weapon.id }`"
-                  class="flex flex-row space-x-2 p-1.5 bg-gray-300 rounded-md shadow-md hover:shadow-lg"
-                >
-                  <span class="font-light">{{ weapon_item.originalText }}</span>
-                  <span class="font-medium">({{ weapon_item.weapon.name }})</span>
-                </NuxtLink>
-                <span v-else class="p-1.5 bg-gray-300 rounded-md shadow-md font-light">
-                  {{ weapon_item.originalText }}
-                </span>
-              </div>
-            </div>
+            <PersonWeaponsPreview :weapons="person_weapons"/>
           </td>
         </tr>
         </tbody>
       </table>
     </div>
-    <div class="flex flex-col gap-2 p-4 rounded-md shadow-md bg-gray-100">
+    <div class="flex flex-col gap-2 p-4 rounded-md shadow-md bg-gray-100 border border-gray-200">
       <Panel header="Notizen" toggleable v-show="personItem?.generalNotes">
         <template #header>
           <p class="text-sm text-black roboto-plain font-bold">Notizen</p>
