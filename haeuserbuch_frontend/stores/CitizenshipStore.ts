@@ -22,6 +22,20 @@ export const useCitizenshipStore = defineStore("citizenship", () => {
     }
 
     /**
+     * Filters citizenships based on given params
+     * @param params {@link FilterCitizenship} parameters for filtering.
+     * @returns An array of {@link CitizenshipPreviewDTO} matching the filter parameters.
+     */
+    async function filterCitizenships(params: FilterCitizenship): Promise<CitizenshipPreviewDTO[]> {
+        loading.value = true;
+        try {
+            return await $fetch<CitizenshipPreviewDTO[]>(`/api/citizenships/filter`, { params });
+        } finally {
+            loading.value = false;
+        }
+    }
+
+    /**
      * Fetches single citizenship item
      * @param id ID of the entry
      */
@@ -83,6 +97,7 @@ export const useCitizenshipStore = defineStore("citizenship", () => {
     return {
         cache,
         fetchCitizenships,
+        filterCitizenships,
         fetchCitizenshipById,
         createCitizenship,
         updateCitizenship,
