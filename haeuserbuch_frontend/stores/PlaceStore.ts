@@ -23,6 +23,15 @@ export const usePlaceStore = defineStore("place", () => {
         }
     }
 
+    async function fetchPlaceOnDemandById(id: number) {
+        try {
+            const data = await $fetch(`/api/places/${id}`);
+            return data as Feature;
+        } catch (error)  {
+            console.error("Error fetching place feature:", error);
+        }
+    }
+
         // Fetch place by ID
     async function fetchPlaceById(id: number) {
         if (!current_place.value || current_place.value.id !== id) {
@@ -114,6 +123,7 @@ export const usePlaceStore = defineStore("place", () => {
         current_place,
         fetchPlaces,
         fetchPlaceById,
+        fetchPlaceOnDemandById,
         createPlace,
         updatePlace,
         deletePlace,

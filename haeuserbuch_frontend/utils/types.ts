@@ -197,7 +197,7 @@ export interface Ownership extends Auditable {
 
 /** Represents a place as non-`geoJSON feature` */
 export interface PlaceDTO {
-    id: number | null;
+    id: number;
     realName: string | null;
     altNames: string[] | [];
 }
