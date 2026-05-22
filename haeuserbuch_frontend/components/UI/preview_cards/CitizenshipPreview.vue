@@ -6,7 +6,7 @@ const props = defineProps<{
 
 <template>
   <div class="inline-block">
-    <NuxtLink :to="`/citizenships/${citizenship.id}`">
+    <NuxtLink :to="`/citizenships/${ props.citizenship.id }`">
       <div class="w-full p-4 rounded-md border border-gray-300 bg-gray-200 shadow-md hover:shadow-xl hover:translate-x-1 transition-all duration-200">
         <div class="flex flex-row items-center gap-4">
           <div class="flex flex-col gap-2 w-full">
@@ -19,11 +19,11 @@ const props = defineProps<{
             <div class="flex flex-col gap-1 text-sm">
               <div class="flex flex-row gap-2">
                 <span class="font-semibold">Signatur:</span>
-                <span>{{ citizenship.signature || 'unbekannt' }}</span>
+                <span>{{ props.citizenship.signature || 'unbekannt' }}</span>
               </div>
               <div class="flex flex-row gap-2">
                 <span class="font-semibold">Referenznummer:</span>
-                <span>{{ citizenship.refNumber || 'unbekannt' }}</span>
+                <span>{{ props.citizenship.refNumber || 'unbekannt' }}</span>
               </div>
             </div>
           </div>

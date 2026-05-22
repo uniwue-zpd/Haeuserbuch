@@ -25,9 +25,9 @@ useHead(() => ({
 </script>
 
 <template>
-  <div class="flex flex-col gap-4 rounded-md shadow-md p-4">
+  <div class="flex flex-col gap-4 rounded-lg shadow-md p-4 border border-gray-200">
     <div class="flex flex-row justify-between">
-      <h1 class="text-3xl montserrat-headline font-bold text-black">{{ personItem?.fullName }}</h1>
+      <h1 class="text-3xl montserrat-headline font-bold">{{ personItem?.fullName }}</h1>
       <TaskBar :id="personId" entity_type="persons"/>
     </div>
     <div class="p-4 rounded-md shadow-md bg-gray-100 border border-gray-200">
