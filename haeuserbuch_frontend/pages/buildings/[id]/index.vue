@@ -17,7 +17,7 @@ const loading = ref(true);
 const building_store = useBuildingStore();
 const person_store = usePersonStore();
 const tile_store = useTileStore();
-const building_item = ref<Feature | null>(null);
+const { data: building_item } = await useAsyncData(`building-${building_id}`, () => building_store.getBuilding(building_id));
 const building_item_properties = computed(() => building_item.value?.properties as BuildingProperties ?? null);
 const building_item_geometry = computed(() => building_item.value?.geometry as Polygon ?? null);
 const sources = computed(() => tile_store.sources);
@@ -34,8 +34,6 @@ useHead(() => ({
 onMounted(async () => {
   try {
     associated_people.value = await person_store.filterPersons({ "associated-building-id": building_id });
-    await building_store.fetchBuildingById(building_id);
-    building_item.value = building_store.current_building;
   } finally {
     loading.value = false;
   }

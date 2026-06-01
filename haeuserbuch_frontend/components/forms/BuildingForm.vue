@@ -16,8 +16,7 @@ const props = defineProps<{
 }>();
 
 const toast = useToast();
-const submitted = ref(false);
-const building_store = useBuildingStore();
+const buildingStore = useBuildingStore();
 
 const tile_store = useTileStore();
 const sources = computed(() => tile_store.sources);
@@ -62,28 +61,26 @@ const initialValue = computed(() => {
 });
 
 const submit = async (formData: Partial<Feature>) => {
-  try {
-    if (props.action === 'create') {
-      await building_store.createBuilding(formData);
-      submitted.value = true;
-      toast.add({severity: 'success', summary: 'Erfolg', detail: 'Erfolgreich erstellt', life: 3000});
-      const form = getNode('building_creation');
+  if (props.action === 'create') {
+    try {
+      await buildingStore.createBuilding(formData);
+      const form = getNode(`${ props.action }_building`);
       form?.reset();
-    } else if (props.action === 'edit' && props.building?.id) {
+      toast.add({severity: 'success', summary: 'Erfolg', detail: 'Erfolgreich erstellt', life: 3000});
+    } catch (e) {
+      console.error(e);
+      toast.add({severity: 'error', summary: 'Fehler', detail: 'Fehler beim Erstellen des Gebäude-Objektes', life: 3000});
+    }
+  } else if (props.action === 'edit' && props.building?.id) {
+    try {
       const id = props.building.id;
-      await building_store.updateBuilding(formData, props.building.id);
-      submitted.value = true;
+      await buildingStore.updateBuilding(id, formData);
       toast.add({severity: 'success', summary: 'Erfolg', detail: 'Erfolgreich upgedated', life: 3000});
       navigateTo(`/buildings/${id}`);
+    } catch (e) {
+      console.error(e);
+      toast.add({severity: 'error', summary: 'Fehler', detail: 'Fehler beim Updaten des Gebäude-Objektes', life: 3000});
     }
-  } catch (error) {
-    console.log(error)
-    toast.add({
-      severity: 'error',
-      summary: 'Fehler',
-      detail: 'Fehler beim Erstellen des Gebäude-Objektes',
-      life: 3000
-    });
   }
 };
 
@@ -156,7 +153,7 @@ onBeforeUnmount(() => {
     <div id="form_map_building" class="h-[500px] w-full rounded-md"/>
     <FormKit
         type="form"
-        id="building_creation"
+        :id="`${ props.action }_building`"
         submit-label="Erstellen"
         @submit="submit"
         :actions="false"
