@@ -16,12 +16,7 @@ const props = defineProps<{
 }>();
 
 const toast = useToast();
-const submitted = ref(false);
-const building_store = useBuildingStore();
-const source_store = useSourceStore();
-const district_store = useDistrictStore();
-const quarter_store = useQuarterStore();
-const street_store = useStreetStore();
+const buildingStore = useBuildingStore();
 
 const tile_store = useTileStore();
 const sources = computed(() => tile_store.sources);
@@ -65,39 +60,27 @@ const initialValue = computed(() => {
   return clone;
 });
 
-const primarySourcesRef = ref();
-const secondarySourcesRef = ref();
-const clearSources = (which: 'primary' | 'secondary') => {
-  if (which === 'primary') {
-    primarySourcesRef.value.node.input([]);
-  } else {
-    secondarySourcesRef.value.node.input([]);
-  }
-}
-
 const submit = async (formData: Partial<Feature>) => {
-  try {
-    if (props.action === 'create') {
-      await building_store.createBuilding(formData);
-      submitted.value = true;
-      toast.add({severity: 'success', summary: 'Erfolg', detail: 'Erfolgreich erstellt', life: 3000});
-      const form = getNode('building_creation');
+  if (props.action === 'create') {
+    try {
+      await buildingStore.createBuilding(formData);
+      const form = getNode(`${ props.action }_building`);
       form?.reset();
-    } else if (props.action === 'edit' && props.building?.id) {
+      toast.add({severity: 'success', summary: 'Erfolg', detail: 'Erfolgreich erstellt', life: 3000});
+    } catch (e) {
+      console.error(e);
+      toast.add({severity: 'error', summary: 'Fehler', detail: 'Fehler beim Erstellen des Gebäude-Objektes', life: 3000});
+    }
+  } else if (props.action === 'edit' && props.building?.id) {
+    try {
       const id = props.building.id;
-      await building_store.updateBuilding(formData, props.building.id);
-      submitted.value = true;
+      await buildingStore.updateBuilding(id, formData);
       toast.add({severity: 'success', summary: 'Erfolg', detail: 'Erfolgreich upgedated', life: 3000});
       navigateTo(`/buildings/${id}`);
+    } catch (e) {
+      console.error(e);
+      toast.add({severity: 'error', summary: 'Fehler', detail: 'Fehler beim Updaten des Gebäude-Objektes', life: 3000});
     }
-  } catch (error) {
-    console.log(error)
-    toast.add({
-      severity: 'error',
-      summary: 'Fehler',
-      detail: 'Fehler beim Erstellen des Gebäude-Objektes',
-      life: 3000
-    });
   }
 };
 
@@ -170,7 +153,7 @@ onBeforeUnmount(() => {
     <div id="form_map_building" class="h-[500px] w-full rounded-md"/>
     <FormKit
         type="form"
-        id="building_creation"
+        :id="`${ props.action }_building`"
         submit-label="Erstellen"
         @submit="submit"
         :actions="false"
@@ -198,14 +181,12 @@ onBeforeUnmount(() => {
                 <div class="flex flex-col gap-1 bg-gray-200 rounded-md p-4 border border-gray-300">
                   <div class="grid grid-cols-2 gap-2">
                     <FormKit
-                        type="select"
+                        type="entityAutocomplete"
+                        entityType="source"
+                        optionLabel="title"
                         name="source"
                         label="Quelle"
                         outer-class="max-w-full"
-                        select-icon="select"
-                        :options="[{ label: 'Keine Auswahl', value: null },
-                        ...source_store.sources.map(p => ({label: p.title, value: { id: p.id, title: p.title }})) as any
-                        ]"
                     />
                     <FormKit
                         type="text"
@@ -255,14 +236,12 @@ onBeforeUnmount(() => {
                 <div class="flex flex-col gap-1 bg-gray-200 rounded-md shadow-md p-4 border border-gray-300">
                   <div class="grid grid-cols-2 gap-2">
                     <FormKit
-                        type="select"
+                        type="entityAutocomplete"
+                        entityType="street"
+                        optionLabel="name"
                         name="street"
                         label="Straße"
                         outer-class="max-w-full"
-                        select-icon="select"
-                        :options="[{ label: 'Keine Auswahl', value: null },
-                        ...street_store.streets.map(p => ({label: p.name, value: { id: p.id, name: p.name }})) as any
-                        ]"
                     />
                     <FormKit
                         type="text"
@@ -320,24 +299,20 @@ onBeforeUnmount(() => {
             </div>
             <div class="md:grid md:grid-cols-2 gap-2 flex flex-col">
               <FormKit
-                  type="select"
+                  type="entityAutocomplete"
+                  entityType="quarter"
+                  optionLabel="name"
                   name="quarter"
                   label="Viertel"
                   outer-class="max-w-full"
-                  select-icon="select"
-                  :options="[{ label: 'Keine Auswahl', value: null },
-                  ...quarter_store.quarters.map(p => ({label: p.name, value: { id: p.id, name: p.name }})) as any
-                  ]"
               />
               <FormKit
-                  type="select"
+                  type="entityAutocomplete"
+                  entityType="district"
+                  optionLabel="name"
                   name="district"
                   label="Distrikt"
                   outer-class="max-w-full"
-                  select-icon="select"
-                  :options="[{ label: 'Keine Auswahl', value: null },
-                  ...district_store.districts.map(p => ({label: p.name, value: { id: p.id, name: p.name }})) as any
-                  ]"
               />
             </div>
             <div class="md:grid md:grid-cols-2 gap-2 flex flex-col">
@@ -358,48 +333,24 @@ onBeforeUnmount(() => {
                   help="Schreibweise: Distrikt/Historische Hausnummer"
               />
             </div>
-            <div class="md:grid md:grid-cols-2 flex flex-col gap-2">
-              <div class="flex flex-col gap-2 p-4 bg-gray-200 rounded-md border border-gray-300">
-                <FormKit
-                    ref="primarySourcesRef"
-                    type="select"
-                    multiple
-                    name="primarySources"
-                    label="Primärquellen"
-                    outer-class="max-w-full"
-                    select-icon="select"
-                    :options="source_store.sources.map(p => ({label: p.title, value: { id: p.id, title: p.title }})) as any"
-                    help="Halten Sie die Strg-Taste gedrückt, um mehrere Quellen auszuwählen"
-                />
-                <button
-                    type="button"
-                    @click="clearSources('primary')"
-                    class="text-sm roboto-plain border border-red-600 text-red-600 p-1 rounded-md shadow-sm hover:shadow-md bg-white font-medium max-w-1/7 mx-auto"
-                >
-                  Liste leeren
-                </button>
-              </div>
-              <div class="flex flex-col gap-2 p-4 bg-gray-200 rounded-md border border-gray-300">
-                <FormKit
-                    ref="secondarySourcesRef"
-                    type="select"
-                    multiple
-                    name="secondarySources"
-                    label="Sekundärquellen"
-                    outer-class="max-w-full"
-                    select-icon="select"
-                    :options="source_store.sources.map(p => ({label: p.title, value: { id: p.id, title: p.title }})) as any"
-                    help="Halten Sie die Strg-Taste gedrückt, um mehrere Quellen auszuwählen"
-                />
-                <button
-                    type="button"
-                    @click="clearSources('secondary')"
-                    class="text-sm roboto-plain border border-red-600 text-red-600 p-1 rounded-md shadow-sm hover:shadow-md bg-white font-medium max-w-1/7 mx-auto"
-                >
-                  Liste leeren
-                </button>
-              </div>
-            </div>
+            <FormKit
+                type="entityAutocomplete"
+                entityType="source"
+                optionLabel="title"
+                name="primarySources"
+                label="Primärquellen (Mehrfachauswahl möglich)"
+                :isMultiple="true"
+                outer-class="max-w-full"
+            />
+            <FormKit
+                type="entityAutocomplete"
+                entityType="source"
+                optionLabel="title"
+                name="secondarySources"
+                label="Sekundärquellen (Mehrfachauswahl möglich)"
+                :isMultiple="true"
+                outer-class="max-w-full"
+            />
             <div class="flex flex-col gap-2">
               <FormKit
                   type="textarea"

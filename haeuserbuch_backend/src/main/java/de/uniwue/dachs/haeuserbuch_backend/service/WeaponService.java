@@ -1,20 +1,25 @@
 package de.uniwue.dachs.haeuserbuch_backend.service;
 
+import de.uniwue.dachs.haeuserbuch_backend.DTO.WeaponDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Weapon;
 import de.uniwue.dachs.haeuserbuch_backend.repository.WeaponRepository;
+import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.WeaponMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class WeaponService {
     private final WeaponRepository weaponRepository;
+    private final WeaponMapper weaponMapper;
 
-    public WeaponService(WeaponRepository weaponRepository) {
+    public WeaponService(WeaponRepository weaponRepository, WeaponMapper weaponMapper) {
         this.weaponRepository = weaponRepository;
+        this.weaponMapper = weaponMapper;
     }
 
     /**
@@ -72,5 +77,17 @@ public class WeaponService {
             throw new EntityNotFoundException("Weapon with ID " + id + " not found");
         }
         weaponRepository.deleteById(id);
+    }
+
+    /**
+     * Allows searching for weapons based on a search term.
+     * @param query Search term.
+     * @return A {@link List} of {@link WeaponDTO} objects that match the search criteria.
+     */
+    public List<WeaponDTO> searchWeapons(String query) {
+        return weaponRepository.searchWeapons(query).stream()
+                .map(weaponMapper::WeaponToDTO)
+                .filter(Objects::nonNull)
+                .toList();
     }
 }

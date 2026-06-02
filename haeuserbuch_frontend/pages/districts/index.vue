@@ -1,9 +1,8 @@
 <script setup lang="ts">
-const districts = ref<District[]>([]);
 
-onMounted(async () => {
-  districts.value = useDistrictStore().districts;
-})
+const districtStore = useDistrictStore();
+
+const { data: districts } = useAsyncData('districts', () => districtStore.fetchDistricts());
 
 useHead(() => ({
   title: 'Distrikte - Distriktverzeichnis'

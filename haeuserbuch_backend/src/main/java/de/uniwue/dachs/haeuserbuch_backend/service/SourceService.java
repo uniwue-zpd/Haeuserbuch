@@ -1,7 +1,9 @@
 package de.uniwue.dachs.haeuserbuch_backend.service;
 
+import de.uniwue.dachs.haeuserbuch_backend.DTO.SourceDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Source;
 import de.uniwue.dachs.haeuserbuch_backend.repository.SourceRepository;
+import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.SourceMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -9,14 +11,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class SourceService {
     private final SourceRepository sourceRepository;
+    private final SourceMapper sourceMapper;
 
-    public SourceService(SourceRepository sourceRepository) {
+    public SourceService(SourceRepository sourceRepository, SourceMapper sourceMapper) {
         this.sourceRepository = sourceRepository;
+        this.sourceMapper = sourceMapper;
     }
 
     // GET all sources
@@ -66,5 +71,17 @@ public class SourceService {
             throw new IllegalArgumentException("Source with ID " + id + " does not exist.");
         }
         sourceRepository.deleteById(id);
+    }
+
+    /**
+     * Allows searching for sources using a query term
+     * @param query Any search term as string
+     * @return A {@link List} of {@link SourceDTO} matching the search term
+     */
+    public List<SourceDTO> searchSources(String query) {
+        return sourceRepository.searchSources(query).stream()
+                .map(sourceMapper::SourceToDTO)
+                .filter(Objects::nonNull)
+                .toList();
     }
 }

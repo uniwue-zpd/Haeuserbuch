@@ -2,13 +2,10 @@
 import StreetForm from "~/components/forms/StreetForm.vue";
 
 const route = useRoute();
-const street_id = Number(route.params.id);
+const streetId = Number(route.params.id);
 const street_store = useStreetStore();
-const street_item = computed(() => street_store.current_street);
 
-onMounted(async () => {
-  await street_store.fetchStreetById(street_id);
-});
+const { data: streetItem } = await useAsyncData(`street-${streetId}`, () => street_store.fetchStreetById(streetId));
 
 useHead(() => ({
   title: `Straße bearbeiten`
@@ -19,7 +16,7 @@ useHead(() => ({
   <StreetForm
       header="Straße bearbeiten"
       action="edit"
-      :street="street_item ?? undefined"
+      :street="streetItem ?? undefined"
   />
 </template>
 

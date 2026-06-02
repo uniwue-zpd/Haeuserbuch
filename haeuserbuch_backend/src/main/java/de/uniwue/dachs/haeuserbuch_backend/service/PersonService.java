@@ -6,18 +6,18 @@ import de.uniwue.dachs.haeuserbuch_backend.model.Person;
 import de.uniwue.dachs.haeuserbuch_backend.model.PlaceCertainty;
 import de.uniwue.dachs.haeuserbuch_backend.model.Weaponry;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PersonRepository;
+import de.uniwue.dachs.haeuserbuch_backend.specification.PersonSpecification;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class PersonService {
@@ -49,6 +49,61 @@ public class PersonService {
     }
 
     /**
+     * GET paged persons
+     * @param pageable pagination and sorting information.
+     * @param name Name of the person.
+     * @param sex Sex of the person.
+     * @param job Job of the person (either the original text or the category name can be used).
+     * @param jobId ID of the job category.
+     * @param associatedBuilding Building associated with the person (can be searched by building's ID, e.g. "IV/18").
+     * @param associatedBuildingId ID of the associated building.
+     * @param isCitizen Whether the person is a citizen or not.
+     * @param placeOfOrigin Place of origin of the person (can be searched by original text).
+     * @param placeOfOriginId ID of the place of origin.
+     * @param originCertainty Certainty of the place of origin information.
+     * @param religion Religion of the person (can be searched by original text or category name).
+     * @param religionId ID of the religion category.
+     * @param weapon Weapon associated with the person (can be searched by original text or category name).
+     * @param weaponId ID of the weapon category.
+     * @return {@link Page} of {@link PersonDTO}
+     */
+    public Page<PersonDTO> getPagedPeople(
+            Pageable pageable,
+            String name,
+            String sex,
+            String job,
+            Long jobId,
+            String associatedBuilding,
+            Long associatedBuildingId,
+            Boolean isCitizen,
+            String placeOfOrigin,
+            Long placeOfOriginId,
+            PlaceCertainty originCertainty,
+            String religion,
+            Long religionId,
+            String weapon,
+            Long weaponId
+    ) {
+        Specification<Person> spec = Specification.where(null);
+        if (name != null) spec = spec.and(PersonSpecification.hasName(name));
+        if (sex != null && !sex.isBlank()) spec = spec.and(PersonSpecification.hasSex(sex));
+        if (job != null && !job.isBlank()) spec = spec.and(PersonSpecification.hasJob(job));
+        if (jobId != null) spec = spec.and(PersonSpecification.hasJobId(jobId));
+        if (associatedBuilding != null && !associatedBuilding.isBlank()) spec = spec.and(PersonSpecification.hasAssociatedBuilding(associatedBuilding));
+        if (associatedBuildingId != null) spec = spec.and(PersonSpecification.hasAssociatedBuildingId(associatedBuildingId));
+        if (isCitizen != null) spec = spec.and(PersonSpecification.isCitizen(isCitizen));
+        if (placeOfOrigin != null && !placeOfOrigin.isBlank()) spec = spec.and(PersonSpecification.hasPlaceOfOrigin(placeOfOrigin));
+        if (placeOfOriginId != null) spec = spec.and(PersonSpecification.hasPlaceOfOriginId(placeOfOriginId));
+        if (originCertainty != null) spec  = spec.and(PersonSpecification.hasOriginCertainty(originCertainty));
+        if (religion != null && !religion.isBlank()) spec = spec.and(PersonSpecification.hasReligion(religion));
+        if (religionId != null) spec = spec.and(PersonSpecification.hasReligionId(religionId));
+        if (weapon != null && !weapon.isBlank()) spec = spec.and(PersonSpecification.hasWeapon(weapon));
+        if (weaponId != null) spec = spec.and(PersonSpecification.hasWeaponId(weaponId));
+        Page<Person> persons = personRepository.findAll(spec, pageable);
+        return persons.map(personMapper::PersonToDTO);
+    }
+
+    /**
      * GET person by ID
      * @param id of the person
      * @return {@link Optional} of {@link PersonDTO}
@@ -61,46 +116,53 @@ public class PersonService {
 
     /**
      * GET filter persons by various attributes. At least one parameter must be provided, otherwise a bad request response is returned.
-     * @param name matches full name, first name, last name or any of the alternative names (case-insensitive, partial match)
-     * @param sex matches the sex field (case-insensitive, partial match)
-     * @param occupation matches the occupation field (case-insensitive, partial match)
-     * @param associatedBuildingId matches the ID of the associated building
-     * @param isCitizen matches the isCitizen field
-     * @param placeOfOriginId matches the ID of any place in the person's origin
-     * @param originCertainty matches the certainty of the person's origin
-     * @return {@link Set} of {@link PersonPreviewDTO} matching the provided criteria or an empty {@link Set} if no matches are found
+     * @param name Name of the person.
+     * @param sex Sex of the person.
+     * @param job Job of the person (either the original text or the category name can be used).
+     * @param jobId ID of the job category.
+     * @param associatedBuilding Building associated with the person (can be searched by building's ID, e.g. "IV/18").
+     * @param associatedBuildingId ID of the associated building.
+     * @param isCitizen Whether the person is a citizen or not.
+     * @param placeOfOrigin Place of origin of the person (can be searched by original text).
+     * @param placeOfOriginId ID of the place of origin.
+     * @param originCertainty Certainty of the place of origin information.
+     * @param religion Religion of the person (can be searched by original text or category name).
+     * @param religionId ID of the religion category.
+     * @param weapon Weapon associated with the person (can be searched by original text or category name).
+     * @param weaponId ID of the weapon category.
+     * @return a {@link Set} of {@link PersonPreviewDTO} matching the provided filters.
      */
     public Set<PersonPreviewDTO> filterPersons(
             String name,
             String sex,
-            String occupation,
+            String job,
+            Long jobId,
+            String associatedBuilding,
             Long associatedBuildingId,
             Boolean isCitizen,
+            String placeOfOrigin,
             Long placeOfOriginId,
-            PlaceCertainty originCertainty
+            PlaceCertainty originCertainty,
+            String religion,
+            Long religionId,
+            String weapon,
+            Long weaponId
     ) {
         Specification<Person> spec = Specification.where(null);
-        if (name != null && !name.isBlank()) {
-            spec = spec.and(de.uniwue.dachs.haeuserbuch_backend.specification.PersonSpecification.hasName(name));
-        }
-        if (sex != null && !sex.isBlank()) {
-            spec = spec.and(de.uniwue.dachs.haeuserbuch_backend.specification.PersonSpecification.hasSex(sex));
-        }
-        if (occupation != null && !occupation.isBlank()) {
-            spec = spec.and(de.uniwue.dachs.haeuserbuch_backend.specification.PersonSpecification.hasOccupation(occupation));
-        }
-        if (associatedBuildingId != null) {
-            spec = spec.and(de.uniwue.dachs.haeuserbuch_backend.specification.PersonSpecification.hasAssociatedBuildingId(associatedBuildingId));
-        }
-        if (isCitizen != null) {
-            spec = spec.and(de.uniwue.dachs.haeuserbuch_backend.specification.PersonSpecification.isCitizen(isCitizen));
-        }
-        if (placeOfOriginId != null) {
-            spec = spec.and(de.uniwue.dachs.haeuserbuch_backend.specification.PersonSpecification.hasPlaceOfOriginId(placeOfOriginId));
-        }
-        if (originCertainty != null) {
-            spec = spec.and(de.uniwue.dachs.haeuserbuch_backend.specification.PersonSpecification.hasOriginCertainty(originCertainty));
-        }
+        if (name != null && !name.isBlank()) spec = spec.and(PersonSpecification.hasName(name));
+        if (sex != null && !sex.isBlank()) spec = spec.and(PersonSpecification.hasSex(sex));
+        if (job != null && !job.isBlank()) spec = spec.and(PersonSpecification.hasJob(job));
+        if (jobId != null) spec = spec.and(PersonSpecification.hasJobId(jobId));
+        if (associatedBuilding != null && !associatedBuilding.isBlank()) spec = spec.and(PersonSpecification.hasAssociatedBuilding(associatedBuilding));
+        if (associatedBuildingId != null) spec = spec.and(PersonSpecification.hasAssociatedBuildingId(associatedBuildingId));
+        if (isCitizen != null) spec = spec.and(PersonSpecification.isCitizen(isCitizen));
+        if (placeOfOrigin != null && !placeOfOrigin.isBlank()) spec = spec.and(PersonSpecification.hasPlaceOfOrigin(placeOfOrigin));
+        if (placeOfOriginId != null) spec = spec.and(PersonSpecification.hasPlaceOfOriginId(placeOfOriginId));
+        if (originCertainty != null) spec = spec.and(PersonSpecification.hasOriginCertainty(originCertainty));
+        if (religion != null && !religion.isBlank()) spec = spec.and(PersonSpecification.hasReligion(religion));
+        if (religionId != null) spec = spec.and(PersonSpecification.hasReligionId(religionId));
+        if (weapon != null && !weapon.isBlank()) spec = spec.and(PersonSpecification.hasWeapon(weapon));
+        if (weaponId != null) spec = spec.and(PersonSpecification.hasWeaponId(weaponId));
         Set<Person> results = new HashSet<>(personRepository.findAll(spec));
         return personMapper.PersonsToPreviewDTOs(results);
     }
@@ -159,5 +221,17 @@ public class PersonService {
     public void deletePerson(Long id) {
         if (!personRepository.existsById(id)) throw new EntityNotFoundException("Person with ID " + id + " does not exist.");
         personRepository.deleteById(id);
+    }
+
+    /**
+     * GET Allows searching for people by their names and alternative spellings of their names
+     * @param query to be used
+     * @return a {@link List} of {@link PersonPreviewDTO} matching the query
+     */
+    public List<PersonPreviewDTO> searchPeople(String query) {
+        return personRepository.searchPeople(query).stream()
+                .map(personMapper::PersonToPreviewDTO)
+                .filter(Objects::nonNull)
+                .toList();
     }
 }

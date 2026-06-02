@@ -1,54 +1,65 @@
 <script setup lang="ts">
-import {onMounted} from "vue";
 import TaskBar from "~/components/UI/page_actions/TaskBar.vue";
+import StreetSkeleton from "~/components/UI/skeletons/StreetSkeleton.vue";
 
 const route = useRoute();
 const street_store = useStreetStore();
 const building_store = useBuildingStore();
-const street_id = Number(route.params.id);
-const street_item = computed(() => street_store.current_street);
-const related_buildings = ref<BuildingDTO[]>([]);
+const streetId = Number(route.params.id);
 
-onMounted(async () => {
-  await street_store.fetchStreetById(street_id);
-  related_buildings.value = await building_store.filterBuildings({ streetId: street_id });
-});
+const { data: streetItem, pending: streetPending } = useAsyncData(
+    `street-${streetId}`,
+    () => street_store.fetchStreetById(streetId)
+);
+
+const { data: relatedBuildings, pending: relatedBuildingsPending } = useAsyncData(
+    `street-${streetId}-related-buildings`,
+    () => building_store.filterBuildings({ streetId: streetId }),
+    { default: () =>[] }
+);
+
+const altNames = computed(() => streetItem.value?.altNames || null);
+
+const isLoading = computed(() => streetPending.value || relatedBuildingsPending.value);
 
 useHead(() => ({
-  title: street_item.value ? `${street_item.value.name} - Verzeichnis der Straßen` : 'Nicht gefunden',
+  title: streetItem.value
+      ? `${streetItem.value.name || 'Unbekannt'} - Straßenverzeichnis`
+      : 'Nicht gefunden'
 }));
 </script>
 
 <template>
-  <Card v-show="street_item">
+  <StreetSkeleton v-if="isLoading"/>
+  <Card v-else>
     <template #title>
       <div class="flex flex-row justify-between">
-        <h1 class="text-3xl montserrat-headline font-bold text-black">{{ street_item?.name }}</h1>
-        <TaskBar :id="street_id" entity_type="streets"/>
+        <h1 class="text-3xl montserrat-headline font-bold text-black">{{ streetItem?.name }}</h1>
+        <TaskBar :id="streetId" entity_type="streets"/>
       </div>
     </template>
     <template #content>
       <div class="flex flex-col gap-2">
-        <div v-show="street_item?.description">
+        <div v-show="streetItem?.description">
           <div class="flex flex-col gap-2">
             <div class="text-lg roboto-plain font-bold">Beschreibung</div>
-            <div>{{ street_item?.description }}</div>
+            <div>{{ streetItem?.description }}</div>
           </div>
         </div>
-        <div v-show="street_item?.altNames.length > 0">
+        <div v-show="altNames">
           <div class="flex flex-col gap-2">
             <h2 class="text-lg roboto-plain font-bold">Andere Namen</h2>
             <ul class="list-disc list-inside">
-              <li v-for="(altName, index) in street_item?.altNames" :key="index" class="roboto-plain">
+              <li v-for="(altName, index) in altNames" :key="index" class="roboto-plain">
                 {{ altName }}
               </li>
             </ul>
           </div>
         </div>
         <Divider/>
-        <div v-show="related_buildings.length > 0" class="flex flex-col gap-2">
+        <div v-show="relatedBuildings.length > 0" class="flex flex-col gap-2">
           <h2 class="text-lg montserrat-headline font-bold text-black">Zugeordnete Gebäude</h2>
-          <DataTable :value="related_buildings" paginator :rows="10" stripedRows>
+          <DataTable :value="relatedBuildings" paginator :rows="10" stripedRows :loading="!relatedBuildings">
             <Column field="districtHouseNumber" header="Bezeichnung" :sortable="true">
               <template #body="{ data }">
                 <NuxtLink
@@ -59,27 +70,28 @@ useHead(() => ({
                 </NuxtLink>
               </template>
             </Column>
+            <Column field="id" header="ID" :sortable="true"/>
           </DataTable>
         </div>
       </div>
     </template>
     <template #footer>
       <div class="flex flex-col gap-2">
-        <Panel header="Notizen" toggleable v-show="street_item?.generalNotes">
+        <Panel header="Notizen" toggleable v-show="streetItem?.generalNotes">
           <template #header>
             <p class="text-sm text-black roboto-plain font-bold">Notizen</p>
           </template>
-          <p class="text-sm text-black roboto-plain">{{ street_item?.generalNotes }}</p>
+          <p class="text-sm text-black roboto-plain">{{ streetItem?.generalNotes }}</p>
         </Panel>
         <Divider/>
         <div class="flex flex-col">
-          <div v-if="street_item?.createdDate" class="flex flex-row space-x-2 text-sm text-black roboto-plain">
+          <div v-if="streetItem?.createdDate" class="flex flex-row space-x-2 text-sm text-black roboto-plain">
             <p>Erstellt am:</p>
-            <p>{{ new Date(street_item?.createdDate).toLocaleDateString() }}</p>
+            <p>{{ new Date(streetItem?.createdDate).toLocaleDateString() }}</p>
           </div>
-          <div v-if="street_item?.lastModifiedDate" class="flex flex-row space-x-2 text-sm text-black roboto-plain">
+          <div v-if="streetItem?.lastModifiedDate" class="flex flex-row space-x-2 text-sm text-black roboto-plain">
             <p>Stand:</p>
-            <p>{{ new Date(street_item?.lastModifiedDate).toLocaleDateString() }}</p>
+            <p>{{ new Date(streetItem?.lastModifiedDate).toLocaleDateString() }}</p>
           </div>
         </div>
       </div>

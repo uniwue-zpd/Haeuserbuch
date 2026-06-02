@@ -34,17 +34,19 @@ public class BuildingController {
             @RequestParam(required = false) Long quarterId,
             @RequestParam(required = false) String quarterName,
             @RequestParam(required = false) Long sourceId,
-            @RequestParam(required = false) String sourceName
+            @RequestParam(required = false) String sourceName,
+            @RequestParam(required = false) Long streetId,
+            @RequestParam(required = false) String streetName
     ) {
         List<Object> paramsCount = Stream.<Object>of(
-                districtId, districtName, quarterId, quarterName, sourceId, sourceName
+                districtId, districtName, quarterId, quarterName, sourceId, sourceName, streetId, streetName
                 )
                 .filter(Objects::nonNull).toList();
         if (paramsCount.isEmpty()) return ResponseEntity.badRequest().build();
 
         return ResponseEntity.ok(
                 buildingService.searchBuildings(
-                        districtId, districtName, quarterId, quarterName, sourceId, sourceName
+                        districtId, districtName, quarterId, quarterName, sourceId, sourceName, streetId, streetName
                 )
         );
     }
@@ -86,5 +88,15 @@ public class BuildingController {
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(404).build();
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<BuildingDTO>> searchBuildings(@RequestParam String query) {
+        if (query == null || query.trim().length() < 3) {
+            return ResponseEntity.ok(List.of());
+        }
+        List<BuildingDTO> results = buildingService.searchBuildings(query);
+        return ResponseEntity.ok(results);
+
     }
 }

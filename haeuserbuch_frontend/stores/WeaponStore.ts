@@ -1,121 +1,106 @@
-import type { Weapon } from "~/utils/types";
-
-export const useWeaponStore = defineStore('weapon', () => {
+export const useWeaponStore = defineStore("weapon", () => {
     // State
-    const weapons = ref<Weapon[]>([]);
-    const currentWeapon = ref<Weapon | null>(null);
-
-    // Getters
-    const isLoaded = computed(() => weapons.value.length > 0);
+    const cache = ref<Record<number, Weapon>>({});
+    const loading = ref(false);
 
     // Actions
 
     /**
-     * GET all weapons from the API and store them in the `weapons` array.
-     * Only fetches if the data is not already loaded (checked via `isLoaded` getter).
+     * `GET` Fetch all weapons from backend.
+     * @returns Promise resolving to an array of Weapon entities
      */
-    async function fetchWeapons() {
-        if (!isLoaded.value) {
-            const { data, error } = await useFetch("/api/weapons");
-            if (error.value) {
-                console.error("Error fetching weapons:", error.value);
-                return;
-            }
-            weapons.value = data.value as Weapon[];
-        }
-    }
-
-    /**
-     * GET weapon by ID. First checks if the weapon is already cached in the `weapons` array.
-     * @param id ID of the weapon to fetch
-     */
-    async function fetchWeaponById(id: number) {
-        if (!currentWeapon.value || currentWeapon.value.id !== id) {
-            const cachedItem = weapons.value.find(weapon => weapon.id === id);
-            if (cachedItem) {
-                currentWeapon.value = cachedItem;
-            } else {
-                try {
-                    currentWeapon.value = await $fetch<Weapon>(`/api/weapons/${id}`);
-                } catch (err) {
-                    console.error(`Error fetching weapon by ID: ${ id }`, err);
-                    return;
-                }
-            }
-        }
-    }
-
-    /**
-     * POST Create a new weapon using the given payload.
-     * On success, adds the new weapon to the `weapons` array.
-     * @param payload Partial weapon data to create
-     */
-    async function createWeapon(payload: Partial<Weapon>) {
+    async function fetchWeapons(): Promise<Weapon[]> {
+        loading.value = true;
         try {
-            const newWeapon = await $fetch<Weapon>('/api/weapons', {
-                method: 'POST',
-                body: payload,
-            });
-            weapons.value.push(newWeapon);
-            return newWeapon;
-        } catch (err) {
-            console.error("Error creating weapon:", err);
+            return await $fetch<Weapon[]>("/api/weapons");
+        } finally {
+            loading.value = false;
+        }
+    }
+
+    /**
+     * `GET` Fetch a single weapon by ID.
+     * @param id Unique identifier
+     * @returns Weapon or null if request fails
+     */
+    async function fetchWeaponById(id: number): Promise<Weapon | null> {
+        if (cache.value[id]) return cache.value[id];
+        try {
+            const data = await $fetch<Weapon>(`/api/weapons/${id}`);
+            cache.value[id] = data;
+            return data;
+        } catch (error) {
+            console.error(`Error fetching weapon with ID ${id}:`, error);
             return null;
         }
     }
 
     /**
-     * PUT Update an existing weapon by ID using the given payload.
-     * @param id ID of the weapon to update
-     * @param payload Partial weapon data to update
+     * `POST` Create a new weapon.
+     * @param payload Partial weapon data
+     * @returns Created Weapon
      */
-    async function updateWeapon(id: number, payload: Partial<Weapon>) {
-        if (weapons.value.length === 0) {
-            console.warn("Weapon list is empty. Fetching weapons before update.");
-            return;
-        }
+    async function createWeapon(payload: Partial<Weapon>): Promise<Weapon> {
+        const data = await $fetch<Weapon>("/api/weapons", {
+            method: "POST",
+            body: payload
+        });
+        cache.value[data.id] = data;
+        return data;
+    }
+
+    /**
+     * `PUT` Update an existing weapon.
+     * @param id Weapon ID
+     * @param payload Partial update data
+     * @returns Updated Weapon
+     */
+    async function updateWeapon(id: number, payload: Partial<Weapon>): Promise<Weapon> {
+        const data = await $fetch<Weapon>(`/api/weapons/${id}`, {
+            method: "PUT",
+            body: payload
+        });
+        cache.value[id] = data;
+        return data;
+    }
+
+    /**
+     * `DELETE` Remove a weapon by ID.
+     * @param id Weapon ID
+     */
+    async function deleteWeapon(id: number): Promise<void> {
         try {
-            const updatedWeapon = await $fetch<Weapon>(`/api/weapons/${id}`, {
-                method: 'PUT',
-                body: payload,
-            });
-            const index = weapons.value.findIndex(weapon => weapon.id === id);
-            if (index !== -1) weapons.value[index] = updatedWeapon;
-        } catch (err) {
-            console.error(`Error updating weapon with ID ${id}:`, err);
-            return null;
+            await $fetch(`/api/weapons/${id}`, { method: "DELETE" });
+            delete cache.value[id];
+        } catch (error) {
+            console.error(`Error deleting weapon with ID ${id}:`, error);
         }
     }
 
     /**
-     * DELETE Remove a weapon by ID.
-     * @param id ID of the weapon to delete
+     * `GET` Search weapons using query string.
+     * @param query Search term
+     * @returns Array of WeaponDTO
      */
-    async function deleteWeapon(id: number) {
-        if (weapons.value.length === 0) {
-            console.warn("Weapons data is not loaded");
-            return;
-        }
+    async function searchWeapons(query: string): Promise<WeaponDTO[]> {
         try {
-            await $fetch(`/api/weapons/${id}`, {
-                method: 'DELETE',
+            return await $fetch<WeaponDTO[]>("/api/weapons/search", {
+                params: { query }
             });
-            weapons.value = weapons.value.filter(weapon => weapon.id !== id);
-            if (currentWeapon.value && currentWeapon.value.id === id) currentWeapon.value = null;
-        } catch (err) {
-            console.error(`Error deleting weapon with ID ${id}:`, err);
-            return;
+        } catch (error) {
+            console.error("Error searching weapons:", error);
+            return [];
         }
     }
 
     return {
-        weapons,
-        currentWeapon,
-        isLoaded,
+        cache,
+        loading,
         fetchWeapons,
         fetchWeaponById,
         createWeapon,
         updateWeapon,
         deleteWeapon,
+        searchWeapons
     };
 });

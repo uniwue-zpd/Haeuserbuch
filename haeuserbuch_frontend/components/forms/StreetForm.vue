@@ -20,7 +20,7 @@ const submit = async (formData: Partial<StreetInput>) => {
       const form = getNode('street_creation');
       form?.reset();
     } else if (props.action === 'edit' && props.street?.id) {
-      await street_store.updateStreet(formData, props.street.id);
+      await street_store.updateStreet(props.street.id, formData);
       submitted.value = true;
       toast.add({severity: 'success', summary: 'Erfolg', detail: 'Erfolgreich upgedated', life: 3000});
       navigateTo(`/streets/${props.street?.id}`);
@@ -60,19 +60,13 @@ const submit = async (formData: Partial<StreetInput>) => {
               prefix-icon="text"
               outer-class="max-w-full"
           />
-          <FormKit type="list" :value="[]" name="altNames" dynamic #default="{ items, node, value }">
-            <FormKit
-                v-for="(item, index) in items"
-                :key="item"
-                :index="index"
-                label="Andere Namen"
-                suffix-icon="trash"
-                @suffix-icon-click="() => node.input(value?.filter((_, i) => i !== index))"
-                :sections-schema="{ suffixIcon: { $el: 'button', attrs: { type: 'button' } } }"
-                outer-class="max-w-full"
-            />
-            <FormKit type="button" @click="() => node.input(value?.concat(''))">Andere Namen hinzufügen</FormKit>
-          </FormKit>
+          <FormKit
+              type="textInput"
+              name="altNames"
+              :isMultiple="true"
+              label="Andere Namen"
+              outer-class="max-w-full"
+          />
           <FormKit
               type="text"
               name="description"

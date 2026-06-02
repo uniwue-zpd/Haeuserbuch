@@ -14,7 +14,7 @@ const props = defineProps<{
 
 // Import store
 const tile_store = useTileStore();
-const place_store = usePlaceStore();
+const placeStore = usePlaceStore();
 
 // Map-related constants and variables
 const coordinates = ref<[number, number] | null>(null);
@@ -61,33 +61,30 @@ const initialValue = computed(() => {
 
 // API submission
 const toast = useToast();
-const submitted = ref(false);
 const submit = async (formData: Partial<Feature>) => {
-  try {
-    if (props.action === 'create') {
-      await place_store.createPlace(formData);
-      submitted.value = true;
+  if (props.action === 'create') {
+    try {
+      await placeStore.createPlace(formData);
       toast.add({severity: 'success', summary: 'Erfolg', detail: 'Erfolgreich erstellt', life: 3000});
-      const form = getNode('place_creation');
+      const form = getNode(`${ props.action }_place`);
       form?.reset();
       coordinates.value = null;
       marker?.remove();
       marker = null;
-    } else if (props.action === 'edit' && props.place?.id) {
-      const id = props.place.id;
-      await place_store.updatePlace(formData, props.place.id);
-      submitted.value = true;
+    } catch (e) {
+      console.error(e);
+      toast.add({severity: 'error', summary: 'Fehler', detail: 'Erstellung fehlgeschlagen', life: 3000});
+    }
+  } else if (props.action === 'edit' && props.place?.id) {
+    const id = props.place.id;
+    try {
+      await placeStore.updatePlace(id, formData);
       toast.add({severity: 'success', summary: 'Erfolg', detail: 'Erfolgreich upgedated', life: 3000});
       navigateTo(`/places/${id}`);
+    } catch (e) {
+      console.error(e);
+      toast.add({severity: 'error', summary: 'Fehler', detail: 'Update fehlgeschlagen', life: 3000});
     }
-  } catch (error) {
-    console.log(error)
-    toast.add({
-      severity: 'error',
-      summary: 'Fehler',
-      detail: 'Fehler beim Erstellen des Orts',
-      life: 3000
-    });
   }
 };
 
@@ -144,7 +141,7 @@ onBeforeUnmount(() => {
     <div id="form_map_place" class="h-[500px] w-full rounded-md"/>
     <FormKit
         type="form"
-        id="place_creation"
+        :id="`${ props.action }_place`"
         submit-label="Erstellen"
         @submit="submit"
         :actions="false"
@@ -169,25 +166,13 @@ onBeforeUnmount(() => {
                 placeholder="Estenfeld"
                 outer-class="max-w-full"
             />
-            <div class="max-h-[30vh] overflow-y-auto border border-gray-300 rounded-md p-4 bg-gray-200">
-              <FormKit type="list" :value="[]" name="altNames" dynamic #default="{ items, node, value }">
-                <FormKit
-                    v-for="(item, index) in items"
-                    :key="item"
-                    :index="index"
-                    label="Andere bekannte Namen"
-                    suffix-icon="trash"
-                    @suffix-icon-click="() => node.input(value?.filter((_, i) => i !== index))"
-                    :sections-schema="{ suffixIcon: { $el: 'button', attrs: { type: 'button' } } }"
-                    outer-class="max-w-full"
-                />
-                <button
-                    type="button"
-                    @click="() => node.input(value?.concat(''))"
-                    class="border border-blue-600 text-blue-600 p-1 rounded-md shadow-sm hover:shadow-md bg-red-100 font-bold max-w-1/7 mx-auto"
-                >Andere Ortsnamen hinzufügen</button>
-              </FormKit>
-            </div>
+            <FormKit
+                type="textInput"
+                name="altNames"
+                :isMultiple="true"
+                label="Andere bekannte Namen"
+                outer-class="max-w-full"
+            />
             <FormKit
                 type="select"
                 name="isUncertain"

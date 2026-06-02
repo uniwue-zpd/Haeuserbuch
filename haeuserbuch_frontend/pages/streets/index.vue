@@ -3,6 +3,8 @@ import {FilterMatchMode} from "@primevue/core";
 
 const street_store = useStreetStore();
 
+const { data: streets } = useAsyncData('streets', () => street_store.fetchStreets());
+
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   name: { value: null, matchMode: FilterMatchMode.CONTAINS }
@@ -21,7 +23,8 @@ useHead(() => ({
     <template #content>
       <DataTable
           v-model:filters="filters"
-          :value="street_store.streets"
+          :value="streets"
+          :loading="!streets"
           paginator
           :rows="10"
           :global-filter-fields="['name']"

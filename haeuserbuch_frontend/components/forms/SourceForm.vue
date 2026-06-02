@@ -20,7 +20,7 @@ const submit = async (formData: Partial<SourceInput>) => {
       const form = getNode('source_create');
       form?.reset();
     } else if (props.action === 'edit' && props.source?.id) {
-      await source_store.updateSource(formData, props.source.id);
+      await source_store.updateSource(props.source.id, formData);
       submitted.value = true;
       toast.add({severity: 'success', summary: 'Erfolg', detail: 'Erfolgreich upgedated', life: 3000});
       const form = getNode('source_edit');
@@ -40,7 +40,7 @@ const submit = async (formData: Partial<SourceInput>) => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-2">
+  <div class="flex flex-col gap-2 w-[80%] mx-auto">
     <h1 class="text-2xl montserrat-headline-headline text-black font-bold">{{ props.header }}</h1>
     <p class="roboto-plain">Füllen Sie bitte die untenstehenden Felder aus, um ein Objekt zu erstellen oder anzupassen.</p>
     <div class="p-3 bg-[#F1F2F2] shadow-md rounded-md">
@@ -56,7 +56,7 @@ const submit = async (formData: Partial<SourceInput>) => {
       >
         <div class="flex flex-col gap-2">
           <FormKit
-              type="text"
+              type="textarea"
               name="title"
               label="Titel"
               prefix-icon="text"
@@ -69,19 +69,13 @@ const submit = async (formData: Partial<SourceInput>) => {
               prefix-icon="text"
               outer-class="max-w-full"
           />
-          <FormKit type="list" :value="[]" name="authors" dynamic #default="{ items, node, value }">
-            <FormKit
-                v-for="(item, index) in items"
-                :key="item"
-                :index="index"
-                label="Autoren"
-                suffix-icon="trash"
-                @suffix-icon-click="() => node.input(value?.filter((_, i) => i !== index))"
-                :sections-schema="{ suffixIcon: { $el: 'button', attrs: { type: 'button' } } }"
-                outer-class="max-w-full"
-            />
-            <FormKit type="button" @click="() => node.input(value?.concat(''))">Autoren hinzufügen</FormKit>
-          </FormKit>
+          <FormKit
+              type="textInput"
+              name="authors"
+              :isMultiple="true"
+              label="Autoren"
+              outer-class="max-w-full"
+          />
           <FormKit
               type="text"
               name="signature"
@@ -96,19 +90,13 @@ const submit = async (formData: Partial<SourceInput>) => {
               prefix-icon="text"
               outer-class="max-w-full"
           />
-          <FormKit type="list" :value="[]" name="links" dynamic #default="{ items, node, value }">
-            <FormKit
-                v-for="(item, index) in items"
-                :key="item"
-                :index="index"
-                label="Weiterführende Links"
-                suffix-icon="trash"
-                @suffix-icon-click="() => node.input(value?.filter((_, i) => i !== index))"
-                :sections-schema="{ suffixIcon: { $el: 'button', attrs: { type: 'button' } } }"
-                outer-class="max-w-full"
-            />
-            <FormKit type="button" @click="() => node.input(value?.concat(''))">Links hinzufügen</FormKit>
-          </FormKit>
+          <FormKit
+              type="textInput"
+              name="links"
+              :isMultiple="true"
+              label="Weiterführende Links"
+              outer-class="max-w-full"
+          />
           <FormKit
               type="textarea"
               name="internalNotes"

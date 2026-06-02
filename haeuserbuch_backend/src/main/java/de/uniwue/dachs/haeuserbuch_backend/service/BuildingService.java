@@ -11,6 +11,7 @@ import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.*;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,6 +74,8 @@ public class BuildingService {
      * @param quarterName Name of the quarter
      * @param sourceId ID of the source
      * @param sourceName Name of the source
+     * @param streetId ID of the street
+     * @param streetName Name of the street
      * @return {@link List} of {@link BuildingDTO} matching the search criteria or an empty {@link List} if no buildings match the criteria
      */
     public List<BuildingDTO> searchBuildings(
@@ -81,7 +84,9 @@ public class BuildingService {
             Long quarterId,
             String quarterName,
             Long sourceId,
-            String sourceName
+            String sourceName,
+            Long streetId,
+            String streetName
     ) {
         Specification<Building> spec = Specification.where(null);
 
@@ -102,6 +107,12 @@ public class BuildingService {
         }
         if (sourceName != null && !sourceName.isEmpty()) {
             spec = spec.and(BuildingSpecifications.hasSourceName(sourceName));
+        }
+        if (streetId != null) {
+            spec = spec.and(BuildingSpecifications.hasStreetId(streetId));
+        }
+        if (streetName != null && !streetName.isEmpty()) {
+            spec = spec.and(BuildingSpecifications.hasAddressStreetName(streetName));
         }
 
         List<Building> response = buildingRepository.findAll(spec);
@@ -184,5 +195,17 @@ public class BuildingService {
             throw new NoSuchElementException("Building with id '" + id + "' does not exist");
         }
         buildingRepository.deleteById(id);
+    }
+
+    /**
+     * Allows searching for buildings based on a search term.
+     * @param query Search term.
+     * @return A {@link List} of {@link BuildingDTO} matching the search term or an empty {@link List} if no buildings match the search term.
+     */
+    public List<BuildingDTO> searchBuildings(@Param("query") String query) {
+        return buildingRepository.searchBuildings(query).stream()
+                .map(buildingMapper::buildingToDTO)
+                .filter(Objects::nonNull)
+                .toList();
     }
 }

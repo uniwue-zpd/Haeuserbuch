@@ -1,108 +1,93 @@
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
 import type { Feature, FeatureCollection } from "~/utils/GeoJsonTypes";
 
 export const usePlaceStore = defineStore("place", () => {
-    // State
-    const places = ref<FeatureCollection | null>(null);
-    const current_place = ref<Feature | null>(null);
+    const featureCollection = ref<FeatureCollection | null>(null);
+    const cache = ref<Record<number, any>>({});
 
-    // Getters
-    const isLoaded = computed(() => places.value !== null);
-
-    // Actions
-        // Fetch places from the API
-    async function fetchPlaces() {
-        if (!isLoaded.value) {
-            const { data, error } = await useFetch('/api/places');
-            if (error.value) {
-                console.error("Error fetching places:", error.value);
-                return;
-            }
-            places.value = data.value as FeatureCollection;
+    /**
+     * `GET` all places stored in the database as `geoJSON` `FeatureCollelction`
+     * and cache it in store.
+     * @param force Whether to force a refetch. Defaults to `false`.
+     * @returns The places as a `geoJSON` `FeatureCollection`
+     */
+    async function getPlaces(force: boolean = false) {
+        if (!featureCollection.value || force) {
+            featureCollection.value = await $fetch<FeatureCollection>('/api/places');
+            return featureCollection.value;
+        } else {
+            return featureCollection.value;
         }
     }
 
-        // Fetch place by ID
-    async function fetchPlaceById(id: number) {
-        if (!current_place.value || current_place.value.id !== id) {
-            const cachedPlace = places.value?.features.find(feature => feature.id === id);
-            if (cachedPlace) {
-                current_place.value = cachedPlace;
-            } else {
-                const { data, error } = await useFetch<Feature>(`/api/places/${id}`);
-                if (error.value) {
-                    console.error(`Error fetching place by ID: ${ id }`, error.value);
-                    return;
-                }
-                current_place.value = data.value as Feature;
-            }
-        }
+    /**
+     * `GET` a place with given `id` and cache it in store.
+     * @param id ID of the place to be fetched
+     * @returns The place as a `geoJSON` `Feature`
+     */
+    async function getPlace(id: number): Promise<Feature> {
+        if (cache.value[id]) return cache.value[id];
+        const data = await $fetch(`/api/places/${id}`);
+        cache.value[id] = data;
+        return data;
     }
 
-        // Create new place
+    /**
+     * `POST` Create new place in the database and cache it in store.
+     * @param payload Body of the request as `geoJSON` feature.
+     */
     async function createPlace(payload: Partial<Feature>) {
-        const { data, error } = await useFetch('/api/places', {
-            method: 'POST',
+        const data = await $fetch(`/api/places`, {
+            method: "POST",
             body: payload
         });
-        if (error.value) {
-            console.error("Error creating place:", error.value);
-            return;
-        }
-        places.value?.features.push(data.value as Feature);
-        return data.value;
+        cache.value[data.id] = data;
+        await getPlaces(true);
     }
 
-        // Update existing place
-    async function updatePlace(payload: Partial<Feature>, id: number) {
-        if (places.value?.features.length === 0 || !places.value) {
-            console.error("Places data is not loaded");
-            return;
-        }
-        const { data, error } = await useFetch<Feature>(`/api/places/${id}`, {
-            method: 'PUT',
+    /**
+     * `PUT` Update an existing place and update its cache value in store.
+     * @param id ID of the given item.
+     * @param payload Body of the request as `geoJSON` feature with updated values.
+     */
+    async function updatePlace(id: number, payload: Partial<Feature>) {
+        cache.value[id] = await $fetch(`/api/places/${id}`, {
+            method: "PUT",
             body: payload
         });
-        if (error.value) {
-            console.error("Error updating place:", error.value);
-            return;
-        }
-        const updatedPlace = data.value as Feature;
-        const index = places.value.features.findIndex(feature => feature.id === id);
-        if (index !== -1) places.value.features[index] = updatedPlace;
-        if (current_place.value?.id === id) current_place.value = updatedPlace;
-        return data.value;
+        await getPlaces(true);
     }
 
-        // Delete place by ID
+    /**
+     * `DELETE` Delete an existing place and remove it from the store.
+     * @param id ID of the place to be deleted.
+     */
     async function deletePlace(id: number) {
-        if (!places.value) {
-            console.error("Places data is not loaded");
-            return;
-        }
-        const { error } = await useFetch(`/api/places/${id}`, { method: 'DELETE' });
-        if (error.value) {
-            console.error('Error deleting places:', error.value);
-            return
-        }
-        places.value.features = places.value.features.filter(p => p.id !== id);
-        if (current_place.value?.id === id) current_place.value = null;
+        await $fetch(`/api/places/${id}`, { method: "DELETE" });
+        delete cache.value[id];
+        await getPlaces(true);
     }
 
-        // Clear current place
-    function clearCurrentPlace() {
-        current_place.value = null;
+    /**
+     * Fetches an array of places based on a search query.
+     * @param query Query to be used for searching places.
+     * @returns An array of `PlaceDTO` matching the search query.
+     */
+    async function searchPlaces(query: string): Promise<PlaceDTO[]> {
+        try {
+            return await $fetch<PlaceDTO[]>('/api/places/search', { query: { query: query } });
+        } catch (err) {
+            console.error('Error searching places', err);
+            return [];
+        }
     }
 
     return {
-        places,
-        current_place,
-        fetchPlaces,
-        fetchPlaceById,
+        getPlaces,
+        getPlace,
         createPlace,
         updatePlace,
         deletePlace,
-        clearCurrentPlace
+        searchPlaces
     }
 });

@@ -1,118 +1,107 @@
 <script setup lang="ts">
 import CitizenshipSkeleton from "~/components/UI/skeletons/CitizenshipSkeleton.vue";
 import TaskBar from "~/components/UI/page_actions/TaskBar.vue";
-import { title_shortener } from "~/utils/helpers";
+import PersonPreview from "~/components/UI/preview_cards/PersonPreview.vue";
+import SourcePreview from "~/components/UI/preview_cards/SourcePreview.vue";
 
 const citizenship_store = useCitizenshipStore();
 
 const route = useRoute();
 const citizenship_id = Number(route.params.id);
-const citizenship_item = computed(() => citizenship_store.current_citizenship);
 
-const loading = ref(true);
+const loading = computed(() => status.value === 'pending');
 
-onMounted(async () => {
-  try {
-    await citizenship_store.fetchCitizenshipById(citizenship_id);
-  } finally {
-    loading.value = false;
-  }
-});
+const { data: citizenshipItem, status } = await useAsyncData(`citizenship-${ citizenship_id }`, () => citizenship_store.fetchCitizenshipById(citizenship_id));
 
 useHead(() => ({
-  title: citizenship_item.value ? `${ citizenship_item.value.signature } - Bürgermatrikel` : 'Nicht gefunden',
+  title: citizenshipItem.value ? `${ citizenshipItem.value.signature } - Bürgermatrikel` : 'Nicht gefunden',
 }));
 </script>
 
 <template>
   <CitizenshipSkeleton v-if="loading"/>
   <div v-else>
-    <div v-if="citizenship_item" class="flex flex-col gap-4 rounded-md shadow-md p-4">
+    <div v-if="citizenshipItem" class="flex flex-col gap-4 rounded-md shadow-md p-4">
       <div class="flex flex-row justify-between">
-        <h1 class="text-3xl montserrat-headline font-bold text-black">{{ citizenship_item?.signature }}</h1>
+        <h1 class="text-3xl montserrat-headline font-bold text-black">{{ citizenshipItem?.signature }}</h1>
         <TaskBar :id="citizenship_id" entity_type="citizenships"/>
       </div>
-      <div class="rounded-md shadow-md p-4 bg-gray-100">
+      <div class="rounded-md shadow-md p-4 bg-gray-100 border border-gray-200">
         <table class="text-black roboto-plain w-full table-auto">
-          <tbody v-if="citizenship_item" class="divide-y divide-gray-200">
-          <tr v-if="citizenship_item.signature">
+          <tbody v-if="citizenshipItem" class="divide-y divide-gray-200">
+          <tr v-if="citizenshipItem.signature">
             <td class="py-4 pr-4 whitespace-nowrap font-bold">Signatur</td>
-            <td class="py-4 whitespace-nowrap">{{ citizenship_item.signature }}</td>
+            <td class="py-4 whitespace-nowrap">{{ citizenshipItem.signature }}</td>
           </tr>
-          <tr v-if="citizenship_item.refNumber">
+          <tr v-if="citizenshipItem.refNumber">
             <td class="py-4 pr-4 whitespace-nowrap font-bold">Referenz Meyer-Erlach</td>
-            <td class="py-4 whitespace-nowrap">{{ citizenship_item.refNumber }}</td>
+            <td class="py-4 whitespace-nowrap">{{ citizenshipItem.refNumber }}</td>
           </tr>
-          <tr v-if="citizenship_item.dateNaturalization">
+          <tr v-if="citizenshipItem.dateNaturalization">
             <td class="py-4 pr-4 whitespace-nowrap font-bold">Datum der Einbürgerung</td>
-            <td class="py-4 whitespace-nowrap">{{ citizenship_item.dateNaturalization }}</td>
+            <td class="py-4 whitespace-nowrap">{{ citizenshipItem.dateNaturalization }}</td>
           </tr>
-          <tr v-if="citizenship_item.dateMisc">
+          <tr v-if="citizenshipItem.dateMisc">
             <td class="py-4 pr-4 whitespace-nowrap font-bold">Andere Datumsangaben</td>
-            <td class="py-4 whitespace-nowrap">{{ citizenship_item.dateMisc }}</td>
+            <td class="py-4 whitespace-nowrap">{{ citizenshipItem.dateMisc }}</td>
           </tr>
-          <tr v-if="citizenship_item.person">
+          <tr v-if="citizenshipItem.person">
             <td class="py-4 pr-4 whitespace-nowrap font-bold">Eingebürgerte Person</td>
             <td class="py-4 whitespace-nowrap">
-              <NuxtLink :to="`/persons/${ citizenship_item.person.id }`" class="rounded-md shadow-md hover:shadow-lg p-2 bg-gray-200 font-medium">
-                {{ citizenship_item.person.firstName }} {{ citizenship_item.person.lastName }}
-              </NuxtLink>
+              <PersonPreview :person="citizenshipItem.person"/>
             </td>
           </tr>
-          <tr v-if="citizenship_item.mentionedPersons.length > 0">
+          <tr v-if="citizenshipItem.mentionedPersons.length > 0">
             <td class="py-4 pr-4 whitespace-nowrap font-bold">Weitere erwähnte Personen</td>
             <td class="py-4 whitespace-nowrap">
               <div class="flex flex-wrap gap-5">
-                <div v-for="person in citizenship_item.mentionedPersons">
-                  <NuxtLink :to="`/persons/${ person.id }`" class="rounded-md shadow-md hover:shadow-lg p-2 bg-gray-200 font-medium">
-                    {{ person.firstName }} {{ person.lastName }}
-                  </NuxtLink>
-                </div>
+                <PersonPreview
+                    v-for="person in citizenshipItem.mentionedPersons"
+                    :person="person"
+                />
               </div>
             </td>
           </tr>
-          <tr v-if="citizenship_item.primarySource">
+          <tr v-if="citizenshipItem.primarySource">
             <td class="py-4 pr-4 whitespace-nowrap font-bold">Primärquelle</td>
             <td class="py-4 whitespace-nowrap">
-              <NuxtLink :to="`/sources/${ citizenship_item.primarySource.id }`" class="rounded-md shadow-md hover:shadow-lg p-2 bg-gray-200 font-medium">
-                {{ citizenship_item.primarySource.title ? title_shortener(citizenship_item.primarySource.title) : citizenship_item.primarySource.title }}
-              </NuxtLink>
+              <SourcePreview :source="citizenshipItem.primarySource"/>
             </td>
           </tr>
-          <tr v-if="citizenship_item.secondarySource">
+          <tr v-if="citizenshipItem.secondarySource">
             <td class="py-4 pr-4 whitespace-nowrap font-bold">Sekundärquelle</td>
             <td class="py-4 whitespace-nowrap">
-              <NuxtLink :to="`/sources/${ citizenship_item.secondarySource.id }`" class="rounded-md shadow-md hover:shadow-lg p-2 bg-gray-200 font-medium">
-                {{ citizenship_item.secondarySource.title ? title_shortener(citizenship_item.secondarySource.title, 4) : citizenship_item.secondarySource.title }}
-              </NuxtLink>
+              <SourcePreview :source="citizenshipItem.secondarySource"/>
             </td>
           </tr>
-          <tr v-if="citizenship_item.entryText">
-            <td class="py-4 pr-4 whitespace-nowrap font-bold">Text des Eintrags</td>
-            <td class="py-4">{{ citizenship_item.entryText }}</td>
+          <tr v-if="citizenshipItem.entryText">
+            <td class="py-4 pr-4 whitespace-nowrap font-bold align-top">Text des Eintrags</td>
+            <td class="py-4">
+              <div class="p-2 rounded-md bg-gray-200 font-light roboto-plain border border-gray-300">{{ citizenshipItem.entryText }}</div>
+            </td>
           </tr>
-          <tr v-if="citizenship_item.addendum">
+          <tr v-if="citizenshipItem.addendum">
             <td class="py-4 pr-4 whitespace-nowrap font-bold">Nachtrag</td>
-            <td class="py-4">{{ citizenship_item.addendum }}</td>
+            <td class="py-4">{{ citizenshipItem.addendum }}</td>
           </tr>
           </tbody>
         </table>
       </div>
-      <div class="flex flex-col gap-2 p-4 rounded-md shadow-md bg-gray-100">
-        <Panel header="Notizen" toggleable v-show="citizenship_item?.generalNotes">
+      <div class="flex flex-col gap-2 p-4 rounded-md shadow-md bg-gray-100 border border-gray-200">
+        <Panel header="Notizen" toggleable v-show="citizenshipItem?.generalNotes">
           <template #header>
             <p class="text-sm text-black roboto-plain font-bold">Notizen</p>
           </template>
-          <p class="text-sm text-black roboto-plain">{{ citizenship_item?.generalNotes }}</p>
+          <p class="text-sm text-black roboto-plain">{{ citizenshipItem?.generalNotes }}</p>
         </Panel>
         <div class="flex flex-col">
-          <div v-if="citizenship_item?.createdDate" class="flex flex-row space-x-2 text-base text-black roboto-plain">
+          <div v-if="citizenshipItem?.createdDate" class="flex flex-row space-x-2 text-base text-black roboto-plain">
             <p class="font-bold">Erstellt am:</p>
-            <p>{{ new Date(citizenship_item?.createdDate).toLocaleDateString() }}</p>
+            <p>{{ new Date(citizenshipItem?.createdDate).toLocaleDateString() }}</p>
           </div>
-          <div v-if="citizenship_item?.lastModifiedDate" class="flex flex-row space-x-2 text-base text-black roboto-plain">
+          <div v-if="citizenshipItem?.lastModifiedDate" class="flex flex-row space-x-2 text-base text-black roboto-plain">
             <p class="font-bold">Stand:</p>
-            <p>{{ new Date(citizenship_item?.lastModifiedDate).toLocaleDateString() }}</p>
+            <p>{{ new Date(citizenshipItem?.lastModifiedDate).toLocaleDateString() }}</p>
           </div>
         </div>
       </div>

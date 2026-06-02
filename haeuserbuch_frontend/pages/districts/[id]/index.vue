@@ -1,41 +1,50 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
-import type { BuildingDTO } from "~/utils/types";
+import DistrictSkeleton from "~/components/UI/skeletons/DistrictSkeleton.vue";
 
-const route = useRoute();
-const district_store = useDistrictStore();
-const building_store = useBuildingStore();
-const district_id = Number(route.params.id);
-const district_item = computed(() => district_store.current_district);
-const related_buildings = ref<BuildingDTO[]>([]);
+const route = useRoute()
+const districtStore = useDistrictStore()
+const buildingStore = useBuildingStore()
 
-onMounted(async () => {
-  await district_store.fetchDistrictById(district_id);
-  related_buildings.value = await building_store.filterBuildings({ districtId: district_id });
-});
+const districtId = Number(route.params.id)
+
+const { data: districtItem, pending: districtPending } = useAsyncData(
+    `district-${districtId}`,
+    () => districtStore.fetchDistrictById(districtId)
+);
+
+const { data: relatedBuildings, pending: buildingsPending } = useAsyncData(
+    `district-buildings-${districtId}`,
+    () => buildingStore.filterBuildings({ districtId }),
+    { default: () => [] }
+);
+
+const isLoading = computed(() => districtPending.value || buildingsPending.value);
 
 useHead(() => ({
-  title: district_item.value ? `${district_item.value.name} - Distriktverzeichnis` : 'Nicht gefunden',
+  title: districtItem.value
+      ? `${districtItem.value.name || 'Unbekannt'} - Distriktverzeichnis`
+      : 'Nicht gefunden'
 }));
 </script>
 
 <template>
-  <Card v-show="district_item">
+  <DistrictSkeleton v-if="isLoading"/>
+  <Card v-else>
     <template #title>
-      <h1 class="text-3xl montserrat-headline font-bold text-black">Distrikt {{ district_item?.name }}</h1>
+      <h1 class="text-3xl montserrat-headline font-bold text-black">Distrikt {{ districtItem?.name }}</h1>
     </template>
     <template #content>
       <div class="flex flex-col gap-2">
-        <div v-show="district_item?.description">
+        <div v-show="districtItem?.description">
           <div class="flex flex-col gap-2">
             <div class="text-xs roboto-plain font-bold">Beschreibung</div>
-            <div>{{ district_item?.description }}</div>
+            <div>{{ districtItem?.description }}</div>
           </div>
         </div>
         <Divider/>
-        <div v-show="related_buildings.length > 0" class="flex flex-col gap-2">
+        <div v-show="relatedBuildings.length > 0" class="flex flex-col gap-2">
           <h2 class="text-lg montserrat-headline font-bold text-black">Zugeordnete Gebäude</h2>
-          <DataTable :value="related_buildings" paginator :rows="10" stripedRows>
+          <DataTable :value="relatedBuildings" paginator :rows="10" stripedRows>
             <Column field="districtHouseNumber" header="Bezeichnung" :sortable="true">
               <template #body="{ data }">
                 <NuxtLink
@@ -52,21 +61,21 @@ useHead(() => ({
     </template>
     <template #footer>
       <div class="flex flex-col gap-2">
-        <Panel header="Notizen" toggleable v-show="district_item?.generalNotes">
+        <Panel header="Notizen" toggleable v-show="districtItem?.generalNotes">
           <template #header>
             <p class="text-sm text-black roboto-plain font-bold">Notizen</p>
           </template>
-          <p class="text-sm text-black roboto-plain">{{ district_item?.generalNotes }}</p>
+          <p class="text-sm text-black roboto-plain">{{ districtItem?.generalNotes }}</p>
         </Panel>
         <Divider/>
         <div class="flex flex-col">
-          <div v-if="district_item?.createdDate" class="flex flex-row space-x-2 text-sm text-black roboto-plain">
+          <div v-if="districtItem?.createdDate" class="flex flex-row space-x-2 text-sm text-black roboto-plain">
             <p>Erstellt am:</p>
-            <p>{{ new Date(district_item?.createdDate).toLocaleDateString() }}</p>
+            <p>{{ new Date(districtItem?.createdDate).toLocaleDateString() }}</p>
           </div>
-          <div v-if="district_item?.lastModifiedDate" class="flex flex-row space-x-2 text-sm text-black roboto-plain">
+          <div v-if="districtItem?.lastModifiedDate" class="flex flex-row space-x-2 text-sm text-black roboto-plain">
             <p>Stand:</p>
-            <p>{{ new Date(district_item?.lastModifiedDate).toLocaleDateString() }}</p>
+            <p>{{ new Date(districtItem?.lastModifiedDate).toLocaleDateString() }}</p>
           </div>
         </div>
       </div>

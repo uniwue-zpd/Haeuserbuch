@@ -9,43 +9,43 @@ const toast = useToast();
 const submitted = ref(false);
 
 const citizenship_store = useCitizenshipStore();
-const person_store = usePersonStore();
-const source_store = useSourceStore();
 type CitizenshipInput = Omit<CitizenshipDTO, 'id' | 'createdBy' | 'createdDate' | 'lastModifiedBy' | 'lastModifiedDate'>;
-
-const sources = computed(() => source_store.sources.map(s => ({ label: s.title, value: { id: s.id, title: s.title } })));
-const persons = computed(() => person_store.persons.map(p => ({ label: `${p.firstName} ${p.lastName}`, value: { id: p.id, firstName: p.firstName, lastName: p.lastName } })));
-
-const mentionedPersonsInput = ref();
-const clearMentionedPersons = () => {
-  mentionedPersonsInput.value.node.input([]);
-}
 
 const submit = async (formData: Partial<CitizenshipInput>) => {
   try {
     if (props.action === 'create') {
       await citizenship_store.createCitizenship(formData);
-      submitted.value = true;
-      toast.add({severity: 'success', summary: 'Erfolg', detail: 'Erfolgreich erstellt', life: 3000});
+      toast.add({
+        severity: 'success',
+        summary: 'Erfolg',
+        detail: 'Erfolgreich erstellt',
+        life: 3000
+      });
       const form = getNode('citizenship_creation');
       form?.reset();
-    } else if (props.action === 'edit' && props.citizenship?.id) {
+    }
+    else if (props.action === 'edit' && props.citizenship?.id) {
       const id = props.citizenship.id;
-      await citizenship_store.updateCitizenship(formData, props.citizenship.id);
-      submitted.value = true;
-      toast.add({severity: 'success', summary: 'Erfolg', detail: 'Erfolgreich upgedated', life: 3000});
+      await citizenship_store.updateCitizenship(id, formData);
+      toast.add({
+        severity: 'success',
+        summary: 'Erfolg',
+        detail: 'Erfolgreich upgedated',
+        life: 3000
+      });
       navigateTo(`/citizenships/${id}`);
     }
+    submitted.value = true
   } catch (error) {
-    console.log(error)
+    console.error(error);
     toast.add({
       severity: 'error',
       summary: 'Fehler',
-      detail: 'Fehler beim Erstellen des Bürgermatrikel-Objektes',
+      detail: 'Fehler beim Speichern des Eintrags',
       life: 3000
     });
   }
-};
+}
 </script>
 
 <template>
@@ -66,14 +66,12 @@ const submit = async (formData: Partial<CitizenshipInput>) => {
         <div class="flex flex-col gap-3">
           <p class="montserrat-headline font-semibold text-black text-xl">Informationen zum Eintrag</p>
           <FormKit
-              type="select"
-              name="primarySource"
+              type="entityAutocomplete"
+              entityType="source"
+              optionLabel="title"
               label="Primärquelle"
+              name="primarySource"
               outer-class="max-w-full"
-              select-icon="select"
-              :options="[{ label: 'Keine Auswahl', value: null },
-              ...sources as any
-              ]"
           />
           <FormKit
               type="text"
@@ -100,35 +98,22 @@ const submit = async (formData: Partial<CitizenshipInput>) => {
               outer-class="max-w-full"
           />
           <FormKit
-              type="select"
-              name="person"
+              type="entityAutocomplete"
+              entityType="person"
+              optionLabel="fullName"
               label="Eingebürgerte Person"
+              name="person"
               outer-class="max-w-full"
-              select-icon="select"
-              :options="[{ label: 'Keine Auswahl', value: null },
-              ...persons as any
-              ]"
           />
-          <div class="flex flex-col gap-2 p-4 bg-gray-200 rounded-md border border-gray-300">
-            <FormKit
-                type="select"
-                ref="mentionedPersonsInput"
-                multiple
-                name="mentionedPersons"
-                label="Erwähnte Personen"
-                outer-class="max-w-full"
-                select-icon="select"
-                :options="persons as any"
-                help="Halten Sie die Strg-Taste gedrückt, um mehrere Quellen auszuwählen"
-            />
-            <button
-                type="button"
-                @click="clearMentionedPersons"
-                class="text-sm roboto-plain border border-red-600 text-red-600 p-1 rounded-md shadow-sm hover:shadow-md bg-white font-medium max-w-1/7 mx-auto"
-            >
-              Liste leeren
-            </button>
-          </div>
+          <FormKit
+              type="entityAutocomplete"
+              entityType="person"
+              optionLabel="fullName"
+              :isMultiple="true"
+              label="Erwähnte Personen (Mehrfachauswahl)"
+              name="mentionedPersons"
+              outer-class="max-w-full"
+          />
           <FormKit
               type="textarea"
               name="entryText"
@@ -141,14 +126,12 @@ const submit = async (formData: Partial<CitizenshipInput>) => {
         <div class="flex flex-col gap-3">
           <p class="montserrat-headline font-semibold text-black text-xl">Ergänzende Informationen</p>
           <FormKit
-              type="select"
+              type="entityAutocomplete"
+              entityType="source"
+              optionLabel="title"
+              label="Sekundärrquelle"
               name="secondarySource"
-              label="Sekundärquelle"
               outer-class="max-w-full"
-              select-icon="select"
-              :options="[{ label: 'Keine Auswahl', value: null },
-              ...sources as any
-              ]"
           />
           <FormKit
               type="text"

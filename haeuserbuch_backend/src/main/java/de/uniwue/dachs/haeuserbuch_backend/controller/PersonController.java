@@ -4,6 +4,10 @@ import de.uniwue.dachs.haeuserbuch_backend.DTO.PersonDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.PersonPreviewDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.PlaceCertainty;
 import de.uniwue.dachs.haeuserbuch_backend.service.PersonService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,10 +25,35 @@ public class PersonController {
         this.personService = personService;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<PersonDTO>> getPersons() {
         List<PersonDTO> persons = personService.getAllPersons();
         return ResponseEntity.ok(persons);
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<PersonDTO>> getPagedPeople(
+            @PageableDefault(sort = "fullName", direction = Sort.Direction.ASC)
+            Pageable pageable,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String sex,
+            @RequestParam(required = false) String job,
+            @RequestParam(required = false, value = "job-id") Long jobId,
+            @RequestParam(required = false, value = "associated-building") String associatedBuilding,
+            @RequestParam(required = false, value = "associated-building-id") Long associatedBuildingId,
+            @RequestParam(required = false, value = "is-citizen") Boolean isCitizen,
+            @RequestParam(required = false, value = "place-of-origin") String placeOfOrigin,
+            @RequestParam(required = false, value = "place-of-origin-id") Long placeOfOriginId,
+            @RequestParam(required = false, value = "origin-certainty") PlaceCertainty originCertainty,
+            @RequestParam(required = false) String religion,
+            @RequestParam(required = false, value = "religion-id") Long religionId,
+            @RequestParam(required = false) String weapon,
+            @RequestParam(required = false, value = "weapon-id") Long weaponId
+    ) {
+        Page<PersonDTO> people = personService.getPagedPeople(
+                pageable, name, sex, job, jobId, associatedBuilding, associatedBuildingId, isCitizen, placeOfOrigin, placeOfOriginId, originCertainty, religion, religionId, weapon, weaponId
+        );
+        return ResponseEntity.ok(people);
     }
 
     @GetMapping("/{id}")
@@ -38,20 +67,25 @@ public class PersonController {
     public ResponseEntity<Set<PersonPreviewDTO>> searchPersons(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String sex,
-            @RequestParam(required = false) String occupation,
-            @RequestParam(required = false, value = "asscociated-building-id") Long associatedBuildingId,
+            @RequestParam(required = false) String job,
+            @RequestParam(required = false, value = "job-id") Long jobId,
+            @RequestParam(required = false, value = "associated-building") String associatedBuilding,
+            @RequestParam(required = false, value = "associated-building-id") Long associatedBuildingId,
             @RequestParam(required = false, value = "is-citizen") Boolean isCitizen,
+            @RequestParam(required = false, value = "place-of-origin") String placeOfOrigin,
             @RequestParam(required = false, value = "place-of-origin-id") Long placeOfOriginId,
-            @RequestParam(required = false, value = "origin-certainty") PlaceCertainty originCertainty) {
+            @RequestParam(required = false, value = "origin-certainty") PlaceCertainty originCertainty,
+            @RequestParam(required = false) String religion,
+            @RequestParam(required = false, value = "religion-id") Long religionId,
+            @RequestParam(required = false) String weapon,
+            @RequestParam(required = false, value = "weapon-id") Long weaponId
+    ) {
         List<Object> paramsCount = Stream.<Object>of(
-                name, sex, occupation, associatedBuildingId, isCitizen, placeOfOriginId, originCertainty
-        )
-                .filter(Objects::nonNull)
-                .toList();
+                name, sex, job, jobId, associatedBuilding, associatedBuildingId, isCitizen, placeOfOrigin, placeOfOriginId, originCertainty, religion, religionId, weapon, weaponId
+                ).filter(Objects::nonNull).toList();
         if (paramsCount.isEmpty()) return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok(
-                personService.filterPersons(
-                        name, sex, occupation, associatedBuildingId, isCitizen, placeOfOriginId, originCertainty
+        return ResponseEntity.ok(personService.filterPersons(
+                name, sex, job, jobId, associatedBuilding, associatedBuildingId, isCitizen, placeOfOrigin, placeOfOriginId, originCertainty, religion, religionId, weapon, weaponId
                 )
         );
     }
@@ -80,5 +114,14 @@ public class PersonController {
         } catch (Exception e) {
             return ResponseEntity.status(404).build();
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<PersonPreviewDTO>> searchPeople(@RequestParam String query) {
+        if (query == null || query.trim().length() < 3) {
+            return ResponseEntity.ok(List.of());
+        }
+        List<PersonPreviewDTO> personPreviewDTOS = personService.searchPeople(query);
+        return ResponseEntity.ok(personPreviewDTOS);
     }
 }

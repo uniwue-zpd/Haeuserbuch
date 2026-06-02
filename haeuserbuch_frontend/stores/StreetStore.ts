@@ -1,108 +1,114 @@
-import { ref, computed } from "vue";
-import type { Street } from "~/utils/types";
+import { ref } from "vue";
+import type { Street, StreetDTO } from "~/utils/types";
 
 export const useStreetStore = defineStore("street", () => {
     // State
-    const streets = ref<Street[]>([]);
-    const current_street = ref<Street | null>(null);
-
-    // Getters
-    const isLoaded = computed(() => streets.value.length > 0);
+    const cache = ref<Record<number, Street>>({});
+    const loading = ref(false);
 
     // Actions
-        // Fetch streets from the API
-    async function fetchStreets() {
-        if (!isLoaded.value) {
-            const { data, error } = await useFetch("/api/streets");
-            if (error.value) {
-                console.error("Error fetching streets:", error.value);
-                return;
-            }
-            streets.value = data.value as Street[];
+
+    /**
+     * `GET` Fetch all streets from backend.
+     * @returns Promise resolving to an array of Street entities
+     */
+    async function fetchStreets(): Promise<Street[]> {
+        loading.value = true;
+        try {
+            return await $fetch<Street[]>("/api/streets");
+        } finally {
+            loading.value = false;
         }
     }
 
-        // Fetch street by ID
-    async function fetchStreetById(id: number) {
-        if (!current_street.value || current_street.value.id !== id) {
-            const cachedStreet = streets.value.find(street => street.id === id);
-            if (cachedStreet) {
-                current_street.value = cachedStreet;
-            } else {
-                const { data, error } = await useFetch<Street>(`/api/streets/${id}`);
-                if (error.value) {
-                    console.error(`Error fetching street by ID: ${ id }`, error.value);
-                    return;
-                }
-                current_street.value = data.value as Street;
-            }
+    /**
+     * `GET` Fetch a single street by ID.
+     * @param id Unique identifier of the street
+     * @returns Street entity or null if request fails
+     */
+    async function fetchStreetById(id: number): Promise<Street | null> {
+        if (cache.value[id]) return cache.value[id];
+        try {
+            const data = await $fetch<Street>(`/api/streets/${id}`);
+            cache.value[id] = data;
+            return data;
+        } catch (error) {
+            console.error(`Error fetching street with ID ${id}:`, error);
+            return null;
         }
     }
 
-        // Create new street
-    async function createStreet(payload: Partial<Street>) {
-        const { data, error } = await useFetch('/api/streets', {
-            method: 'POST',
-            body: payload,
+    /**
+     * `POST` Create a new street entry.
+     * @param payload Partial street data
+     * @returns Newly created Street entity
+     */
+    async function createStreet(payload: Partial<Street>): Promise<Street> {
+        const data = await $fetch<Street>("/api/streets", {
+            method: "POST",
+            body: payload
         });
-        if (error.value) {
-            console.error("Error creating street:", error.value);
-            return;
-        }
-        streets.value.push(data.value as Street);
-        return data.value;
+        cache.value[data.id] = data;
+        return data;
     }
 
-        // Update existing street
-    async function updateStreet(payload: Partial<Street>, id: number) {
-        if (streets.value.length === 0) {
-            console.error("Streets data is not loaded");
-            return;
-        }
-        const { data, error } = await useFetch<Street>(`/api/streets/${id}`, {
-            method: 'PUT',
-            body: payload,
+    /**
+     * `PUT` Update an existing street.
+     * @param id ID of street to update
+     * @param payload Partial update data
+     * @returns Updated Street entity
+     */
+    async function updateStreet(
+        id: number,
+        payload: Partial<Street>
+    ): Promise<Street> {
+        const data = await $fetch<Street>(`/api/streets/${id}`, {
+            method: "PUT",
+            body: payload
         });
-        if (error.value) {
-            console.error("Error updating street:", error.value);
-            return;
-        }
-        const updatedStreet = data.value as Street;
-        const index = streets.value.findIndex(street => street.id === id);
-        if (index !== -1) streets.value[index] = updatedStreet;
-        if (current_street.value && current_street.value.id === id) current_street.value = updatedStreet;
-        return data.value;
+        cache.value[id] = data;
+        return data;
     }
 
-        // Delete street by ID
-    async function deleteStreet(id: number) {
-        if (!streets.value) {
-            console.error("Streets data is not loaded");
-            return;
+    /**
+     * `DELETE` Remove a street by ID.
+     * @param id ID of street to delete
+     */
+    async function deleteStreet(id: number): Promise<void> {
+        try {
+            await $fetch(`/api/streets/${id}`, {
+                method: "DELETE"
+            });
+            delete cache.value[id];
+        } catch (error) {
+            console.error(`Error deleting street with ID ${id}:`, error);
         }
-        const { error } = await useFetch(`/api/streets/${id}`, { method: 'DELETE' });
-        if (error.value) {
-            console.error('Error deleting street:', error.value);
-            throw error.value;
-        }
-        streets.value = streets.value.filter(p => p.id !== id);
-        if (current_street.value?.id === id) current_street.value = null;
     }
 
-        // Clear current street
-    function clearCurrentStreet() {
-        current_street.value = null;
+    /**
+     * `GET` Search streets using a query string.
+     * @param query Search term
+     * @returns Array of StreetDTO matches
+     */
+    async function searchStreets(query: string): Promise<StreetDTO[]> {
+        try {
+            return await $fetch<StreetDTO[]>("/api/streets/search", {
+                params: { query }
+            });
+        } catch (error) {
+            console.error("Error searching streets:", error);
+            return [];
+        }
     }
 
     return {
-        streets,
-        current_street,
-        isLoaded,
+        cache,
+        loading,
         fetchStreets,
         fetchStreetById,
         createStreet,
         updateStreet,
         deleteStreet,
-        clearCurrentStreet
-    }
+        searchStreets
+    };
 });

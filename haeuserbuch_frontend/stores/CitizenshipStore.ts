@@ -1,105 +1,107 @@
+import type {FilterCitizenship} from "~/utils/types";
+
 export const useCitizenshipStore = defineStore("citizenship", () => {
     // State
-    const citizenships = ref<CitizenshipDTO[]>([]);
-    const current_citizenship = ref<CitizenshipDTO | null>(null);
-
-    // Getters
-    const isLoaded = computed(() => citizenships.value.length > 0);
+    const cache = ref<Record<number, CitizenshipDTO>>({});
+    const loading = ref(false);
 
     // Actions
-        // Fetch citizenships from the API
-    async function fetchCitizenships() {
-        if (!isLoaded.value) {
-            const { data, error } = await useFetch("/api/citizenships");
-            if (error.value) {
-                console.error("Error fetching citizenships:", error.value);
-                return;
-            }
-            citizenships.value = data.value as CitizenshipDTO[];
+
+    /**
+     * Fetches citizenships using pageable parameters
+     * @param params {@link FilterCitizenship} parameters for filtering and pagination
+     * @return Promise resolving to paged citizenship data
+     */
+    async function fetchCitizenships(params?: FilterCitizenship) {
+        loading.value = true;
+        try {
+            return await $fetch(`/api/citizenships`, { params });
+        } finally {
+            loading.value = false;
         }
     }
 
-        // Fetch citizenship by ID
-    async function fetchCitizenshipById(id: number) {
-        if (!current_citizenship.value || current_citizenship.value.id !== id) {
-            const cachedCitizenship = citizenships.value.find(citizenship => citizenship.id === id);
-            if (cachedCitizenship) {
-                current_citizenship.value = cachedCitizenship;
-            } else {
-                const { data, error } = await useFetch(`/api/citizenships/${id}`);
-                if (error.value) {
-                    console.error(`Error fetching citizenship by ID: ${ id }`, error.value);
-                    return;
-                }
-                current_citizenship.value = data.value as CitizenshipDTO;
-            }
+    /**
+     * Filters citizenships based on given params
+     * @param params {@link FilterCitizenship} parameters for filtering.
+     * @returns An array of {@link CitizenshipPreviewDTO} matching the filter parameters.
+     */
+    async function filterCitizenships(params: FilterCitizenship): Promise<CitizenshipPreviewDTO[]> {
+        loading.value = true;
+        try {
+            return await $fetch<CitizenshipPreviewDTO[]>(`/api/citizenships/filter`, { params });
+        } finally {
+            loading.value = false;
         }
     }
 
-        // Create new citizenship
-    async function createCitizenship(payload: Partial<CitizenshipDTO>) {
-        const { data, error } = await useFetch('/api/citizenships', {
+    /**
+     * Fetches single citizenship item
+     * @param id ID of the entry
+     */
+    async function fetchCitizenshipById(id: number): Promise<CitizenshipDTO | null> {
+        if (cache.value[id]) return cache.value[id];
+        try {
+            const data = await $fetch(`/api/citizenships/${id}`);
+            cache.value[id] = data;
+            return data;
+        } catch (error) {
+            console.error(`Error fetching citizenship ID ${ id }:`, error);
+            return null;
+        }
+    }
+
+    /**
+     * Creates a new entry in citizenship register
+     * @param payload data to be inserted
+     * @return Promise resolving to created citizenship data
+     */
+    async function createCitizenship(payload: Partial<CitizenshipDTO>): Promise<CitizenshipDTO> {
+        const data = await $fetch<CitizenshipDTO>('/api/citizenships', {
             method: 'POST',
-            body: payload,
+            body: payload
         });
-        if (error.value) {
-            console.error("Error creating citizenship:", error.value);
-            return;
-        }
-        citizenships.value.push(data.value as CitizenshipDTO);
-        return data.value;
+        cache.value[data.id] = data;
+        return data;
     }
 
-        // Update existing citizenship
-    async function updateCitizenship(payload: Partial<CitizenshipDTO>, id: number) {
-        if (citizenships.value.length === 0) {
-            console.error("Citizenships data is not loaded");
-            return;
-        }
-        const { data, error } = await useFetch(`/api/citizenships/${id}`, {
+    /**
+     * Updates an entry in citizenship register
+     * @param id ID of the entry to be updated
+     * @param payload data to be updated
+     * @return Promise resolving to updated citizenship data
+     */
+    async function updateCitizenship(id: number, payload: Partial<CitizenshipDTO>): Promise<CitizenshipDTO> {
+        const data = await $fetch<CitizenshipDTO>(`/api/citizenships/${id}`, {
             method: 'PUT',
-            body: payload,
+            body: payload
         });
-        if (error.value) {
-            console.error(`Error updating citizenship ID ${ id }:`, error.value);
-            return;
-        }
-        const updatedCitizenship = data.value as CitizenshipDTO;
-        const index = citizenships.value.findIndex(citizenship => citizenship.id === id);
-        if (index !== -1) citizenships.value[index] = updatedCitizenship;
-        if (current_citizenship.value && current_citizenship.value.id === id) current_citizenship.value = updatedCitizenship;
-        return data.value;
+        cache.value[data.id] = data;
+        return data;
     }
 
-        // Delete citizenship
+    /**
+     * Deletes an entry in citizenship register
+     * @param id ID of the entry
+     */
     async function deleteCitizenship(id: number) {
-        if (citizenships.value.length === 0) {
-            console.error("Citizenships data is not loaded");
+        try {
+            await $fetch(`/api/citizenships/${id}`, { method: 'DELETE' });
+            delete cache.value[id];
+        } catch (error) {
+            console.error("An error appeared: ", error);
             return;
         }
-        const { error } = await useFetch(`/api/citizenships/${id}`, { method: 'DELETE' });
-        if (error.value) {
-            console.error(`Error deleting citizenship ID ${ id }:`, error.value);
-            return;
-        }
-        citizenships.value = citizenships.value.filter(citizenship => citizenship.id !== id);
-        if (current_citizenship.value?.id === id) current_citizenship.value = null;
-    }
-
-        // Clear current citizenship
-    function clearCurrentCitizenship() {
-        current_citizenship.value = null;
     }
 
     return {
-        citizenships,
-        current_citizenship,
-        isLoaded,
+        cache,
         fetchCitizenships,
+        filterCitizenships,
         fetchCitizenshipById,
         createCitizenship,
         updateCitizenship,
         deleteCitizenship,
-        clearCurrentCitizenship
+        loading
     }
 });

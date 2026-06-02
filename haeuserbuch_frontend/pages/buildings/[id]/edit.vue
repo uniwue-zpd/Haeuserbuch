@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import BuildingForm from "~/components/forms/BuildingForm.vue";
-import { computed, onMounted } from "vue";
+import FetchError from "~/components/UI/FetchError.vue";
 
 useHead(() => ({
   title: 'Gebäude bearbeiten'
@@ -8,19 +8,17 @@ useHead(() => ({
 
 const route = useRoute();
 const building_id = Number(route.params.id);
-const building_store = useBuildingStore();
-const building_item = computed(() => building_store.current_building);
-
-onMounted(async () => {
-  await building_store.fetchBuildingById(building_id);
-})
+const buildingStore = useBuildingStore();
+const { data: buildingItem, error: hasError } = await useAsyncData(() => buildingStore.getBuilding(building_id));
 </script>
 
 <template>
+  <FetchError v-if="hasError" :error="hasError"/>
   <BuildingForm
-    header="Gebäude bearbeiten"
-    action="edit"
-    :building="building_item ?? undefined"
+      v-else
+      header="Gebäude bearbeiten"
+      action="edit"
+      :building="buildingItem ?? undefined"
   />
 </template>
 

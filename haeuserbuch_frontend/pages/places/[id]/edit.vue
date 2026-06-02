@@ -1,22 +1,25 @@
 <script setup lang="ts">
 import PlaceForm from "~/components/forms/PlaceForm.vue";
+import FetchError from "~/components/UI/FetchError.vue";
 
 useHead(() => ({
   title: 'Ort bearbeiten'
 }));
 
 const route = useRoute();
-const place_id = Number(route.params.id);
-const place_store = usePlaceStore();
-const place_item = computed(() => place_store.current_place);
-
-onMounted(async () => {
-  await place_store.fetchPlaceById(place_id);
-});
+const placeId = Number(route.params.id);
+const placeStore = usePlaceStore();
+const { data: placeItem, error: hasError } = useAsyncData(() => placeStore.getPlace(placeId));
 </script>
 
 <template>
-  <PlaceForm header="Ort bearbeiten" action="edit" :place="place_item ?? undefined"/>
+  <FetchError v-if="hasError" :error="hasError"/>
+  <PlaceForm
+      v-else
+      header="Ort bearbeiten"
+      action="edit"
+      :place="placeItem ?? undefined"
+  />
 </template>
 
 <style scoped>

@@ -5,11 +5,12 @@ import { computed, onMounted } from 'vue';
 import type { FeatureCollection } from "~/utils/GeoJsonTypes";
 import { initMap } from "~/service/map_init";
 import { FilterMatchMode } from "@primevue/core";
+import FetchError from "~/components/UI/FetchError.vue";
+import UniversalSkeleton from "~/components/UI/skeletons/UniversalSkeleton.vue";
 
-const router = useRouter();
-const building_store = useBuildingStore();
+const buildingStore = useBuildingStore();
 const tile_store = useTileStore();
-const buildings = computed(() => building_store.buildings);
+const { data: buildings, error: hasError, pending: isLoading } = await useAsyncData('buildings-feature-collection', () => buildingStore.getBuildings());
 const sources = computed(() => tile_store.sources);
 const layers = computed(() => tile_store.layers);
 const buildingCount = computed(() => buildings.value?.features.length);
@@ -80,15 +81,15 @@ onMounted(async () => {
       console.warn('No features found');
       return;
     }
-    const popup_html = `<div class="cursor-pointer text-center montserrat-headline font-semibold text-black">${e.features[0].properties?.districtHouseNumber}</div>`;
+    const popup_html = document.createElement('div');
+    popup_html.innerHTML = e.features[0].properties?.districtHouseNumber || 'Unbekanntes Gebäude';
+    popup_html.setAttribute('class',  'cursor-pointer font-bold montserrat-headline');
     const popup_link = `/buildings/${ e.features[0].id }`;
+    popup_html.addEventListener('click', () => {navigateTo(popup_link)});
     const popup = new maplibregl.Popup()
         .setLngLat(e.lngLat)
-        .setHTML(popup_html)
-        .addTo(map!);
-    popup.getElement().addEventListener('click', () => {
-      router.push(popup_link);
-    });
+        .setDOMContent(popup_html);
+    popup.addTo(map!);
     map!.flyTo({
       center: e.lngLat,
       zoom: 17
@@ -111,7 +112,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-2">
+  <UniversalSkeleton v-if="isLoading"/>
+  <FetchError v-else-if="hasError" :error="hasError"/>
+  <div v-else class="flex flex-col gap-2">
     <h1 class="text-3xl montserrat-headline font-bold">Die Häuser im Überblick</h1>
     <Tabs value="0">
       <TabList>

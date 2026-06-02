@@ -1,5 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.controller;
 
+import de.uniwue.dachs.haeuserbuch_backend.DTO.WeaponDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Weapon;
 import de.uniwue.dachs.haeuserbuch_backend.service.WeaponService;
 import jakarta.persistence.EntityNotFoundException;
@@ -54,5 +55,14 @@ public class WeaponController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(404).build();
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<WeaponDTO>> searchWeapons(@RequestParam String query) {
+        if (query == null || query.trim().length() < 3) {
+            return ResponseEntity.ok(List.of());
+        }
+        List<WeaponDTO> results = weaponService.searchWeapons(query);
+        return ResponseEntity.ok(results);
     }
 }
