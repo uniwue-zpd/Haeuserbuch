@@ -8,40 +8,34 @@ import { initMap } from "~/service/map_init";
 import BuildingSkeleton from "~/components/UI/skeletons/BuildingSkeleton.vue";
 import TaskBar from "~/components/UI/page_actions/TaskBar.vue";
 import { title_shortener } from "~/utils/helpers";
+import FetchError from "~/components/UI/FetchError.vue";
 
 const route = useRoute();
 const building_id = Number(route.params.id);
 
-const loading = ref(true);
-
 const building_store = useBuildingStore();
 const person_store = usePersonStore();
 const tile_store = useTileStore();
-const { data: building_item } = await useAsyncData(`building-${building_id}`, () => building_store.getBuilding(building_id));
-const building_item_properties = computed(() => building_item.value?.properties as BuildingProperties ?? null);
-const building_item_geometry = computed(() => building_item.value?.geometry as Polygon ?? null);
+const { data: buildingItem, error: hasError, pending: isLoading } = await useAsyncData(`building-${building_id}`, () => building_store.getBuilding(building_id));
+const { data: associatedPeople } = await useAsyncData(`associated-people-building-${building_id}`, () => person_store.filterPersons({ "associated-building-id": building_id }));
+const buildingItemProperties = computed(() => buildingItem.value?.properties as BuildingProperties ?? null);
+const buildingItemGeometry = computed(() => buildingItem.value?.geometry as Polygon ?? null);
 const sources = computed(() => tile_store.sources);
 const layers = computed(() => tile_store.layers);
 
 let map: maplibregl.Map | null = null;
 const center = ref<[number, number] | null>(null);
-const associated_people = ref<PersonPreviewDTO[] | []>([]);
 
 useHead(() => ({
-  title: building_item.value ? `${building_item_properties.value?.districtHouseNumber} - Gebäudeverzeichnis` : 'Nicht gefunden',
+  title: buildingItem.value ? `${ buildingItemProperties.value?.districtHouseNumber } - Gebäudeverzeichnis` : 'Nicht gefunden',
 }));
 
 onMounted(async () => {
-  try {
-    associated_people.value = await person_store.filterPersons({ "associated-building-id": building_id });
-  } finally {
-    loading.value = false;
-  }
   await nextTick();
   if (!document.getElementById('map')) return;
   center.value = [
-    (building_item.value?.geometry as Polygon).coordinates[0][0][0],
-    (building_item.value?.geometry as Polygon).coordinates[0][0][1]
+    (buildingItem.value?.geometry as Polygon).coordinates[0][0][0],
+    (buildingItem.value?.geometry as Polygon).coordinates[0][0][1]
   ];
   map = initMap(
       'map',
@@ -53,11 +47,11 @@ onMounted(async () => {
       layers.value as RasterLayerSpecification[]
   );
   map.on('load', () => {
-    if (!building_item.value) return;
+    if (!buildingItem.value) return;
     map!.addSource('building', {
       type: 'geojson',
       // @ts-ignore
-      data: building_item.value as Feature,
+      data: buildingItem.value as Feature,
     });
     map!.addLayer({
       'id': 'building',
@@ -87,28 +81,29 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <BuildingSkeleton v-if="loading"/>
+  <BuildingSkeleton v-if="isLoading"/>
+  <FetchError v-else-if="hasError" :error="hasError"/>
   <div v-else class="flex flex-col gap-4 p-4 rounded-md shadow-md">
     <div class="flex flex-row justify-between">
-      <h1 v-if="building_item_properties?.districtHouseNumber" class="text-3xl montserrat-headline font-bold">
-        {{ building_item_properties?.districtHouseNumber }}
+      <h1 v-if="buildingItemProperties?.districtHouseNumber" class="text-3xl montserrat-headline font-bold">
+        {{ buildingItemProperties?.districtHouseNumber }}
       </h1>
       <TaskBar :id="building_id" entity_type="buildings"/>
     </div>
     <div>
-      <div v-if="building_item_geometry" class="h-[300px] md:h-[500px] w-full rounded-md shadow-md" id="map"/>
+      <div v-if="buildingItemGeometry" class="h-[300px] md:h-[500px] w-full rounded-md shadow-md" id="map"/>
       <div v-else class="flex flex-col gap-4 items-center justify-center h-[250px] bg-yellow-200 rounded-md mx-auto p-2.5">
         <i class="pi pi-exclamation-circle text-5xl"/>
         <p class="roboto-plain text-center text-lg font-medium">Für dieses Gebäude sind bisher keine Geodaten hinterlegt</p>
       </div>
     </div>
-    <div v-if="building_item_properties" class="flex flex-col p-4 bg-gray-100 rounded-md shadow-md roboto-plain divide-y divide-gray-300">
+    <div v-if="buildingItemProperties" class="flex flex-col p-4 bg-gray-100 rounded-md shadow-md roboto-plain divide-y divide-gray-300">
       <h2 class="text-2xl text-black font-semibold montserrat-headline pb-2">Metadaten</h2>
-      <div v-if="building_item_properties.names.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
+      <div v-if="buildingItemProperties.names.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Namen</p>
         <div class="flex flex-wrap gap-3.5">
           <div
-              v-for="name in building_item_properties.names"
+              v-for="name in buildingItemProperties.names"
               class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md"
           >
             <div class="flex flex-row space-x-2 font-medium">
@@ -116,7 +111,7 @@ onBeforeUnmount(() => {
               <NuxtLink
                   :to="`/sources/${name.source?.id}`"
                   class="text-blue-700 line-clamp-1"
-                  :title="name.source?.title"
+                  :title="name.source?.title as string"
               >
                 (Quelle)
               </NuxtLink>
@@ -124,11 +119,11 @@ onBeforeUnmount(() => {
           </div>
         </div>
       </div>
-      <div v-if="building_item_properties.addresses.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
+      <div v-if="buildingItemProperties.addresses.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Adressen</p>
         <div class="flex flex-wrap gap-3.5">
           <div
-              v-for="address in building_item_properties.addresses"
+              v-for="address in buildingItemProperties.addresses"
               class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md"
           >
             <div class="flex flex-row space-x-2 font-medium">
@@ -141,84 +136,84 @@ onBeforeUnmount(() => {
           </div>
         </div>
       </div>
-      <div v-if="building_item_properties.houseNumber" class="grid grid-cols-2 gap-2 p-2.5">
+      <div v-if="buildingItemProperties.houseNumber" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Hausnummer</p>
-        <p>{{ building_item_properties.houseNumber }}</p>
+        <p>{{ buildingItemProperties.houseNumber }}</p>
       </div>
-      <div v-if="building_item_properties.partType" class="grid grid-cols-2 gap-2 p-2.5">
+      <div v-if="buildingItemProperties.partType" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Bauteil</p>
-        <p>{{ building_item_properties.partType }}</p>
+        <p>{{ buildingItemProperties.partType }}</p>
       </div>
-      <div v-if="building_item_properties.specialStatus" class="grid grid-cols-2 gap-2 p-2.5">
+      <div v-if="buildingItemProperties.specialStatus" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Sonderstatus</p>
-        <p>{{ building_item_properties.specialStatus }}</p>
+        <p>{{ buildingItemProperties.specialStatus }}</p>
       </div>
-      <div v-if="building_item_properties.quarter" class="grid grid-cols-2 gap-2 p-2.5">
+      <div v-if="buildingItemProperties.quarter" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Viertel</p>
         <div>
           <NuxtLink
-              :to="`/quarters/${building_item_properties.quarter.id}`"
+              :to="`/quarters/${buildingItemProperties.quarter.id}`"
               class="text-blue-700 p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md font-medium"
           >
-            {{ building_item_properties.quarter.name }}
+            {{ buildingItemProperties.quarter.name }}
           </NuxtLink>
         </div>
       </div>
-      <div v-if="building_item_properties.district" class="grid grid-cols-2 gap-2 p-2.5">
+      <div v-if="buildingItemProperties.district" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Distrikt</p>
         <div>
           <NuxtLink
-              :to="`/districts/${building_item_properties.district.id}`"
+              :to="`/districts/${buildingItemProperties.district.id}`"
               class="text-blue-700 p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md font-medium"
           >
-            {{ building_item_properties.district.name }}
+            {{ buildingItemProperties.district.name }}
           </NuxtLink>
         </div>
       </div>
-      <div v-if="building_item_properties.primarySources.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
+      <div v-if="buildingItemProperties.primarySources.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Primärquellen</p>
         <div class="flex flex-wrap gap-3.5">
           <div
-              v-for="source in building_item_properties.primarySources"
+              v-for="source in buildingItemProperties.primarySources"
               class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md"
           >
               <NuxtLink
                   :to="`/sources/${source.id}`"
                   class="text-blue-700 line-clamp-1 font-medium"
-                  :title="source.title"
+                  :title="source.title as string"
               >
                 {{ source.title ? title_shortener(source.title, 4) : 'Unbenannte Quelle' }}
               </NuxtLink>
           </div>
         </div>
       </div>
-      <div v-if="building_item_properties.secondarySources.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
+      <div v-if="buildingItemProperties.secondarySources.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Sekundärquellen</p>
         <div class="flex flex-wrap gap-3.5">
           <div
-              v-for="source in building_item_properties.secondarySources"
+              v-for="source in buildingItemProperties.secondarySources"
               class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md max-w-[30%]"
           >
             <NuxtLink
                 :to="`/sources/${source.id}`"
                 class="text-blue-700 line-clamp-1 font-medium"
-                :title="source.title"
+                :title="source.title as string"
             >
               {{ source.title ? title_shortener(source.title, 4) : 'Unbenannte Quelle' }}
             </NuxtLink>
           </div>
         </div>
       </div>
-      <div v-if="building_item_properties.generalNotes" class="grid grid-cols-2 gap-2 p-2.5">
+      <div v-if="buildingItemProperties.generalNotes" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Notizen</p>
-        <p>{{ building_item_properties.generalNotes }}</p>
+        <p>{{ buildingItemProperties.generalNotes }}</p>
       </div>
-      <div v-if="associated_people.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
+      <div v-if="associatedPeople && associatedPeople.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Assoziierte Personen</p>
         <div class="flex flex-wrap gap-3.5">
           <span
-              v-for="person in associated_people"
-              :key="person.id"
+              v-for="person in associatedPeople"
+              :key="person.id as number"
           >
             <NuxtLink
                 :to="`/persons/${ person.id }`"
@@ -232,13 +227,13 @@ onBeforeUnmount(() => {
     </div>
     <div class="flex flex-col gap-2 p-4 bg-gray-100 rounded-md shadow-md">
       <div class="flex flex-col">
-        <div v-if="building_item_properties?.createdDate" class="flex flex-row space-x-2 text-black roboto-plain">
+        <div v-if="buildingItemProperties?.createdDate" class="flex flex-row space-x-2 text-black roboto-plain">
           <p class="font-bold">Erstellt am:</p>
-          <p>{{ new Date(building_item_properties.createdDate).toLocaleDateString() }}</p>
+          <p>{{ new Date(buildingItemProperties.createdDate).toLocaleDateString() }}</p>
         </div>
-        <div v-if="building_item_properties?.lastModifiedDate" class="flex flex-row space-x-2 text-black roboto-plain">
+        <div v-if="buildingItemProperties?.lastModifiedDate" class="flex flex-row space-x-2 text-black roboto-plain">
           <p class="font-bold">Stand:</p>
-          <p>{{ new Date(building_item_properties.lastModifiedDate).toLocaleDateString() }}</p>
+          <p>{{ new Date(buildingItemProperties.lastModifiedDate).toLocaleDateString() }}</p>
         </div>
       </div>
     </div>

@@ -5,10 +5,12 @@ import { computed, onMounted } from 'vue';
 import type { FeatureCollection } from "~/utils/GeoJsonTypes";
 import { initMap } from "~/service/map_init";
 import { FilterMatchMode } from "@primevue/core";
+import FetchError from "~/components/UI/FetchError.vue";
+import UniversalSkeleton from "~/components/UI/skeletons/UniversalSkeleton.vue";
 
 const buildingStore = useBuildingStore();
 const tile_store = useTileStore();
-const { data: buildings } = await useAsyncData('buildings-feature-collection', () => buildingStore.getBuildings());
+const { data: buildings, error: hasError, pending: isLoading } = await useAsyncData('buildings-feature-collection', () => buildingStore.getBuildings());
 const sources = computed(() => tile_store.sources);
 const layers = computed(() => tile_store.layers);
 const buildingCount = computed(() => buildings.value?.features.length);
@@ -110,7 +112,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-2">
+  <UniversalSkeleton v-if="isLoading"/>
+  <FetchError v-else-if="hasError" :error="hasError"/>
+  <div v-else class="flex flex-col gap-2">
     <h1 class="text-3xl montserrat-headline font-bold">Die Häuser im Überblick</h1>
     <Tabs value="0">
       <TabList>
