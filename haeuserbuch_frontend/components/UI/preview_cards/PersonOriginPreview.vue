@@ -3,7 +3,6 @@ import {computed, onMounted, ref} from "vue";
 import {initMap} from "~/service/map_init";
 import {DEFAULT_MAP_CENTER} from "~/utils/constant_values";
 import maplibregl, {type RasterLayerSpecification, type RasterSourceSpecification} from "maplibre-gl";
-import {has} from "@formkit/utils";
 
 const props = defineProps<{
   personId: number;
@@ -32,7 +31,7 @@ const { data: places } = await useAsyncData(`person-${props.personId}-origin-pla
       }
       const features = await Promise.all(
           props.personOrigin.places.map((place) =>
-              placeStore.fetchPlaceOnDemandById(place.id)
+              placeStore.getPlace(place.id)
           )
       );
       return {
