@@ -59,6 +59,6 @@ public class Building extends BaseEntity {
     )
     private Set<Source> secondarySources = new HashSet<>();
 
-    @Column(columnDefinition = "geometry(Geometry,25832)")
+    @Column(columnDefinition = "geometry(Geometry,4326)")
     private Geometry coordinates;
 }
