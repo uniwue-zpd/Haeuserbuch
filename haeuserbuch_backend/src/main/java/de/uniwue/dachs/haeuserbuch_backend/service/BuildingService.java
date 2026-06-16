@@ -17,9 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.createPoint;
-import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.createPolygon;
-
 /** Service class for managing Building entities.
  * Provides methods for CRUD operations and searching buildings based on various criteria.
  */
@@ -114,7 +111,6 @@ public class BuildingService {
         if (streetName != null && !streetName.isEmpty()) {
             spec = spec.and(BuildingSpecifications.hasAddressStreetName(streetName));
         }
-
         List<Building> response = buildingRepository.findAll(spec);
         return buildingMapper.buildingsToDTOs(response);
     }
@@ -169,15 +165,7 @@ public class BuildingService {
                 entity.setInternalNotes(properties.getInternalNotes());
                 entity.setGeneralNotes(properties.getGeneralNotes());
             }
-            if (updatedFeature.getGeometry() != null) {
-                if (updatedFeature.getGeometry() instanceof PointGeometry pointGeometry) {
-                    entity.setCoordinates(createPoint(pointGeometry.getCoordinates()));
-                } else if (updatedFeature.getGeometry() instanceof PolygonGeometry polygonGeometry) {
-                    entity.setCoordinates(createPolygon(polygonGeometry.getCoordinates()));
-                } else {
-                    throw new IllegalArgumentException("Unsupported geometry type");
-                }
-            }
+            entity.setCoordinates(buildingMapper.DTOToGeometry(updatedFeature.getGeometry()));
             Building updatedEntity = buildingRepository.save(entity);
             return buildingMapper.BuildingToFeature(updatedEntity);
         }).orElseThrow(() -> new NoSuchElementException("Building with ID " + id + " does not exist"));
