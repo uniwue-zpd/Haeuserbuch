@@ -6,7 +6,7 @@ import { initMap } from "~/service/map_init";
 import { MaplibreTerradrawControl, roundFeatureCoordinates } from '@watergis/maplibre-gl-terradraw';
 import '@watergis/maplibre-gl-terradraw/dist/maplibre-gl-terradraw.css';
 import type { Position } from 'geojson';
-import { type GeoJSONStoreGeometries } from "terra-draw";
+import type { GeoJSONStoreGeometries } from "terra-draw";
 import type { Feature } from "~/utils/GeoJsonTypes";
 
 const props = defineProps<{
@@ -23,7 +23,7 @@ const sources = computed(() => tile_store.sources);
 const layers = computed(() => tile_store.layers);
 let map: maplibregl.Map | null = null;
 const draw = new MaplibreTerradrawControl({
-  modes: ['render','point', 'polygon','select','delete-selection','delete','download'],
+  modes: ['render','point', 'polygon', 'linestring', 'select','delete-selection','delete','download'],
   open: true,
   adapterOptions: {
     coordinatePrecision: 9
@@ -45,6 +45,8 @@ const center = computed<[number, number]>(() => {
       return (geom.coordinates as number[][][])[0][0] as [number, number];
     case 'MultiPolygon':
       return (geom.coordinates as number[][][][])[0][0][0] as [number, number];
+    case 'LineString':
+      return (geom.coordinates as number[][])[0] as [number, number];
     default:
       return DEFAULT_MAP_CENTER;
   }
@@ -112,7 +114,7 @@ onMounted(async () => {
         }
       ], 9);
       drawInstance?.addFeatures(geojson);
-      coordinates.value = props.building.geometry.coordinates;
+      coordinates.value = props.building.geometry.coordinates as any;
       geometry_type.value = props.building.geometry.type;
     }
   });

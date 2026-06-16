@@ -1,15 +1,11 @@
 package de.uniwue.dachs.haeuserbuch_backend.utils.Mappers;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.BuildingDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.*;
 import de.uniwue.dachs.haeuserbuch_backend.model.*;
-import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.BuildingProperties;
-import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
-import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PointGeometry;
-import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PolygonGeometry;
 import de.uniwue.dachs.haeuserbuch_backend.repository.BuildingRepository;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
 import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
@@ -57,19 +53,8 @@ public class BuildingMapper {
         properties.setLastModifiedDate(building.getLastModifiedDate());
         properties.setLastModifiedBy(building.getLastModifiedBy());
         feature.setProperties(properties);
-        if (building.getCoordinates() != null) {
-            Geometry geometry = building.getCoordinates();
-            if (geometry instanceof Point) {
-                PointGeometry pointGeometry = new PointGeometry();
-                pointGeometry.setCoordinates(convertPoint(building.getCoordinates()));
-                feature.setGeometry(pointGeometry);
-            } else if (geometry instanceof Polygon) {
-                PolygonGeometry polygonGeometry = new PolygonGeometry();
-                List<List<List<Double>>> coordinates = convertPolygon(building.getCoordinates());
-                polygonGeometry.setCoordinates(coordinates);
-                feature.setGeometry(polygonGeometry);
-            }
-        }
+        Geometry geometry = building.getCoordinates();
+        feature.setGeometry(geometryToDTO(geometry));
         return feature;
     }
 
@@ -101,17 +86,8 @@ public class BuildingMapper {
                 throw new IllegalArgumentException("Unsupported properties type");
             }
         }
-        if (feature.getGeometry() != null) {
-            if (feature.getGeometry() instanceof PointGeometry) {
-                List<Double> coordinates = ((PointGeometry) feature.getGeometry()).getCoordinates();
-                building.setCoordinates(createPoint(coordinates));
-            } else if (feature.getGeometry() instanceof PolygonGeometry) {
-                List<List<List<Double>>> coordinates = ((PolygonGeometry) feature.getGeometry()).getCoordinates();
-                building.setCoordinates(createPolygon(coordinates));
-            } else {
-                throw new IllegalArgumentException("Unsupported geometry type");
-            }
-        }
+        Geometry geometry = DTOToGeometry(feature.getGeometry());
+        building.setCoordinates(geometry);
         return building;
     }
 
@@ -135,5 +111,43 @@ public class BuildingMapper {
                 .map(this::buildingToDTO)
                 .sorted(Comparator.comparing(BuildingDTO::getId))
                 .toList();
+    }
+
+    private de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Geometry geometryToDTO(Geometry geometry) {
+        if (geometry == null) return null;
+        return switch(geometry) {
+            case Point point -> {
+                PointGeometry pointGeometry = new PointGeometry();
+                pointGeometry.setCoordinates(convertPoint(point));
+                yield pointGeometry;
+            }
+            case Polygon polygon -> {
+                PolygonGeometry polygonGeometry = new PolygonGeometry();
+                polygonGeometry.setCoordinates(convertPolygon(polygon));
+                yield polygonGeometry;
+            }
+            case MultiPolygon multiPolygon -> {
+                MultiPolygonGeometry multiPolygonGeometry = new MultiPolygonGeometry();
+                multiPolygonGeometry.setCoordinates(convertMultiPolygon(multiPolygon));
+                yield multiPolygonGeometry;
+            }
+            case LineString lineString -> {
+                LineStringGeometry lineStringGeometry = new LineStringGeometry();
+                lineStringGeometry.setCoordinates(convertLineString(lineString));
+                yield lineStringGeometry;
+            }
+            default -> throw new IllegalArgumentException("Unsupported geometry type" + geometry.getGeometryType());
+        };
+    }
+
+    public Geometry DTOToGeometry(de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Geometry geometry) {
+        if (geometry == null) return null;
+        return switch (geometry) {
+            case PointGeometry pointGeometry -> createPoint(pointGeometry.getCoordinates());
+            case PolygonGeometry polygonGeometry -> createPolygon(polygonGeometry.getCoordinates());
+            case LineStringGeometry lineStringGeometry -> createLineString(lineStringGeometry.getCoordinates());
+            case MultiPolygonGeometry multiPolygonGeometry -> createMultiPolygon(multiPolygonGeometry.getCoordinates());
+            default -> throw new IllegalArgumentException("Unsupported geometry type" + geometry.getClass().getSimpleName());
+        };
     }
 }

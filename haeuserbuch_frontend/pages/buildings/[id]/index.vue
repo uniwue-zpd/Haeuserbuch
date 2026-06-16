@@ -1,8 +1,13 @@
 <script setup lang="ts">
-import maplibregl, { type RasterLayerSpecification, type RasterSourceSpecification} from 'maplibre-gl';
+import maplibregl, {
+  type CircleLayerSpecification, type FillExtrusionLayerSpecification,
+  type LineLayerSpecification,
+  type RasterLayerSpecification,
+  type RasterSourceSpecification
+} from 'maplibre-gl';
 import "maplibre-gl/dist/maplibre-gl.css";
-import { computed, ref, onMounted } from 'vue';
-import type { Feature, Polygon } from "~/utils/GeoJsonTypes";
+import { computed, onMounted } from 'vue';
+import type { Feature } from "~/utils/GeoJsonTypes";
 import '@watergis/maplibre-gl-terradraw/dist/maplibre-gl-terradraw.css';
 import { initMap } from "~/service/map_init";
 import BuildingSkeleton from "~/components/UI/skeletons/BuildingSkeleton.vue";
@@ -19,12 +24,72 @@ const tile_store = useTileStore();
 const { data: buildingItem, error: hasError, pending: isLoading } = await useAsyncData(`building-${building_id}`, () => building_store.getBuilding(building_id));
 const { data: associatedPeople } = await useAsyncData(`associated-people-building-${building_id}`, () => person_store.filterPersons({ "associated-building-id": building_id }));
 const buildingItemProperties = computed(() => buildingItem.value?.properties as BuildingProperties ?? null);
-const buildingItemGeometry = computed(() => buildingItem.value?.geometry as Polygon ?? null);
+const buildingItemGeometry = computed(() => buildingItem.value?.geometry ?? null);
+
+// Get bounds
+const bounds = computed(() => {
+  const geometry = buildingItemGeometry.value;
+  if (!geometry) return null;
+  const bounds = new maplibregl.LngLatBounds();
+  const extend = (coords: any): void => {
+    if (Array.isArray(coords) && coords.length === 2 && typeof coords[0] === "number") {
+      bounds.extend(coords as [number, number]);
+      return;
+    }
+    coords.forEach(extend);
+  };
+  extend(geometry.coordinates);
+  return bounds;
+});
+
+// Get layer design
+const layer = computed(() => {
+  if (!buildingItemGeometry.value) return null;
+  const geometryType = buildingItemGeometry.value.type;
+  switch (geometryType) {
+    case "Point":
+      return {
+        id: "building-point",
+        type: "circle",
+        source: "building",
+        paint: {
+          "circle-radius": 6,
+          "circle-color": "#d8cece"
+        }
+      } as CircleLayerSpecification;
+    case "LineString":
+      return {
+        id: "building-line",
+        type: "line",
+        source: "building",
+        paint: {
+          "line-width": 4,
+          "line-color": "#56e3bd"
+        }
+      } as LineLayerSpecification;
+    case "Polygon":
+    case "MultiPolygon":
+      return {
+        id: "building-fill",
+        type: "fill-extrusion",
+        source: "building",
+        paint: {
+          "fill-extrusion-color": "rgb(0,119,255)",
+          "fill-extrusion-opacity": 0.8,
+          "fill-extrusion-height": 10
+        }
+      } as FillExtrusionLayerSpecification;
+    default:
+      throw new Error(`Unsupported geometry type: ${ geometryType }`);
+  }
+})
+
+// Get custom maps data
 const sources = computed(() => tile_store.sources);
 const layers = computed(() => tile_store.layers);
 
+// Declare the map
 let map: maplibregl.Map | null = null;
-const center = ref<[number, number] | null>(null);
 
 useHead(() => ({
   title: buildingItem.value ? `${ buildingItemProperties.value?.districtHouseNumber } - Gebäudeverzeichnis` : 'Nicht gefunden',
@@ -33,13 +98,9 @@ useHead(() => ({
 onMounted(async () => {
   await nextTick();
   if (!document.getElementById('map')) return;
-  center.value = [
-    (buildingItem.value?.geometry as Polygon).coordinates[0][0][0],
-    (buildingItem.value?.geometry as Polygon).coordinates[0][0][1]
-  ];
   map = initMap(
       'map',
-      center.value ? center.value : DEFAULT_MAP_CENTER,
+      DEFAULT_MAP_CENTER,
       14,
       70,
       sources.value as Record<string, RasterSourceSpecification>,
@@ -53,22 +114,8 @@ onMounted(async () => {
       // @ts-ignore
       data: buildingItem.value as Feature,
     });
-    map!.addLayer({
-      'id': 'building',
-      'type': 'fill-extrusion',
-      'source': 'building',
-      'layout': {},
-      'paint': {
-        'fill-extrusion-color': 'rgba(0,255,4,0.8)',
-        'fill-extrusion-opacity': 0.8,
-        'fill-extrusion-height': 10
-      }
-    });
-    map!.flyTo({
-      center: center.value ? center.value : DEFAULT_MAP_CENTER,
-      zoom: 17,
-      speed: 0.2
-    })
+    map!.addLayer(layer.value!);
+    map?.fitBounds(bounds.value!, { padding: 20, maxZoom: 18 });
   });
 });
 
