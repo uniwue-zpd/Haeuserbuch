@@ -11,6 +11,7 @@ import lombok.Setter;
         @JsonSubTypes.Type(value = PointGeometry.class, name = "Point"),
         @JsonSubTypes.Type(value = PolygonGeometry.class, name = "Polygon"),
         @JsonSubTypes.Type(value = MultiPolygonGeometry.class, name = "MultiPolygon"),
+        @JsonSubTypes.Type(value = LineStringGeometry.class, name = "LineString")
 })
 @Getter
 @Setter
