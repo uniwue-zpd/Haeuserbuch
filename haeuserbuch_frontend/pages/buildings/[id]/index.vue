@@ -146,6 +146,18 @@ onBeforeUnmount(() => {
     </div>
     <div v-if="buildingItemProperties" class="flex flex-col p-4 bg-gray-100 rounded-md shadow-md roboto-plain divide-y divide-gray-300">
       <h2 class="text-2xl text-black font-semibold montserrat-headline pb-2">Metadaten</h2>
+      <div v-if="buildingItemProperties.year" class="grid grid-cols-2 gap-2 p-2.5">
+        <p class="font-bold">Jahr</p>
+        <p>{{ buildingItemProperties.year }}</p>
+      </div>
+      <div v-if="buildingItemProperties.parcelNumber" class="grid grid-cols-2 gap-2 p-2.5">
+        <p class="font-bold">Flurstücksnummer</p>
+        <p>{{ buildingItemProperties.parcelNumber }}</p>
+      </div>
+      <div v-if="buildingItemProperties.parcelNumberCounter" class="grid grid-cols-2 gap-2 p-2.5">
+        <p class="font-bold">Flurstücksnummerzähler</p>
+        <p>{{ buildingItemProperties.parcelNumberCounter }}</p>
+      </div>
       <div v-if="buildingItemProperties.names.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Namen</p>
         <div class="flex flex-wrap gap-3.5">

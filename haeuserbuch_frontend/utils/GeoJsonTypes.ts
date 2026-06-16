@@ -53,6 +53,9 @@ export interface MultiPolygon {
 /* GeoJSON `properties` for a building feature */
 export interface BuildingProperties {
     type: string | null;
+    year: number | null;
+    parcelNumber: number | null;
+    parcelNumberCounter: number | null;
     names: BuildingNameDTO[] | [];
     addresses: AddressDTO[] | [];
     partType: string | null;

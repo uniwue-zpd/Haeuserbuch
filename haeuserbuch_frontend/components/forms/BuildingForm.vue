@@ -283,6 +283,27 @@ onBeforeUnmount(() => {
               >Adressen hinzufügen</button>
             </FormKit>
             <Divider/>
+            <FormKit
+                type="number"
+                name="year"
+                label="Jahr"
+                placeholder="1832"
+                outer-class="max-w-full"
+            />
+            <FormKit
+                type="number"
+                name="parcelNumber"
+                label="Flurstücksnummer"
+                placeholder="88356"
+                outer-class="max-w-full"
+            />
+            <FormKit
+                type="number"
+                name="parcelNumberCounter"
+                label="Flurstücksnummerzähler"
+                placeholder="3"
+                outer-class="max-w-full"
+            />
             <div class="md:grid md:grid-cols-2 gap-2 flex flex-col">
               <FormKit
                   type="text"
