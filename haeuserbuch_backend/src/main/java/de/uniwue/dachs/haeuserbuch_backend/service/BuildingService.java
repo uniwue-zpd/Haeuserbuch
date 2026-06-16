@@ -144,6 +144,9 @@ public class BuildingService {
         return buildingRepository.findById(id).map(entity -> {
             BuildingProperties properties = (BuildingProperties) updatedFeature.getProperties();
             if (properties != null) {
+                entity.setYear(properties.getYear());
+                entity.setParcelNumber(properties.getParcelNumber());
+                entity.setParcelNumberCounter(properties.getParcelNumberCounter());
                 Set<BuildingName> newNames = buildingNameMapper.BuildingNameDTOsToBuildingNames(properties.getNames());
                 entity.getNames().clear();
                 entity.getNames().addAll(newNames);

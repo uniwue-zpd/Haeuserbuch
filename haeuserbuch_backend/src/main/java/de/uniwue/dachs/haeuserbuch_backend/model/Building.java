@@ -13,6 +13,13 @@ import java.util.Set;
 @Getter
 @Setter
 public class Building extends BaseEntity {
+
+    private Long year;
+
+    private Long parcelNumber;
+
+    private Long parcelNumberCounter;
+
     @OneToMany(
             cascade = CascadeType.ALL,
             orphanRemoval = true
