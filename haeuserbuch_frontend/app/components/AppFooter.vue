@@ -36,12 +36,12 @@ function copy_to_clipboard(copy_item: string) {
         <div class="flex flex-row justify-between md:space-x-10 md:justify-end">
           <div class="flex flex-col justify-center">
             <a href="https://www.dfg.de/de" target="_blank">
-              <img class="h-[30px] md:h-[40px]" src="../public/dfg_logo_schriftzug_weiss.png" alt="dfglogo"/>
+              <img class="h-[30px] md:h-[40px]" src="/dfg_logo_schriftzug_weiss.png" alt="dfglogo"/>
             </a>
           </div>
           <div class="flex flex-col justify-center">
             <a href="https://www.uni-wuerzburg.de/" target="_blank">
-              <img class="h-[30px] md:h-[40px]" src="../public/unilogo4cohne_w.jpg" alt="unilogo"/>
+              <img class="h-[30px] md:h-[40px]" src="/unilogo4cohne_w.jpg" alt="unilogo"/>
             </a>
           </div>
         </div>
