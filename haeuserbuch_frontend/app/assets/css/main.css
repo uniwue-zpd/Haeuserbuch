@@ -2,6 +2,8 @@
 layer(base);
 
 @import 'tailwindcss';
+@source '../../../formkit.theme.ts';
+@source '../../../formkit.config.ts';
 
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
