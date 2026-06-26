@@ -40,12 +40,7 @@ export default defineNuxtConfig({
     apiBaseUrl: 'http://localhost:8080',
     tileserverApiUrl: 'http://localhost:8081'
   },
-  modules: [
-    '@primevue/nuxt-module',
-    '@formkit/nuxt',
-    '@pinia/nuxt',
-    '@nuxt/icon',
-  ],
+  modules: ['@primevue/nuxt-module', '@formkit/nuxt', '@pinia/nuxt', '@nuxt/icon', 'nuxt-auth-utils'],
   primevue: {
     options: {
       theme: {
