@@ -38,7 +38,16 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   runtimeConfig: {
     apiBaseUrl: 'http://localhost:8080',
-    tileserverApiUrl: 'http://localhost:8081'
+    tileserverApiUrl: 'http://localhost:8081',
+    oauth: {
+      keycloak: {
+        serverUrl: '',
+        realm: '',
+        clientId: '',
+        clientSecret: '',
+        redirectURL: '',
+      }
+    }
   },
   modules: ['@primevue/nuxt-module', '@formkit/nuxt', '@pinia/nuxt', '@nuxt/icon', 'nuxt-auth-utils'],
   primevue: {
