@@ -73,18 +73,49 @@ onMounted(async () => {
         ],
         'fill-extrusion-opacity': 0.8,
         'fill-extrusion-height': 10
-      }
+      },
+      filter: ['==', '$type', 'Polygon']
+    });
+    map!.addLayer({
+      'id': 'walls',
+      'type': 'line',
+      'source': 'buildings',
+      'layout': {
+        'line-cap': 'round',
+        'line-join': 'round'
+      },
+      'paint': {
+        'line-color': '#E66101',
+        'line-width': 7,
+        'line-opacity': 0.9,
+        'line-blur': 0.3,
+      },
+      filter: ['==', '$type', 'LineString']
+    });
+    map!.addLayer({
+      id: 'towers',
+      type: 'circle',
+      source: 'buildings',
+      paint: {
+        'circle-radius': 5,
+        'circle-color': '#E66101',
+        'circle-opacity': 0.9,
+        'circle-stroke-width': 2,
+        'circle-stroke-color': '#ffffff',
+        'circle-stroke-opacity': 0.9
+      },
+      filter: ['==', '$type', 'Point']
     });
   });
-  map.on('click', 'buildings', (e) => {
+  map.on('click', ['buildings', 'walls', 'towers'], (e) => {
     if (!e.features || e.features.length === 0) {
       console.warn('No features found');
       return;
     }
     const popup_html = document.createElement('div');
-    popup_html.innerHTML = e.features[0].properties?.districtHouseNumber || 'Unbekanntes Gebäude';
+    popup_html.innerHTML = e.features[0]?.properties?.districtHouseNumber || 'Unbekanntes Gebäude';
     popup_html.setAttribute('class',  'cursor-pointer font-bold montserrat-headline');
-    const popup_link = `/buildings/${ e.features[0].id }`;
+    const popup_link = `/buildings/${ e.features[0]?.id }`;
     popup_html.addEventListener('click', () => {navigateTo(popup_link)});
     const popup = new maplibregl.Popup()
         .setLngLat(e.lngLat)
@@ -95,10 +126,10 @@ onMounted(async () => {
       zoom: 17
     });
   });
-  map.on('mouseenter', 'buildings', () => {
+  map.on('mouseenter', ['buildings', 'walls', 'towers'], () => {
     map!.getCanvas().style.cursor = 'pointer';
   });
-  map.on('mouseleave', 'buildings', () => {
+  map.on('mouseleave', ['buildings', 'walls', 'towers'], () => {
     map!.getCanvas().style.cursor = '';
   });
 });
