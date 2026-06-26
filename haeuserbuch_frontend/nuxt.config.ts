@@ -1,6 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import Aura from '@primeuix/themes/aura';
 import { definePreset } from "@primeuix/themes";
+import tailwindcss from "@tailwindcss/vite";
 
 const HaeuserbuchPreset = definePreset(Aura, {
   semantic: {
@@ -62,11 +63,8 @@ export default defineNuxtConfig({
       scan: true,
     }
   },
-  css: ['~/assets/css/main.css'],
-  postcss: {
-    plugins: {
-      tailwindcss: {},
-      autoprefixer: {},
-    },
-  },
+  css: ['./app/assets/css/main.css'],
+  vite: {
+    plugins: [tailwindcss()]
+  }
 })
