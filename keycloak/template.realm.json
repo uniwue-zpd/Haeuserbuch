@@ -1,0 +1,49 @@
+{
+  "realm": "haeuserbuch_realm",
+  "enabled": true,
+  "displayName": "Haeuserbuch",
+  "displayNameHtml": "Häuserbuch",
+  "roles": {
+    "realm": [
+      {
+        "name": "editor",
+        "description": "Editor role with basic permissions to edit content."
+      },
+      {
+        "name": "admin",
+        "description": "Admin role with full permissions to manage the application."
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "haeuserbuch-nuxt-frontend",
+      "name": "Häuserbuch Nuxt Frontend",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "your-client-secret-here",
+      "redirectUris": ["http://localhost:3000/*"],
+      "webOrigins": ["http://localhost:3000"],
+      "standardFlowEnabled": true,
+      "users": [
+        {
+          "username": "haeuserbuch-administrator",
+          "enabled": true,
+          "emailVerified": true,
+          "firstName": "Admin",
+          "lastName": "User",
+          "email": "your-email@example.com",
+          "credentials": [
+            {
+              "type": "password",
+              "value": "admin-password",
+              "temporary": false
+            }
+          ],
+          "realmRoles": ["admin", "editor"]
+        }
+      ]
+    }
+  ]
+}
