@@ -5,6 +5,12 @@ spring:
   application:
     name: haeuserbuch_backend
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: # keycloak issuer URI
+
   datasource:
     url: # database URL
     username: # database username
