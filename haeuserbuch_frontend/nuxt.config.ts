@@ -65,6 +65,10 @@ export default defineNuxtConfig({
   },
   css: ['./app/assets/css/main.css'],
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    ssr: {
+      // Bundle Terradraw + MapLibre for SSR to avoid named-export interop issues.
+      noExternal: ['@watergis/maplibre-gl-terradraw', 'maplibre-gl']
+    }
   }
 })
