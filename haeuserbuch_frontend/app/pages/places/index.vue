@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import maplibregl, {LngLat, type RasterLayerSpecification, type RasterSourceSpecification} from 'maplibre-gl';
+import maplibregl, {
+  LngLat,
+  type RasterLayerSpecification,
+  type RasterSourceSpecification
+} from 'maplibre-gl';
 import "maplibre-gl/dist/maplibre-gl.css";
 import { initMap } from "~/service/map_init";
 import {FilterMatchMode} from "@primevue/core";
@@ -109,6 +113,20 @@ onMounted(async () => {
       },
     });
   });
+  map.on('click', 'places_clusters', async (e) => {
+    const feature = e.features?.[0];
+    if (!feature) return;
+    const clusterId = feature.properties?.cluster_id;
+    if (typeof clusterId !== 'number') return;
+    const source = map!.getSource('places') as maplibregl.GeoJSONSource;
+    const zoom = await source.getClusterExpansionZoom(clusterId);
+    if (feature.geometry.type !== 'Point') return;
+    const coords = feature.geometry.coordinates as [number, number];
+    map!.easeTo({
+      center: coords,
+      zoom
+    });
+  });
   map.on('click', 'places', (e) => {
     if (!e.features) return;
     const geometry = e.features[0].geometry as Point;
@@ -132,10 +150,10 @@ onMounted(async () => {
       zoom: 14
     });
   });
-  map.on('mouseenter', 'places', () => {
+  map.on('mouseenter', ['places', 'places_clusters'], () => {
     map!.getCanvas().style.cursor = 'pointer';
   });
-  map.on('mouseleave', 'places', () => {
+  map.on('mouseleave', ['places', 'places_clusters'], () => {
     map!.getCanvas().style.cursor = '';
   });
 });
