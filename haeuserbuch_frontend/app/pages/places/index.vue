@@ -128,16 +128,17 @@ onMounted(async () => {
     });
   });
   map.on('click', 'places', (e) => {
-    if (!e.features) return;
-    const geometry = e.features[0].geometry as Point;
+    const feature = e.features?.[0];
+    if (!feature) return;
+    const geometry = feature.geometry as Point;
     const coordinates = new LngLat(
         (geometry.coordinates[0]),
         (geometry.coordinates[1])
     );
     const popUpLink = document.createElement('div');
-    popUpLink.innerHTML = e.features[0].properties?.realName ?? 'Unbekannter Ort';
+    popUpLink.innerHTML = feature.properties?.realName ?? 'Unbekannter Ort';
     popUpLink.setAttribute('class', 'cursor-pointer font-bold montserrat-headline');
-    const id = e.features[0].id;
+    const id = feature.id;
     popUpLink.addEventListener('click', () => {
       navigateTo(`/places/${ id }`)
     });
