@@ -50,16 +50,62 @@ onMounted(async () => {
     map!.addSource('places', {
       type: 'geojson',
       // @ts-ignore
-      data: places.value as FeatureCollection
+      data: places.value as FeatureCollection,
+      cluster: true,
+      clusterRadius: 50
+    });
+    map!.addLayer({
+      id: 'places_clusters',
+      type: 'circle',
+      source: 'places',
+      filter: ['has', 'point_count'],
+
+      paint: {
+        'circle-color': [
+          'step',
+          ['get', 'point_count'],
+          '#8FB3C9',
+          25,
+          '#7398B2',
+          100,
+          '#5C7F9B'
+        ],
+        'circle-radius': [
+          'step',
+          ['get', 'point_count'],
+          16,
+          25,
+          22,
+          100,
+          30
+        ],
+        'circle-stroke-color': '#F8F4EA',
+        'circle-stroke-width': 2,
+        'circle-opacity': 0.85
+      }
+    });
+    map!.addLayer({
+      id: 'places_clusters_count',
+      type: 'symbol',
+      source: 'places',
+      filter: ['has', 'point_count'],
+      layout: {
+        'text-field': '{point_count_abbreviated}',
+        'text-size': 12,
+        'text-font': ['Noto Sans Regular']
+      }
     });
     map!.addLayer({
       id: 'places',
       type: 'circle',
       source: 'places',
+      filter: ['!', ['has', 'point_count']],
       paint: {
         'circle-radius': 8,
-        'circle-color': '#3254a8',
+        'circle-color': '#5C7F9B',
         'circle-opacity': 0.8,
+        'circle-stroke-color': '#F8F4EA',
+        'circle-stroke-width': 2
       },
     });
   });
