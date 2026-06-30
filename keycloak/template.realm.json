@@ -45,5 +45,10 @@
         }
       ]
     }
-  ]
+  ],
+  "smtpServer": {
+    "host": "smtp.example.com",
+    "port": 587,
+    "from": "haeuserbuch@example.com"
+  }
 }
