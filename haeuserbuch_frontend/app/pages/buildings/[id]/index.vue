@@ -25,6 +25,8 @@ const { data: buildingItem, error: hasError, pending: isLoading } = await useAsy
 const { data: associatedPeople } = await useAsyncData(`associated-people-building-${building_id}`, () => person_store.filterPersons({ "associated-building-id": building_id }));
 const buildingItemProperties = computed(() => buildingItem.value?.properties as BuildingProperties ?? null);
 const buildingItemGeometry = computed(() => buildingItem.value?.geometry ?? null);
+const addresses1869 = computed(() => buildingItemProperties.value?.addresses.filter(address => address.fromDate === '1869') ?? []);
+const addresses2025 = computed(() => buildingItemProperties.value?.addresses.filter(address => address.fromDate === '2025') ?? []);
 
 // Get bounds
 const bounds = computed(() => {
@@ -188,11 +190,28 @@ onBeforeUnmount(() => {
           </div>
         </div>
       </div>
-      <div v-if="buildingItemProperties.addresses.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
-        <p class="font-bold">Adressen</p>
+      <div v-if="addresses1869.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
+        <p class="font-bold">Adressen um 1869</p>
         <div class="flex flex-wrap gap-3.5">
           <div
-              v-for="address in buildingItemProperties.addresses"
+              v-for="address in addresses1869"
+              class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md"
+          >
+            <div class="flex flex-row space-x-2 font-medium">
+              <NuxtLink
+                  :to="`/streets/${address.street?.id}`"
+                  class="text-blue-700"
+              >{{ address.street?.name }}</NuxtLink>
+              <span>{{ address.houseNumber }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div v-if="addresses2025.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
+        <p class="font-bold">Aktuelle Adressen</p>
+        <div class="flex flex-wrap gap-3.5">
+          <div
+              v-for="address in addresses2025"
               class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md"
           >
             <div class="flex flex-row space-x-2 font-medium">
