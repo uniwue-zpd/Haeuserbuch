@@ -189,7 +189,7 @@ onBeforeUnmount(() => {
                       class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md"
                       prefetch
                   >
-                    {{ data.properties.districtHouseNumber }}
+                    {{ data.properties.districtHouseNumber || 'Ohne Bezeichnung' }}
                   </NuxtLink>
                 </template>
                 <template #filter="{ filterModel, filterCallback }">
