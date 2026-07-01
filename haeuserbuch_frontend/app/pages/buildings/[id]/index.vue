@@ -53,8 +53,12 @@ const layer = computed(() => {
         type: "circle",
         source: "building",
         paint: {
-          "circle-radius": 6,
-          "circle-color": "#d8cece"
+          'circle-radius': 9,
+          'circle-color': '#E66101',
+          'circle-opacity': 0.9,
+          'circle-stroke-width': 2,
+          'circle-stroke-color': '#ffffff',
+          'circle-stroke-opacity': 0.9
         }
       } as CircleLayerSpecification;
     case "LineString":
@@ -91,9 +95,14 @@ const layers = computed(() => tile_store.layers);
 // Declare the map
 let map: maplibregl.Map | null = null;
 
-useHead(() => ({
-  title: buildingItem.value ? `${ buildingItemProperties.value?.districtHouseNumber } - Gebäudeverzeichnis` : 'Nicht gefunden',
-}));
+useHead(() => {
+  const districtHouseNumber = buildingItemProperties.value?.districtHouseNumber;
+  return {
+    title: districtHouseNumber
+        ? `${districtHouseNumber} - Gebäudeverzeichnis`
+        : 'Gebäude - Gebäudeverzeichnis',
+  };
+});
 
 onMounted(async () => {
   await nextTick();
@@ -135,6 +144,7 @@ onBeforeUnmount(() => {
       <h1 v-if="buildingItemProperties?.districtHouseNumber" class="text-3xl montserrat-headline font-bold">
         {{ buildingItemProperties?.districtHouseNumber }}
       </h1>
+      <h1 v-else class="text-3xl montserrat-headline font-bold">Gebäude ohne Bezeichnung</h1>
       <TaskBar :id="building_id" entity_type="buildings"/>
     </div>
     <div>
