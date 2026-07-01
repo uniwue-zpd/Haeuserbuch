@@ -175,13 +175,13 @@ onBeforeUnmount(() => {
         <div class="flex flex-wrap gap-3.5">
           <div
               v-for="name in buildingItemProperties.names"
-              class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md"
+              class="p-1.5 bg-gray-200 border border-gray-300 rounded-md shadow-sm hover:shadow-md border border-gray-300"
           >
             <div class="flex flex-row space-x-2 font-medium">
               <span>{{ name.name }}</span>
               <NuxtLink
                   :to="`/sources/${name.source?.id}`"
-                  class="text-blue-700 line-clamp-1"
+                  class="line-clamp-1"
                   :title="name.source?.title as string"
               >
                 (Quelle)
@@ -195,12 +195,11 @@ onBeforeUnmount(() => {
         <div class="flex flex-wrap gap-3.5">
           <div
               v-for="address in addresses1869"
-              class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md"
+              class="p-1.5 bg-gray-200 border border-gray-300 rounded-md shadow-sm hover:shadow-md"
           >
             <div class="flex flex-row space-x-2 font-medium">
               <NuxtLink
                   :to="`/streets/${address.street?.id}`"
-                  class="text-blue-700"
               >{{ address.street?.name }}</NuxtLink>
               <span>{{ address.houseNumber }}</span>
             </div>
@@ -212,12 +211,11 @@ onBeforeUnmount(() => {
         <div class="flex flex-wrap gap-3.5">
           <div
               v-for="address in addresses2025"
-              class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md"
+              class="p-1.5 bg-gray-200 border border-gray-300 rounded-md shadow-sm hover:shadow-md"
           >
             <div class="flex flex-row space-x-2 font-medium">
               <NuxtLink
                   :to="`/streets/${address.street?.id}`"
-                  class="text-blue-700"
               >{{ address.street?.name }}</NuxtLink>
               <span>{{ address.houseNumber }}</span>
             </div>
@@ -241,7 +239,7 @@ onBeforeUnmount(() => {
         <div>
           <NuxtLink
               :to="`/quarters/${buildingItemProperties.quarter.id}`"
-              class="text-blue-700 p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md font-medium"
+              class="p-1.5 bg-gray-200 border border-gray-300 rounded-md shadow-sm hover:shadow-md font-medium"
           >
             {{ buildingItemProperties.quarter.name }}
           </NuxtLink>
@@ -252,7 +250,7 @@ onBeforeUnmount(() => {
         <div>
           <NuxtLink
               :to="`/districts/${buildingItemProperties.district.id}`"
-              class="text-blue-700 p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md font-medium"
+              class="p-1.5 bg-gray-200 border border-gray-300 rounded-md shadow-sm hover:shadow-md font-medium"
           >
             {{ buildingItemProperties.district.name }}
           </NuxtLink>
@@ -263,11 +261,11 @@ onBeforeUnmount(() => {
         <div class="flex flex-wrap gap-3.5">
           <div
               v-for="source in buildingItemProperties.primarySources"
-              class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md"
+              class="p-1.5 bg-gray-200 border border-gray-300 rounded-md shadow-sm hover:shadow-md"
           >
               <NuxtLink
                   :to="`/sources/${source.id}`"
-                  class="text-blue-700 line-clamp-1 font-medium"
+                  class="line-clamp-1 font-medium"
                   :title="source.title as string"
               >
                 {{ source.title ? title_shortener(source.title, 4) : 'Unbenannte Quelle' }}
@@ -280,11 +278,11 @@ onBeforeUnmount(() => {
         <div class="flex flex-wrap gap-3.5">
           <div
               v-for="source in buildingItemProperties.secondarySources"
-              class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md max-w-[30%]"
+              class="p-1.5 bg-gray-200 border border-gray-300 rounded-md shadow-sm hover:shadow-md max-w-[30%]"
           >
             <NuxtLink
                 :to="`/sources/${source.id}`"
-                class="text-blue-700 line-clamp-1 font-medium"
+                class="line-clamp-1 font-medium"
                 :title="source.title as string"
             >
               {{ source.title ? title_shortener(source.title, 4) : 'Unbenannte Quelle' }}
@@ -305,7 +303,7 @@ onBeforeUnmount(() => {
           >
             <NuxtLink
                 :to="`/persons/${ person.id }`"
-                class="p-1.5 bg-gray-200 rounded-md shadow-sm hover:shadow-md text-blue-700 line-clamp-1 font-medium"
+                class="p-1.5 bg-gray-200 border border-gray-300 rounded-md shadow-sm hover:shadow-md line-clamp-1 font-medium"
             >
               {{ person.fullName }}
             </NuxtLink>
