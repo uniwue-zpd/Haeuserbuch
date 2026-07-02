@@ -1,6 +1,7 @@
 export default defineOAuthKeycloakEventHandler({
     async onSuccess(event, { user, tokens }) {
         await setUserSession(event, {
+            maxAge: 60 * 60 * 24, // 1 day
             user: {
                 id: user.id,
                 name: user.name,
