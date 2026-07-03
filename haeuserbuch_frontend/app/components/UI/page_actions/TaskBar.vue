@@ -7,6 +7,8 @@ const props = defineProps<{
   entity_type: 'buildings' | 'citizenships' | 'persons' | 'places' | 'sources' | 'streets';
 }>();
 
+const { loggedIn } = useUserSession();
+
 const confirm = useConfirm();
 const toast = useToast();
 
@@ -62,7 +64,12 @@ const actions = {
       },
       accept: async () => {
         try {
-          await deleteHandlers[props.entity_type](props.id);
+          const handler = deleteHandlers[props.entity_type];
+          if (!handler) {
+            toast.add({ severity: 'error', summary: 'Fehler', detail: 'Kein Lösch-Handler gefunden', life: 3000 });
+            return;
+          }
+          await handler(props.id);
           toast.add({ severity: 'info', summary: 'Bestätigung', detail: 'Löschvorgang erfolgreich', life: 3000 });
           navigateTo(`/${ props.entity_type }`);
         } catch (err) {
@@ -92,7 +99,10 @@ const actions = {
           <NuxtLink
               :to="edit_path"
               class="flex flex-row space-x-2 p-1 rounded-md text-gray-600 hover:bg-[#f1f5f9] hover:text-black whitespace-nowrap items-center"
-              @click="actions.edit_page()"
+              :class="{ 'opacity-50 pointer-events-none cursor-not-allowed': !loggedIn }"
+              :aria-disabled="!loggedIn"
+              :tabindex="loggedIn ? 0 : -1"
+              @click="(e) => { if (!loggedIn) e.preventDefault(); else actions.edit_page(); }"
           >
             <Icon name="material-symbols-edit-square-outline-sharp" class="text-xl"/>
             <span class="text-sm leading-none">Bearbeiten</span>
@@ -108,7 +118,7 @@ const actions = {
           </NuxtLink>
           <button
               @click="actions.copy_url()"
-              class="flex flex-row space-x-2 p-1 rounded-md text-gray-600 hover:bg-[#f1f5f9] hover:text-black whitespace-nowrap items-center"
+              class="flex flex-row space-x-2 p-1 rounded-md text-gray-600 hover:bg-[#f1f5f9] hover:text-black whitespace-nowrap items-center cursor-pointer"
           >
             <Icon name="material-symbols-share-outline" class="text-xl"/>
             <span class="text-sm leading-none">Teilen</span>
@@ -116,7 +126,8 @@ const actions = {
           <ConfirmDialog/>
           <button
               @click="actions.delete_page()"
-              class="flex flex-row space-x-2 p-1 rounded-md hover:bg-[#f1f5f9] text-red-600 hover:text-red-700 whitespace-nowrap items-center"
+              :disabled="!loggedIn"
+              class="flex flex-row space-x-2 p-1 rounded-md hover:bg-[#f1f5f9] text-red-600 hover:text-red-700 whitespace-nowrap items-center disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-red-600"
           >
             <Icon name="material-symbols-delete-outline" class="text-xl"/>
             <span class="text-sm leading-none">Eintrag löschen</span>
@@ -126,7 +137,7 @@ const actions = {
     </Transition>
     <button
         @click="show_toolbar = !show_toolbar"
-        class="p-2 leading-none rounded-md hover:bg-[#f1f5f9]"
+        class="p-2 leading-none rounded-md hover:bg-[#f1f5f9] cursor-pointer"
         title="Mehr Optionen"
     >
       <Icon name="material-symbols-more-vert" class="text-xl" />
