@@ -57,13 +57,12 @@ export const usePersonStore = defineStore("person", () => {
      * @param payload data to be inserted
      * @return Promise resolving to created person data
      */
-    async function createPerson(payload: Partial<PersonDTO>): Promise<PersonDTO> {
+    async function createPerson(payload: Partial<PersonDTO>) {
         const data = await $fetch<PersonDTO>('/api/persons', {
             method: 'POST',
             body: payload
         });
         cache.value[data.id] = data;
-        return data;
     }
 
     /**
@@ -72,13 +71,12 @@ export const usePersonStore = defineStore("person", () => {
      * @param payload data to be updated
      * @return Promise resolving to updated person data
      */
-    async function updatePerson(id: number, payload: Partial<PersonDTO>): Promise<PersonDTO> {
+    async function updatePerson(id: number, payload: Partial<PersonDTO>) {
         const data = await $fetch<PersonDTO>(`/api/persons/${id}`, {
             method: 'PUT',
             body: payload
         });
         cache.value[data.id] = data;
-        return data;
     }
 
     /**
