@@ -1,4 +1,5 @@
 import { joinURL } from "ufo";
+import { getAccessToken } from '#server/utils/auth'
 
 export default defineEventHandler(async (event) => {
     const proxyUrl = useRuntimeConfig().apiBaseUrl;
@@ -9,9 +10,7 @@ export default defineEventHandler(async (event) => {
     if (method === "GET") return proxyRequest(event, target);
 
     // Protected routes require an access token
-    const { secure } = await getUserSession(event);
-    const accessToken = secure?.accessToken;
-    if (!accessToken) throw createError({ statusCode: 401, message: 'Missing access token' });
+    const accessToken = await getAccessToken(event);
 
     return proxyRequest(event, target, {
         headers: {
