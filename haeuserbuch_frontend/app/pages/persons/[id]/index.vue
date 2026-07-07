@@ -16,7 +16,7 @@ const person_job = computed(() => personItem.value?.job);
 const person_religion = computed(() => personItem.value?.religion);
 const person_weapons = computed(() => personItem.value?.weapons);
 
-const { data: personItem } = await useAsyncData(`person-${ personId }`, () => person_store.fetchPersonById(personId));
+const { data: personItem } = await useAsyncData(`person-detail-${ personId }`, () => person_store.fetchPersonById(personId));
 const { data: naturalizationEntry } = await useAsyncData(`person-${ personId }-naturalization`, () => citizenshipStore.filterCitizenships({'naturalizedperson-id': personId}));
 
 useHead(() => ({

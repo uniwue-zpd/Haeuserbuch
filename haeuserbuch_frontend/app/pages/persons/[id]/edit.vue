@@ -9,7 +9,7 @@ const route = useRoute();
 const person_id = Number(route.params.id);
 const person_store = usePersonStore();
 
-const { data: personItem, status } = await useAsyncData(`person-${ person_id }`, () => person_store.fetchPersonById(person_id));
+const { data: personItem, status } = await useAsyncData(`person-edit-${ person_id }`, () => person_store.fetchPersonById(person_id));
 </script>
 
 <template>
