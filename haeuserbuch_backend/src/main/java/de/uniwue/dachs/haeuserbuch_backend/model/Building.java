@@ -13,6 +13,13 @@ import java.util.Set;
 @Getter
 @Setter
 public class Building extends BaseEntity {
+
+    private Long year;
+
+    private Long parcelNumber;
+
+    private Long parcelNumberCounter;
+
     @OneToMany(
             cascade = CascadeType.ALL,
             orphanRemoval = true
@@ -59,6 +66,6 @@ public class Building extends BaseEntity {
     )
     private Set<Source> secondarySources = new HashSet<>();
 
-    @Column(columnDefinition = "geometry(Geometry,25832)")
+    @Column(columnDefinition = "geometry(Geometry,4326)")
     private Geometry coordinates;
 }

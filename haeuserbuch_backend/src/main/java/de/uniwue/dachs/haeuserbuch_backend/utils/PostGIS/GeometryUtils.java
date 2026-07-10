@@ -5,126 +5,187 @@ import org.locationtech.jts.geom.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GeometryUtils {
-    private static final GeometryFactory geometryFactory = new GeometryFactory();
+public final class GeometryUtils {
+    private static final int COORDINATE_DIMENSION = 2;
+    private static final int SRID = 4326;
 
-    // Converts the coordinates to a point
+    private static final GeometryFactory GEOMETRY_FACTORY =
+            new GeometryFactory(new PrecisionModel(), SRID);
+
+    private GeometryUtils() {
+        throw new AssertionError("Utility class");
+    }
+
+    /**
+     * Converts a Point into a JTS {@link Point} instance
+     * @param coordinates A {@link List} containing exactly two {@link Double} values representing the x and y coordinates of the point.
+     * @return A {@link Point} instance created from the provided coordinates.
+     */
     public static Point createPoint(List<Double> coordinates) {
-        if (coordinates == null || coordinates.size() != 2) {
-            return null;
+        if (coordinates == null || coordinates.size() != COORDINATE_DIMENSION) {
+            throw new IllegalArgumentException("Point must contain exactly two coordinates");
         }
-        Coordinate point = new Coordinate(coordinates.get(0), coordinates.get(1));
-        return geometryFactory.createPoint(point);
+        Coordinate coordinate = new Coordinate(coordinates.get(0), coordinates.get(1));
+        return GEOMETRY_FACTORY.createPoint(coordinate);
     }
 
-    // Converts the point to coordinates list
+    /**
+     * Converts a JTS {@link Point} instance into a GeoJSON-compatible coordinate list.
+     * @param geometry A {@link Geometry} instance that is expected to be of type {@link Point}.
+     * @return A {@link List} containing exactly two {@link Double} values representing the x and y coordinates of the point.
+     * @throws IllegalArgumentException if the provided geometry is null or not of type {@link Point}.
+     */
     public static List<Double> convertPoint(Geometry geometry) {
-        if (!(geometry instanceof Point point)) {
-            throw new IllegalArgumentException("Geometry must be a Point");
-        }
-        List<Double> coordinates = new ArrayList<>();
-        coordinates.add(point.getX());
-        coordinates.add(point.getY());
-        return coordinates;
+        Point point = requireGeometry(geometry, Point.class);
+        return List.of(point.getX(), point.getY());
     }
 
+    /**
+     * Creates a JTS LineString from a list of GeoJSON coordinates.
+     * @param lineStringCoordinates A {@link List} of {@link List} of {@link Double} values, where each inner list represents a point with exactly two coordinates (x and y).
+     * @return A {@link LineString} instance created from the provided coordinates.
+     */
+    public static LineString createLineString(List<List<Double>> lineStringCoordinates) {
+        requireNonEmpty(lineStringCoordinates, "LineString");
+        return GEOMETRY_FACTORY.createLineString(toCoordinates(lineStringCoordinates));
+    }
+
+    /**
+     * Creates a LineString from a JTS LineString
+     * @param geometry {@link Geometry} instance that is expected to be of type {@link LineString}.
+     * @return a LineString as {@link List} of {@link List} of {@link Double} values, where each inner list represents a point with exactly two coordinates (x and y).
+      * @throws IllegalArgumentException if the provided geometry is null or not of type {@link LineString}.
+     */
+    public static List<List<Double>> convertLineString(Geometry geometry) {
+        LineString lineString = requireGeometry(geometry, LineString.class);
+        return convertCoordinates(lineString.getCoordinates());
+    }
+
+    /**
+     * Converts a Polygon into its JTS representation
+     * @param polygonCoordinates A Polygon
+     * @return {@link Polygon} instance created from the provided coordinates
+     * @throws IllegalArgumentException if the provided list of coordinates is null or empty.
+     */
+    public static Polygon createPolygon(List<List<List<Double>>> polygonCoordinates) {
+        requireNonEmpty(polygonCoordinates, "Polygon");
+        Coordinate[] outerCoordinates = toCoordinates(polygonCoordinates.getFirst());
+        LinearRing outerRing = GEOMETRY_FACTORY.createLinearRing(outerCoordinates);
+        LinearRing[] holes = new LinearRing[Math.max(0, polygonCoordinates.size() - 1)];
+        for (int i = 1; i < polygonCoordinates.size(); i++) {
+            holes[i - 1] = GEOMETRY_FACTORY.createLinearRing(toCoordinates(polygonCoordinates.get(i)));
+        }
+        return GEOMETRY_FACTORY.createPolygon(outerRing, holes);
+    }
+
+    /**
+     * Converts a JTS Polygon instance in its geoJSON representation
+     * @param geometry {@link Geometry} instance that is expected to be of type {@link Polygon}.
+     * @return A {@link List} of {@link List} of {@link Double} values, where the first inner list represents the exterior ring and any subsequent inner lists represent interior rings (holes) of the polygon.
+     * @throws IllegalArgumentException if the provided geometry is null or not of type {@link Polygon}.
+     */
     public static List<List<List<Double>>> convertPolygon(Geometry geometry) {
-        if (!(geometry instanceof Polygon polygon)) {
-            throw new IllegalArgumentException("Geometry must be a Polygon");
-        }
+        Polygon polygon = requireGeometry(geometry, Polygon.class);
         List<List<List<Double>>> coordinates = new ArrayList<>();
-        List<List<Double>> outer_coordinates = convertCoordinates(polygon.getExteriorRing().getCoordinates());
-        coordinates.add(outer_coordinates);
-        if (polygon.getNumInteriorRing() > 0) {
-            for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
-                coordinates.add(convertCoordinates(polygon.getInteriorRingN(i).getCoordinates()));
-            }
+        coordinates.add(convertCoordinates(polygon.getExteriorRing().getCoordinates()));
+        for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
+            coordinates.add(convertCoordinates(polygon.getInteriorRingN(i).getCoordinates()));
         }
         return coordinates;
     }
 
-    public static Polygon createPolygon(List<List<List<Double>>> polygon) {
-        if (polygon == null || polygon.isEmpty()) {
-            throw new IllegalArgumentException("Polygon ca not be null or empty");
-        }
-        Coordinate[] outer_coordinates = toCoordinates(polygon.getFirst());
-        LinearRing outer_ring = geometryFactory.createLinearRing(outer_coordinates);
-        if (polygon.size() == 1) {
-            return geometryFactory.createPolygon(outer_ring, null);
-        } else {
-            LinearRing[] holes = new LinearRing[polygon.size() - 1];
-            for (int i = 1; i < polygon.size(); i++) {
-                Coordinate[] inner_coordinates = toCoordinates(polygon.get(i));
-                holes[i - 1] = geometryFactory.createLinearRing(inner_coordinates);
-            }
-            return geometryFactory.createPolygon(outer_ring, holes);
-        }
+    /**
+     * Creates a JTS MultiPolygon instance from its geoJSON representation
+     * @param multiPolygonCoordinates geoJSON Multipolygon
+     * @return a {@link MultiPolygon} instance created from the provided coordinates
+     * @throws IllegalArgumentException if the provided list of coordinates is null or empty.
+     */
+    public static MultiPolygon createMultiPolygon(List<List<List<List<Double>>>> multiPolygonCoordinates) {
+        requireNonEmpty(multiPolygonCoordinates, "MultiPolygon");
+        Polygon[] polygons = multiPolygonCoordinates.stream()
+                .map(GeometryUtils::createPolygon)
+                .toArray(Polygon[]::new);
+        return GEOMETRY_FACTORY.createMultiPolygon(polygons);
     }
 
+    /**
+     * Converts a JTS Multipolygon into its geoJSON representation
+     * @param geometry {@link Geometry} instance that is expected to be of type {@link MultiPolygon}.
+     * @return a geoJSON Multipolygon instance
+     * @throws IllegalArgumentException if the provided geometry is null or not of type {@link MultiPolygon}.
+     */
     public static List<List<List<List<Double>>>> convertMultiPolygon(Geometry geometry) {
-        if (!(geometry instanceof MultiPolygon multiPolygon)) {
-            throw new IllegalArgumentException("Geometry must be a MultiPolygon");
-        }
+        MultiPolygon multiPolygon = requireGeometry(geometry, MultiPolygon.class);
         List<List<List<List<Double>>>> coordinates = new ArrayList<>();
         for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
-            Polygon polygon = (Polygon) multiPolygon.getGeometryN(i);
-            List<List<List<Double>>> polygonCoordinates = new ArrayList<>();
-            polygonCoordinates.add(convertCoordinates(polygon.getExteriorRing().getCoordinates()));
-            for (int j = 0; j < polygon.getNumInteriorRing(); j++) {
-                polygonCoordinates.add(convertCoordinates(polygon.getInteriorRingN(j).getCoordinates()));
-            }
-            coordinates.add(polygonCoordinates);
+            coordinates.add(convertPolygon(multiPolygon.getGeometryN(i)));
         }
         return coordinates;
     }
 
-
-    public static MultiPolygon createMultiPolygon(List<List<List<List<Double>>>> multiPolygon) {
-        if (multiPolygon == null || multiPolygon.isEmpty()) {
-            throw new IllegalArgumentException("MultiPolygon cannot be null or empty");
-        }
-        Polygon[] polygons = new Polygon[multiPolygon.size()];
-        for (int i = 0; i < multiPolygon.size(); i++) {
-            List<List<List<Double>>> polygon = multiPolygon.get(i);
-            if (polygon == null || polygon.isEmpty()) {
-                throw new IllegalArgumentException("Polygon at index " + i + " cannot be null or empty");
-            }
-            Coordinate[] outerCoordinates = toCoordinates(polygon.getFirst());
-            LinearRing outerRing = geometryFactory.createLinearRing(outerCoordinates);
-            if (polygon.size() == 1) {
-                polygons[i] = geometryFactory.createPolygon(outerRing, null);
-            } else {
-                LinearRing[] holes = new LinearRing[polygon.size() - 1];
-                for (int j = 1; j < polygon.size(); j++) {
-                    Coordinate[] innerCoordinates = toCoordinates(polygon.get(j));
-                    holes[j - 1] = geometryFactory.createLinearRing(innerCoordinates);
-                }
-                polygons[i] = geometryFactory.createPolygon(outerRing, holes);
-            }
-        }
-        return geometryFactory.createMultiPolygon(polygons);
-    }
-
+    /**
+     * Converts a list of coordinate pairs into a coordinate array suitable for JTS geometry creation.
+     * @param points {@link List} of {@link List} of {@link Double} values, where each inner list represents a point with exactly two coordinates (x and y).
+     * @return {@link Coordinate} array created from the provided list of points.
+     * @throws IllegalArgumentException if any point in the provided list is null or does not
+     */
     private static Coordinate[] toCoordinates(List<List<Double>> points) {
         Coordinate[] coordinates = new Coordinate[points.size()];
         for (int i = 0; i < points.size(); i++) {
             List<Double> point = points.get(i);
-            if (point.size() != 2) {
-                throw new IllegalArgumentException("Each point must have exactly two coordinates.");
+            if (point == null || point.size() != COORDINATE_DIMENSION) {
+                throw new IllegalArgumentException("Each point must contain exactly two coordinates");
             }
             coordinates[i] = new Coordinate(point.get(0), point.get(1));
         }
         return coordinates;
     }
 
+    /**
+     * Converts a JTS Coordinate array instance into a List of points
+     * @param coordinates {@link Coordinate} array to be converted
+     * @return A {@link List} of {@link List} of {@link Double} values, where each inner list represents a point with exactly two coordinates (x and y).
+     * @throws IllegalArgumentException if the provided coordinate array is null.
+     */
     private static List<List<Double>> convertCoordinates(Coordinate[] coordinates) {
-        List<List<Double>> ring = new ArrayList<>();
+        List<List<Double>> result = new ArrayList<>(coordinates.length);
         for (Coordinate coordinate : coordinates) {
-            List<Double> point = new ArrayList<>();
-            point.add(coordinate.getX());
-            point.add(coordinate.getY());
-            ring.add(point);
+            List<Double> point = List.of(coordinate.getX(), coordinate.getY());
+            result.add(point);
         }
-        return ring;
+        return result;
+    }
+
+    /**
+     * Checks if a list is null or empty and throws an IllegalArgumentException if it is.
+     * @param list A list instance to be checked
+     * @param geometryType A String value to be checked
+     * @param <T> The type of the list elements
+     * @throws IllegalArgumentException if the provided list is null or empty.
+     */
+    private static <T> void requireNonEmpty(List<T> list, String geometryType) {
+        if (list == null || list.isEmpty()) {
+            throw new IllegalArgumentException(geometryType + " cannot be null or empty");
+        }
+    }
+
+    /**
+     * Checks whether the given geometry is non-null and of the expected type, throwing an IllegalArgumentException if either condition is not met.
+     * @param geometry {@link Geometry} instance to be checked
+     * @param expectedType class that the geometry is expected to be an instance of
+     * @return the provided geometry cast to the expected type if it is valid
+     * @param <T> the expected type of the geometry
+     * @throws IllegalArgumentException if the provided geometry is null or not of the expected type.
+     */
+    private static <T extends Geometry> T requireGeometry(Geometry geometry, Class<T> expectedType) {
+        if (geometry == null) throw new IllegalArgumentException("Geometry cannot be null");
+        if (!expectedType.isInstance(geometry)) {
+            throw new IllegalArgumentException("Expected "
+                    + expectedType.getSimpleName()
+                    + " but got "
+                    + geometry.getGeometryType()
+            );
+        }
+        return expectedType.cast(geometry);
     }
 }

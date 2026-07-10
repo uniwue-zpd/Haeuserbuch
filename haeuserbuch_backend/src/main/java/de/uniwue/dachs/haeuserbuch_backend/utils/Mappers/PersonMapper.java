@@ -17,15 +17,15 @@ public class PersonMapper {
     private final PersonRepository personRepository;
     private final BuildingMapper buildingMapper;
     private final PersonOriginMapper personOriginMapper;
-    private final PersonOccupationMapper personOccupationMapper;
+    private final PersonJobMapper personJobMapper;
     private final PersonReligionMapper personReligionMapper;
     private final WeaponryMapper weaponryMapper;
 
-    public PersonMapper(PersonRepository personRepository, BuildingMapper buildingMapper, PersonOriginMapper personOriginMapper, PersonOccupationMapper personOccupationMapper, PersonReligionMapper personReligionMapper, WeaponryMapper weaponryMapper) {
+    public PersonMapper(PersonRepository personRepository, BuildingMapper buildingMapper, PersonOriginMapper personOriginMapper, PersonJobMapper personJobMapper, PersonReligionMapper personReligionMapper, WeaponryMapper weaponryMapper) {
         this.personRepository = personRepository;
         this.buildingMapper = buildingMapper;
         this.personOriginMapper = personOriginMapper;
-        this.personOccupationMapper = personOccupationMapper;
+        this.personJobMapper = personJobMapper;
         this.personReligionMapper = personReligionMapper;
         this.weaponryMapper = weaponryMapper;
     }
@@ -41,7 +41,7 @@ public class PersonMapper {
         person.setAssociatedBuilding(buildingMapper.DTOToBuilding(personDTO.getAssociatedBuilding()));
         person.setIsCitizen(personDTO.getIsCitizen());
         person.setOrigin(personOriginMapper.DTOToPersonOrigin(personDTO.getOrigin()));
-        person.setOccupation(personOccupationMapper.DTOToPersonOccupation(personDTO.getOccupation()));
+        person.setJob(personJobMapper.DTOToPersonJob(personDTO.getJob()));
         person.setReligion(personReligionMapper.DTOToPersonReligion(personDTO.getReligion()));
         person.setWeapons(weaponryMapper.DTOsToWeaponries(personDTO.getWeapons()));
         person.setInternalNotes(personDTO.getInternalNotes());
@@ -64,7 +64,7 @@ public class PersonMapper {
         personDTO.setAssociatedBuilding(buildingMapper.buildingToDTO(person.getAssociatedBuilding()));
         personDTO.setIsCitizen(person.getIsCitizen());
         personDTO.setOrigin(personOriginMapper.PersonOriginToDTO(person.getOrigin()));
-        personDTO.setOccupation(personOccupationMapper.PersonOccupationToDTO(person.getOccupation()));
+        personDTO.setJob(personJobMapper.PersonJobToDTO(person.getJob()));
         personDTO.setReligion(personReligionMapper.PersonReligionToDTO(person.getReligion()));
         personDTO.setWeapons(weaponryMapper.WeaponriesToDTOs(person.getWeapons()));
         personDTO.setInternalNotes(person.getInternalNotes());
@@ -96,8 +96,7 @@ public class PersonMapper {
         if (person == null) return null;
         PersonPreviewDTO previewDTO = new PersonPreviewDTO();
         previewDTO.setId(person.getId());
-        previewDTO.setFirstName(person.getFirstName());
-        previewDTO.setLastName(person.getLastName());
+        previewDTO.setFullName(person.getFullName());
         return previewDTO;
     }
 

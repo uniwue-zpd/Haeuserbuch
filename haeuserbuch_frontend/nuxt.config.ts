@@ -1,6 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import Aura from '@primeuix/themes/aura';
 import { definePreset } from "@primeuix/themes";
+import tailwindcss from "@tailwindcss/vite";
 
 const HaeuserbuchPreset = definePreset(Aura, {
   semantic: {
@@ -25,7 +26,12 @@ export default defineNuxtConfig({
     head: {
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/WUE_LOGO_Skyline_260408_HQ.svg' },
-      ]
+      ],
+      // Prevent the maps being blocked by the OSM tile server due to missing referrer information
+      meta: [{
+        name: 'referrer',
+        content: 'strict-origin-when-cross-origin'
+      }]
     }
   },
   compatibilityDate: '2024-11-01',
@@ -57,11 +63,12 @@ export default defineNuxtConfig({
       scan: true,
     }
   },
-  css: ['~/assets/css/main.css'],
-  postcss: {
-    plugins: {
-      tailwindcss: {},
-      autoprefixer: {},
-    },
-  },
+  css: ['./app/assets/css/main.css'],
+  vite: {
+    plugins: [tailwindcss()],
+    ssr: {
+      // Bundle Terradraw + MapLibre for SSR to avoid named-export interop issues.
+      noExternal: ['@watergis/maplibre-gl-terradraw', 'maplibre-gl']
+    }
+  }
 })

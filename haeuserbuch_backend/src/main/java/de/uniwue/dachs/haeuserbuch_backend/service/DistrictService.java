@@ -1,20 +1,25 @@
 package de.uniwue.dachs.haeuserbuch_backend.service;
 
+import de.uniwue.dachs.haeuserbuch_backend.DTO.DistrictDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.District;
 import de.uniwue.dachs.haeuserbuch_backend.repository.DistrictRepository;
+import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.DistrictMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class DistrictService {
     private final DistrictRepository districtRepository;
+    private final DistrictMapper districtMapper;
 
-    public DistrictService(DistrictRepository districtRepository) {
+    public DistrictService(DistrictRepository districtRepository, DistrictMapper districtMapper) {
         this.districtRepository = districtRepository;
+        this.districtMapper = districtMapper;
     }
 
     // GET all districts
@@ -54,5 +59,17 @@ public class DistrictService {
             throw new EntityNotFoundException("District with ID " + id + " does not exist.");
         }
         districtRepository.deleteById(id);
+    }
+
+    /**
+     * GET An array of districts based on a search term.
+     * @param query Search term.
+     * @return A {@link List} of {@link DistrictDTO} objects matching the search term.
+     */
+    public List<DistrictDTO> searchDistricts(String query) {
+        return districtRepository.searchDistricts(query).stream()
+                .map(districtMapper::DistrictToDTO)
+                .filter(Objects::nonNull)
+                .toList();
     }
 }

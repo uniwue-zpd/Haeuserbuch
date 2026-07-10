@@ -1,5 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.controller;
 
+import de.uniwue.dachs.haeuserbuch_backend.DTO.ReligionDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Religion;
 import de.uniwue.dachs.haeuserbuch_backend.service.ReligionService;
 import jakarta.persistence.EntityNotFoundException;
@@ -54,5 +55,14 @@ public class ReligionController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(404).build();
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ReligionDTO>> searchReligions(@RequestParam String query) {
+        if (query == null || query.trim().length() < 3) {
+            return ResponseEntity.ok(List.of());
+        }
+        List<ReligionDTO> results = religionService.searchReligions(query);
+        return ResponseEntity.ok(results);
     }
 }

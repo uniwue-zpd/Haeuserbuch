@@ -1,5 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.service;
 
+import de.uniwue.dachs.haeuserbuch_backend.DTO.PlaceDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Place;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PlaceRepository;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
@@ -87,5 +88,16 @@ public class PlaceService {
             throw new RuntimeException("Place with id '" + id + "' does not exist");
         }
         placeRepository.deleteById(id);
+    }
+
+    /**
+     * Allows searching for places based on a search term.
+     * @param query Search term.
+     * @return A {@link List} of {@link PlaceDTO} matching the search term or an empty {@link List} if no places match the search term.
+     */
+    public List<PlaceDTO> searchPlaces(String query) {
+        return placeRepository.searchPlaces(query).stream()
+                .map(placeMapper::PlaceToDTO)
+                .toList();
     }
 }

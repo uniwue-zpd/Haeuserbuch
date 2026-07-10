@@ -1,5 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.controller;
 
+import de.uniwue.dachs.haeuserbuch_backend.DTO.DistrictDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.District;
 import de.uniwue.dachs.haeuserbuch_backend.service.DistrictService;
 import jakarta.persistence.EntityNotFoundException;
@@ -54,5 +55,14 @@ public class DistrictController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(404).build();
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<DistrictDTO>> searchDistricts(@RequestParam String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return ResponseEntity.ok(List.of());
+        }
+        List<DistrictDTO> districtDTOs = districtService.searchDistricts(query);
+        return ResponseEntity.ok(districtDTOs);
     }
 }

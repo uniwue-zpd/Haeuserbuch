@@ -1,0 +1,282 @@
+<script setup lang="ts">
+const props = defineProps<{
+  header: string;
+  action: 'create' | 'edit';
+  person?: PersonDTO;
+}>();
+
+const toast = useToast();
+const submitted = ref(false);
+
+const personStore = usePersonStore();
+
+type PersonInput = Omit<PersonDTO, 'id' | 'createdBy' | 'createdDate' | 'lastModifiedBy' | 'lastModifiedDate'>;
+
+const submit = async (formData: Partial<PersonInput>) => {
+  try {
+    if (props.action === 'create') {
+      await personStore.createPerson(formData);
+      toast.add({
+        severity: 'success',
+        summary: 'Erfolg',
+        detail: 'Erfolgreich erstellt',
+        life: 3000
+      });
+      const form = getNode('person_creation');
+      form?.reset();
+    }
+    else if (props.action === 'edit' && props.person?.id) {
+      const id = props.person.id;
+      await personStore.updatePerson(id, formData);
+      toast.add({
+        severity: 'success',
+        summary: 'Erfolg',
+        detail: 'Erfolgreich upgedated',
+        life: 3000
+      });
+      navigateTo(`/persons/${id}`);
+    }
+    submitted.value = true
+  } catch (error) {
+    console.error(error);
+    toast.add({
+      severity: 'error',
+      summary: 'Fehler',
+      detail: 'Fehler beim Speichern des Eintrags',
+      life: 3000
+    });
+  }
+}
+</script>
+
+<template>
+  <div class="flex flex-col gap-2 w-[80%] mx-auto">
+    <h1 class="text-2xl montserrat-headline-headline text-black font-bold">{{ props.header }}</h1>
+    <p class="roboto-plain">Füllen Sie bitte die untenstehenden Felder aus, um ein Objekt zu erstellen oder anzupassen.</p>
+    <FormKit
+        type="form"
+        id="person_creation"
+        submit-label="Erstellen"
+        @submit="submit"
+        :actions="false"
+        :value="props.person ? props.person : {}"
+        :key="props.person?.id || 'create'"
+        #default="{ value }"
+    >
+      <div class="flex flex-col gap-3 p-4 bg-gray-100 border border-gray-200 rounded-md shadow-md">
+        <div class="text-center roboto-plain font-bold text-2xl">Allgemeine Angaben</div>
+        <div class="flex flex-row space-x-5">
+          <FormKit
+              type="text"
+              name="firstName"
+              label="Vorname"
+              prefix-icon="text"
+              outer-class="max-w-full"
+          />
+          <FormKit
+              type="text"
+              name="lastName"
+              label="Nachname"
+              prefix-icon="text"
+              outer-class="max-w-full"
+          />
+        </div>
+        <FormKit
+            type="text"
+            name="fullName"
+            label="Voller Name"
+            prefix-icon="text"
+            outer-class="max-w-full"
+            help="Tragen Sie hier den vollen Namen der Person ein, auch wenn dieser mit dem Vor- und Nachnamen identisch ist"
+        />
+        <FormKit
+            type="textInput"
+            name="altNames"
+            :isMultiple="true"
+            label="Namensvarianten"
+            outer-class="max-w-full"
+        />
+        <FormKit
+            type="select"
+            name="sex"
+            label="Geschlecht"
+            :options="[
+                    { label: 'unbekannt', value: null },
+                    { label: 'männlich', value: 'männlich' },
+                    { label: 'weiblich', value: 'weiblich' }
+                  ]"
+            select-icon="select"
+            outer-class="max-w-full"
+        />
+        <FormKit
+            type="select"
+            name="isCitizen"
+            label="Bürger"
+            :options="[
+                    { label: 'unbekannt', value: null },
+                    { label: 'ja', value: true },
+                    { label: 'nein', value: false }
+                  ]"
+            select-icon="select"
+            outer-class="max-w-full"
+        />
+        <div class="text-center roboto-plain font-bold text-2xl">Herkunft</div>
+        <FormKit type="group" name="origin">
+          <div class="flex flex-col gap-2 p-4 bg-gray-200 border border-gray-300 rounded-md shadow-sm">
+            <FormKit
+                type="text"
+                name="originalText"
+                label="Eingetragener Ortsname"
+                prefix-icon="text"
+                outer-class="max-w-full"
+            />
+            <FormKit
+                type="entityAutocomplete"
+                entityType="place"
+                optionLabel="realName"
+                :isMultiple="true"
+                name="places"
+                label="Mögliche Herkunftsorte"
+                outer-class="max-w-full"
+            />
+            <FormKit
+                type="select"
+                name="certainty"
+                label="Herkunftsort lokalisierbar"
+                :options="[
+                    { label: 'Unbekannt', value: null },
+                    { label: 'Nicht identifizierbar', value: 'UNKNOWN' },
+                    { label: 'Unsicher', value: 'AMBIGUOUS' },
+                    { label: 'Sicher', value: 'IDENTIFIED' }
+                  ]"
+                select-icon="select"
+                outer-class="max-w-full"
+            />
+          </div>
+        </FormKit>
+        <div class="text-center roboto-plain font-bold text-2xl">Bezug zum Gebäude</div>
+        <FormKit
+            type="entityAutocomplete"
+            entityType="building"
+            optionLabel="districtHouseNumber"
+            name="associatedBuilding"
+            label="Erwähntes Gebäude"
+            outer-class="max-w-full"
+        />
+        <div class="text-center roboto-plain font-bold text-2xl">Berufliche Situation</div>
+        <FormKit type="group" name="job">
+          <div class="flex flex-col gap-2 p-4 bg-gray-200 border border-gray-300 rounded-md shadow-sm">
+            <FormKit
+                type="text"
+                name="originalText"
+                label="Eingetragener Beruf"
+                prefix-icon="text"
+                outer-class="max-w-full"
+            />
+            <FormKit
+                type="entityAutocomplete"
+                entityType="job"
+                optionLabel="name"
+                name="jobCategory"
+                label="Standardisierte Berufskategorie"
+                outer-class="max-w-full"
+            />
+          </div>
+        </FormKit>
+        <div class="text-center roboto-plain font-bold text-2xl">Religiöse Zugehörigkeit</div>
+        <FormKit type="group" name="religion">
+          <div class="flex flex-col gap-2 p-4 bg-gray-200 border border-gray-300 rounded-md shadow-sm">
+            <FormKit
+                type="text"
+                name="originalText"
+                label="Eingetragene Religion"
+                prefix-icon="text"
+                outer-class="max-w-full"
+            />
+            <FormKit
+                type="entityAutocomplete"
+                entityType="religion"
+                optionLabel="name"
+                name="religionCategory"
+                label="Standardisierte Religionskategorie"
+                outer-class="max-w-full"
+            />
+          </div>
+        </FormKit>
+        <div class="text-center roboto-plain font-bold text-2xl">Bewaffnung</div>
+        <FormKit type="list" :value="[]" name="weapons" dynamic #default="{ items, node, value }">
+          <FormKit
+              type="group"
+              v-for="(item, index) in items"
+              :key="item"
+              :index="index"
+          >
+            <div class="flex flex-col gap-1 bg-gray-200 rounded-md shadow-md p-4 border border-gray-300">
+              <div class="grid grid-cols-2 gap-2">
+                <FormKit
+                    type="text"
+                    name="originalText"
+                    label="Originaler Text"
+                    placeholder="Spitzhacke"
+                    outer-class="max-w-full"
+                />
+                <FormKit
+                    type="entityAutocomplete"
+                    entityType="weapon"
+                    optionLabel="name"
+                    name="weapon"
+                    label="Waffe"
+                    outer-class="max-w-full"
+                />
+              </div>
+              <button
+                  type="button"
+                  @click="() => node.input(value?.filter((_, i) => i !== index))"
+                  class="text-sm roboto-plain border border-red-600 text-red-600 p-1 rounded-md shadow-sm hover:shadow-md bg-blue-50 font-medium max-w-1/7 mx-auto"
+              >
+                Entfernen
+              </button>
+            </div>
+          </FormKit>
+          <button
+              type="button"
+              @click="() => node.input(value?.concat({ weapon: {}, originalText: '' }))"
+              class="text-sm roboto-plain border border-blue-600 text-blue-600 p-1 rounded-md bg-blue-50 font-medium max-w-1/6 mx-auto"
+          >Waffen hinzufügen</button>
+        </FormKit>
+        <div class="text-center roboto-plain font-bold text-2xl">Notizen</div>
+        <FormKit
+            type="textarea"
+            name="internalNotes"
+            label="Notizen intern"
+            prefix-icon="list"
+            outer-class="max-w-full"
+        />
+        <FormKit
+            type="textarea"
+            name="generalNotes"
+            label="Notizen allgemein"
+            prefix-icon="list"
+            outer-class="max-w-full"
+        />
+      </div>
+      <!-- Preview of the input values -->
+      <Fieldset class="mb-4 mt-4">
+        <template #legend>
+          <div class="montserrat-headline font-semibold text-black text-xl">Eingabe-Vorschau</div>
+        </template>
+        <div class="max-h-[500px] overflow-y-auto bg-gray-100 border border-gray-200 rounded-md">
+          <pre wrap class="text-sm p-2">{{ value }}</pre>
+        </div>
+      </Fieldset>
+      <FormKit
+          type="submit"
+          :label="props.action === 'create' ? 'Erstellen' : 'Ändern'"
+      />
+    </FormKit>
+  </div>
+</template>
+
+<style scoped>
+
+</style>

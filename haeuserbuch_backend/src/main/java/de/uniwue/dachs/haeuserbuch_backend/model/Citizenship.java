@@ -17,7 +17,7 @@ import java.util.Set;
 public class Citizenship extends BaseEntity {
     private String signature;
 
-    private Long refNumber;
+    private String refNumber;
 
     @ManyToOne
     @JoinColumn(name = "person_id")
@@ -31,8 +31,8 @@ public class Citizenship extends BaseEntity {
     )
     private Set<Person> mentionedPersons = new HashSet<>();
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "primary_source_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "primary_source_id")
     private Source primarySource;
 
     @ManyToOne

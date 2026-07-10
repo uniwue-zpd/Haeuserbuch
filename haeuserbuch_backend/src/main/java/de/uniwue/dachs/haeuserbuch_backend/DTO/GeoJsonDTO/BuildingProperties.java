@@ -9,6 +9,9 @@ import java.util.*;
 @Getter
 @Setter
 public class BuildingProperties extends Properties {
+    private Long year;
+    private Long parcelNumber;
+    private Long parcelNumberCounter;
     private Set<BuildingNameDTO> names = new HashSet<>();
     private Set<AddressDTO> addresses = new HashSet<>();
     private String partType;
