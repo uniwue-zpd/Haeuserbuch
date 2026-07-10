@@ -14,7 +14,7 @@ function copy_to_clipboard(copy_item: string) {
 
 <template>
   <footer class="flex flex-col">
-    <div class="bg-stone-400">
+    <div class="bg-[#2C3E50]">
       <div class="flex flex-col gap-2 md:flex-row md:justify-between max-w-[1140px] text-black p-3 mx-auto">
         <div class="flex flex-row justify-between md:space-x-10">
           <div class="flex flex-col gap-2">
