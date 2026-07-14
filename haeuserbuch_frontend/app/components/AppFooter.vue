@@ -34,17 +34,20 @@ function copy_to_clipboard(copy_item: string) {
           </div>
         </div>
         <div class="flex flex-wrap items-center justify-center gap-6 md:justify-between md:gap-4">
-          <a href="https://www.dfg.de/de" target="_blank">
-            <img class="h-[30px] md:h-[55px]" src="/dfg.png" alt="DFG-Logo" />
+          <a href="https://www.dfg.de/de" target="_blank" title="Deutsche Forschungsgemeinschaft">
+            <img class="h-[30px] md:h-[55px]" src="/dfg.png" alt="DFG-Logo"/>
           </a>
-          <a href="https://www.uni-wuerzburg.de/" target="_blank">
-            <img class="h-[30px] md:h-[55px]" src="/uniwue.jpg" alt="Uni-Wue-Logo" />
+          <a href="https://www.uni-wuerzburg.de/" target="_blank" title="Universität Würzburg">
+            <img class="h-[30px] md:h-[55px]" src="/uniwue.jpg" alt="Uni-Wue-Logo"/>
           </a>
-          <a href="https://www.uni-wuerzburg.de/" target="_blank">
-            <img class="h-[30px] md:h-[55px]" src="/blfd.jpg" alt="BLFD-Logo" />
+          <a href="https://www.gda.bayern.de/de/archives/staatsarchiv-kitzingen/" target="_blank" title="Staatsarchiv Kitzingen">
+            <img class="h-[30px] md:h-[55px]" src="/sta.jpg" alt="Staatsarchiv-Kitzingen-Logo"/>
           </a>
-          <a href="https://www.ldbv.bayern.de/" target="_blank">
-            <img class="h-[30px] md:h-[55px]" src="/ldbv.svg" alt="LDBV-Logo" />
+          <a href="https://www.blfd.bayern.de/" target="_blank" title="Bayerisches Landesamt für Denkmalpflege">
+            <img class="h-[30px] md:h-[55px]" src="/blfd.jpg" alt="BLFD-Logo"/>
+          </a>
+          <a href="https://www.ldbv.bayern.de/" target="_blank" title="Landesamt für Digitalisierung, Breitband und Vermessung">
+            <img class="h-[30px] md:h-[55px]" src="/ldbv.svg" alt="LDBV-Logo"/>
           </a>
         </div>
       </div>
