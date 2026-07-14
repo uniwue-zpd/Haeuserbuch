@@ -15,8 +15,8 @@ function copy_to_clipboard(copy_item: string) {
 <template>
   <footer class="flex flex-col">
     <div class="bg-[#2C3E50]">
-      <div class="flex flex-col gap-6 md:justify-between max-w-[1140px] text-black p-3 mx-auto">
-        <div class="flex flex-row justify-between space-x-2">
+      <div class="flex flex-col gap-6 md:justify-between max-w-[1140px] p-3 mx-auto">
+        <div class="flex flex-col md:flex-row justify-between gap-2">
           <div class="flex flex-col gap-2">
             <p class="text-lg md:text-xl montserrat-headline font-bold text-white">Häuserbuch</p>
             <NuxtLink to="/project" class="text-white roboto-plain text-sm md:text-base">Projekt</NuxtLink>
@@ -33,27 +33,19 @@ function copy_to_clipboard(copy_item: string) {
             <NuxtLink to="/contact" class="text-white roboto-plain text-sm md:text-base">Kontaktformular</NuxtLink>
           </div>
         </div>
-        <div class="flex md:flex-row md:justify-between flex-wrap gap-4">
-          <div class="flex flex-col justify-center">
-            <a href="https://www.dfg.de/de" target="_blank">
-              <img class="h-[30px] md:h-[55px]" src="/dfg.png" alt="DFG-Logo"/>
-            </a>
-          </div>
-          <div class="flex flex-col justify-center">
-            <a href="https://www.uni-wuerzburg.de/" target="_blank">
-              <img class="h-[30px] md:h-[55px]" src="/uniwue.jpg" alt="Uni-Wue-Logo"/>
-            </a>
-          </div>
-          <div class="flex flex-col justify-center">
-            <a href="https://www.uni-wuerzburg.de/" target="_blank">
-              <img class="h-[30px] md:h-[55px]" src="/blfd.jpg" alt="BLFD-Logo"/>
-            </a>
-          </div>
-          <div class="flex flex-col justify-center">
-            <a href="https://www.ldbv.bayern.de/" target="_blank">
-              <img class="h-[30px] md:h-[55px]" src="/ldbv.svg" alt="LDBV-Logo"/>
-            </a>
-          </div>
+        <div class="flex flex-wrap items-center justify-center gap-6 md:justify-between md:gap-4">
+          <a href="https://www.dfg.de/de" target="_blank">
+            <img class="h-[30px] md:h-[55px]" src="/dfg.png" alt="DFG-Logo" />
+          </a>
+          <a href="https://www.uni-wuerzburg.de/" target="_blank">
+            <img class="h-[30px] md:h-[55px]" src="/uniwue.jpg" alt="Uni-Wue-Logo" />
+          </a>
+          <a href="https://www.uni-wuerzburg.de/" target="_blank">
+            <img class="h-[30px] md:h-[55px]" src="/blfd.jpg" alt="BLFD-Logo" />
+          </a>
+          <a href="https://www.ldbv.bayern.de/" target="_blank">
+            <img class="h-[30px] md:h-[55px]" src="/ldbv.svg" alt="LDBV-Logo" />
+          </a>
         </div>
       </div>
     </div>
