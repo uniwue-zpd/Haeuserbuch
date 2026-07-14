@@ -150,7 +150,7 @@
         </div>
       </div>
       <div class="flex flex-col gap-2 p-5 rounded-xl shadow-lg border-2 border-[#F1F2F2]">
-        <h1 class="text-2xl text-black font-bold">Dr. Stefan Moser</h1>
+        <h1 class="text-2xl text-black font-bold">Dr. Stephan Moser</h1>
         <Divider>
           <div class="px-2 roboto-plain font-bold text-lg text-black">Vita</div>
         </Divider>
