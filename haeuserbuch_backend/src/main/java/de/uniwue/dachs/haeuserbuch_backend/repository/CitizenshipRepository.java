@@ -1,7 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.repository;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.FullTextSearch.CitizenshipFullTextSearchResult;
-import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.CitizenshipPreviewDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Citizenship;
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -27,7 +26,7 @@ public interface CitizenshipRepository extends JpaRepository<Citizenship, Long>,
     /**
      * Full-text search for citizenship register entries based on the query string.
      * @param query The search query string.
-     * @return A list of {@link CitizenshipPreviewDTO} objects containing metadata.
+     * @return A list of {@link CitizenshipFullTextSearchResult} objects containing metadata.
      * **/
     @Query(value = """
         SELECT
