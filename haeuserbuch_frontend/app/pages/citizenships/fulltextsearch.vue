@@ -16,7 +16,7 @@ const searchParams = ref<SearchCitizenshipFullText>({
   size: 10
 });
 
-const { data, refresh, pending } = await useAsyncData<Page<CitizenshipFullTextResult>>(
+const { data, refresh, pending, error } = await useAsyncData<Page<CitizenshipFullTextResult>>(
     "citizenship-fulltext-search",
     () => citizenshipStore.searchFullText(searchParams.value),
     { immediate: false }
@@ -188,10 +188,17 @@ watch(query, () => {
       </div>
     </div>
     <div
-        v-else-if="query.length > 0 && !pending"
+        v-else-if="data && data.totalElements === 0"
         class="text-sm roboto-plain"
     >
       Keine Ergebnisse gefunden.
+    </div>
+    <div
+        v-else-if="error"
+        class="flex flex-row gap-2 roboto-plain"
+    >
+      <span>Fehler:</span>
+      <code class="text-red-600">{{ error.status }} {{ error.statusText }}</code>
     </div>
   </div>
 </template>
