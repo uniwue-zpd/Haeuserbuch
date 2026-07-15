@@ -3,10 +3,17 @@ const citizenshipStore = useCitizenshipStore();
 
 const query = ref("");
 
+const pageOptions = computed(() =>
+    Array.from({ length: data.value?.totalPages ?? 0 }, (_, index) => ({
+      label: `${index + 1}`,
+      value: index
+    }))
+);
+
 const searchParams = ref<SearchCitizenshipFullText>({
   query: "",
   page: 0,
-  size: 20
+  size: 10
 });
 
 const { data, refresh, pending } = await useAsyncData<Page<CitizenshipFullTextResult>>(
@@ -14,6 +21,13 @@ const { data, refresh, pending } = await useAsyncData<Page<CitizenshipFullTextRe
     () => citizenshipStore.searchFullText(searchParams.value),
     { immediate: false }
 );
+
+const changePage = (page: number) => {
+  if (!data.value) return;
+  if (page < 0 || page >= data.value.totalPages) return;
+  searchParams.value.page = page;
+  refresh();
+};
 
 const debouncedSearch = debounce(() => {
   const trimmedQuery = query.value.trim();
@@ -24,10 +38,10 @@ const debouncedSearch = debounce(() => {
   searchParams.value = {
     query: trimmedQuery,
     page: 0,
-    size: 20
+    size: 10
   };
   refresh();
-}, 500);
+}, 1000);
 
 watch(query, () => {
   debouncedSearch();
@@ -100,11 +114,57 @@ watch(query, () => {
     >
       <div class="flex flex-row items-center gap-2 text-base roboto-plain font-medium">
         <span>Treffer:</span>
-        <span
-            class="flex h-10 w-10 items-center justify-center rounded-full border-2 border-green-500"
+        <span :class="[
+            'flex items-center justify-center rounded-full border-2 border-green-500',
+            data.totalElements > 999 ? 'h-13 min-w-13' : 'h-10 w-10'
+            ]"
         >
           {{ data.totalElements }}
         </span>
+      </div>
+      <div
+          v-if="data.totalPages > 1"
+          class="flex flex-row justify-center items-center gap-2 mt-3"
+      >
+        <button
+            @click="changePage(0)"
+            :disabled="data.first"
+            class="flex h-9 items-center justify-center rounded-lg border border-gray-200 px-2 text-sm roboto-plain shadow-sm transition-all hover:border-gray-300 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+        >
+          <i class="pi pi-angle-double-left"/>
+        </button>
+        <button
+            @click="changePage(data.number - 1)"
+            :disabled="data.first"
+            class="flex h-9 items-center justify-center rounded-lg border border-gray-200 px-2 text-sm roboto-plain shadow-sm transition-all hover:border-gray-300 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+        >
+          <i class="pi pi-angle-left"/>
+        </button>
+        <div class="flex items-center gap-2 text-sm roboto-plain">
+          <Select
+              :model-value="data.number"
+              :options="pageOptions"
+              option-label="label"
+              option-value="value"
+              class="h-9"
+              @update:modelValue="changePage($event)"
+          />
+          <span>von {{ data.totalPages }}</span>
+        </div>
+        <button
+            @click="changePage(data.number + 1)"
+            :disabled="data.last"
+            class="flex h-9 items-center justify-center rounded-lg border border-gray-200 px-2 text-sm roboto-plain shadow-sm transition-all hover:border-gray-300 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+        >
+          <i class="pi pi-angle-right"/>
+        </button>
+        <button
+            @click="changePage(data.totalPages - 1)"
+            :disabled="data.last"
+            class="flex h-9 items-center justify-center rounded-lg border border-gray-200 px-2 text-sm roboto-plain shadow-sm transition-all hover:border-gray-300 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+        >
+          <i class="pi pi-angle-double-right"/>
+        </button>
       </div>
       <div
           v-for="result in data.content"
@@ -121,7 +181,7 @@ watch(query, () => {
           </NuxtLink>
           <div class="text-sm roboto-plain">Referenz Meyer-Erlach: {{ result.refNumber }}</div>
           <div
-              class="border-l-4 border-gray-300 px-4 py-2 roboto-plain leading-6 text-justify"
+              class="border-l-4 border-gray-300 px-4 py-1 roboto-plain leading-6 text-justify"
               v-html="result.queryResult"
           />
         </div>
