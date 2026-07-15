@@ -1,4 +1,4 @@
-import type {FilterCitizenship} from "~/utils/types";
+import type {FilterCitizenship, Page, SearchCitizenshipFullText} from "~/utils/types";
 
 export const useCitizenshipStore = defineStore("citizenship", () => {
     // State
@@ -15,7 +15,16 @@ export const useCitizenshipStore = defineStore("citizenship", () => {
     async function fetchCitizenships(params?: FilterCitizenship) {
         loading.value = true;
         try {
-            return await $fetch(`/api/citizenships`, { params });
+            return await $fetch(`/api/citizenships`, { query: params });
+        } finally {
+            loading.value = false;
+        }
+    }
+
+    async function searchFullText(params: SearchCitizenshipFullText): Promise<Page<CitizenshipFullTextResult>> {
+        loading.value = true;
+        try {
+            return await $fetch(`/api/citizenships/fulltextsearch`, { query: params });
         } finally {
             loading.value = false;
         }
@@ -98,6 +107,7 @@ export const useCitizenshipStore = defineStore("citizenship", () => {
         cache,
         fetchCitizenships,
         filterCitizenships,
+        searchFullText,
         fetchCitizenshipById,
         createCitizenship,
         updateCitizenship,

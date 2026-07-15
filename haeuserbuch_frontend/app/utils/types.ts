@@ -102,6 +102,20 @@ export interface FilterCitizenship {
     secondarysource?: string;
 }
 
+export interface CitizenshipFullTextResult {
+    id: number;
+    signature: string | null;
+    refNumber: string | null;
+    queryResult: string;
+}
+
+export interface SearchCitizenshipFullText {
+    query: string;
+    page?: number;
+    size?: number;
+    sort?: string;
+}
+
 // PERSONS
 
 /** Represents a DTO of a person object mentioned in the sources. */
@@ -330,4 +344,33 @@ export interface Tile {
     bounds: [number, number, number, number];
     center: [number, number, number];
     tilejson: string;
+}
+
+export interface Page<T> {
+    content: T[];
+    pageable: {
+        pageNumber: number;
+        pageSize: number;
+        sort: {
+            empty: boolean;
+            unsorted: boolean;
+            sorted: boolean;
+        };
+        offset: number;
+        unpaged: boolean;
+        pages: boolean;
+    };
+    last: boolean;
+    totalPages: number;
+    totalElements: number;
+    size: number;
+    number: number;
+    sort: {
+        empty: boolean;
+        unsorted: boolean;
+        sorted: boolean;
+    };
+    numberOfElements: number;
+    first: boolean;
+    empty: boolean;
 }
