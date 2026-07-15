@@ -1,6 +1,7 @@
 package de.uniwue.dachs.haeuserbuch_backend.service;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.CitizenshipDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.FullTextSearch.CitizenshipFullTextSearchResult;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.CitizenshipPreviewDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.*;
 import de.uniwue.dachs.haeuserbuch_backend.repository.CitizenshipRepository;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 @Service
 public class CitizenshipService {
@@ -25,6 +27,9 @@ public class CitizenshipService {
     private final CitizenshipMapper citizenshipMapper;
     private final SourceMapper sourceMapper;
     private final PersonMapper personMapper;
+
+    private static final Pattern HTML_TAG_PATTERN = Pattern.compile("<[^>]*>");
+    private static final Pattern SPECIAL_CHAR_PATTERN = Pattern.compile("[^\\p{L}\\p{N}\\s\"'-]");
 
     public CitizenshipService(CitizenshipRepository citizenshipRepository, CitizenshipMapper citizenshipMapper, SourceMapper sourceMapper, PersonMapper personMapper) {
         this.citizenshipRepository = citizenshipRepository;
@@ -166,5 +171,19 @@ public class CitizenshipService {
             throw new RuntimeException("Citizenship with id '" + id + "' does not exist");
         }
         citizenshipRepository.deleteById(id);
+    }
+
+    /**
+     * `GET` An array of citizenship entry objects that match the full-text search query.
+     * @param query Search query
+     * @return A {@link List} of {@link CitizenshipFullTextSearchResult} objects containing metadata about the matching citizenship entries.
+     */
+    public List<CitizenshipFullTextSearchResult> searchCitizenshipFullText(String query) {
+        if (query == null || query.isBlank()) return List.of();
+        String sanitizedQuery = query
+                .replaceAll(HTML_TAG_PATTERN.pattern(), "")
+                .replaceAll(SPECIAL_CHAR_PATTERN.pattern(), "")
+                .trim();
+        return citizenshipRepository.searchFullText(sanitizedQuery);
     }
 }
