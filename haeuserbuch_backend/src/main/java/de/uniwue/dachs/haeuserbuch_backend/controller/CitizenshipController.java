@@ -1,6 +1,7 @@
 package de.uniwue.dachs.haeuserbuch_backend.controller;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.CitizenshipDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.FullTextSearch.CitizenshipFullTextSearchResult;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.CitizenshipPreviewDTO;
 import de.uniwue.dachs.haeuserbuch_backend.service.CitizenshipService;
 import org.springframework.data.domain.Page;
@@ -98,4 +99,9 @@ public class CitizenshipController {
         }
     }
 
+    @GetMapping("/fulltextsearch")
+    public ResponseEntity<List<CitizenshipFullTextSearchResult>> searchCitizenshipFulltext(@RequestParam String query) {
+        List<CitizenshipFullTextSearchResult> results = citizenshipService.searchCitizenshipFullText(query);
+        return ResponseEntity.ok(results);
+    }
 }
