@@ -100,8 +100,12 @@ public class CitizenshipController {
     }
 
     @GetMapping("/fulltextsearch")
-    public ResponseEntity<List<CitizenshipFullTextSearchResult>> searchCitizenshipFulltext(@RequestParam String query) {
-        List<CitizenshipFullTextSearchResult> results = citizenshipService.searchCitizenshipFullText(query);
+    public ResponseEntity<Page<CitizenshipFullTextSearchResult>> searchCitizenshipFulltext(
+            @RequestParam String query,
+            @PageableDefault(sort = "id", direction = Sort.Direction.ASC)
+            Pageable pageable
+    ) {
+        Page<CitizenshipFullTextSearchResult> results = citizenshipService.searchCitizenshipFullText(query, pageable);
         return ResponseEntity.ok(results);
     }
 }

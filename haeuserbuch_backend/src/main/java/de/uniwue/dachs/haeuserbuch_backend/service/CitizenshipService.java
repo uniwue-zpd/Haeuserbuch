@@ -178,12 +178,12 @@ public class CitizenshipService {
      * @param query Search query
      * @return A {@link List} of {@link CitizenshipFullTextSearchResult} objects containing metadata about the matching citizenship entries.
      */
-    public List<CitizenshipFullTextSearchResult> searchCitizenshipFullText(String query) {
-        if (query == null || query.isBlank()) return List.of();
+    public Page<CitizenshipFullTextSearchResult> searchCitizenshipFullText(String query, Pageable pageable) {
+        if (query == null || query.isBlank()) return Page.empty(pageable);
         String sanitizedQuery = query
                 .replaceAll(HTML_TAG_PATTERN.pattern(), "")
                 .replaceAll(SPECIAL_CHAR_PATTERN.pattern(), "")
                 .trim();
-        return citizenshipRepository.searchFullText(sanitizedQuery);
+        return citizenshipRepository.searchFullText(sanitizedQuery, pageable);
     }
 }
