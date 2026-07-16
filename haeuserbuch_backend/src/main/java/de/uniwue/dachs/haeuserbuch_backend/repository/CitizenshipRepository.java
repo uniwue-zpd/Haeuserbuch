@@ -44,4 +44,35 @@ public interface CitizenshipRepository extends JpaRepository<Citizenship, Long>,
         WHERE cz.full_text_vector @@ websearch_to_tsquery('german', :query)
         """, nativeQuery = true)
     Page<CitizenshipFullTextSearchResult> searchFullText(@Param("query") String query, Pageable pageable);
+
+    /**
+     * Performs an exact full-text search on citizenship entries using a regular expression.
+     * <p>The search matches only complete words using PostgreSQL word boundaries
+     * ({@code \m} and {@code \M}). Matching terms are highlighted in the returned
+     * entry text by wrapping them with {@code <b>} tags.</p>
+     * @param query the exact search term to find in the citizenship entry text
+     * @param pageable pagination information including page number, page size, and sorting
+     * @return a {@link Page} of {@link CitizenshipFullTextSearchResult} objects containing
+     * the matching citizenship entries and highlighted text fragments
+     */
+    @Query(value = """
+    SELECT
+        cz.id,
+        cz.signature,
+        cz.ref_number,
+        regexp_replace(
+            cz.entry_text,
+            '\\m' || :query || '\\M',
+            '<b>' || :query || '</b>',
+            'gi'
+        ) AS query_result
+    FROM citizenship cz
+    WHERE cz.entry_text ~* ('\\m' || :query || '\\M')
+    """,
+    countQuery = """
+    SELECT COUNT(*)
+    FROM citizenship cz
+    WHERE cz.entry_text ~* ('\\m' || :query || '\\M')
+    """, nativeQuery = true)
+    Page<CitizenshipFullTextSearchResult> searchFullTextExact(@Param("query") String query, Pageable pageable);
 }
