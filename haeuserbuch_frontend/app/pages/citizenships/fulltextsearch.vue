@@ -13,7 +13,8 @@ const pageOptions = computed(() =>
 const searchParams = ref<SearchCitizenshipFullText>({
   query: "",
   page: 0,
-  size: 10
+  size: 10,
+  exact: false
 });
 
 const { data, refresh, pending, error } = await useAsyncData<Page<CitizenshipFullTextResult>>(
@@ -38,14 +39,15 @@ const debouncedSearch = debounce(() => {
   searchParams.value = {
     query: trimmedQuery,
     page: 0,
-    size: 10
+    size: 10,
+    exact: searchParams.value.exact
   };
   refresh();
 }, 1000);
 
-watch(query, () => {
-  debouncedSearch();
-});
+watch([query, () => searchParams.value.exact],
+    () => { debouncedSearch(); }
+);
 </script>
 
 <template>
@@ -102,6 +104,12 @@ watch(query, () => {
         <i class="pi pi-times text-sm leading-none"/>
         <span>Zurücksetzen</span>
       </button>
+    </div>
+    <div class="flex items-center gap-2">
+      <ToggleSwitch v-model="searchParams.exact" />
+      <label class="text-sm roboto-plain">
+        Exakte Suche
+      </label>
     </div>
     <hr class="border-2 border-gray-200"/>
     <div v-if="pending" class="flex flex-row gap-3 items-center">

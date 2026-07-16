@@ -114,6 +114,7 @@ export interface SearchCitizenshipFullText {
     page?: number;
     size?: number;
     sort?: string;
+    exact?: boolean;
 }
 
 // PERSONS
