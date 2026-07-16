@@ -36,7 +36,7 @@ public class Building extends BaseEntity {
 
     private String partType;
 
-    private String specialStatus;
+    private String object;
 
     @ManyToOne
     @JoinColumn(name = "quarter_id")

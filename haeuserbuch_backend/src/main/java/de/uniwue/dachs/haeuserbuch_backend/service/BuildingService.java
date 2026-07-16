@@ -154,7 +154,7 @@ public class BuildingService {
                 entity.getAddresses().clear();
                 entity.getAddresses().addAll(newAddresses);
                 entity.setPartType(properties.getPartType());
-                entity.setSpecialStatus(properties.getSpecialStatus());
+                entity.setObject(properties.getObject());
                 entity.setQuarter(quarterMapper.QuarterDTOToQuarter(properties.getQuarter()));
                 entity.setDistrict(districtMapper.DistrictDTOToDistrict(properties.getDistrict()));
                 entity.setHouseNumber(properties.getHouseNumber());

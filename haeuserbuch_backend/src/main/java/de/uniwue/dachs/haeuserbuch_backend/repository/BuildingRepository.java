@@ -22,7 +22,7 @@ public interface BuildingRepository extends JpaRepository<Building, Long>, JpaSp
         SELECT DISTINCT b FROM Building b
         LEFT JOIN b.quarter q
         WHERE LOWER(b.districtHouseNumber) LIKE LOWER(CONCAT('%', :query, '%'))
-        OR LOWER(b.specialStatus) LIKE LOWER(CONCAT('%', :query, '%'))
+        OR LOWER(b.object) LIKE LOWER(CONCAT('%', :query, '%'))
         OR LOWER(q.name) LIKE LOWER(CONCAT('%', :query, '%'))
         ORDER BY b.districtHouseNumber ASC
     """)

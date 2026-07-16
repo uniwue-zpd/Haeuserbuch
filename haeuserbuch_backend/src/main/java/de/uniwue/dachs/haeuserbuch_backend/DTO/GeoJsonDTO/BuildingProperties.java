@@ -15,7 +15,7 @@ public class BuildingProperties extends Properties {
     private Set<BuildingNameDTO> names = new HashSet<>();
     private Set<AddressDTO> addresses = new HashSet<>();
     private String partType;
-    private String specialStatus;
+    private String object;
     private QuarterDTO quarter;
     private DistrictDTO district;
     private String houseNumber;

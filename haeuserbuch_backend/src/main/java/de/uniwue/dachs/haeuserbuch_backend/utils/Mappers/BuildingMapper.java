@@ -41,7 +41,7 @@ public class BuildingMapper {
         properties.setParcelNumberCounter(building.getParcelNumberCounter());
         properties.setNames(buildingNameMapper.BuildingNamesToDTOs(building.getNames()));
         properties.setPartType(building.getPartType());
-        properties.setSpecialStatus(building.getSpecialStatus());
+        properties.setObject(building.getObject());
         properties.setAddresses(addressMapper.AddressesToDTOs(building.getAddresses()));
         properties.setQuarter(quarterMapper.QuarterToDTO(building.getQuarter()));
         properties.setDistrict(districtMapper.DistrictToDTO(building.getDistrict()));
@@ -78,7 +78,7 @@ public class BuildingMapper {
                 building.setParcelNumberCounter(properties.getParcelNumberCounter());
                 building.setNames(buildingNameMapper.BuildingNameDTOsToBuildingNames(properties.getNames()));
                 building.setPartType(properties.getPartType());
-                building.setSpecialStatus(properties.getSpecialStatus());
+                building.setObject(properties.getObject());
                 building.setAddresses(addressMapper.AddressDTOsToAddresses(properties.getAddresses()));
                 building.setQuarter(quarterMapper.QuarterDTOToQuarter(properties.getQuarter()));
                 building.setDistrict(districtMapper.DistrictDTOToDistrict(properties.getDistrict()));
