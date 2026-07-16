@@ -55,10 +55,7 @@ watch([query, () => searchParams.value.exact],
     <h1 class="text-3xl font-bold montserrat-headline">Volltextsuche in Bürgermatrikeln</h1>
     <div class="rounded-lg border border-gray-200 p-3 shadow-md">
       <div class="flex items-center gap-2">
-        <Icon
-            name="material-symbols-info-outline-rounded"
-            class="text-lg"
-        />
+        <Icon name="material-symbols-info-outline-rounded" class="text-lg"/>
         <span class="font-semibold roboto-plain">Hinweise zur Suche</span>
       </div>
       <ul class="mt-2 list-disc list-inside text-sm roboto-plain">
@@ -84,18 +81,14 @@ watch([query, () => searchParams.value.exact],
     </div>
     <div class="flex flex-col md:flex-row gap-3 items-center">
       <div class="flex flex-col gap-2 flex-1">
-        <label for="search" class="text-base font-semibold roboto-plain">
-          Suchbegriff
-        </label>
+        <label for="search" class="text-base font-semibold roboto-plain">Suchbegriff</label>
         <InputText
             id="search"
             v-model="query"
             placeholder="Suche..."
             class="w-full h-9"
         />
-        <small class="text-sm roboto-plain">
-          Geben Sie den Suchbegriff ein, um die Volltextsuche zu starten
-        </small>
+        <small class="text-sm roboto-plain">Geben Sie den Suchbegriff ein, um die Volltextsuche zu starten</small>
       </div>
       <button
           @click="query = ''"
@@ -107,13 +100,11 @@ watch([query, () => searchParams.value.exact],
     </div>
     <div class="flex items-center gap-2">
       <ToggleSwitch v-model="searchParams.exact" />
-      <label class="text-sm roboto-plain">
-        Exakte Suche
-      </label>
+      <label class="text-sm roboto-plain">Exakte Suche</label>
     </div>
     <hr class="border-2 border-gray-200"/>
     <div v-if="pending" class="flex flex-row gap-3 items-center">
-      <i class="pi pi-spin pi-spinner text-lg text-gray-600"/>
+      <i class="pi pi-spin pi-spinner text-lg"/>
       <span class="text-sm roboto-plain">Suche läuft...</span>
     </div>
     <div
