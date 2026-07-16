@@ -174,16 +174,23 @@ public class CitizenshipService {
     }
 
     /**
-     * `GET` An array of citizenship entry objects that match the full-text search query.
-     * @param query Search query
-     * @return A {@link List} of {@link CitizenshipFullTextSearchResult} objects containing metadata about the matching citizenship entries.
+     * Searches citizenship entries using a full-text search query.
+     * <p>The search can be performed either as a standard full-text search or as an
+     * exact search depending on the provided parameters. Results are returned as a
+     * paginated collection of matching citizenship entries.</p>
+     * @param query the search query entered by the user
+     * @param exact whether the search should match exact terms only
+     * @param pageable pagination information including page number, page size, and sorting
+     * @return a {@link Page} of {@link CitizenshipFullTextSearchResult} objects containing
+     * metadata and highlighted text fragments of matching citizenship entries
      */
-    public Page<CitizenshipFullTextSearchResult> searchCitizenshipFullText(String query, Pageable pageable) {
+    public Page<CitizenshipFullTextSearchResult> searchCitizenshipFullText(String query, boolean exact, Pageable pageable) {
         if (query == null || query.isBlank()) return Page.empty(pageable);
         String sanitizedQuery = query
                 .replaceAll(HTML_TAG_PATTERN.pattern(), "")
                 .replaceAll(SPECIAL_CHAR_PATTERN.pattern(), "")
                 .trim();
+        if (exact) return citizenshipRepository.searchFullTextExact(sanitizedQuery, pageable);
         return citizenshipRepository.searchFullText(sanitizedQuery, pageable);
     }
 }
