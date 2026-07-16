@@ -91,7 +91,7 @@ onMounted(() => {
       <div class="flex flex-col gap-2">
         <div class="flex flex-col md:flex-row gap-2">
           <NuxtLink
-              to="citizenships/description"
+              to="/citizenships/description"
               class="group flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-100 p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md"
           >
             <div class="flex h-10 w-10 items-center justify-center rounded-md bg-gray-200 transition-colors group-hover:bg-blue-100">
@@ -103,7 +103,7 @@ onMounted(() => {
             </div>
           </NuxtLink>
           <NuxtLink
-              to="citizenships/fulltextsearch"
+              to="/citizenships/fulltextsearch"
               class="group flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-100 p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md"
           >
             <div class="flex h-10 w-10 items-center justify-center rounded-md bg-gray-200 transition-colors group-hover:bg-blue-100">
