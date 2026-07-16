@@ -53,7 +53,7 @@ watch([query, () => searchParams.value.exact],
 <template>
   <div class="flex flex-col gap-4 rounded-lg shadow-lg p-4 border-2 border-gray-200">
     <h1 class="text-3xl font-bold montserrat-headline">Volltextsuche in Bürgermatrikeln</h1>
-    <div class="rounded-md border border-gray-200 p-3 shadow-md">
+    <div class="rounded-lg border border-gray-200 p-3 shadow-md">
       <div class="flex items-center gap-2">
         <Icon
             name="material-symbols-info-outline-rounded"
