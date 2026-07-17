@@ -154,16 +154,16 @@ public class BuildingService {
                 entity.getAddresses().clear();
                 entity.getAddresses().addAll(newAddresses);
                 entity.setPartType(properties.getPartType());
-                entity.setSpecialStatus(properties.getSpecialStatus());
+                entity.setObject(properties.getObject());
                 entity.setQuarter(quarterMapper.QuarterDTOToQuarter(properties.getQuarter()));
                 entity.setDistrict(districtMapper.DistrictDTOToDistrict(properties.getDistrict()));
-                entity.setHouseNumber(properties.getHouseNumber());
-                entity.setDistrictHouseNumber(properties.getDistrictHouseNumber());
-                entity.setPrimarySources(properties.getPrimarySources() != null
-                        ? sourceMapper.SourceDTOsToSources(properties.getPrimarySources())
+                entity.setPropertyNumber(properties.getPropertyNumber());
+                entity.setDistrictPropertyNumber(properties.getDistrictPropertyNumber());
+                entity.setSources(properties.getSources() != null
+                        ? sourceMapper.SourceDTOsToSources(properties.getSources())
                         : new HashSet<>());
-                entity.setSecondarySources(properties.getSecondarySources() != null
-                        ? sourceMapper.SourceDTOsToSources(properties.getSecondarySources())
+                entity.setLiterature(properties.getLiterature() != null
+                        ? sourceMapper.SourceDTOsToSources(properties.getLiterature())
                         : new HashSet<>());
                 entity.setInternalNotes(properties.getInternalNotes());
                 entity.setGeneralNotes(properties.getGeneralNotes());

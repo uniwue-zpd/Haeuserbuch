@@ -314,8 +314,8 @@ onBeforeUnmount(() => {
               />
               <FormKit
                 type="text"
-                name="specialStatus"
-                label="Sonderstatus"
+                name="object"
+                label="Objekt"
                 prefix-icon="text"
                 outer-class="max-w-full"
               />
@@ -342,26 +342,26 @@ onBeforeUnmount(() => {
               <FormKit
                   type="number"
                   number
-                  name="houseNumber"
-                  label="Hausnummer"
+                  name="propertyNumber"
+                  label="Besitznummer"
                   prefix-icon="number"
                   outer-class="max-w-full"
               />
               <FormKit
                   type="text"
-                  name="districtHouseNumber"
-                  label="Distrikt & Hausnummer"
+                  name="districtPropertyNumber"
+                  label="Distrikt & Besitznummer"
                   prefix-icon="text"
                   outer-class="max-w-full"
-                  help="Schreibweise: Distrikt/Historische Hausnummer"
+                  help="Schreibweise: Distrikt/Historische Besitznummer"
               />
             </div>
             <FormKit
                 type="entityAutocomplete"
                 entityType="source"
                 optionLabel="title"
-                name="primarySources"
-                label="Primärquellen (Mehrfachauswahl möglich)"
+                name="sources"
+                label="Quellen (Mehrfachauswahl möglich)"
                 :isMultiple="true"
                 outer-class="max-w-full"
             />
@@ -369,8 +369,8 @@ onBeforeUnmount(() => {
                 type="entityAutocomplete"
                 entityType="source"
                 optionLabel="title"
-                name="secondarySources"
-                label="Sekundärquellen (Mehrfachauswahl möglich)"
+                name="literature"
+                label="Literatur (Mehrfachauswahl möglich)"
                 :isMultiple="true"
                 outer-class="max-w-full"
             />

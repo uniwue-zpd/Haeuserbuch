@@ -22,7 +22,7 @@ const isLoading = computed(() => quarterPending.value || buildingsPending.value)
 
 useHead(() => ({
   title: quarterItem.value
-      ? `${quarterItem.value.name} - QuarterVerzeichnis`
+      ? `${quarterItem.value.name} - Verzeichnis der Viertel`
       : 'Nicht gefunden',
 }));
 </script>
@@ -43,13 +43,13 @@ useHead(() => ({
         <div v-show="relatedBuildings.length > 0" class="flex flex-col gap-2">
           <h2 class="text-lg montserrat-headline font-bold text-black">Zugeordnete Gebäude</h2>
           <DataTable :value="relatedBuildings" paginator :rows="10" stripedRows>
-            <Column field="districtHouseNumber" header="Bezeichnung" :sortable="true">
+            <Column field="districtPropertyNumber" header="Bezeichnung" :sortable="true">
               <template #body="{ data }">
                 <NuxtLink
                     :to="`/buildings/${data.id}`"
                     class="roboto-plain font-bold text-black"
                 >
-                  {{ data.districtHouseNumber }}
+                  {{ data.districtPropertyNumber }}
                 </NuxtLink>
               </template>
             </Column>

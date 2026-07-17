@@ -158,7 +158,7 @@ const submit = async (formData: Partial<PersonInput>) => {
         <FormKit
             type="entityAutocomplete"
             entityType="building"
-            optionLabel="districtHouseNumber"
+            optionLabel="districtPropertyNumber"
             name="associatedBuilding"
             label="Erwähntes Gebäude"
             outer-class="max-w-full"

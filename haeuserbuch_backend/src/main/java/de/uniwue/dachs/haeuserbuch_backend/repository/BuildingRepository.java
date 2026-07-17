@@ -15,16 +15,16 @@ import java.util.List;
 public interface BuildingRepository extends JpaRepository<Building, Long>, JpaSpecificationExecutor<Building> {
     @Override
     @NonNull
-    @EntityGraph(attributePaths = {"primarySources"})
+    @EntityGraph(attributePaths = {"sources"})
     List<Building> findAll();
 
     @Query("""
         SELECT DISTINCT b FROM Building b
         LEFT JOIN b.quarter q
-        WHERE LOWER(b.districtHouseNumber) LIKE LOWER(CONCAT('%', :query, '%'))
-        OR LOWER(b.specialStatus) LIKE LOWER(CONCAT('%', :query, '%'))
+        WHERE LOWER(b.districtPropertyNumber) LIKE LOWER(CONCAT('%', :query, '%'))
+        OR LOWER(b.object) LIKE LOWER(CONCAT('%', :query, '%'))
         OR LOWER(q.name) LIKE LOWER(CONCAT('%', :query, '%'))
-        ORDER BY b.districtHouseNumber ASC
+        ORDER BY b.districtPropertyNumber ASC
     """)
     List<Building> searchBuildings(@Param("query") String query);
 }

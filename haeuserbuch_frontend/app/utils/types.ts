@@ -16,7 +16,7 @@ export interface Auditable {
 /** Represents a preview DTO of a building. */
 export interface BuildingDTO {
     id: number | null;
-    districtHouseNumber: string | null;
+    districtPropertyNumber: string | null;
 }
 
 /** Represents an object containing data of available names of a building. */

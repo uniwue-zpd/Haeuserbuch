@@ -59,13 +59,13 @@ export interface BuildingProperties {
     names: BuildingNameDTO[] | [];
     addresses: AddressDTO[] | [];
     partType: string | null;
-    specialStatus: string | null;
+    object: string | null;
     quarter: QuarterDTO | null;
     district: DistrictDTO | null;
-    houseNumber: string | null;
-    districtHouseNumber: string | null;
-    primarySources: SourceDTO[] | [];
-    secondarySources: SourceDTO[] | [];
+    propertyNumber: string | null;
+    districtPropertyNumber: string | null;
+    sources: SourceDTO[] | [];
+    literature: SourceDTO[] | [];
     internalNotes: string | null;
     generalNotes: string | null;
     createdDate: number | null;
