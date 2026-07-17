@@ -314,8 +314,8 @@ onBeforeUnmount(() => {
               />
               <FormKit
                 type="text"
-                name="specialStatus"
-                label="Sonderstatus"
+                name="object"
+                label="Objekt"
                 prefix-icon="text"
                 outer-class="max-w-full"
               />

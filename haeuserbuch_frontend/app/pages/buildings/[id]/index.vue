@@ -230,9 +230,9 @@ onBeforeUnmount(() => {
         <p class="font-bold">Bauteil</p>
         <p>{{ buildingItemProperties.partType }}</p>
       </div>
-      <div v-if="buildingItemProperties.specialStatus" class="grid grid-cols-2 gap-2 p-2.5">
-        <p class="font-bold">Sonderstatus</p>
-        <p>{{ buildingItemProperties.specialStatus }}</p>
+      <div v-if="buildingItemProperties.object" class="grid grid-cols-2 gap-2 p-2.5">
+        <p class="font-bold">Objekt</p>
+        <p>{{ buildingItemProperties.object }}</p>
       </div>
       <div v-if="buildingItemProperties.quarter" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Viertel</p>

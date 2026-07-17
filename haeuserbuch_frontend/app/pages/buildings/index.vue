@@ -165,7 +165,7 @@ onBeforeUnmount(() => {
             <DataTable
                 :value="buildings?.features"
                 v-model:filters="filters" filter-display="row"
-                :global-filter-fields="['properties.districtHouseNumber', 'properties.partType', 'properties.specialStatus', 'properties.quarter.name', 'properties.district.name']"
+                :global-filter-fields="['properties.districtHouseNumber', 'properties.partType', 'properties.object', 'properties.quarter.name', 'properties.district.name']"
                 stateStorage="session" stateKey="dt-state-demo-session" paginator :rows="7"
             >
               <template #header>
@@ -218,9 +218,9 @@ onBeforeUnmount(() => {
                   <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
                 </template>
               </Column>
-              <Column field="properties.specialStatus" header="Status" class="roboto-plain" :sortable="true">
+              <Column field="properties.object" header="Objekt" class="roboto-plain" :sortable="true">
                 <template #body="slotProps">
-                  <div v-if="slotProps.data.properties.specialStatus">{{ slotProps.data.properties.specialStatus }}</div>
+                  <div v-if="slotProps.data.properties.object">{{ slotProps.data.properties.object }}</div>
                   <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
                 </template>
               </Column>

@@ -59,7 +59,7 @@ export interface BuildingProperties {
     names: BuildingNameDTO[] | [];
     addresses: AddressDTO[] | [];
     partType: string | null;
-    specialStatus: string | null;
+    object: string | null;
     quarter: QuarterDTO | null;
     district: DistrictDTO | null;
     houseNumber: string | null;
