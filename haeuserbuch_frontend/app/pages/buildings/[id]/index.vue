@@ -238,6 +238,7 @@ onBeforeUnmount(() => {
               >
                 {{ name.name }}
                 <NuxtLink
+                    v-if="name.source"
                     :to="`/sources/${name.source?.id}`"
                     class="text-blue-500 hover:text-blue-700"
                     title="Quelle"
