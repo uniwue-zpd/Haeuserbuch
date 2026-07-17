@@ -20,8 +20,8 @@ public class BuildingProperties extends Properties {
     private DistrictDTO district;
     private String propertyNumber;
     private String districtPropertyNumber;
-    private Set<SourceDTO> primarySources = new HashSet<>();
-    private Set<SourceDTO> secondarySources = new HashSet<>();
+    private Set<SourceDTO> sources = new HashSet<>();
+    private Set<SourceDTO> literature = new HashSet<>();
     private String internalNotes;
     private String generalNotes;
     private Date createdDate;

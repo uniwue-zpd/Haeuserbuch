@@ -47,8 +47,8 @@ public class BuildingMapper {
         properties.setDistrict(districtMapper.DistrictToDTO(building.getDistrict()));
         properties.setPropertyNumber(building.getPropertyNumber());
         properties.setDistrictPropertyNumber(building.getDistrictPropertyNumber());
-        properties.setPrimarySources(sourceMapper.SourcesToDTOs(building.getPrimarySources()));
-        properties.setSecondarySources(sourceMapper.SourcesToDTOs(building.getSecondarySources()));
+        properties.setSources(sourceMapper.SourcesToDTOs(building.getSources()));
+        properties.setLiterature(sourceMapper.SourcesToDTOs(building.getLiterature()));
         properties.setInternalNotes(building.getInternalNotes());
         properties.setGeneralNotes(building.getGeneralNotes());
         properties.setCreatedDate(building.getCreatedDate());
@@ -84,8 +84,8 @@ public class BuildingMapper {
                 building.setDistrict(districtMapper.DistrictDTOToDistrict(properties.getDistrict()));
                 building.setPropertyNumber(properties.getPropertyNumber());
                 building.setDistrictPropertyNumber(properties.getDistrictPropertyNumber());
-                building.setPrimarySources(sourceMapper.SourceDTOsToSources(properties.getPrimarySources()));
-                building.setSecondarySources(sourceMapper.SourceDTOsToSources(properties.getSecondarySources()));
+                building.setSources(sourceMapper.SourceDTOsToSources(properties.getSources()));
+                building.setLiterature(sourceMapper.SourceDTOsToSources(properties.getLiterature()));
                 building.setInternalNotes(properties.getInternalNotes());
                 building.setGeneralNotes(properties.getGeneralNotes());
             } else {

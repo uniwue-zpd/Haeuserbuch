@@ -159,11 +159,11 @@ public class BuildingService {
                 entity.setDistrict(districtMapper.DistrictDTOToDistrict(properties.getDistrict()));
                 entity.setPropertyNumber(properties.getPropertyNumber());
                 entity.setDistrictPropertyNumber(properties.getDistrictPropertyNumber());
-                entity.setPrimarySources(properties.getPrimarySources() != null
-                        ? sourceMapper.SourceDTOsToSources(properties.getPrimarySources())
+                entity.setSources(properties.getSources() != null
+                        ? sourceMapper.SourceDTOsToSources(properties.getSources())
                         : new HashSet<>());
-                entity.setSecondarySources(properties.getSecondarySources() != null
-                        ? sourceMapper.SourceDTOsToSources(properties.getSecondarySources())
+                entity.setLiterature(properties.getLiterature() != null
+                        ? sourceMapper.SourceDTOsToSources(properties.getLiterature())
                         : new HashSet<>());
                 entity.setInternalNotes(properties.getInternalNotes());
                 entity.setGeneralNotes(properties.getGeneralNotes());

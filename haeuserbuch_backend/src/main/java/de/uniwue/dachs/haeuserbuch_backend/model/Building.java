@@ -52,19 +52,19 @@ public class Building extends BaseEntity {
 
     @ManyToMany
     @JoinTable(
-            name = "building_primary_source",
+            name = "building_source",
             joinColumns = @JoinColumn(name = "building_id"),
-            inverseJoinColumns = @JoinColumn(name = "primary_source_id")
+            inverseJoinColumns = @JoinColumn(name = "source_id")
     )
-    private Set<Source> primarySources = new HashSet<>();
+    private Set<Source> sources = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
-            name = "building_secondary_source",
+            name = "building_literature",
             joinColumns = @JoinColumn(name = "building_id"),
-            inverseJoinColumns = @JoinColumn(name = "secondary_source_id")
+            inverseJoinColumns = @JoinColumn(name = "source_id")
     )
-    private Set<Source> secondarySources = new HashSet<>();
+    private Set<Source> literature = new HashSet<>();
 
     @Column(columnDefinition = "geometry(Geometry,4326)")
     private Geometry coordinates;
