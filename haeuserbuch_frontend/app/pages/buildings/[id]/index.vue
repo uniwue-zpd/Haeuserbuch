@@ -25,8 +25,12 @@ const { data: buildingItem, error: hasError, pending: isLoading } = await useAsy
 const { data: associatedPeople } = await useAsyncData(`associated-people-building-${building_id}`, () => person_store.filterPersons({ "associated-building-id": building_id }));
 const buildingItemProperties = computed(() => buildingItem.value?.properties as BuildingProperties ?? null);
 const buildingItemGeometry = computed(() => buildingItem.value?.geometry ?? null);
-const addresses1869 = computed(() => buildingItemProperties.value?.addresses.filter(address => address.fromDate === '1869') ?? []);
-const addresses2025 = computed(() => buildingItemProperties.value?.addresses.filter(address => address.fromDate === '2025') ?? []);
+const addressesCurrent = computed(() =>
+    buildingItemProperties.value?.addresses.filter(address => String(address.fromDate ?? '') === '2025') ?? []
+);
+const addressesOld = computed(() =>
+    buildingItemProperties.value?.addresses.filter(address => String(address.fromDate ?? '') !== '2025') ?? []
+);
 
 // Get bounds
 const bounds = computed(() => {
@@ -146,7 +150,7 @@ onBeforeUnmount(() => {
       <h1 v-if="buildingItemProperties?.districtPropertyNumber" class="text-3xl montserrat-headline font-bold">
         {{ buildingItemProperties?.districtPropertyNumber }}
       </h1>
-      <h1 v-else class="text-3xl montserrat-headline font-bold">Gebäude ohne Bezeichnung</h1>
+      <h1 v-else class="text-3xl montserrat-headline font-bold">{{ buildingItemProperties?.object || 'Gebäude ohne Bezeichnung' }}</h1>
       <TaskBar :id="building_id" entity_type="buildings"/>
     </div>
     <div>
@@ -186,11 +190,11 @@ onBeforeUnmount(() => {
               </NuxtLink>
             </div>
           </div>
-          <div v-if="addresses1869.length > 0" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
+          <div v-if="addressesOld.length > 0" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
             <p class="text-sm text-gray-500 font-medium">Adressen um 1869</p>
             <div class="flex flex-wrap gap-2">
               <NuxtLink
-                  v-for="address in addresses1869"
+                  v-for="address in addressesOld"
                   :to="`/streets/${address.street?.id}`"
                   class="p-1.5 border-2 border-gray-300 rounded-lg shadow-sm hover:shadow-md font-semibold"
               >
@@ -198,11 +202,11 @@ onBeforeUnmount(() => {
               </NuxtLink>
             </div>
           </div>
-          <div v-if="addresses2025.length > 0" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
+          <div v-if="addressesCurrent.length > 0" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
             <p class="text-sm text-gray-500 font-medium">Aktuelle Adressen</p>
             <div class="flex flex-wrap gap-2">
               <NuxtLink
-                  v-for="address in addresses1869"
+                  v-for="address in addressesCurrent"
                   :to="`/streets/${address.street?.id}`"
                   class="p-1.5 border-2 border-gray-300 rounded-lg shadow-sm hover:shadow-md font-semibold"
               >
