@@ -141,7 +141,7 @@ onBeforeUnmount(() => {
 <template>
   <BuildingSkeleton v-if="isLoading"/>
   <FetchError v-else-if="hasError" :error="hasError"/>
-  <div v-else class="flex flex-col gap-4 p-4 rounded-md shadow-md">
+  <div v-else class="flex flex-col gap-4 p-4 rounded-lg shadow-lg border-2 border-gray-300">
     <div class="flex flex-row justify-between">
       <h1 v-if="buildingItemProperties?.districtPropertyNumber" class="text-3xl montserrat-headline font-bold">
         {{ buildingItemProperties?.districtPropertyNumber }}
@@ -156,171 +156,176 @@ onBeforeUnmount(() => {
         <p class="roboto-plain text-center text-lg font-medium">Für dieses Gebäude sind bisher keine Geodaten hinterlegt</p>
       </div>
     </div>
-    <div v-if="buildingItemProperties" class="flex flex-col p-4 bg-gray-100 rounded-md shadow-md roboto-plain divide-y divide-gray-300">
-      <h2 class="text-2xl text-black font-semibold montserrat-headline pb-2">Metadaten</h2>
-      <div v-if="buildingItemProperties.year" class="grid grid-cols-2 gap-2 p-2.5">
-        <p class="font-bold">Jahr</p>
-        <p>{{ buildingItemProperties.year }}</p>
-      </div>
-      <div v-if="buildingItemProperties.parcelNumber" class="grid grid-cols-2 gap-2 p-2.5">
-        <p class="font-bold">Flurstücksnummer</p>
-        <p>{{ buildingItemProperties.parcelNumber }}</p>
-      </div>
-      <div v-if="buildingItemProperties.parcelNumberCounter" class="grid grid-cols-2 gap-2 p-2.5">
-        <p class="font-bold">Flurstücksnummerzähler</p>
-        <p>{{ buildingItemProperties.parcelNumberCounter }}</p>
-      </div>
-      <div v-if="buildingItemProperties.names.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
-        <p class="font-bold">Namen</p>
-        <div class="flex flex-wrap gap-3.5">
-          <div
-              v-for="name in buildingItemProperties.names"
-              class="p-1.5 bg-gray-200 border border-gray-300 rounded-md shadow-sm hover:shadow-md"
-          >
-            <div class="flex flex-row space-x-2 font-medium">
-              <span>{{ name.name }}</span>
+    <div v-if="buildingItemProperties" class="flex flex-col gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="roboto-plain flex flex-col gap-5 p-4 rounded-lg shadow-lg border border-gray-300">
+          <h2 class="text-2xl font-semibold montserrat-headline">Adressen und Flurstücke</h2>
+          <div v-if="buildingItemProperties.propertyNumber" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
+            <p class="text-sm text-gray-500 font-medium">Historische Besitznummer</p>
+            <p class="font-semibold">{{ buildingItemProperties.propertyNumber }}</p>
+          </div>
+          <div v-if="buildingItemProperties.district" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
+            <p class="text-sm text-gray-500 font-medium">Distrikt</p>
+            <div>
               <NuxtLink
-                  :to="`/sources/${name.source?.id}`"
-                  class="line-clamp-1"
-                  :title="name.source?.title as string"
+                  :to="`/districts/${buildingItemProperties.district.id}`"
+                  class="p-1.5 border-2 border-gray-300 rounded-lg shadow-sm hover:shadow-md font-semibold"
               >
-                (Quelle)
+                {{ buildingItemProperties.district.name }}
               </NuxtLink>
             </div>
           </div>
-        </div>
-      </div>
-      <div v-if="addresses1869.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
-        <p class="font-bold">Adressen um 1869</p>
-        <div class="flex flex-wrap gap-3.5">
-          <div
-              v-for="address in addresses1869"
-              class="p-1.5 bg-gray-200 border border-gray-300 rounded-md shadow-sm hover:shadow-md"
-          >
-            <div class="flex flex-row space-x-2 font-medium">
+          <div v-if="buildingItemProperties.quarter" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
+            <p class="text-sm text-gray-500 font-medium">Viertel</p>
+            <div>
               <NuxtLink
-                  :to="`/streets/${address.street?.id}`"
-              >{{ address.street?.name }}</NuxtLink>
-              <span>{{ address.houseNumber }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-if="addresses2025.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
-        <p class="font-bold">Aktuelle Adressen</p>
-        <div class="flex flex-wrap gap-3.5">
-          <div
-              v-for="address in addresses2025"
-              class="p-1.5 bg-gray-200 border border-gray-300 rounded-md shadow-sm hover:shadow-md"
-          >
-            <div class="flex flex-row space-x-2 font-medium">
-              <NuxtLink
-                  :to="`/streets/${address.street?.id}`"
-              >{{ address.street?.name }}</NuxtLink>
-              <span>{{ address.houseNumber }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-if="buildingItemProperties.propertyNumber" class="grid grid-cols-2 gap-2 p-2.5">
-        <p class="font-bold">Historische Besitznummer</p>
-        <p>{{ buildingItemProperties.propertyNumber }}</p>
-      </div>
-      <div v-if="buildingItemProperties.partType" class="grid grid-cols-2 gap-2 p-2.5">
-        <p class="font-bold">Bauteil</p>
-        <p>{{ buildingItemProperties.partType }}</p>
-      </div>
-      <div v-if="buildingItemProperties.object" class="grid grid-cols-2 gap-2 p-2.5">
-        <p class="font-bold">Objekt</p>
-        <p>{{ buildingItemProperties.object }}</p>
-      </div>
-      <div v-if="buildingItemProperties.quarter" class="grid grid-cols-2 gap-2 p-2.5">
-        <p class="font-bold">Viertel</p>
-        <div>
-          <NuxtLink
-              :to="`/quarters/${buildingItemProperties.quarter.id}`"
-              class="p-1.5 bg-gray-200 border border-gray-300 rounded-md shadow-sm hover:shadow-md font-medium"
-          >
-            {{ buildingItemProperties.quarter.name }}
-          </NuxtLink>
-        </div>
-      </div>
-      <div v-if="buildingItemProperties.district" class="grid grid-cols-2 gap-2 p-2.5">
-        <p class="font-bold">Distrikt</p>
-        <div>
-          <NuxtLink
-              :to="`/districts/${buildingItemProperties.district.id}`"
-              class="p-1.5 bg-gray-200 border border-gray-300 rounded-md shadow-sm hover:shadow-md font-medium"
-          >
-            {{ buildingItemProperties.district.name }}
-          </NuxtLink>
-        </div>
-      </div>
-      <div v-if="buildingItemProperties.sources.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
-        <p class="font-bold">Quellen</p>
-        <div class="flex flex-wrap gap-3.5">
-          <div
-              v-for="source in buildingItemProperties.sources"
-              class="p-1.5 bg-gray-200 border border-gray-300 rounded-md shadow-sm hover:shadow-md"
-          >
-              <NuxtLink
-                  :to="`/sources/${source.id}`"
-                  class="line-clamp-1 font-medium"
-                  :title="source.title as string"
+                  :to="`/quarters/${buildingItemProperties.quarter.id}`"
+                  class="p-1.5 border-2 border-gray-300 rounded-lg shadow-sm hover:shadow-md font-semibold"
               >
-                {{ source.title ? title_shortener(source.title, 4) : 'Unbenannte Quelle' }}
+                {{ buildingItemProperties.quarter.name }}
               </NuxtLink>
+            </div>
+          </div>
+          <div v-if="addresses1869.length > 0" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
+            <p class="text-sm text-gray-500 font-medium">Adressen um 1869</p>
+            <div class="flex flex-wrap gap-2">
+              <NuxtLink
+                  v-for="address in addresses1869"
+                  :to="`/streets/${address.street?.id}`"
+                  class="p-1.5 border-2 border-gray-300 rounded-lg shadow-sm hover:shadow-md font-semibold"
+              >
+                {{ address.street?.name }} {{ address.houseNumber }}
+              </NuxtLink>
+            </div>
+          </div>
+          <div v-if="addresses2025.length > 0" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
+            <p class="text-sm text-gray-500 font-medium">Aktuelle Adressen</p>
+            <div class="flex flex-wrap gap-2">
+              <NuxtLink
+                  v-for="address in addresses1869"
+                  :to="`/streets/${address.street?.id}`"
+                  class="p-1.5 border-2 border-gray-300 rounded-lg shadow-sm hover:shadow-md font-semibold"
+              >
+                {{ address.street?.name }} {{ address.houseNumber }}
+              </NuxtLink>
+            </div>
+          </div>
+          <div v-if="buildingItemProperties.parcelNumber" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
+            <p class="text-sm text-gray-500 font-medium">Flurstücksnummer</p>
+            <p class="font-semibold">{{ buildingItemProperties.parcelNumber }}</p>
+          </div>
+          <div v-if="buildingItemProperties.parcelNumberCounter" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
+            <p class="text-sm text-gray-500 font-medium">Flurstücksnummerzähler</p>
+            <p class="font-semibold">{{ buildingItemProperties.parcelNumberCounter }}</p>
+          </div>
+        </div>
+        <div class="roboto-plain flex flex-col gap-5 p-4 rounded-lg shadow-lg border border-gray-300">
+          <h2 class="text-2xl font-semibold montserrat-headline">Objektbeschreibung</h2>
+          <div v-if="buildingItemProperties.year" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
+            <p class="text-sm text-gray-500 font-medium">Jahr</p>
+            <p class="font-semibold">{{ buildingItemProperties.year }}</p>
+          </div>
+          <div v-if="buildingItemProperties.names.length > 0" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
+            <p class="text-sm text-gray-500 font-medium">Gebäudenamen</p>
+            <ul class="list-inside list-disc">
+              <li
+                  v-for="name in buildingItemProperties.names"
+                  class="font-semibold"
+              >
+                {{ name.name }}
+                <NuxtLink
+                    :to="`/sources/${name.source?.id}`"
+                    class="text-blue-500 hover:text-blue-700"
+                    title="Quelle"
+                >
+                  <Icon name="material-symbols-book-2-outline" class="text-base opacity-70"/>
+                </NuxtLink>
+              </li>
+            </ul>
+          </div>
+          <div v-if="buildingItemProperties.object" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
+            <p class="text-sm text-gray-500 font-medium">Objekt</p>
+            <p class="font-semibold">{{ buildingItemProperties.object }}</p>
+          </div>
+          <div v-if="buildingItemProperties.partType" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
+            <p class="text-sm text-gray-500 font-medium">Bauteil</p>
+            <p class="font-semibold">{{ buildingItemProperties.partType }}</p>
           </div>
         </div>
       </div>
-      <div v-if="buildingItemProperties.literature.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
-        <p class="font-bold">Literatur</p>
-        <div class="flex flex-wrap gap-3.5">
-          <div
-              v-for="source in buildingItemProperties.literature"
-              class="p-1.5 bg-gray-200 border border-gray-300 rounded-md shadow-sm hover:shadow-md max-w-[30%]"
-          >
+      <div
+          v-if="buildingItemProperties.sources.length > 0 || buildingItemProperties.literature.length > 0"
+          class="roboto-plain flex flex-col gap-5 p-4 rounded-lg shadow-lg border border-gray-300"
+      >
+        <h2 class="text-2xl font-semibold montserrat-headline">Quellen- und Literaturangaben</h2>
+        <div v-if="buildingItemProperties.sources.length > 0" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
+          <p class="text-sm text-gray-500 font-medium">Quellen</p>
+          <div class="flex flex-wrap gap-2">
             <NuxtLink
-                :to="`/sources/${source.id}`"
-                class="line-clamp-1 font-medium"
-                :title="source.title as string"
+                v-for="source in buildingItemProperties.sources"
+                :to="`/sources/${ source.id }`"
+                class="p-1.5 border-2 border-gray-300 rounded-lg shadow-sm hover:shadow-md font-semibold"
+            >
+              {{ source.title ? title_shortener(source.title, 4) : 'Unbenannte Quelle' }}
+            </NuxtLink>
+          </div>
+        </div>
+        <div v-if="buildingItemProperties.literature.length > 0" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
+          <p class="text-sm text-gray-500 font-medium">Literatur</p>
+          <div class="flex flex-wrap gap-2">
+            <NuxtLink
+                v-for="source in buildingItemProperties.literature"
+                :to="`/sources/${ source.id }`"
+                class="p-1.5 border-2 border-gray-300 rounded-lg shadow-sm hover:shadow-md font-semibold"
             >
               {{ source.title ? title_shortener(source.title, 4) : 'Unbenannte Quelle' }}
             </NuxtLink>
           </div>
         </div>
       </div>
-      <div v-if="buildingItemProperties.generalNotes" class="grid grid-cols-2 gap-2 p-2.5">
-        <p class="font-bold">Notizen</p>
-        <p>{{ buildingItemProperties.generalNotes }}</p>
+      <div
+          v-if="buildingItemProperties.generalNotes"
+          class="roboto-plain flex flex-col gap-5 p-4 rounded-lg shadow-lg border border-gray-300"
+      >
+        <h2 class="text-2xl font-semibold montserrat-headline">Notizen und Anmerkungen</h2>
+        <div v-if="buildingItemProperties.generalNotes" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
+          <p class="text-sm text-gray-500 font-medium">Anmerkungen</p>
+          <p class="text-justify">{{ buildingItemProperties.generalNotes }}</p>
+        </div>
+        <div v-if="buildingItemProperties.internalNotes" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
+          <p class="text-sm text-gray-500 font-medium">Notizen</p>
+          <p class="text-justify">{{ buildingItemProperties.internalNotes }}</p>
+        </div>
       </div>
-      <div v-if="associatedPeople && associatedPeople.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
-        <p class="font-bold">Assoziierte Personen</p>
-        <div class="flex flex-wrap gap-3.5">
-          <span
-              v-for="person in associatedPeople"
-              :key="person.id as number"
-          >
+      <div class="roboto-plain flex flex-col gap-5 p-4 rounded-lg shadow-lg border border-gray-300">
+        <h2 class="text-2xl font-semibold montserrat-headline">Beziehungen zu anderen Entitäten</h2>
+        <div v-if="associatedPeople && associatedPeople.length > 0" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
+          <p class="text-sm text-gray-500 font-medium">Personen</p>
+          <div class="flex flex-wrap gap-2">
             <NuxtLink
+                v-for="person in associatedPeople"
                 :to="`/persons/${ person.id }`"
-                class="p-1.5 bg-gray-200 border border-gray-300 rounded-md shadow-sm hover:shadow-md line-clamp-1 font-medium"
+                class="p-1.5 border-2 border-gray-300 rounded-lg shadow-sm hover:shadow-md font-semibold"
             >
-              {{ person.fullName }}
+              {{ person.fullName || 'Person mit ID' + person.id }}
             </NuxtLink>
-          </span>
+          </div>
+        </div>
+        <div v-else class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
+          <p class="text-sm text-gray-500 font-medium">Bisher keine Relationen gefunden</p>
         </div>
       </div>
-    </div>
-    <div class="flex flex-col gap-2 p-4 bg-gray-100 rounded-md shadow-md">
-      <div class="flex flex-col">
-        <div v-if="buildingItemProperties?.createdDate" class="flex flex-row space-x-2 text-black roboto-plain">
-          <p class="font-bold">Erstellt am:</p>
-          <p>{{ new Date(buildingItemProperties.createdDate).toLocaleDateString() }}</p>
+      <div class="roboto-plain flex flex-col gap-5 p-4 rounded-lg shadow-lg border border-gray-300">
+        <h2 class="text-2xl font-semibold montserrat-headline">Über den Eintrag</h2>
+        <div v-if="buildingItemProperties.createdDate" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
+          <p class="text-sm text-gray-500 font-medium">Erstellt am</p>
+          <p class="text-justify">{{ new Date(buildingItemProperties.createdDate).toLocaleDateString() }}</p>
         </div>
-        <div v-if="buildingItemProperties?.lastModifiedDate" class="flex flex-row space-x-2 text-black roboto-plain">
-          <p class="font-bold">Stand:</p>
-          <p>{{ new Date(buildingItemProperties.lastModifiedDate).toLocaleDateString() }}</p>
+        <div v-if="buildingItemProperties.lastModifiedDate" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
+          <p class="text-sm text-gray-500 font-medium">Zuletzt aktualisiert am</p>
+          <p class="text-justify">{{ new Date(buildingItemProperties.lastModifiedDate).toLocaleDateString() }}</p>
         </div>
+        <!-- TO-DO: After Keycloak integration: createdBy & lastModifiedBy -->
       </div>
     </div>
   </div>
