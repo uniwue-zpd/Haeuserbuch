@@ -18,8 +18,8 @@ public class BuildingProperties extends Properties {
     private String object;
     private QuarterDTO quarter;
     private DistrictDTO district;
-    private String houseNumber;
-    private String districtHouseNumber;
+    private String propertyNumber;
+    private String districtPropertyNumber;
     private Set<SourceDTO> primarySources = new HashSet<>();
     private Set<SourceDTO> secondarySources = new HashSet<>();
     private String internalNotes;

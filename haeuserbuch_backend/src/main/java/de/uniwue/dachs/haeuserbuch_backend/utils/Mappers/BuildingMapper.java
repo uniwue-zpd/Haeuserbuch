@@ -45,8 +45,8 @@ public class BuildingMapper {
         properties.setAddresses(addressMapper.AddressesToDTOs(building.getAddresses()));
         properties.setQuarter(quarterMapper.QuarterToDTO(building.getQuarter()));
         properties.setDistrict(districtMapper.DistrictToDTO(building.getDistrict()));
-        properties.setHouseNumber(building.getHouseNumber());
-        properties.setDistrictHouseNumber(building.getDistrictHouseNumber());
+        properties.setPropertyNumber(building.getPropertyNumber());
+        properties.setDistrictPropertyNumber(building.getDistrictPropertyNumber());
         properties.setPrimarySources(sourceMapper.SourcesToDTOs(building.getPrimarySources()));
         properties.setSecondarySources(sourceMapper.SourcesToDTOs(building.getSecondarySources()));
         properties.setInternalNotes(building.getInternalNotes());
@@ -82,8 +82,8 @@ public class BuildingMapper {
                 building.setAddresses(addressMapper.AddressDTOsToAddresses(properties.getAddresses()));
                 building.setQuarter(quarterMapper.QuarterDTOToQuarter(properties.getQuarter()));
                 building.setDistrict(districtMapper.DistrictDTOToDistrict(properties.getDistrict()));
-                building.setHouseNumber(properties.getHouseNumber());
-                building.setDistrictHouseNumber(properties.getDistrictHouseNumber());
+                building.setPropertyNumber(properties.getPropertyNumber());
+                building.setDistrictPropertyNumber(properties.getDistrictPropertyNumber());
                 building.setPrimarySources(sourceMapper.SourceDTOsToSources(properties.getPrimarySources()));
                 building.setSecondarySources(sourceMapper.SourceDTOsToSources(properties.getSecondarySources()));
                 building.setInternalNotes(properties.getInternalNotes());
@@ -108,7 +108,7 @@ public class BuildingMapper {
         if (building == null) return null;
         BuildingDTO buildingDTO = new BuildingDTO();
         buildingDTO.setId(building.getId());
-        buildingDTO.setDistrictHouseNumber(building.getDistrictHouseNumber());
+        buildingDTO.setDistrictPropertyNumber(building.getDistrictPropertyNumber());
         return buildingDTO;
     }
 

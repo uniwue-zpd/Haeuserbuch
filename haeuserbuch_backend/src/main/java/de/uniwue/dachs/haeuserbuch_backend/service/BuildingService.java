@@ -157,8 +157,8 @@ public class BuildingService {
                 entity.setObject(properties.getObject());
                 entity.setQuarter(quarterMapper.QuarterDTOToQuarter(properties.getQuarter()));
                 entity.setDistrict(districtMapper.DistrictDTOToDistrict(properties.getDistrict()));
-                entity.setHouseNumber(properties.getHouseNumber());
-                entity.setDistrictHouseNumber(properties.getDistrictHouseNumber());
+                entity.setPropertyNumber(properties.getPropertyNumber());
+                entity.setDistrictPropertyNumber(properties.getDistrictPropertyNumber());
                 entity.setPrimarySources(properties.getPrimarySources() != null
                         ? sourceMapper.SourceDTOsToSources(properties.getPrimarySources())
                         : new HashSet<>());

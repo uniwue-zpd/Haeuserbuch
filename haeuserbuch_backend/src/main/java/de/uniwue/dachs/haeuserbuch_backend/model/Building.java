@@ -46,9 +46,9 @@ public class Building extends BaseEntity {
     @JoinColumn(name = "district_id")
     private District district;
 
-    private String houseNumber;
+    private String propertyNumber;
 
-    private String districtHouseNumber;
+    private String districtPropertyNumber;
 
     @ManyToMany
     @JoinTable(
