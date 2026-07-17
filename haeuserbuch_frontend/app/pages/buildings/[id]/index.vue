@@ -98,10 +98,10 @@ const layers = computed(() => tile_store.layers);
 let map: maplibregl.Map | null = null;
 
 useHead(() => {
-  const districtHouseNumber = buildingItemProperties.value?.districtHouseNumber;
+  const districtPropertyNumber = buildingItemProperties.value?.districtPropertyNumber;
   return {
-    title: districtHouseNumber
-        ? `${districtHouseNumber} - Gebäudeverzeichnis`
+    title: districtPropertyNumber
+        ? `${districtPropertyNumber} - Gebäudeverzeichnis`
         : 'Gebäude - Gebäudeverzeichnis',
   };
 });
@@ -143,8 +143,8 @@ onBeforeUnmount(() => {
   <FetchError v-else-if="hasError" :error="hasError"/>
   <div v-else class="flex flex-col gap-4 p-4 rounded-md shadow-md">
     <div class="flex flex-row justify-between">
-      <h1 v-if="buildingItemProperties?.districtHouseNumber" class="text-3xl montserrat-headline font-bold">
-        {{ buildingItemProperties?.districtHouseNumber }}
+      <h1 v-if="buildingItemProperties?.districtPropertyNumber" class="text-3xl montserrat-headline font-bold">
+        {{ buildingItemProperties?.districtPropertyNumber }}
       </h1>
       <h1 v-else class="text-3xl montserrat-headline font-bold">Gebäude ohne Bezeichnung</h1>
       <TaskBar :id="building_id" entity_type="buildings"/>
@@ -222,9 +222,9 @@ onBeforeUnmount(() => {
           </div>
         </div>
       </div>
-      <div v-if="buildingItemProperties.houseNumber" class="grid grid-cols-2 gap-2 p-2.5">
-        <p class="font-bold">Hausnummer</p>
-        <p>{{ buildingItemProperties.houseNumber }}</p>
+      <div v-if="buildingItemProperties.propertyNumber" class="grid grid-cols-2 gap-2 p-2.5">
+        <p class="font-bold">Historische Besitznummer</p>
+        <p>{{ buildingItemProperties.propertyNumber }}</p>
       </div>
       <div v-if="buildingItemProperties.partType" class="grid grid-cols-2 gap-2 p-2.5">
         <p class="font-bold">Bauteil</p>

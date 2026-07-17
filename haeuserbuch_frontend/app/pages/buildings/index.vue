@@ -22,7 +22,7 @@ useHead(() => ({
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  'properties.districtHouseNumber': { value: null, matchMode: FilterMatchMode.CONTAINS },
+  'properties.districtPropertyNumber': { value: null, matchMode: FilterMatchMode.CONTAINS },
   'properties.district.name': { value: null, matchMode: FilterMatchMode.IN }
 });
 
@@ -113,7 +113,7 @@ onMounted(async () => {
       return;
     }
     const popup_html = document.createElement('div');
-    popup_html.innerHTML = e.features[0]?.properties?.districtHouseNumber || 'Unbekanntes Gebäude';
+    popup_html.innerHTML = e.features[0]?.properties?.districtPropertyNumber || e.features[0]?.properties?.object || 'Unbekanntes Gebäude';
     popup_html.setAttribute('class',  'cursor-pointer font-bold montserrat-headline');
     const popup_link = `/buildings/${ e.features[0]?.id }`;
     popup_html.addEventListener('click', () => {navigateTo(popup_link)});
@@ -165,8 +165,8 @@ onBeforeUnmount(() => {
             <DataTable
                 :value="buildings?.features"
                 v-model:filters="filters" filter-display="row"
-                :global-filter-fields="['properties.districtHouseNumber', 'properties.partType', 'properties.object', 'properties.quarter.name', 'properties.district.name']"
-                stateStorage="session" stateKey="dt-state-demo-session" paginator :rows="7"
+                :global-filter-fields="['properties.districtPropertyNumber', 'properties.partType', 'properties.object', 'properties.quarter.name', 'properties.district.name']"
+                stateStorage="session" stateKey="dt-state-demo-session-buildings" paginator :rows="7"
             >
               <template #header>
                 <div class="flex flex-row justify-end">
@@ -182,14 +182,14 @@ onBeforeUnmount(() => {
                   </IconField>
                 </div>
               </template>
-              <Column field="properties.districtHouseNumber" header="Bezeichnung" :sortable="true">
+              <Column field="properties.districtPropertyNumber" header="Bezeichnung" :sortable="true">
                 <template #body="{ data }">
                   <NuxtLink
                       :to="`/buildings/${data.id}`"
                       class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md"
                       prefetch
                   >
-                    {{ data.properties.districtHouseNumber || 'Ohne Bezeichnung' }}
+                    {{ data.properties.districtPropertyNumber || 'Ohne Bezeichnung' }}
                   </NuxtLink>
                 </template>
                 <template #filter="{ filterModel, filterCallback }">

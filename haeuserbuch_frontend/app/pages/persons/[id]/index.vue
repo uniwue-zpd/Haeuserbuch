@@ -78,7 +78,7 @@ useHead(() => ({
                 :to="`/buildings/${ personItem?.associatedBuilding?.id }`"
                 class="p-1.5 bg-gray-300 rounded-md shadow-md hover:shadow-lg font-medium"
             >
-              {{ personItem?.associatedBuilding?.districtHouseNumber }}
+              {{ personItem?.associatedBuilding?.districtPropertyNumber }}
             </NuxtLink>
           </td>
         </tr>

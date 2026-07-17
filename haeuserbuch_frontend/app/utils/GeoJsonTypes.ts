@@ -62,8 +62,8 @@ export interface BuildingProperties {
     object: string | null;
     quarter: QuarterDTO | null;
     district: DistrictDTO | null;
-    houseNumber: string | null;
-    districtHouseNumber: string | null;
+    propertyNumber: string | null;
+    districtPropertyNumber: string | null;
     primarySources: SourceDTO[] | [];
     secondarySources: SourceDTO[] | [];
     internalNotes: string | null;

@@ -342,18 +342,18 @@ onBeforeUnmount(() => {
               <FormKit
                   type="number"
                   number
-                  name="houseNumber"
-                  label="Hausnummer"
+                  name="propertyNumber"
+                  label="Besitznummer"
                   prefix-icon="number"
                   outer-class="max-w-full"
               />
               <FormKit
                   type="text"
-                  name="districtHouseNumber"
-                  label="Distrikt & Hausnummer"
+                  name="districtPropertyNumber"
+                  label="Distrikt & Besitznummer"
                   prefix-icon="text"
                   outer-class="max-w-full"
-                  help="Schreibweise: Distrikt/Historische Hausnummer"
+                  help="Schreibweise: Distrikt/Historische Besitznummer"
               />
             </div>
             <FormKit
