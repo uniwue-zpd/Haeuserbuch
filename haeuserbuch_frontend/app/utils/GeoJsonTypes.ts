@@ -64,8 +64,8 @@ export interface BuildingProperties {
     district: DistrictDTO | null;
     propertyNumber: string | null;
     districtPropertyNumber: string | null;
-    primarySources: SourceDTO[] | [];
-    secondarySources: SourceDTO[] | [];
+    sources: SourceDTO[] | [];
+    literature: SourceDTO[] | [];
     internalNotes: string | null;
     generalNotes: string | null;
     createdDate: number | null;

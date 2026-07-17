@@ -175,7 +175,7 @@ onBeforeUnmount(() => {
         <div class="flex flex-wrap gap-3.5">
           <div
               v-for="name in buildingItemProperties.names"
-              class="p-1.5 bg-gray-200 border border-gray-300 rounded-md shadow-sm hover:shadow-md border border-gray-300"
+              class="p-1.5 bg-gray-200 border border-gray-300 rounded-md shadow-sm hover:shadow-md"
           >
             <div class="flex flex-row space-x-2 font-medium">
               <span>{{ name.name }}</span>
@@ -256,11 +256,11 @@ onBeforeUnmount(() => {
           </NuxtLink>
         </div>
       </div>
-      <div v-if="buildingItemProperties.primarySources.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
-        <p class="font-bold">Primärquellen</p>
+      <div v-if="buildingItemProperties.sources.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
+        <p class="font-bold">Quellen</p>
         <div class="flex flex-wrap gap-3.5">
           <div
-              v-for="source in buildingItemProperties.primarySources"
+              v-for="source in buildingItemProperties.sources"
               class="p-1.5 bg-gray-200 border border-gray-300 rounded-md shadow-sm hover:shadow-md"
           >
               <NuxtLink
@@ -273,11 +273,11 @@ onBeforeUnmount(() => {
           </div>
         </div>
       </div>
-      <div v-if="buildingItemProperties.secondarySources.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
-        <p class="font-bold">Sekundärquellen</p>
+      <div v-if="buildingItemProperties.literature.length > 0" class="grid grid-cols-2 gap-2 p-2.5">
+        <p class="font-bold">Literatur</p>
         <div class="flex flex-wrap gap-3.5">
           <div
-              v-for="source in buildingItemProperties.secondarySources"
+              v-for="source in buildingItemProperties.literature"
               class="p-1.5 bg-gray-200 border border-gray-300 rounded-md shadow-sm hover:shadow-md max-w-[30%]"
           >
             <NuxtLink

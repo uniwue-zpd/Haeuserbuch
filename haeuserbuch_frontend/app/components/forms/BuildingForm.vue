@@ -360,8 +360,8 @@ onBeforeUnmount(() => {
                 type="entityAutocomplete"
                 entityType="source"
                 optionLabel="title"
-                name="primarySources"
-                label="Primärquellen (Mehrfachauswahl möglich)"
+                name="sources"
+                label="Quellen (Mehrfachauswahl möglich)"
                 :isMultiple="true"
                 outer-class="max-w-full"
             />
@@ -369,8 +369,8 @@ onBeforeUnmount(() => {
                 type="entityAutocomplete"
                 entityType="source"
                 optionLabel="title"
-                name="secondarySources"
-                label="Sekundärquellen (Mehrfachauswahl möglich)"
+                name="literature"
+                label="Literatur (Mehrfachauswahl möglich)"
                 :isMultiple="true"
                 outer-class="max-w-full"
             />

@@ -15,7 +15,7 @@ import java.util.List;
 public interface BuildingRepository extends JpaRepository<Building, Long>, JpaSpecificationExecutor<Building> {
     @Override
     @NonNull
-    @EntityGraph(attributePaths = {"primarySources"})
+    @EntityGraph(attributePaths = {"sources"})
     List<Building> findAll();
 
     @Query("""
