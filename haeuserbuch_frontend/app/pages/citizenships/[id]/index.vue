@@ -10,9 +10,7 @@ const citizenship_store = useCitizenshipStore();
 const route = useRoute();
 const citizenship_id = Number(route.params.id);
 
-const loading = computed(() => status.value === 'pending');
-
-const { data: citizenshipItem, status, error: hasError } = await useAsyncData(`citizenship-${ citizenship_id }`, () => citizenship_store.fetchCitizenshipById(citizenship_id));
+const { data: citizenshipItem, pending: isLoading, error: hasError } = await useAsyncData(`citizenship-${ citizenship_id }-details`, () => citizenship_store.fetchCitizenshipById(citizenship_id));
 
 useHead(() => ({
   title: citizenshipItem.value ? `${ citizenshipItem.value.signature } - Bürgermatrikel` : 'Nicht gefunden',
@@ -20,7 +18,7 @@ useHead(() => ({
 </script>
 
 <template>
-  <CitizenshipSkeleton v-if="loading"/>
+  <CitizenshipSkeleton v-if="isLoading"/>
   <FetchError v-else-if="hasError" :error="hasError"/>
   <div v-else>
     <div v-if="citizenshipItem" class="flex flex-col gap-4 p-4 rounded-lg shadow-lg border-2 border-gray-300">
