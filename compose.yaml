@@ -1,0 +1,94 @@
+services:
+  database:
+    image: ${POSTGIS_IMAGE:-imresamu/postgis:17-3.5-alpine}
+    environment:
+      POSTGRES_DB: ${DB_NAME:-haeuserbuch}
+      POSTGRES_USER: ${DB_USER:-haeuserbuch}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-haeuserbuch_dev_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Optional: import a dump only when postgres_data is initialized for the first time.
+      # - ./dump.sql:/docker-entrypoint-initdb.d/05_dump.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-haeuserbuch} -d ${DB_NAME:-haeuserbuch}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+    restart: unless-stopped
+
+  tileserver:
+    image: ${TILESERVER_IMAGE:-maptiler/tileserver-gl:v5.4.0}
+    command: ["--config", "/config/config.json", "--public_url", "/tiles/"]
+    volumes:
+      - ${TILES_DIR:-./tiles}:/data:ro
+      - ./tileserver/config.json:/config/config.json:ro
+    healthcheck:
+      test: ["CMD-SHELL", "node /usr/src/app/src/healthcheck.js"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./haeuserbuch_backend
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/${DB_NAME:-haeuserbuch}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:-haeuserbuch}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-haeuserbuch_dev_password}
+      HAEUSERBUCH_UPLOAD_DIR: /uploads
+    volumes:
+      - ./haeuserbuch_backend:/app
+      - maven_cache:/root/.m2
+      - uploads_data:/uploads
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://127.0.0.1:8080/actuator/health >/dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+      start_period: 30s
+    restart: unless-stopped
+    init: true
+
+  frontend:
+    build:
+      context: ./haeuserbuch_frontend
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: development
+      NUXT_HOST: 0.0.0.0
+      NUXT_PORT: 3000
+      NUXT_API_BASE_URL: http://backend:8080
+      NUXT_TILESERVER_API_URL: http://tileserver:8080
+      CHOKIDAR_USEPOLLING: ${CHOKIDAR_USEPOLLING:-true}
+    volumes:
+      - ./haeuserbuch_frontend:/app
+      - frontend_node_modules:/app/node_modules
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+      tileserver:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    restart: unless-stopped
+    init: true
+
+volumes:
+  postgres_data:
+  uploads_data:
+  maven_cache:
+  frontend_node_modules:

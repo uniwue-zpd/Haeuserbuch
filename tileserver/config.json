@@ -1,0 +1,15 @@
+{
+  "options": {
+    "paths": {
+      "mbtiles": "/data"
+    }
+  },
+  "data": {
+    "nw08051": {
+      "mbtiles": "NW08051_new.mbtiles"
+    },
+    "nw08151": {
+      "mbtiles": "NW08151.mbtiles"
+    }
+  }
+}

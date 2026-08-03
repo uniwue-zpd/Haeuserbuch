@@ -1,4 +1,15 @@
+.git
+.idea
+.env
+.env.*
+!.env.example
 node_modules
+.pnpm-store
+.nuxt
+.nitro
 .output
+.data
+.cache
+coverage
 dist
 *.log
