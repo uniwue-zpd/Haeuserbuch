@@ -16,6 +16,7 @@
     "@formkit/nuxt": "^2.1.0",
     "@iconify-json/material-symbols": "^1.2.51",
     "@nuxt/icon": "^1.15.0",
+    "@nuxt/ui": "^4.10.0",
     "@pinia/nuxt": "^0.11.3",
     "@primeuix/themes": "^1.2.5",
     "@primevue/forms": "^4.3.3",
