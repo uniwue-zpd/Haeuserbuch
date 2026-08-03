@@ -64,7 +64,7 @@ jobs:
         working-directory: haeuserbuch_backend
         env:
           HAEUSERBUCH_UPLOAD_DIR: ${{ runner.temp }}/uploads
-        run: ./mvnw --batch-mode verify
+        run: mvn --batch-mode verify
 
   frontend:
     name: Frontend build
