@@ -1,0 +1,200 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '**'
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref_type != 'tag' }}
+
+jobs:
+  backend:
+    name: Backend build and test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgis/postgis:17-3.5-alpine
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: haeuserbuch_ci
+          POSTGRES_USER: haeuserbuch_ci
+          POSTGRES_PASSWORD: haeuserbuch_ci_password
+        options: >-
+          --health-cmd "pg_isready -U haeuserbuch_ci -d haeuserbuch_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      SPRING_PROFILES_ACTIVE: test
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/haeuserbuch_ci
+      SPRING_DATASOURCE_USERNAME: haeuserbuch_ci
+      SPRING_DATASOURCE_PASSWORD: haeuserbuch_ci_password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Set up Java 21
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: haeuserbuch_backend/pom.xml
+
+      - name: Create runtime directories
+        env:
+          HAEUSERBUCH_UPLOAD_DIR: ${{ runner.temp }}/uploads
+        run: mkdir -p "${HAEUSERBUCH_UPLOAD_DIR}"
+
+      - name: Verify with Maven
+        working-directory: haeuserbuch_backend
+        env:
+          HAEUSERBUCH_UPLOAD_DIR: ${{ runner.temp }}/uploads
+        run: ./mvnw --batch-mode verify
+
+  frontend:
+    name: Frontend build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@b0f76dfb45f55f8421693e4803ac7bb65143bd34 # v6
+        with:
+          version: '11.9.0'
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: haeuserbuch_frontend/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: haeuserbuch_frontend
+        run: pnpm install --frozen-lockfile
+
+      - name: Build frontend
+        working-directory: haeuserbuch_frontend
+        run: pnpm build
+
+  containers:
+    name: Container configuration and build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Validate development Compose model
+        run: docker compose config --quiet
+
+      - name: Validate production Compose model
+        run: >-
+          docker compose --env-file .env.prod.example
+          -f compose.prod.yaml
+          -f compose.prod.build.yaml
+          --profile backup
+          config --quiet
+
+      - name: Build production images
+        if: github.ref != 'refs/heads/dev' && github.ref_type != 'tag'
+        run: >-
+          docker compose --env-file .env.prod.example
+          -f compose.prod.yaml
+          -f compose.prod.build.yaml
+          --profile backup
+          build backend frontend db_backup
+
+  publish:
+    name: Publish ${{ matrix.component }} image
+    if: >-
+      github.event_name != 'pull_request' &&
+      (github.ref == 'refs/heads/dev' || github.ref_type == 'tag')
+    needs:
+      - backend
+      - frontend
+      - containers
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - component: backend
+            context: ./haeuserbuch_backend
+            dockerfile: ./haeuserbuch_backend/Dockerfile.prod
+          - component: frontend
+            context: ./haeuserbuch_frontend
+            dockerfile: ./haeuserbuch_frontend/Dockerfile.prod
+          - component: db-backup
+            context: ./db_backup
+            dockerfile: ./db_backup/Dockerfile
+
+    env:
+      REGISTRY: ghcr.io
+      DOCKER_METADATA_SHORT_SHA_LENGTH: 12
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8 # v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate image metadata
+        id: metadata
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/haeuserbuch-${{ matrix.component }}
+          flavor: latest=auto
+          tags: |
+            type=raw,value=dev,enable=${{ github.ref == 'refs/heads/dev' }}
+            type=sha,format=short,prefix=dev-,enable=${{ github.ref == 'refs/heads/dev' }}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}},enable=${{ !startsWith(github.ref_name, 'v0.') }}
+            type=sha,format=short,prefix=sha-
+
+      - name: Build and publish image
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.metadata.outputs.tags }}
+          labels: ${{ steps.metadata.outputs.labels }}
+          cache-from: type=gha,scope=${{ matrix.component }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.component }}
+          provenance: mode=max
+          sbom: true
