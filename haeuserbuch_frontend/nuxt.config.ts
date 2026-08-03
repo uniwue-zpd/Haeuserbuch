@@ -35,7 +35,7 @@ export default defineNuxtConfig({
     }
   },
   compatibilityDate: '2024-11-01',
-  devtools: { enabled: true },
+  devtools: { enabled: process.env.NODE_ENV !== 'production' },
   runtimeConfig: {
     apiBaseUrl: 'http://localhost:8080',
     tileserverApiUrl: 'http://localhost:8081'
@@ -63,9 +63,14 @@ export default defineNuxtConfig({
       scan: true,
     }
   },
-  css: ['./app/assets/css/main.css'],
+  css: ['~/assets/css/main.css'],
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      include: [
+          'maplibre-gl'
+      ]
+    },
     ssr: {
       // Bundle Terradraw + MapLibre for SSR to avoid named-export interop issues.
       noExternal: ['@watergis/maplibre-gl-terradraw', 'maplibre-gl']

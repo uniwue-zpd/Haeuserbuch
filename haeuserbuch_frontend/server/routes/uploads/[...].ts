@@ -3,8 +3,6 @@ import { joinURL } from 'ufo';
 
 export default defineEventHandler((event: H3Event) => {
     const proxyUrl = useRuntimeConfig(event).apiBaseUrl;
-    const path = event.path.replace(/^\/api/, '');
-    const target = joinURL(proxyUrl, path);
 
-    return proxyRequest(event, target);
+    return proxyRequest(event, joinURL(proxyUrl, event.path));
 });
