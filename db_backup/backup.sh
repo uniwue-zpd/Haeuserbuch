@@ -1,11 +1,12 @@
 #!/bin/sh
 
-set -e
+set -eu
 
 TIMESTAMP_DATE=$(date +"%Y-%m-%d")
 TIMESTAMP_TIME=$(date +"%H%M")
 
 BACKUP_DIR=/backups
+DB_PORT=${DB_PORT:-5432}
 
 mkdir -p "$BACKUP_DIR/$TIMESTAMP_DATE"
 

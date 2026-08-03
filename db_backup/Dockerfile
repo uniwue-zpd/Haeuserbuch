@@ -1,6 +1,4 @@
-FROM alpine:3.22
-
-RUN apk add --no-cache bash gzip busybox-suid postgresql-client
+FROM postgres:17-alpine
 
 COPY backup.sh /usr/local/bin/backup.sh
 RUN chmod +x /usr/local/bin/backup.sh

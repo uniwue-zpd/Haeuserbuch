@@ -1,0 +1,15 @@
+services:
+  backend:
+    build:
+      context: ./haeuserbuch_backend
+      dockerfile: Dockerfile.prod
+
+  frontend:
+    build:
+      context: ./haeuserbuch_frontend
+      dockerfile: Dockerfile.prod
+
+  db_backup:
+    build:
+      context: ./db_backup
+      dockerfile: Dockerfile
