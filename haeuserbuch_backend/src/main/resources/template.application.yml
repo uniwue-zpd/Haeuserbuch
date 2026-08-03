@@ -30,7 +30,7 @@ spring:
 
   config:
     files:
-      upload-dir: /files
+      upload-dir: /uploads
 
 server:
   compression:
