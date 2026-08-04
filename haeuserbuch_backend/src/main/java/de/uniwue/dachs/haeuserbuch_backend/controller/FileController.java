@@ -114,4 +114,15 @@ public class FileController {
                 .contentType(MediaType.parseMediaType(file.getType()))
                 .body(resource);
     }
+
+    /**
+     * Returns a list of files matching the search query.
+     * @param query Query to be used
+     * @return A {@link ResponseEntity} containing a list of {@link FileDTO} objects matching the search query.
+     * The response will have an HTTP status of 200 (OK) if the search is successful, or 404 (Not Found) if no files match the query.
+     */
+    @GetMapping("/search")
+    public ResponseEntity<List<FileDTO>> searchFiles(@RequestParam("query") String query) {
+        return ResponseEntity.ok(fileService.searchFiles(query));
+    }
 }

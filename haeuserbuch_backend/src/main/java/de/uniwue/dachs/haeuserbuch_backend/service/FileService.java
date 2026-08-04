@@ -226,4 +226,15 @@ public class FileService {
             throw new RuntimeException("Invalid file path: " + file.getPath(), e);
         }
     }
+
+    /**
+     * Searches for files by their names
+     * @param query Query to be used
+     * @return A {@link List} of {@link FileDTO} objects matching the query
+     */
+    public List<FileDTO> searchFiles(String query) {
+        return fileRepository.searchFiles(query).stream()
+                .map(fileMapper::toDTO)
+                .toList();
+    }
 }
