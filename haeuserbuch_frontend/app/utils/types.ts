@@ -375,3 +375,26 @@ export interface Page<T> {
     first: boolean;
     empty: boolean;
 }
+
+/**
+ * Data transfer object representing a stored file.
+ * Contains file metadata exposed by the backend API.
+ * The DTO does not include internal storage information such as
+ * the filesystem path.
+ */
+export interface FileDTO extends Auditable {
+    originalName: string | null;
+    name: string | null;
+    type: string | null;
+    size: number | null;
+}
+
+/**
+ * Parameters used for requesting paginated data.
+ * Corresponds to Spring Data's {@code Pageable} parameters.
+ */
+export interface Pageable {
+    page?: number;
+    size?: number;
+    sort?: string | string[];
+}
