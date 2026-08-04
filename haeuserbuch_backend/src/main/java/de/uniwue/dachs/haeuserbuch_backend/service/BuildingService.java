@@ -123,13 +123,9 @@ public class BuildingService {
     @Transactional
     @CacheEvict(value = "buildings", allEntries = true)
     public Feature createBuilding(Feature feature) {
-        try {
-            Building building = buildingMapper.FeatureToBuilding(feature);
-            Building savedBuilding = buildingRepository.save(building);
-            return buildingMapper.BuildingToFeature(savedBuilding);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Failed to create building: " + e.getMessage());
-        }
+        Building building = buildingMapper.FeatureToBuilding(feature);
+        Building savedBuilding = buildingRepository.save(building);
+        return buildingMapper.BuildingToFeature(savedBuilding);
     }
 
     /**
@@ -142,6 +138,7 @@ public class BuildingService {
     @CacheEvict(value = "buildings", allEntries = true)
     public Feature updateBuilding(Long id, Feature updatedFeature) {
         return buildingRepository.findById(id).map(entity -> {
+            Building mappedBuilding = buildingMapper.FeatureToBuilding(updatedFeature);
             BuildingProperties properties = (BuildingProperties) updatedFeature.getProperties();
             if (properties != null) {
                 entity.setYear(properties.getYear());
@@ -165,10 +162,11 @@ public class BuildingService {
                 entity.setLiterature(properties.getLiterature() != null
                         ? sourceMapper.SourceDTOsToSources(properties.getLiterature())
                         : new HashSet<>());
+                entity.setFiles(mappedBuilding.getFiles());
                 entity.setInternalNotes(properties.getInternalNotes());
                 entity.setGeneralNotes(properties.getGeneralNotes());
             }
-            entity.setCoordinates(buildingMapper.DTOToGeometry(updatedFeature.getGeometry()));
+            entity.setCoordinates(mappedBuilding.getCoordinates());
             Building updatedEntity = buildingRepository.save(entity);
             return buildingMapper.BuildingToFeature(updatedEntity);
         }).orElseThrow(() -> new NoSuchElementException("Building with ID " + id + " does not exist"));

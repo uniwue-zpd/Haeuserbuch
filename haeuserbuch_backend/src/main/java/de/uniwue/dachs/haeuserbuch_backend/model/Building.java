@@ -66,6 +66,14 @@ public class Building extends BaseEntity {
     )
     private Set<Source> literature = new HashSet<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "building_file",
+            joinColumns = @JoinColumn(name = "building_id"),
+            inverseJoinColumns = @JoinColumn(name = "file_id")
+    )
+    private Set<File> files = new HashSet<>();
+
     @Column(columnDefinition = "geometry(Geometry,4326)")
     private Geometry coordinates;
 }
