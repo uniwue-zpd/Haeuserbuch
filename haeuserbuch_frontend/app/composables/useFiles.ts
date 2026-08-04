@@ -3,11 +3,11 @@ import type { FileDTO, Pageable } from "~/utils/types";
 export const useFiles = () => {
 
     const getAllFiles = async (): Promise<FileDTO[]> => {
-        return await $fetch<FileDTO[]>("/api/files");
+        return await $fetch<FileDTO[]>("/api/files/all");
     };
 
     const getFiles = async (pageable?: Pageable) => {
-        return await $fetch("/api/files/page", {
+        return await $fetch("/api/files", {
             query: {
                 page: pageable?.page ?? 0,
                 size: pageable?.size ?? 10,

@@ -31,7 +31,7 @@ public class FileController {
      * Returns all stored files.
      * @return list of all files
      */
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<FileDTO>> getAllFiles() {
         return ResponseEntity.ok(fileService.getAllFiles());
     }
@@ -42,7 +42,7 @@ public class FileController {
      * @param pageable pagination parameters
      * @return paginated file list
      */
-    @GetMapping("/page")
+    @GetMapping
     public ResponseEntity<Page<FileDTO>> getFiles(Pageable pageable) {
         return ResponseEntity.ok(fileService.getFiles(pageable));
     }
