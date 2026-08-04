@@ -9,4 +9,6 @@ import lombok.Setter;
 public class FileDTO extends BaseEntity {
     private String originalName;
     private String name;
+    private String type;
+    private Long size;
 }

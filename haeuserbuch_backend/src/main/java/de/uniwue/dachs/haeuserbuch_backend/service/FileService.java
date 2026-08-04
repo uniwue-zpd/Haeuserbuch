@@ -26,6 +26,7 @@ import java.util.*;
 @Service
 public class FileService {
     private final FileMapper fileMapper;
+
     @Value("$config.files.upload-dir")
     private String uploadDirValue;
 
@@ -38,7 +39,7 @@ public class FileService {
 
     /**
      * Returns metadata for all stored files.
-     * @return list of all stored files as {@link FileDTO} objects
+     * @return list of stored files as {@link FileDTO} objects
      */
     public List<FileDTO> getAllFiles() {
         return fileMapper.toDTOs(fileRepository.findAll());
@@ -47,36 +48,46 @@ public class FileService {
     /**
      * Returns a paginated list of stored files.
      * @param pageable pagination and sorting information
-     * @return page containing {@link FileDTO} objects
+     * @return page of {@link FileDTO} objects
      */
     public Page<FileDTO> getFiles(Pageable pageable) {
-        Page<File> filePage = fileRepository.findAll(pageable);
-        return filePage.map(fileMapper::toDTO);
+        return fileRepository.findAll(pageable)
+                .map(fileMapper::toDTO);
     }
 
     /**
-     * Returns the metadata of a stored file by its ID.
-     * @param id ID of the file
-     * @return an {@link Optional} containing the corresponding {@link FileDTO},
-     * or an empty {@link Optional} if no file exists with the given ID
+     * Returns a stored file by its ID.
+     * @param id file ID
+     * @return optional containing {@link FileDTO} if found
      */
     public Optional<FileDTO> getFileById(Long id) {
-        return fileRepository.findById(id).map(fileMapper::toDTO);
+        return fileRepository.findById(id)
+                .map(fileMapper::toDTO);
+    }
+
+    /**
+     * Returns the internal {@link File} entity by ID.
+     * Used internally when filesystem information is required.
+     * @param id file ID
+     * @return stored {@link File} entity
+     */
+    public File getFileEntityById(Long id) {
+        return fileRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("File not found with id: " + id));
     }
 
     /**
      * Uploads multiple image files, stores them on disk, and persists their metadata.
-     * Only non-empty files with a content type starting with {@code image/} are processed.
-     * Each stored file gets a UUID-prefixed filename to avoid name collisions. For every
-     * successfully stored file, a {@link File} entity is created and saved in the database.
      * @param files array of multipart files to upload
-     * @return list of created {@link FileDTO} objects for all successfully processed files
-     * @throws IllegalArgumentException if {@code files} is {@code null} or empty
-     * @throws IOException if the upload directory cannot be created or a file cannot be written
+     * @return list of created {@link FileDTO} objects
+     * @throws IllegalArgumentException if no files are provided
+     * @throws IOException if files cannot be stored
      */
     @Transactional
     public List<FileDTO> uploadFiles(MultipartFile[] files) throws IllegalArgumentException, IOException {
-        if (files == null || files.length == 0) throw new IllegalArgumentException("No files provided");
+        if (files == null || files.length == 0) {
+            throw new IllegalArgumentException("No files provided");
+        }
 
         List<File> uploadedFiles = new ArrayList<>();
         Path uploadDir = Paths.get(uploadDirValue);
@@ -84,7 +95,7 @@ public class FileService {
         try {
             Files.createDirectories(uploadDir);
         } catch (IOException ex) {
-            throw new IOException("Could not create target directory" + uploadDir, ex);
+            throw new IOException("Could not create target directory " + uploadDir, ex);
         }
 
         for (MultipartFile file : files) {
@@ -94,18 +105,23 @@ public class FileService {
             if (contentType == null || !contentType.startsWith("image/")) continue;
 
             String originalFileName = file.getOriginalFilename();
-            String uuid = UUID.randomUUID() + "-" + originalFileName;
-            Path targetPath = uploadDir.resolve(uuid);
+            String filename = UUID.randomUUID() + "-" + originalFileName;
+            Path targetPath = uploadDir.resolve(filename);
 
             try (InputStream in = file.getInputStream()) {
-                Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException ex) {
-                throw new IOException("Could not store file " + originalFileName + ". Please try again!", ex);
-            }
 
+                Files.copy(
+                        in,
+                        targetPath,
+                        StandardCopyOption.REPLACE_EXISTING
+                );
+
+            } catch (IOException ex) {
+                throw new IOException("Could not store file " + originalFileName, ex);
+            }
             File savedFile = new File();
             savedFile.setOriginalName(originalFileName);
-            savedFile.setName(uuid);
+            savedFile.setName(filename);
             savedFile.setPath(targetPath.toString());
             savedFile.setType(contentType);
             savedFile.setSize(file.getSize());
@@ -116,39 +132,31 @@ public class FileService {
     }
 
     /**
-     * Deletes the stored file and its corresponding {@link File} entity.
-     * The physical file is removed from the file system before the database
-     * record is deleted.
-     * @param id ID of the file to delete
-     * @throws EntityNotFoundException if no {@link File} exists with the given ID
-     * @throws IOException if the file cannot be deleted from the file system
+     * Deletes a file from filesystem and database.
+     *
+     * @param id file ID
+     * @throws EntityNotFoundException if file does not exist
+     * @throws IOException if deletion fails
      */
     @Transactional
     public void deleteFileById(Long id) throws EntityNotFoundException, IOException {
-        File file = fileRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("File not found with id: " + id));
-
+        File file = getFileEntityById(id);
         Path filePath = Paths.get(file.getPath());
         try {
             Files.deleteIfExists(filePath);
         } catch (IOException ex) {
             throw new IOException("Could not delete file " + filePath, ex);
         }
-        fileRepository.deleteById(id);
+        fileRepository.delete(file);
     }
 
     /**
-     * Deletes multiple stored files and their corresponding {@link File} entities.
-     * Each file is removed from both the file system and the database. The result
-     * contains separate lists of successfully deleted files, files that could not
-     * be deleted, and IDs that do not exist.
-     * @param ids IDs of the files to delete
-     * @return a map containing the keys {@code success}, {@code fail}, and
-     * {@code notFound}, each mapping to the corresponding list of file IDs
-     * @throws IllegalArgumentException if the provided ID set is {@code null} or empty
+     * Deletes multiple files from filesystem and database.
+     * @param ids IDs of files to delete
+     * @return deletion result grouped by status
      */
     @Transactional
-    public Map<String, List<Long>> deleteFiles(Set<Long> ids) throws IllegalArgumentException {
+    public Map<String, List<Long>> deleteFiles(Set<Long> ids) {
         if (ids == null || ids.isEmpty()) {
             throw new IllegalArgumentException("No files to delete");
         }
@@ -172,7 +180,6 @@ public class FileService {
                 notFoundFiles.add(id);
             }
         }
-
         return Map.of(
                 "success", deletedFiles,
                 "fail", failedFiles,
@@ -181,23 +188,19 @@ public class FileService {
     }
 
     /**
-     * Loads the file content as a {@link Resource} for the given file ID.
-     * The method first resolves the file metadata from the database, then
-     * maps the stored file path to a {@link UrlResource}. It validates that
-     * the underlying file exists and is readable before returning the resource.
-     * @param id ID of the file to load
-     * @return readable file content as a {@link Resource}
-     * @throws EntityNotFoundException if no file metadata exists for the given ID
-     * @throws RuntimeException if the file path is invalid, missing, or not readable
+     * Loads file content as a {@link Resource}.
+     * @param id file ID
+     * @return file resource
      */
     public Resource getFileContent(Long id) {
-        File file = fileRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("File with id " + id + " not found"));
+        File file = getFileEntityById(id);
         try {
             Path filePath = Paths.get(file.getPath()).normalize();
             Resource resource = new UrlResource(filePath.toUri());
             if (!resource.exists() || !resource.isReadable()) {
-                throw new RuntimeException("File with id " + id + " exists but is not readable");
+                throw new RuntimeException(
+                        "File with id " + id + " exists but is not readable"
+                );
             }
             return resource;
         } catch (MalformedURLException e) {
