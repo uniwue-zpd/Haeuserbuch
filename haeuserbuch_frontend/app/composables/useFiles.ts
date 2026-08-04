@@ -42,6 +42,10 @@ export const useFiles = () => {
         return `/api/files/${id}/content`;
     };
 
+    const searchFiles = async (query: string): Promise<FileDTO[]> => {
+        return await $fetch<FileDTO[]>("/api/files/search", { query: { query } });
+    };
+
     return {
         getAllFiles,
         getFiles,
@@ -49,6 +53,7 @@ export const useFiles = () => {
         uploadFiles,
         deleteFileById,
         deleteFiles,
-        getFileContentUrl
+        getFileContentUrl,
+        searchFiles
     };
 };
