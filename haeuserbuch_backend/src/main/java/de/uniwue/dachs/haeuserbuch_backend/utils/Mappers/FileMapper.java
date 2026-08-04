@@ -34,6 +34,8 @@ public class FileMapper {
         fileDTO.setId(file.getId());
         fileDTO.setOriginalName(file.getOriginalName());
         fileDTO.setName(file.getName());
+        fileDTO.setType(file.getType());
+        fileDTO.setSize(file.getSize());
         fileDTO.setCreatedDate(file.getCreatedDate());
         fileDTO.setCreatedBy(file.getCreatedBy());
         fileDTO.setLastModifiedDate(file.getLastModifiedDate());
