@@ -1,6 +1,7 @@
 package de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.*;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.FilePreviewDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,6 +23,7 @@ public class BuildingProperties extends Properties {
     private String districtPropertyNumber;
     private Set<SourceDTO> sources = new HashSet<>();
     private Set<SourceDTO> literature = new HashSet<>();
+    private Set<FilePreviewDTO> files = new HashSet<>();
     private String internalNotes;
     private String generalNotes;
     private Date createdDate;

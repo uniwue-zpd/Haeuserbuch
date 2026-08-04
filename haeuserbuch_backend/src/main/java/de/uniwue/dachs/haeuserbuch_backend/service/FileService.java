@@ -1,11 +1,14 @@
 package de.uniwue.dachs.haeuserbuch_backend.service;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.FileDTO;
+import de.uniwue.dachs.haeuserbuch_backend.model.Building;
 import de.uniwue.dachs.haeuserbuch_backend.model.File;
+import de.uniwue.dachs.haeuserbuch_backend.repository.BuildingRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.FileRepository;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.FileMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
@@ -31,10 +34,12 @@ public class FileService {
     private String uploadDirValue;
 
     private final FileRepository fileRepository;
+    private final BuildingRepository buildingRepository;
 
-    public FileService(FileRepository fileRepository, FileMapper fileMapper) {
+    public FileService(FileRepository fileRepository, FileMapper fileMapper, BuildingRepository buildingRepository) {
         this.fileRepository = fileRepository;
         this.fileMapper = fileMapper;
+        this.buildingRepository = buildingRepository;
     }
 
     /**
@@ -139,8 +144,10 @@ public class FileService {
      * @throws IOException if deletion fails
      */
     @Transactional
+    @CacheEvict(value = "buildings", allEntries = true)
     public void deleteFileById(Long id) throws EntityNotFoundException, IOException {
         File file = getFileEntityById(id);
+        detachFileFromBuildings(id);
         Path filePath = Paths.get(file.getPath());
         try {
             Files.deleteIfExists(filePath);
@@ -156,6 +163,7 @@ public class FileService {
      * @return deletion result grouped by status
      */
     @Transactional
+    @CacheEvict(value = "buildings", allEntries = true)
     public Map<String, List<Long>> deleteFiles(Set<Long> ids) {
         if (ids == null || ids.isEmpty()) {
             throw new IllegalArgumentException("No files to delete");
@@ -170,6 +178,7 @@ public class FileService {
             if (optionalFile.isPresent()) {
                 File file = optionalFile.get();
                 try {
+                    detachFileFromBuildings(id);
                     Files.deleteIfExists(Paths.get(file.getPath()));
                     fileRepository.delete(file);
                     deletedFiles.add(id);
@@ -185,6 +194,16 @@ public class FileService {
                 "fail", failedFiles,
                 "notFound", notFoundFiles
         );
+    }
+
+    private void detachFileFromBuildings(Long fileId) {
+        List<Building> buildings = buildingRepository.findByFilesId(fileId);
+        if (buildings.isEmpty()) return;
+
+        for (Building building : buildings) {
+            building.getFiles().removeIf(file -> Objects.equals(file.getId(), fileId));
+        }
+        buildingRepository.saveAll(buildings);
     }
 
     /**
