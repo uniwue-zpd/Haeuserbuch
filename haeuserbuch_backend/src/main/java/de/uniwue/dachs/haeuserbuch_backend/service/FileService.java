@@ -8,6 +8,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,9 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class FileService {
@@ -34,6 +34,34 @@ public class FileService {
     public FileService(FileRepository fileRepository, FileMapper fileMapper) {
         this.fileRepository = fileRepository;
         this.fileMapper = fileMapper;
+    }
+
+    /**
+     * Returns metadata for all stored files.
+     * @return list of all stored files as {@link FileDTO} objects
+     */
+    public List<FileDTO> getAllFiles() {
+        return fileMapper.toDTOs(fileRepository.findAll());
+    }
+
+    /**
+     * Returns a paginated list of stored files.
+     * @param pageable pagination and sorting information
+     * @return page containing {@link FileDTO} objects
+     */
+    public Page<FileDTO> getFiles(Pageable pageable) {
+        Page<File> filePage = fileRepository.findAll(pageable);
+        return filePage.map(fileMapper::toDTO);
+    }
+
+    /**
+     * Returns the metadata of a stored file by its ID.
+     * @param id ID of the file
+     * @return an {@link Optional} containing the corresponding {@link FileDTO},
+     * or an empty {@link Optional} if no file exists with the given ID
+     */
+    public Optional<FileDTO> getFileById(Long id) {
+        return fileRepository.findById(id).map(fileMapper::toDTO);
     }
 
     /**
@@ -85,6 +113,71 @@ public class FileService {
         }
         fileRepository.saveAll(uploadedFiles);
         return fileMapper.toDTOs(uploadedFiles);
+    }
+
+    /**
+     * Deletes the stored file and its corresponding {@link File} entity.
+     * The physical file is removed from the file system before the database
+     * record is deleted.
+     * @param id ID of the file to delete
+     * @throws EntityNotFoundException if no {@link File} exists with the given ID
+     * @throws IOException if the file cannot be deleted from the file system
+     */
+    @Transactional
+    public void deleteFileById(Long id) throws EntityNotFoundException, IOException {
+        File file = fileRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("File not found with id: " + id));
+
+        Path filePath = Paths.get(file.getPath());
+        try {
+            Files.deleteIfExists(filePath);
+        } catch (IOException ex) {
+            throw new IOException("Could not delete file " + filePath, ex);
+        }
+        fileRepository.deleteById(id);
+    }
+
+    /**
+     * Deletes multiple stored files and their corresponding {@link File} entities.
+     * Each file is removed from both the file system and the database. The result
+     * contains separate lists of successfully deleted files, files that could not
+     * be deleted, and IDs that do not exist.
+     * @param ids IDs of the files to delete
+     * @return a map containing the keys {@code success}, {@code fail}, and
+     * {@code notFound}, each mapping to the corresponding list of file IDs
+     * @throws IllegalArgumentException if the provided ID set is {@code null} or empty
+     */
+    @Transactional
+    public Map<String, List<Long>> deleteFiles(Set<Long> ids) throws IllegalArgumentException {
+        if (ids == null || ids.isEmpty()) {
+            throw new IllegalArgumentException("No files to delete");
+        }
+
+        List<Long> deletedFiles = new ArrayList<>();
+        List<Long> failedFiles = new ArrayList<>();
+        List<Long> notFoundFiles = new ArrayList<>();
+
+        for (Long id : ids) {
+            Optional<File> optionalFile = fileRepository.findById(id);
+            if (optionalFile.isPresent()) {
+                File file = optionalFile.get();
+                try {
+                    Files.deleteIfExists(Paths.get(file.getPath()));
+                    fileRepository.delete(file);
+                    deletedFiles.add(id);
+                } catch (IOException e) {
+                    failedFiles.add(id);
+                }
+            } else {
+                notFoundFiles.add(id);
+            }
+        }
+
+        return Map.of(
+                "success", deletedFiles,
+                "fail", failedFiles,
+                "notFound", notFoundFiles
+        );
     }
 
     /**
