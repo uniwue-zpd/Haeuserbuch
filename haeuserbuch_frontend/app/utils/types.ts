@@ -390,6 +390,14 @@ export interface FileDTO extends Auditable {
 }
 
 /**
+ * Lightweight data transfer object representing a stored file
+ */
+export interface FilePreviewDTO {
+    id: number;
+    originalName: string;
+}
+
+/**
  * Parameters used for requesting paginated data.
  * Corresponds to Spring Data's {@code Pageable} parameters.
  */

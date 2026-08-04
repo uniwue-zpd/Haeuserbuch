@@ -67,6 +67,7 @@ export interface BuildingProperties {
     sources: SourceDTO[] | [];
     literature: SourceDTO[] | [];
     internalNotes: string | null;
+    files: FileDTO[] | [];
     generalNotes: string | null;
     createdDate: number | null;
     createdBy: string | null;

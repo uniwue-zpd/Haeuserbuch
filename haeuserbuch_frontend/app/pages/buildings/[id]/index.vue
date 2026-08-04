@@ -19,6 +19,7 @@ const route = useRoute();
 const building_id = Number(route.params.id);
 
 const building_store = useBuildingStore();
+const fileApi = useFiles();
 const person_store = usePersonStore();
 const tile_store = useTileStore();
 const { data: buildingItem, error: hasError, pending: isLoading } = await useAsyncData(`building-${building_id}`, () => building_store.getBuilding(building_id));
@@ -31,6 +32,7 @@ const addressesCurrent = computed(() =>
 const addressesOld = computed(() =>
     buildingItemProperties.value?.addresses.filter(address => String(address.fromDate ?? '') !== '2025') ?? []
 );
+const buildingFiles = computed(() => buildingItemProperties.value?.files ?? []);
 
 // Get bounds
 const bounds = computed(() => {
@@ -319,6 +321,44 @@ onBeforeUnmount(() => {
         <div v-else class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
           <p class="text-sm text-gray-500 font-medium">Bisher keine Relationen gefunden</p>
         </div>
+      </div>
+      <div
+          v-if="buildingFiles.length"
+          class="roboto-plain flex flex-col gap-3 p-4 rounded-lg shadow-lg border border-gray-300"
+      >
+        <h2 class="text-2xl font-semibold montserrat-headline">
+          Bilder
+        </h2>
+        <Galleria
+            :value="buildingFiles"
+            :numVisible="3"
+            :showThumbnails="buildingFiles.length > 4"
+            :showIndicators="buildingFiles.length > 1"
+            :showItemNavigators="buildingFiles.length > 1"
+            class="max-w-3xl mx-auto"
+        >
+          <template #item="{ item }">
+            <div class="flex flex-col gap-2">
+              <div class="flex justify-center items-center h-70 bg-gray-100 rounded-lg overflow-hidden">
+                <Image
+                    :src="fileApi.getFileContentUrl(item.id)"
+                    :alt="item.originalName"
+                    preview
+                    class="max-h-65 max-w-full"
+                    imageClass="max-h-[260px] max-w-full object-contain rounded-lg"
+                />
+              </div>
+              <span class="text-sm text-gray-500 text-center">{{ item.originalName }}</span>
+            </div>
+          </template>
+          <template #thumbnail="{ item }">
+            <img
+                :src="fileApi.getFileContentUrl(item.id)"
+                :alt="item.originalFilename"
+                class="w-20 h-14 object-cover rounded-md"
+            />
+          </template>
+        </Galleria>
       </div>
       <div class="roboto-plain flex flex-col gap-5 p-4 rounded-lg shadow-lg border border-gray-300">
         <h2 class="text-2xl font-semibold montserrat-headline">Über den Eintrag</h2>
