@@ -10,7 +10,6 @@
           Die Bürgermatrikel der Jahre 1405 bis 1613 des Würzburger Stadtarchivs
         </h1>
         <h2 class="font-semibold text-lg montserrat-headline">Stadtarchiv Würzburg, RB 207–209, 211–213, 215</h2>
-        <div class="roboto-plain">Stand: 15.6.2026 / RS / CN</div>
       </div>
       <hr class="border-gray-200"/>
       <div class="flex flex-col gap-2 text-justify roboto-plain">
