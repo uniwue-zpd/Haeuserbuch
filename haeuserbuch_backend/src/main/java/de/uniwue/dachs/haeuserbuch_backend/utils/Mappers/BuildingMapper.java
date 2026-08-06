@@ -22,14 +22,16 @@ public class BuildingMapper {
     private final BuildingNameMapper buildingNameMapper;
     private final BuildingRepository buildingRepository;
     private final AddressMapper addressMapper;
+    private final FileMapper fileMapper;
 
-    public BuildingMapper(SourceMapper sourceMapper, DistrictMapper districtMapper, QuarterMapper quarterMapper, BuildingNameMapper buildingNameMapper, BuildingRepository buildingRepository, AddressMapper addressMapper) {
+    public BuildingMapper(SourceMapper sourceMapper, DistrictMapper districtMapper, QuarterMapper quarterMapper, BuildingNameMapper buildingNameMapper, BuildingRepository buildingRepository, AddressMapper addressMapper, FileMapper fileMapper) {
         this.sourceMapper = sourceMapper;
         this.districtMapper = districtMapper;
         this.quarterMapper = quarterMapper;
         this.buildingNameMapper = buildingNameMapper;
         this.buildingRepository = buildingRepository;
         this.addressMapper = addressMapper;
+        this.fileMapper = fileMapper;
     }
 
     public Feature BuildingToFeature(Building building) {
@@ -49,6 +51,7 @@ public class BuildingMapper {
         properties.setDistrictPropertyNumber(building.getDistrictPropertyNumber());
         properties.setSources(sourceMapper.SourcesToDTOs(building.getSources()));
         properties.setLiterature(sourceMapper.SourcesToDTOs(building.getLiterature()));
+        properties.setFiles(fileMapper.toPreviewDTOs(building.getFiles()));
         properties.setInternalNotes(building.getInternalNotes());
         properties.setGeneralNotes(building.getGeneralNotes());
         properties.setCreatedDate(building.getCreatedDate());
@@ -86,6 +89,7 @@ public class BuildingMapper {
                 building.setDistrictPropertyNumber(properties.getDistrictPropertyNumber());
                 building.setSources(sourceMapper.SourceDTOsToSources(properties.getSources()));
                 building.setLiterature(sourceMapper.SourceDTOsToSources(properties.getLiterature()));
+                building.setFiles(fileMapper.toFiles(properties.getFiles()));
                 building.setInternalNotes(properties.getInternalNotes());
                 building.setGeneralNotes(properties.getGeneralNotes());
             } else {

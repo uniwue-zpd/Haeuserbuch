@@ -15,7 +15,8 @@ type EntityTypes =
     | 'religion'
     | 'source'
     | 'street'
-    | 'weapon';
+    | 'weapon'
+    | 'file';
 
 const entityType: EntityTypes = props.context?.entityType;
 const isMultiple: boolean = props.context?.isMultiple;
@@ -33,6 +34,7 @@ const religionStore = useReligionStore();
 const sourceStore = useSourceStore();
 const streetStore = useStreetStore();
 const weaponStore = useWeaponStore();
+const fileApi = useFiles();
 
 const debouncedSearch = debounce(async (query: string) => {
   loading.value = true;
@@ -67,6 +69,13 @@ const debouncedSearch = debounce(async (query: string) => {
     case 'weapon':
       suggestions.value = await weaponStore.searchWeapons(query);
       break;
+    case 'file':
+      const files = await fileApi.searchFiles(query);
+      suggestions.value = files.map(file => ({
+        id: file.id,
+        originalName: file.originalName
+      }));
+      break;
   }
   loading.value = false;
 }, 300);
@@ -82,18 +91,35 @@ const value = computed({
 </script>
 
 <template>
-  <AutoComplete
-      v-model="value"
-      :suggestions="suggestions"
-      :loading="loading"
-      @complete="onComplete"
-      @clear="isMultiple ? props.context?.node.input([]) : props.context?.node.input(null)"
-      :optionLabel="optionLabel"
-      class="min-w-full"
-      :dropdown="!isMultiple"
-      showClear
-      :multiple="isMultiple"
-  />
+  <div>
+    <AutoComplete
+        v-model="value"
+        :suggestions="suggestions"
+        :loading="loading"
+        @complete="onComplete"
+        @clear="isMultiple ? props.context?.node.input([]) : props.context?.node.input(null)"
+        :optionLabel="optionLabel"
+        class="min-w-full"
+        :dropdown="!isMultiple"
+        showClear
+        :multiple="isMultiple"
+    >
+      <template #option="{ option }">
+        <div
+            v-if="entityType === 'file'"
+            class="flex items-center gap-3"
+        >
+          <img
+              :src="fileApi.getFileContentUrl(option.id)"
+              class="w-10 h-10 rounded-md object-cover border shrink-0"
+              alt="Preview"
+          />
+          <span class="truncate">{{ option.originalName }}</span>
+        </div>
+        <span v-else>{{ option[optionLabel] }}</span>
+      </template>
+    </AutoComplete>
+  </div>
 </template>
 
 <style scoped>

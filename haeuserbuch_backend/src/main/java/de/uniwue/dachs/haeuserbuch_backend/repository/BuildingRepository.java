@@ -10,13 +10,20 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BuildingRepository extends JpaRepository<Building, Long>, JpaSpecificationExecutor<Building> {
     @Override
     @NonNull
-    @EntityGraph(attributePaths = {"sources"})
+    @EntityGraph(attributePaths = {"sources", "files"})
     List<Building> findAll();
+
+    @Override
+    @EntityGraph(attributePaths = {"sources", "files"})
+    Optional<Building> findById(@NonNull Long id);
+
+    List<Building> findByFilesId(Long fileId);
 
     @Query("""
         SELECT DISTINCT b FROM Building b

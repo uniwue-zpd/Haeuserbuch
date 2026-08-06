@@ -389,6 +389,15 @@ onBeforeUnmount(() => {
                   prefix-icon="list"
                   outer-class="max-w-full"
               />
+              <FormKit
+                type="entityAutocomplete"
+                entityType="file"
+                name="files"
+                optionLabel="originalName"
+                label="Dateien (Mehrfachauswahl möglich)"
+                :isMultiple="true"
+                outer-class="max-w-full"
+              />
             </div>
           </div>
         </FormKit>
