@@ -27,6 +27,7 @@
 
 :root {
   --ui-primary: black;
+  --ui-bg: #fafafa;
   --p-tabs-tab-active-border-color: #1e293b !important;
   --p-tabs-tab-active-color: #1e293b !important;
 }
