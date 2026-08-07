@@ -34,6 +34,7 @@
 
 .dark {
   --ui-primary: white;
+  --ui-bg: #0c0c0c;
 }
 
 #__nuxt {
