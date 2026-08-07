@@ -31,68 +31,51 @@ useHead(() => ({
 
 <template>
   <QuarterSkeleton v-if="isLoading" />
-  <Card v-else>
-    <template #title>
-      <h1 class="text-3xl font-bold text-black">{{ quarterItem?.name }}</h1>
-    </template>
-    <template #content>
-      <div class="flex flex-col gap-2">
-        <div v-show="quarterItem?.description">
-          <div class="text-xs font-bold">Beschreibung</div>
-          <div>{{ quarterItem?.description }}</div>
+  <div v-else class="flex min-h-full flex-col gap-4">
+    <Card>
+      <template #title>
+        <h1 class="text-3xl font-bold text-black">{{ quarterItem?.name }}</h1>
+      </template>
+      <template #content>
+        <div class="flex flex-col gap-2">
+          <div v-show="quarterItem?.description">
+            <div class="text-xs font-bold">Beschreibung</div>
+            <div>{{ quarterItem?.description }}</div>
+          </div>
+          <Divider />
+          <div v-show="relatedBuildings.length > 0" class="flex flex-col gap-2">
+            <h2 class="text-lg font-bold text-black">Zugeordnete Gebäude</h2>
+            <DataTable :value="relatedBuildings" paginator :rows="10" stripedRows>
+              <Column
+                field="districtPropertyNumber"
+                header="Bezeichnung"
+                :sortable="true"
+              >
+                <template #body="{ data }">
+                  <NuxtLink
+                    :to="`/buildings/${data.id}`"
+                    class="font-bold text-black"
+                  >
+                    {{ data.districtPropertyNumber }}
+                  </NuxtLink>
+                </template>
+              </Column>
+            </DataTable>
+          </div>
         </div>
-        <Divider />
-        <div v-show="relatedBuildings.length > 0" class="flex flex-col gap-2">
-          <h2 class="text-lg font-bold text-black">Zugeordnete Gebäude</h2>
-          <DataTable :value="relatedBuildings" paginator :rows="10" stripedRows>
-            <Column
-              field="districtPropertyNumber"
-              header="Bezeichnung"
-              :sortable="true"
-            >
-              <template #body="{ data }">
-                <NuxtLink
-                  :to="`/buildings/${data.id}`"
-                  class="font-bold text-black"
-                >
-                  {{ data.districtPropertyNumber }}
-                </NuxtLink>
-              </template>
-            </Column>
-          </DataTable>
-        </div>
-      </div>
-    </template>
-    <template #footer>
-      <div class="flex flex-col gap-2">
+      </template>
+      <template #footer>
         <Panel header="Notizen" toggleable v-show="quarterItem?.generalNotes">
           <template #header>
             <p class="text-sm text-black font-bold">Notizen</p>
           </template>
           <p class="text-sm text-black">{{ quarterItem?.generalNotes }}</p>
         </Panel>
-        <Divider />
-        <div class="flex flex-col">
-          <div
-            v-if="quarterItem?.createdDate"
-            class="flex flex-row space-x-2 text-sm text-black"
-          >
-            <p>Erstellt am:</p>
-            <p>{{ new Date(quarterItem?.createdDate).toLocaleDateString() }}</p>
-          </div>
-          <div
-            v-if="quarterItem?.lastModifiedDate"
-            class="flex flex-row space-x-2 text-sm text-black"
-          >
-            <p>Stand:</p>
-            <p>
-              {{ new Date(quarterItem?.lastModifiedDate).toLocaleDateString() }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </template>
-  </Card>
+      </template>
+    </Card>
+    <UIContentMetadata
+      :created-date="quarterItem?.createdDate"
+      :last-modified-date="quarterItem?.lastModifiedDate"
+    />
+  </div>
 </template>
-
-<style scoped></style>

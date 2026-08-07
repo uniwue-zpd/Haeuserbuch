@@ -89,7 +89,7 @@ onBeforeUnmount(() => {
 <template>
   <UniversalSkeleton v-if="isLoading" />
   <FetchError v-else-if="hasError" :error="hasError" />
-  <div v-else class="place-page">
+  <div v-else class="place-page flex min-h-full flex-col gap-8">
     <header class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
       <div>
         <h1 class="mt-1 text-4xl font-bold tracking-tight text-highlighted">
@@ -165,32 +165,15 @@ onBeforeUnmount(() => {
         </div>
       </section>
 
-      <section class="bento-card lg:col-span-5">
-        <div class="bento-card-heading">
-          <h2>Über den Eintrag</h2>
-        </div>
-        <div class="detail-list">
-          <div v-if="properties.createdDate" class="detail-row">
-            <p class="detail-label">Erstellt am</p>
-            <p class="text-highlighted">{{ new Date(properties.createdDate).toLocaleDateString() }}</p>
-          </div>
-          <div v-if="properties.lastModifiedDate" class="detail-row">
-            <p class="detail-label">Zuletzt aktualisiert am</p>
-            <p class="text-highlighted">{{ new Date(properties.lastModifiedDate).toLocaleDateString() }}</p>
-          </div>
-        </div>
-      </section>
     </div>
+    <UIContentMetadata
+      :created-date="properties?.createdDate"
+      :last-modified-date="properties?.lastModifiedDate"
+    />
   </div>
 </template>
 
 <style scoped>
-.place-page {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
 .place-bento-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);

@@ -31,6 +31,25 @@ const { data: naturalizationEntry } = await useAsyncData(
     citizenshipStore.filterCitizenships({ "naturalizedperson-id": personId }),
 );
 
+const hasProfileContent = computed(() => {
+  const person = personItem.value;
+  return Boolean(
+    person &&
+      (person.firstName ||
+        person.lastName ||
+        person.sex ||
+        person.altNames.length ||
+        person.isCitizen ||
+        naturalizationEntry.value?.length ||
+        person.associatedBuilding ||
+        person.religion?.originalText ||
+        person.weapons?.length),
+  );
+});
+const hasOriginContent = computed(() => {
+  const origin = personItem.value?.origin;
+  return Boolean(origin && (origin.originalText || origin.places.length || origin.certainty));
+});
 useHead(() => ({
   title: personItem.value
     ? `${personItem.value.fullName} - Personenverzeichnis`
@@ -43,36 +62,41 @@ useHead(() => ({
   <FetchError v-else-if="hasError" :error="hasError" />
   <div
     v-else-if="personItem"
-    class="flex flex-col gap-4 p-4 rounded-lg shadow-lg border-2 border-gray-300"
+    class="person-page flex min-h-full flex-col gap-8"
   >
-    <div class="flex flex-row justify-between">
-      <h1 class="text-3xl font-bold">{{ personItem.fullName }}</h1>
+    <header class="person-page__header">
+      <h1 class="person-title">{{ personItem.fullName }}</h1>
       <TaskBar :id="personId" entity_type="persons" />
-    </div>
-    <div class="flex flex-col gap-4">
+    </header>
+    <div class="person-bento-grid">
       <div
-        class="flex flex-col gap-5 p-4 rounded-lg shadow-lg border border-gray-300"
+        v-if="hasProfileContent"
+        class="person-card person-card--profile"
       >
-        <h2 class="text-2xl font-semibold">Über die Person</h2>
+        <h2>Über die Person</h2>
         <div
           v-if="personItem.firstName || personItem.lastName"
-          class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
+          class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
         >
-          <p class="text-sm text-gray-500 font-medium">Vor- und Nachname</p>
-          <p class="font-semibold">
-            {{ personItem.firstName }} {{ personItem.lastName }}
-          </p>
+          <template v-if="personItem.firstName">
+            <p class="text-sm text-gray-500 font-medium">Vorname</p>
+            <p class="font-semibold">{{ personItem.firstName }}</p>
+          </template>
+          <template v-if="personItem.lastName">
+            <p class="text-sm text-gray-500 font-medium">Nachname</p>
+            <p class="font-semibold">{{ personItem.lastName }}</p>
+          </template>
         </div>
         <div
           v-if="personItem.sex"
-          class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
+          class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
         >
           <p class="text-sm text-gray-500 font-medium">Geschlecht</p>
           <p class="font-semibold">{{ personItem.sex }}</p>
         </div>
         <div
           v-if="personItem.altNames.length > 0"
-          class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
+          class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
         >
           <p class="text-sm text-gray-500 font-medium">Namensvarianten</p>
           <ul class="list-inside list-disc">
@@ -83,7 +107,7 @@ useHead(() => ({
         </div>
         <div
           v-if="personItem.isCitizen"
-          class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
+          class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
         >
           <p class="text-sm text-gray-500 font-medium">Bürger?</p>
           <Icon
@@ -93,7 +117,7 @@ useHead(() => ({
         </div>
         <div
           v-if="naturalizationEntry && naturalizationEntry.length > 0"
-          class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
+          class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
         >
           <p class="text-sm text-gray-500 font-medium">
             Nachweis der Einbürgerung
@@ -106,7 +130,7 @@ useHead(() => ({
         </div>
         <div
           v-if="personItem.associatedBuilding"
-          class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
+          class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
         >
           <p class="text-sm text-gray-500 font-medium">Bezug zum Gebäude</p>
           <div>
@@ -119,17 +143,19 @@ useHead(() => ({
           </div>
         </div>
         <div
-          v-if="personJob"
-          class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
+          class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
         >
           <p class="text-sm text-gray-500 font-medium">Berufliche Situation</p>
           <div>
-            <PersonJobPreview :job="personJob" />
+            <PersonJobPreview v-if="personJob" :job="personJob" />
+            <p v-else class="text-sm text-muted">
+              Bisher keine berufliche Situation erfasst
+            </p>
           </div>
         </div>
         <div
           v-if="personReligion && personReligion.originalText"
-          class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
+          class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
         >
           <p class="text-sm text-gray-500 font-medium">
             Religiöse Zugehörigkeit
@@ -140,7 +166,7 @@ useHead(() => ({
         </div>
         <div
           v-if="personWeapons && personWeapons.length > 0"
-          class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
+          class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
         >
           <p class="text-sm text-gray-500 font-medium">Bewaffnung</p>
           <div>
@@ -149,15 +175,15 @@ useHead(() => ({
         </div>
       </div>
       <PersonOriginPreview
-        v-if="personItem && personItem.origin"
+        v-if="hasOriginContent && personItem?.origin"
         :personId="personId"
         :personOrigin="personItem.origin"
       />
       <div
         v-if="personItem.generalNotes"
-        class="flex flex-col gap-5 p-4 rounded-lg shadow-lg border border-gray-300"
+        class="person-card"
       >
-        <h2 class="text-2xl font-semibold">Notizen und Anmerkungen</h2>
+        <h2>Notizen und Anmerkungen</h2>
         <div class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
           <p class="text-sm text-gray-500 font-medium">Anmerkungen</p>
           <p class="text-justify">{{ personItem.generalNotes }}</p>
@@ -170,34 +196,136 @@ useHead(() => ({
           <p class="text-justify">{{ personItem.internalNotes }}</p>
         </div>
       </div>
-      <div
-        class="flex flex-col gap-5 p-4 rounded-lg shadow-lg border border-gray-300"
-      >
-        <h2 class="text-2xl font-semibold">Über den Eintrag</h2>
-        <div
-          v-if="personItem.createdDate"
-          class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
-        >
-          <p class="text-sm text-gray-500 font-medium">Erstellt am</p>
-          <p class="text-justify">
-            {{ new Date(personItem.createdDate).toLocaleDateString() }}
-          </p>
-        </div>
-        <div
-          v-if="personItem.lastModifiedDate"
-          class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
-        >
-          <p class="text-sm text-gray-500 font-medium">
-            Zuletzt aktualisiert am
-          </p>
-          <p class="text-justify">
-            {{ new Date(personItem.lastModifiedDate).toLocaleDateString() }}
-          </p>
-        </div>
-        <!-- TO-DO: After Keycloak integration: createdBy & lastModifiedBy -->
-      </div>
     </div>
+    <UIContentMetadata
+      :created-date="personItem.createdDate"
+      :last-modified-date="personItem.lastModifiedDate"
+    />
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.person-page__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.person-title {
+  color: var(--ui-text-highlighted);
+  font-size: clamp(2.25rem, 5vw, 4.5rem);
+  font-weight: 750;
+  letter-spacing: -0.055em;
+  line-height: 0.98;
+}
+
+.person-bento-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.person-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1.25rem;
+  border: 1px solid rgb(209 213 219);
+  border-radius: 1rem;
+  background: var(--ui-bg);
+  padding: 1.25rem;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 0.06);
+}
+
+.person-card h2 {
+  color: var(--ui-text-highlighted);
+  font-size: 1.2rem;
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.person-card :deep(.border-l-4) {
+  gap: 0.45rem;
+  border-top: 1px solid var(--ui-border-muted);
+  border-left-width: 0;
+  padding: 0.75rem 0;
+}
+
+.person-card :deep(.border-l-4 > p:first-child) {
+  color: var(--ui-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.person-card :deep(.border-l-4 > p:not(:first-child)) {
+  color: var(--ui-text-highlighted);
+  line-height: 1.45;
+}
+
+.person-card--profile {
+  grid-row: span 2;
+}
+
+.person-bento-grid :deep(.person-origin-card) {
+  min-width: 0;
+  border: 1px solid rgb(209 213 219);
+  border-radius: 1rem;
+  background: var(--ui-bg);
+  padding: 1.25rem;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 0.06);
+}
+
+.person-bento-grid :deep(.person-origin-card h2) {
+  color: var(--ui-text-highlighted);
+  font-size: 1.2rem;
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.person-bento-grid :deep(.person-origin-card > div:not(.h-\[220px\])) {
+  gap: 0.45rem;
+  border-top: 1px solid var(--ui-border-muted);
+  padding: 0.75rem 0;
+}
+
+.person-bento-grid :deep(.person-origin-card .text-xs) {
+  color: var(--ui-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.person-bento-grid :deep(.person-origin-card .h-\[220px\]) {
+  border: 0;
+  border-radius: 0.75rem;
+  box-shadow: none;
+}
+
+@media (min-width: 1024px) {
+  .person-bento-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-auto-rows: minmax(10rem, auto);
+    align-items: start;
+  }
+
+  .person-card--profile {
+    grid-column: span 7;
+  }
+
+  .person-card--profile + * {
+    grid-column: span 5;
+  }
+
+  .person-card:not(.person-card--profile) {
+    grid-column: span 5;
+  }
+}
+
+@media (max-width: 640px) {
+  .person-page__header {
+    align-items: center;
+  }
+}
+</style>

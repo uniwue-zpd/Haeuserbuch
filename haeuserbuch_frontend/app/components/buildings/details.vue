@@ -39,10 +39,6 @@ const addressesOld = computed(() =>
   ),
 );
 
-function formatDate(value: number | null) {
-  if (!value) return null;
-  return new Intl.DateTimeFormat("de-DE").format(new Date(value));
-}
 </script>
 
 <template>
@@ -297,17 +293,6 @@ function formatDate(value: number | null) {
       </div>
     </section>
 
-    <section class="detail-section" :aria-labelledby="`${headingPrefix}-audit`">
-      <h2 :id="`${headingPrefix}-audit`">Über den Eintrag</h2>
-      <div v-if="formatDate(details.createdDate)" class="detail-row">
-        <p class="detail-label">Erstellt am</p>
-        <p>{{ formatDate(details.createdDate) }}</p>
-      </div>
-      <div v-if="formatDate(details.lastModifiedDate)" class="detail-row">
-        <p class="detail-label">Zuletzt aktualisiert am</p>
-        <p>{{ formatDate(details.lastModifiedDate) }}</p>
-      </div>
-    </section>
   </div>
 </template>
 

@@ -28,7 +28,7 @@ useHead(() => ({
 <template>
   <CitizenshipSkeleton v-if="isLoading" />
   <FetchError v-else-if="hasError" :error="hasError" />
-  <div v-else>
+  <div v-else class="flex min-h-full flex-col gap-4">
     <div
       v-if="citizenshipItem"
       class="flex flex-col gap-4 p-4 rounded-lg shadow-lg border-2 border-gray-300"
@@ -138,37 +138,12 @@ useHead(() => ({
             <SourcePreview :source="citizenshipItem.secondarySource" />
           </div>
         </div>
-        <div
-          class="flex flex-col gap-5 p-4 rounded-lg shadow-lg border border-gray-300"
-        >
-          <h2 class="text-2xl font-semibold">Über den Eintrag</h2>
-          <div
-            v-if="citizenshipItem.createdDate"
-            class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
-          >
-            <p class="text-sm text-gray-500 font-medium">Erstellt am</p>
-            <p class="text-justify">
-              {{ new Date(citizenshipItem.createdDate).toLocaleDateString() }}
-            </p>
-          </div>
-          <div
-            v-if="citizenshipItem.lastModifiedDate"
-            class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
-          >
-            <p class="text-sm text-gray-500 font-medium">
-              Zuletzt aktualisiert am
-            </p>
-            <p class="text-justify">
-              {{
-                new Date(citizenshipItem.lastModifiedDate).toLocaleDateString()
-              }}
-            </p>
-          </div>
-          <!-- TO-DO: After Keycloak integration: createdBy & lastModifiedBy -->
-        </div>
       </div>
     </div>
+    <UIContentMetadata
+      v-if="citizenshipItem"
+      :created-date="citizenshipItem.createdDate"
+      :last-modified-date="citizenshipItem.lastModifiedDate"
+    />
   </div>
 </template>
-
-<style scoped></style>

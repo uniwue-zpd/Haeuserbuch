@@ -80,8 +80,8 @@ function handleMapSelect(id: number) {
 </script>
 
 <template>
-  <AppShell main-class="mx-auto w-full grow max-w-[120rem] px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-    <div class="building-page">
+  <AppShell main-class="mx-auto flex w-full grow max-w-[120rem] flex-col px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+      <div class="building-page flex min-h-full flex-col gap-6">
       <header v-if="selectedBuilding" class="building-page__header">
         <h1 class="building-title">{{ buildingLabel(selectedBuilding) }}</h1>
         <div class="flex items-start gap-2">
@@ -127,17 +127,16 @@ function handleMapSelect(id: number) {
           <slot />
         </main>
       </div>
+      <UIContentMetadata
+        v-if="selectedBuilding"
+        :created-date="selectedBuilding.properties.createdDate"
+        :last-modified-date="selectedBuilding.properties.lastModifiedDate"
+      />
     </div>
   </AppShell>
 </template>
 
 <style scoped>
-.building-page {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
 .building-page__header {
   display: flex;
   align-items: flex-start;
