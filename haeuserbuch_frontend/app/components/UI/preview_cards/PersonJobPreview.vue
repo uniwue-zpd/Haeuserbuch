@@ -5,27 +5,54 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="inline-block">
-    <div class="flex flex-col gap-2 rounded-md shadow-md p-3 border-2 border-gray-300">
-      <div class="flex flex-row space-x-3 items-center">
-        <span class="text-sm font-semibold uppercase tracking-wide text-gray-500">Eingetragener Beruf:</span>
-        <span class="italic text-sm">{{ props.job.originalText }}</span>
-      </div>
-      <hr class="border"/>
-      <div v-if="props.job.jobCategory" class="flex flex-row space-x-3 items-center">
-        <span class="text-sm font-semibold uppercase tracking-wide text-gray-500">Kategorie:</span>
-        <NuxtLink
-            :to="`/jobs/${ props.job.jobCategory.id }`"
-            class="p-1.5 border-2 border-gray-300 rounded-lg shadow-sm hover:shadow-md font-semibold"
-        >
-          {{ props.job.jobCategory.name }}
-        </NuxtLink>
-      </div>
-
+  <div class="job-preview">
+    <div v-if="props.job.originalText" class="job-row">
+      <span class="preview-key">Eingetragener Beruf</span>
+      <span>{{ props.job.originalText }}</span>
+    </div>
+    <div v-if="props.job.jobCategory" class="job-row">
+      <span class="preview-key">Kategorie</span>
+      <NuxtLink :to="`/jobs/${props.job.jobCategory.id}`" class="job-link">
+        {{ props.job.jobCategory.name }}
+      </NuxtLink>
     </div>
   </div>
 </template>
 
 <style scoped>
+.job-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  border-top: 1px solid var(--ui-border-muted);
+  padding: 0.75rem 0;
+}
 
+.job-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.75rem;
+  color: var(--ui-text-highlighted);
+  font-size: 0.9rem;
+}
+
+.preview-key {
+  color: var(--ui-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.job-link {
+  color: var(--ui-text-highlighted);
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: 0.2rem;
+}
+
+.job-link:hover,
+.job-link:focus-visible {
+  color: var(--ui-primary);
+  outline: none;
+}
 </style>

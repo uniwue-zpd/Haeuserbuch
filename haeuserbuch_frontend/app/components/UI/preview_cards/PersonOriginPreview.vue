@@ -15,8 +15,8 @@ const props = defineProps<{
 const placeStore = usePlaceStore();
 const tile_store = useTileStore();
 
-const sources = computed(() => tile_store.sources);
-const layers = computed(() => tile_store.layers);
+const sources = computed(() => tile_store.baseSources);
+const layers = computed(() => tile_store.baseLayers);
 
 const originCertainty = ref<Record<string, { label: string; color: string }>>({
   IDENTIFIED: { label: "Identifiziert", color: "bg-green-400" },
@@ -86,7 +86,7 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="flex flex-col gap-5 p-4 rounded-lg shadow-lg border border-gray-300"
+    class="person-origin-card flex flex-col gap-5 p-4 rounded-lg shadow-lg border border-gray-300"
   >
     <h2 class="text-2xl font-semibold">Herkunft</h2>
     <div v-if="personOrigin.originalText" class="flex flex-col gap-1">

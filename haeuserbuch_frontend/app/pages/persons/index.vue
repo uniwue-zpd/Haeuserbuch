@@ -183,46 +183,44 @@ useHead(() => ({
 </script>
 
 <template>
-  <div class="w-full">
-    <div class="flex flex-col gap-2">
-      <h1 class="text-3xl font-bold text-black">Personen</h1>
-      <div
-        class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+  <div class="persons-page">
+    <header class="persons-page__header">
+      <h1 class="persons-title">Personen</h1>
+      <UPopover
+        mode="click"
+        :content="{ align: 'end', side: 'bottom', sideOffset: 8 }"
       >
-        <p class="text-lg font-medium">
-          Einträge insgesamt: {{ totalRecords }}
-        </p>
-        <UPopover
-          mode="click"
-          :content="{ align: 'end', side: 'bottom', sideOffset: 8 }"
-        >
-          <UButton
-            color="neutral"
-            variant="outline"
-            icon="i-lucide-info"
-            label="Hinweise"
-          />
+        <UButton
+          color="neutral"
+          variant="outline"
+          icon="i-lucide-info"
+          label="Hinweise"
+        />
 
-          <template #content>
-            <ul class="max-w-sm list-inside list-disc space-y-2 p-4 text-sm">
-              <li>
-                Beim Klicken auf den Namen der jeweiligen Person öffnet sich
-                die Seite mit zusätzlichen Informationen
-              </li>
-              <li>
-                Über die Sortierknöpfe in den Spaltenüberschriften können die
-                Werte alphabetisch sortiert werden
-              </li>
-            </ul>
-          </template>
-        </UPopover>
-      </div>
+        <template #content>
+          <ul class="max-w-sm list-inside list-disc space-y-2 p-4 text-sm">
+            <li>
+              Beim Klicken auf den Namen der jeweiligen Person öffnet sich
+              die Seite mit zusätzlichen Informationen
+            </li>
+            <li>
+              Über die Sortierknöpfe in den Spaltenüberschriften können die
+              Werte alphabetisch sortiert werden
+            </li>
+          </ul>
+        </template>
+      </UPopover>
+    </header>
+    <div class="persons-summary person-card">
+      <p>Einträge insgesamt: {{ totalRecords }}</p>
+    </div>
 
-      <div class="grid gap-6 lg:grid-cols-[18rem_minmax(0,1fr)]">
-        <aside class="h-fit overflow-hidden rounded-lg border border-default bg-default">
-          <div class="border-b border-default px-4 py-4">
-            <h2 class="text-xl font-semibold">Filter</h2>
-          </div>
+    <div class="persons-bento-grid">
+      <aside class="person-filter-card person-card">
+        <div class="person-card__heading">
+          <h2>Filter</h2>
+        </div>
+        <div class="person-filter-fields">
           <details open class="border-b border-default p-4">
             <summary class="cursor-pointer list-none text-base font-semibold">
               <span class="flex items-center justify-between">
@@ -282,8 +280,9 @@ useHead(() => ({
             </summary>
             <UInput v-model="filterValues.origin" class="mt-3 w-full" placeholder="Suchen..." />
           </details>
-        </aside>
-        <div class="min-w-0">
+        </div>
+      </aside>
+      <section class="person-table-card person-card">
           <UTable
             :data="rows"
             :columns="columns"
@@ -338,10 +337,89 @@ useHead(() => ({
               @update:page="onPageChange"
             />
           </div>
-        </div>
-      </div>
+      </section>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.persons-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.persons-page__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.persons-title {
+  color: var(--ui-text-highlighted);
+  font-size: clamp(2.25rem, 5vw, 4.5rem);
+  font-weight: 750;
+  letter-spacing: -0.055em;
+  line-height: 0.98;
+}
+
+.person-card {
+  border: 1px solid rgb(209 213 219);
+  border-radius: 1rem;
+  background: var(--ui-bg);
+  box-shadow: 0 8px 24px rgb(15 23 42 / 0.06);
+}
+
+.persons-summary {
+  width: fit-content;
+  padding: 0.8rem 1rem;
+  color: var(--ui-text-highlighted);
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+.persons-bento-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.person-filter-card,
+.person-table-card {
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+.person-filter-card h2 {
+  color: var(--ui-text-highlighted);
+  font-size: 1.2rem;
+  font-weight: 650;
+}
+
+.person-card__heading {
+  border-bottom: 1px solid var(--ui-border-muted);
+  padding: 1.25rem;
+}
+
+.person-filter-fields {
+  display: flex;
+  flex-direction: column;
+}
+
+.person-table-card :deep(table) {
+  border: 0;
+}
+
+.person-table-card > :deep(.flex.flex-col) {
+  padding: 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  .persons-bento-grid {
+    grid-template-columns: minmax(16rem, 18rem) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+</style>
