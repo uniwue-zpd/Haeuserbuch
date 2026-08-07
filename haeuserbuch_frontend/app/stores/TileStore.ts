@@ -22,8 +22,14 @@ export const useTileStore = defineStore('tile', () => {
     ]);
     const historicalSources = ref<Record<string, RasterSourceSpecification>>({});
     const historicalLayers = ref<RasterLayerSpecification[]>([]);
-    const sources = ref<Record<string, RasterSourceSpecification>>({ ...baseSources.value });
-    const layers = ref<RasterLayerSpecification[]>([...baseLayers.value]);
+    const sources = computed(() => ({
+        ...baseSources.value,
+        ...historicalSources.value,
+    }));
+    const layers = computed(() => [
+        ...baseLayers.value,
+        ...historicalLayers.value,
+    ]);
 
     const isLoaded = computed(() => tiles.value.length > 0);
 
@@ -43,7 +49,7 @@ export const useTileStore = defineStore('tile', () => {
 
     function getMaplibreSources(tileList: Tile[]): void {
         tileList.forEach(tile => {
-            if (!sources.value[tile.id]) {
+            if (!historicalSources.value[tile.id]) {
                 const source: RasterSourceSpecification = {
                     type: 'raster',
                     tiles: tile.tiles,
@@ -63,8 +69,6 @@ export const useTileStore = defineStore('tile', () => {
                 };
                 historicalSources.value[tile.id] = source;
                 historicalLayers.value.push(layer);
-                sources.value[tile.id] = source;
-                layers.value.push(layer);
             }
         });
     }
