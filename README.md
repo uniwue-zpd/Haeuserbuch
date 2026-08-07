@@ -66,13 +66,21 @@ Create the production environment file and replace its placeholder password:
 cp .env.prod.example .env.prod
 ```
 
-Also configure `TILES_DIR` and `BACKUP_DIR` there if their default directories should not be used. On ARM64 hosts, set:
+Also configure `TILES_DIR` and `BACKUP_DIR` there if their default directories should not be used. The configured PostGIS image supports both AMD64 and ARM64.
 
-```dotenv
-POSTGIS_IMAGE=imresamu/postgis:17-3.5-alpine
+Production mounts `dump.sql` automatically. Its objects are owned by `haeuserbuch_user`; the included initializer prepares that role and grants it to the configured `DB_USER` before importing the dump. PostgreSQL only runs these initialization scripts for a new `postgres_data` volume.
+
+If a production volume was initialized before this setup, or its initialization logs contain an error, it may contain only a partial database. If that volume does not contain data that must be retained, remove only the database volume and start the stack again:
+
+```bash
+docker compose --env-file .env.prod \
+  -f compose.prod.yaml \
+  -f compose.prod.build.yaml \
+  down
+docker volume rm haeuserbuch-prod_postgres_data
 ```
 
-To initialize production from `dump.sql`, uncomment the same initializer mount in `compose.prod.yaml` before its first startup.
+Use the project name from `COMPOSE_PROJECT_NAME` when it differs from `haeuserbuch-prod`. Take a backup before removing a volume that may contain production changes.
 
 Build and start the production stack:
 
