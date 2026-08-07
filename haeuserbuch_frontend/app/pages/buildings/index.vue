@@ -1,325 +1,523 @@
 <script setup lang="ts">
-import maplibregl, { type RasterLayerSpecification, type RasterSourceSpecification} from 'maplibre-gl';
-import "maplibre-gl/dist/maplibre-gl.css";
-import { computed, onMounted } from 'vue';
-import type { FeatureCollection } from "~/utils/GeoJsonTypes";
-import { initMap } from "~/service/map_init";
-import { FilterMatchMode } from "@primevue/core";
-import FetchError from "~/components/UI/FetchError.vue";
-import UniversalSkeleton from "~/components/UI/skeletons/UniversalSkeleton.vue";
+import { isBuildingFeature, type BuildingFeature } from "~/utils/GeoJsonTypes";
+import type { PersonPreviewDTO } from "~/utils/types";
 
+definePageMeta({ layout: "map" });
+
+const route = useRoute();
+const router = useRouter();
 const buildingStore = useBuildingStore();
-const tile_store = useTileStore();
-const { data: buildings, error: hasError, pending: isLoading } = await useAsyncData('buildings-feature-collection', () => buildingStore.getBuildings());
-const sources = computed(() => tile_store.sources);
-const layers = computed(() => tile_store.layers);
-const buildingCount = computed(() => buildings.value?.features.length);
-let map: maplibregl.Map | null = null;
 
-useHead(() => ({
-  title: 'Gebäude - Gebäudeverzeichnis',
+const {
+  data: buildings,
+  error: buildingsError,
+  pending: buildingsPending,
+  refresh: refreshBuildings,
+} = useAsyncData(
+  "buildings-feature-collection",
+  () => buildingStore.getBuildings(),
+  { lazy: true },
+);
+
+const search = ref("");
+const debouncedSearch = ref("");
+const district = ref("");
+const quarter = ref("");
+const objectType = ref("");
+const georeferenced = ref("");
+const notice = ref<string | null>(null);
+const isDesktop = ref(false);
+const viewportHeight = ref(800);
+const sheetState = ref<"collapsed" | "half" | "full">("half");
+const draggedSheetHeight = ref<number | null>(null);
+
+const collator = new Intl.Collator("de-DE", {
+  numeric: true,
+  sensitivity: "base",
+});
+let searchTimer: ReturnType<typeof setTimeout> | null = null;
+let desktopMedia: MediaQueryList | null = null;
+let noticeTimer: ReturnType<typeof setTimeout> | null = null;
+let dragStartY = 0;
+let dragStartHeight = 0;
+let dragMoved = false;
+
+const buildingFeatures = computed<BuildingFeature[]>(() =>
+  (buildings.value?.features ?? []).filter(isBuildingFeature),
+);
+const buildingById = computed(
+  () => new Map(buildingFeatures.value.map((feature) => [feature.id, feature])),
+);
+const districtOptions = computed(() =>
+  Array.from(
+    new Set(
+      buildingFeatures.value
+        .map((feature) => feature.properties.district?.name)
+        .filter(Boolean) as string[],
+    ),
+  ).sort(collator.compare),
+);
+const quarterOptions = computed(() =>
+  Array.from(
+    new Set(
+      buildingFeatures.value
+        .map((feature) => feature.properties.quarter?.name)
+        .filter(Boolean) as string[],
+    ),
+  ).sort(collator.compare),
+);
+const objectTypeOptions = computed(() =>
+  Array.from(
+    new Set(
+      buildingFeatures.value
+        .map((feature) => feature.properties.object)
+        .filter(Boolean) as string[],
+    ),
+  ).sort(collator.compare),
+);
+
+function normalize(value: string | number | null | undefined) {
+  return String(value ?? "")
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLocaleLowerCase("de-DE")
+    .trim();
+}
+
+const searchIndex = computed(
+  () =>
+    new Map(
+      buildingFeatures.value.map((feature) => {
+        const properties = feature.properties;
+        const addresses = properties.addresses.flatMap((address) => [
+          address.street?.name,
+          address.houseNumber,
+        ]);
+        const values = [
+          properties.districtPropertyNumber,
+          properties.propertyNumber,
+          ...properties.names.map((name) => name.name),
+          properties.object,
+          properties.partType,
+          properties.district?.name,
+          properties.quarter?.name,
+          ...addresses,
+        ];
+        return [feature.id, normalize(values.filter(Boolean).join(" "))];
+      }),
+    ),
+);
+
+function designation(feature: BuildingFeature) {
+  return (
+    feature.properties.districtPropertyNumber ||
+    feature.properties.names.find((name) => name.name)?.name ||
+    feature.properties.object ||
+    `Gebäude ${feature.id}`
+  );
+}
+
+const filteredBuildings = computed(() => {
+  const query = normalize(debouncedSearch.value);
+  return buildingFeatures.value
+    .filter((feature) => {
+      if (query && !searchIndex.value.get(feature.id)?.includes(query))
+        return false;
+      if (
+        district.value &&
+        feature.properties.district?.name !== district.value
+      )
+        return false;
+      if (quarter.value && feature.properties.quarter?.name !== quarter.value)
+        return false;
+      if (objectType.value && feature.properties.object !== objectType.value)
+        return false;
+      if (georeferenced.value === "yes" && !feature.geometry) return false;
+      if (georeferenced.value === "no" && feature.geometry) return false;
+      return true;
+    })
+    .sort((left, right) => {
+      const leftNamed = Boolean(left.properties.districtPropertyNumber);
+      const rightNamed = Boolean(right.properties.districtPropertyNumber);
+      if (leftNamed !== rightNamed) return leftNamed ? -1 : 1;
+      return (
+        collator.compare(designation(left), designation(right)) ||
+        left.id - right.id
+      );
+    });
+});
+const filteredBuildingIds = computed(() =>
+  filteredBuildings.value.map((feature) => feature.id),
+);
+
+function parseBuildingId(value: typeof route.query.building) {
+  if (typeof value !== "string" || !/^\d+$/.test(value)) return null;
+  const id = Number(value);
+  return Number.isSafeInteger(id) ? id : null;
+}
+
+const initialBuildingId = parseBuildingId(route.query.building);
+const selectedId = ref<number | null>(
+  initialBuildingId && buildingById.value.has(initialBuildingId)
+    ? initialBuildingId
+    : null,
+);
+const selectedBuilding = computed(() =>
+  selectedId.value ? (buildingById.value.get(selectedId.value) ?? null) : null,
+);
+const selectedIndex = computed(() =>
+  selectedId.value
+    ? filteredBuildings.value.findIndex(
+        (feature) => feature.id === selectedId.value,
+      )
+    : -1,
+);
+const hasPrevious = computed(() => selectedIndex.value > 0);
+const hasNext = computed(
+  () =>
+    selectedIndex.value >= 0 &&
+    selectedIndex.value < filteredBuildings.value.length - 1,
+);
+
+const {
+  data: associatedPeople,
+  error: associatedPeopleError,
+  pending: associatedPeoplePending,
+  refresh: refreshAssociatedPeople,
+} = useAsyncData(
+  "building-explorer-associated-people",
+  () =>
+    selectedId.value
+      ? $fetch<PersonPreviewDTO[]>("/api/persons/filter", {
+          query: { "associated-building-id": selectedId.value },
+        })
+      : Promise.resolve([]),
+  { default: () => [], lazy: true, watch: [selectedId] },
+);
+
+const sheetSnapHeights = computed(() => ({
+  collapsed: 72,
+  half: Math.round(viewportHeight.value * 0.45),
+  full: Math.round(viewportHeight.value * 0.88),
 }));
+const sheetHeight = computed(
+  () => draggedSheetHeight.value ?? sheetSnapHeights.value[sheetState.value],
+);
+const mapBottomPadding = computed(() =>
+  isDesktop.value ? 0 : sheetHeight.value,
+);
 
-const filters = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  'properties.districtPropertyNumber': { value: null, matchMode: FilterMatchMode.CONTAINS },
-  'properties.district.name': { value: null, matchMode: FilterMatchMode.IN }
+useHead(() => ({ title: "Gebäude entdecken - Gebäudeverzeichnis" }));
+
+function updateQueryBuilding(id: number | null) {
+  if (!import.meta.client) return;
+  const url = new URL(window.location.href);
+  const currentLocation = `${url.pathname}${url.search}${url.hash}`;
+  if (id === null) url.searchParams.delete("building");
+  else url.searchParams.set("building", String(id));
+  const nextLocation = `${url.pathname}${url.search}${url.hash}`;
+  if (nextLocation === currentLocation) return;
+
+  // Selection is local UI state. Pushing through the history adapter preserves
+  // deep links and Back/Forward without running a full Nuxt navigation per click.
+  router.options.history.push(nextLocation);
+}
+
+function selectBuilding(id: number) {
+  if (!buildingById.value.has(id)) return;
+  selectedId.value = id;
+  sheetState.value = "full";
+  updateQueryBuilding(id);
+  resetExplorerScroll();
+}
+
+function deselectBuilding() {
+  selectedId.value = null;
+  sheetState.value = "half";
+  updateQueryBuilding(null);
+  resetExplorerScroll();
+}
+
+function resetExplorerScroll() {
+  if (!import.meta.client || isDesktop.value) return;
+  requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" }));
+  window.setTimeout(() => window.scrollTo({ top: 0, behavior: "auto" }), 340);
+}
+
+function selectPrevious() {
+  if (!hasPrevious.value) return;
+  selectBuilding(filteredBuildings.value[selectedIndex.value - 1]!.id);
+}
+
+function selectNext() {
+  if (!hasNext.value) return;
+  selectBuilding(filteredBuildings.value[selectedIndex.value + 1]!.id);
+}
+
+function clearFilters() {
+  search.value = "";
+  debouncedSearch.value = "";
+  district.value = "";
+  quarter.value = "";
+  objectType.value = "";
+  georeferenced.value = "";
+}
+
+function showNotice(message: string) {
+  notice.value = message;
+  if (noticeTimer) clearTimeout(noticeTimer);
+  noticeTimer = setTimeout(() => {
+    notice.value = null;
+  }, 5000);
+}
+
+function cycleSheet() {
+  if (dragMoved) {
+    dragMoved = false;
+    return;
+  }
+  sheetState.value =
+    sheetState.value === "collapsed"
+      ? "half"
+      : sheetState.value === "half"
+        ? "full"
+        : "collapsed";
+}
+
+function startSheetDrag(event: PointerEvent) {
+  if (isDesktop.value) return;
+  dragStartY = event.clientY;
+  dragStartHeight = sheetHeight.value;
+  dragMoved = false;
+  window.addEventListener("pointermove", moveSheetDrag);
+  window.addEventListener("pointerup", endSheetDrag, { once: true });
+}
+
+function moveSheetDrag(event: PointerEvent) {
+  const movement = dragStartY - event.clientY;
+  if (Math.abs(movement) > 6) dragMoved = true;
+  draggedSheetHeight.value = Math.min(
+    sheetSnapHeights.value.full,
+    Math.max(sheetSnapHeights.value.collapsed, dragStartHeight + movement),
+  );
+}
+
+function endSheetDrag() {
+  window.removeEventListener("pointermove", moveSheetDrag);
+  const current = draggedSheetHeight.value ?? dragStartHeight;
+  const snaps = Object.entries(sheetSnapHeights.value) as Array<
+    ["collapsed" | "half" | "full", number]
+  >;
+  sheetState.value = snaps.reduce((closest, candidate) =>
+    Math.abs(candidate[1] - current) < Math.abs(closest[1] - current)
+      ? candidate
+      : closest,
+  )[0];
+  draggedSheetHeight.value = null;
+}
+
+function updateViewport() {
+  viewportHeight.value = window.innerHeight;
+  isDesktop.value = Boolean(desktopMedia?.matches);
+}
+
+function onKeydown(event: KeyboardEvent) {
+  if (event.key === "Escape" && selectedId.value) deselectBuilding();
+}
+
+watch(search, (value) => {
+  if (searchTimer) clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    debouncedSearch.value = value;
+  }, 180);
 });
 
-const districts = ref([
-  {type: 'I', value: 'I'},
-  {type: 'II', value: 'II'},
-  {type: 'III', value: 'III'},
-  {type: 'IV', value: 'IV'},
-  {type: 'V', value: 'V'},
-  {type: 'unbekannt', value: null},
-]);
+function validateBuildingQuery(value: typeof route.query.building) {
+  if (buildingsPending.value) return;
+  if (value === undefined) {
+    selectedId.value = null;
+    return;
+  }
+  const id = parseBuildingId(value);
+  if (id && buildingById.value.has(id)) {
+    selectedId.value = id;
+    return;
+  }
+  selectedId.value = null;
+  if (import.meta.client) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("building");
+    router.options.history.replace(`${url.pathname}${url.search}${url.hash}`);
+  }
+  showNotice("Das angeforderte Gebäude konnte nicht gefunden werden.");
+}
 
-onMounted(async () => {
-  map = initMap(
-      'map_buildings',
-      DEFAULT_MAP_CENTER,
-      14,
-      70,
-      sources.value as Record<string, RasterSourceSpecification>,
-      // @ts-ignore
-      layers.value as RasterLayerSpecification[]
-  );
-  map.on('load', () => {
-    if (!buildings.value) return;
-    map!.addSource('buildings', {
-      type: "geojson",
-      //@ts-ignore
-      data: {
-        ...buildings.value,
-        features: buildings.value.features.filter(f => f.geometry !== null)
-      } as FeatureCollection
-    });
-    map!.addLayer({
-      'id': 'buildings',
-      'type': 'fill-extrusion',
-      'source': 'buildings',
-      'layout': {},
-      'paint': {
-        'fill-extrusion-color': [
-          'match',
-          ['get', 'name', ['get', 'district']],
-          'I', '#e41a1c',
-          'II', '#377eb8',
-          'III', '#4daf4a',
-          'IV', '#ff7f00',
-          'V', '#984ea3',
-          '#999999'
-        ],
-        'fill-extrusion-opacity': 0.8,
-        'fill-extrusion-height': 10
-      },
-      filter: ['==', '$type', 'Polygon']
-    });
-    map!.addLayer({
-      'id': 'walls',
-      'type': 'line',
-      'source': 'buildings',
-      'layout': {
-        'line-cap': 'round',
-        'line-join': 'round'
-      },
-      'paint': {
-        'line-color': '#E66101',
-        'line-width': 7,
-        'line-opacity': 0.9,
-        'line-blur': 0.3,
-      },
-      filter: ['==', '$type', 'LineString']
-    });
-    map!.addLayer({
-      id: 'towers',
-      type: 'circle',
-      source: 'buildings',
-      paint: {
-        'circle-radius': 5,
-        'circle-color': '#E66101',
-        'circle-opacity': 0.9,
-        'circle-stroke-width': 2,
-        'circle-stroke-color': '#ffffff',
-        'circle-stroke-opacity': 0.9
-      },
-      filter: ['==', '$type', 'Point']
-    });
-  });
-  map.on('click', ['buildings', 'walls', 'towers'], (e) => {
-    if (!e.features || e.features.length === 0) {
-      console.warn('No features found');
-      return;
-    }
-    const popup_html = document.createElement('div');
-    popup_html.innerHTML = e.features[0]?.properties?.districtPropertyNumber || e.features[0]?.properties?.object || 'Unbekanntes Gebäude';
-    popup_html.setAttribute('class',  'cursor-pointer font-bold montserrat-headline');
-    const popup_link = `/buildings/${ e.features[0]?.id }`;
-    popup_html.addEventListener('click', () => {navigateTo(popup_link)});
-    const popup = new maplibregl.Popup()
-        .setLngLat(e.lngLat)
-        .setDOMContent(popup_html);
-    popup.addTo(map!);
-    map!.flyTo({
-      center: e.lngLat,
-      zoom: 17
-    });
-  });
-  map.on('mouseenter', ['buildings', 'walls', 'towers'], () => {
-    map!.getCanvas().style.cursor = 'pointer';
-  });
-  map.on('mouseleave', ['buildings', 'walls', 'towers'], () => {
-    map!.getCanvas().style.cursor = '';
-  });
+function syncSelectionFromLocation() {
+  const value = new URL(window.location.href).searchParams.get("building");
+  if (value === null) {
+    selectedId.value = null;
+    return;
+  }
+  validateBuildingQuery(value);
+}
+
+watch(() => route.query.building, validateBuildingQuery);
+
+watch(buildingsPending, (pending) => {
+  if (!pending) validateBuildingQuery(route.query.building);
+});
+
+watch(selectedId, (id) => {
+  if (id && !isDesktop.value) sheetState.value = "full";
+});
+
+onMounted(() => {
+  desktopMedia = window.matchMedia("(min-width: 1024px)");
+  updateViewport();
+  desktopMedia.addEventListener("change", updateViewport);
+  window.addEventListener("resize", updateViewport);
+  window.addEventListener("keydown", onKeydown);
+  window.addEventListener("popstate", syncSelectionFromLocation);
+  validateBuildingQuery(route.query.building);
 });
 
 onBeforeUnmount(() => {
-  if (map) {
-    map.remove();
-    map = null;
-  }
+  if (searchTimer) clearTimeout(searchTimer);
+  if (noticeTimer) clearTimeout(noticeTimer);
+  desktopMedia?.removeEventListener("change", updateViewport);
+  window.removeEventListener("resize", updateViewport);
+  window.removeEventListener("keydown", onKeydown);
+  window.removeEventListener("popstate", syncSelectionFromLocation);
+  window.removeEventListener("pointermove", moveSheetDrag);
+  window.removeEventListener("pointerup", endSheetDrag);
 });
 </script>
 
 <template>
-  <UniversalSkeleton v-if="isLoading"/>
-  <FetchError v-else-if="hasError" :error="hasError"/>
-  <div v-else class="flex flex-col gap-2">
-    <h1 class="text-3xl montserrat-headline font-bold">Die Häuser im Überblick</h1>
-    <Tabs value="0">
-      <TabList>
-        <Tab value="0" class="montserrat-headline font-semibold text-lg">Karte</Tab>
-        <Tab value="1" class="montserrat-headline font-semibold text-lg">Tabellarische Übersicht</Tab>
-        <Tab value="2" class="montserrat-headline font-semibold text-lg">Siehe auch</Tab>
-      </TabList>
-      <TabPanels>
-        <TabPanel value="0">
-          <div id="map_buildings" class="h-[50vh] md:h-[60vh] w-full rounded-md"/>
-        </TabPanel>
-        <TabPanel value="1">
-          <div class="flex flex-col gap-2">
-            <p class="roboto-plain text-base text-black">
-              Aktuell sind insgesamt <span class="font-semibold">{{ buildingCount }}</span> Gebäude erfasst.
-            </p>
-            <DataTable
-                :value="buildings?.features"
-                v-model:filters="filters" filter-display="row"
-                :global-filter-fields="['properties.districtPropertyNumber', 'properties.partType', 'properties.object', 'properties.quarter.name', 'properties.district.name']"
-                stateStorage="session" stateKey="dt-state-demo-session-buildings" paginator :rows="7"
-            >
-              <template #header>
-                <div class="flex flex-row justify-end">
-                  <IconField>
-                    <InputIcon>
-                      <i class="pi pi-search"/>
-                    </InputIcon>
-                    <InputText
-                        v-model="filters['global'].value"
-                        type="text"
-                        placeholder="Schlagwortsuche"
-                    />
-                  </IconField>
-                </div>
-              </template>
-              <Column field="properties.districtPropertyNumber" header="Bezeichnung" :sortable="true">
-                <template #body="{ data }">
-                  <NuxtLink
-                      :to="`/buildings/${data.id}`"
-                      class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md"
-                      prefetch
-                  >
-                    {{ data.properties.districtPropertyNumber || 'Ohne Bezeichnung' }}
-                  </NuxtLink>
-                </template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText
-                      v-model="filterModel.value"
-                      type="text" @input="filterCallback()"
-                      placeholder="Suchen..."
-                  />
-                </template>
-              </Column>
-              <Column field="properties.names" header="Namen" class="roboto-plain" :sortable="true">
-                <template #body="slotProps">
-                  <div v-if="slotProps.data.properties.names.length > 0">
-                    <ul class="list-disc list-inside">
-                      <li v-for="(name, index) in slotProps.data.properties.names" :key="index">
-                        {{ name.name }}
-                      </li>
-                    </ul>
-                  </div>
-                  <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
-                </template>
-              </Column>
-              <Column field="properties.partType" header="Bauteil" class="roboto-plain" :sortable="true">
-                <template #body="slotProps">
-                  <div v-if="slotProps.data.properties.partType">{{ slotProps.data.properties.partType }}</div>
-                  <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
-                </template>
-              </Column>
-              <Column field="properties.object" header="Objekt" class="roboto-plain" :sortable="true">
-                <template #body="slotProps">
-                  <div v-if="slotProps.data.properties.object">{{ slotProps.data.properties.object }}</div>
-                  <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
-                </template>
-              </Column>
-              <Column field="properties.quarter" header="Viertel" class="roboto-plain" :sortable="true">
-                <template #body="slotProps">
-                  <div v-if="slotProps.data.properties.quarter">
-                    <NuxtLink :to="`/quarters/${slotProps.data.properties.quarter.id}`">
-                      {{ slotProps.data.properties.quarter.name }}
-                    </NuxtLink>
-                  </div>
-                  <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</div>
-                </template>
-              </Column>
-              <Column
-                  filterField="properties.district.name" field="properties.district.name"
-                  :showFilterMenu="false"
-                  :sortable="true"
-                  header="Distrikt"
-                  class="roboto-plain"
-              >
-                <template #body="slotProps">
-                  <div v-if="slotProps.data.properties.district">
-                    <NuxtLink :to="`/districts/${slotProps.data.properties.district.id}`">
-                      {{ slotProps.data.properties.district.name }}
-                    </NuxtLink>
-                  </div>
-                  <div v-else class="roboto-italic p-2 bg-red-100 rounded-md">
-                    unbekannt
-                  </div>
-                </template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <MultiSelect
-                      v-model="filterModel.value"
-                      @change="filterCallback()"
-                      :options="districts" optionLabel="type" :option-value="option => option.value"
-                      placeholder="Beliebige"
-                  >
-                    <template #option="slotProps">
-                      <div>{{ slotProps.option.value }}</div>
-                    </template>
-                  </MultiSelect>
-                </template>
-              </Column>
-              <Column
-                  field="geometry.coordinates"
-                  header="Georeferenziert"
-                  class="roboto-plain"
-                  :sortable="true"
-              >
-                <template #body="slotProps">
-                  <i :class="[slotProps.data.geometry.coordinates ? 'pi pi-check text-green-500' : 'pi pi-times text-red-500']"/>
-                </template>
-              </Column>
-            </DataTable>
-          </div>
-        </TabPanel>
-        <TabPanel value="2">
-          <div class="misc">
-            <div class="flex flex-col gap-4 md:grid md:grid-cols-3">
-              <NuxtLink to="/districts" prefetch>
-                <div class="bg-[#F1F2F2] shadow-md rounded-md p-5 hover:shadow-lg hover:scale-105 transition-transform duration-300">
-                  <div class="flex flex-col gap-3 items-center">
-                    <i class="pi pi-map" style="font-size: 4.5rem"/>
-                    <h3 class="text-center text-xl text-black montserrat-headline font-bold">Distrikte</h3>
-                  </div>
-                </div>
-              </NuxtLink>
-              <NuxtLink to="/quarters" prefetch>
-                <div class="bg-[#F1F2F2] shadow-md rounded-md p-5 hover:shadow-lg hover:scale-105 transition-transform duration-300">
-                  <div class="flex flex-col gap-3 items-center">
-                    <i class="pi pi-th-large" style="font-size: 4.5rem"/>
-                    <h3 class="text-center text-xl text-black montserrat-headline font-bold">Viertel</h3>
-                  </div>
-                </div>
-              </NuxtLink>
-              <NuxtLink to="/streets" prefetch>
-                <div class="bg-[#F1F2F2] shadow-md rounded-md p-5 hover:shadow-lg hover:scale-105 transition-transform duration-300">
-                  <div class="flex flex-col gap-3 items-center">
-                    <i class="pi pi-list" style="font-size: 4.5rem"/>
-                    <h3 class="text-center text-xl text-black montserrat-headline font-bold">Straßen</h3>
-                  </div>
-                </div>
-              </NuxtLink>
-              <NuxtLink to="/sources" prefetch>
-                <div class="bg-[#F1F2F2] shadow-md rounded-md p-5 hover:shadow-lg hover:scale-105 transition-transform duration-300">
-                  <div class="flex flex-col gap-3 items-center">
-                    <i class="pi pi-book" style="font-size: 4.5rem"/>
-                    <h3 class="text-center text-xl text-black montserrat-headline font-bold">Quellenverzeichnis</h3>
-                  </div>
-                </div>
-              </NuxtLink>
-            </div>
-          </div>
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
-  </div>
+  <section
+    class="relative h-[calc(100svh-79px)] min-h-[560px] w-full overflow-hidden bg-[#d8ddd7]"
+  >
+    <div
+      v-if="notice"
+      class="absolute left-1/2 top-4 z-40 flex max-w-[calc(100%-2rem)] -translate-x-1/2 items-center gap-2 rounded-xl bg-[#22374b] px-4 py-3 text-sm font-semibold text-white shadow-xl"
+      role="status"
+    >
+      <Icon
+        name="material-symbols-info-outline-rounded"
+        class="shrink-0 text-xl text-[#f2ad35]"
+      />
+      {{ notice }}
+      <button
+        type="button"
+        class="ml-2"
+        aria-label="Hinweis schließen"
+        @click="notice = null"
+      >
+        <Icon name="material-symbols-close-rounded" class="text-xl" />
+      </button>
+    </div>
+
+    <div
+      v-if="buildingsError"
+      class="flex h-full items-center justify-center bg-slate-100 p-6"
+    >
+      <div
+        class="max-w-md rounded-2xl border border-red-200 bg-white p-7 text-center shadow-xl"
+      >
+        <Icon
+          name="material-symbols-error-outline-rounded"
+          class="text-5xl text-red-700"
+        />
+        <h1 class="mt-3 text-2xl font-bold text-[#22374b]">
+          Gebäude konnten nicht geladen werden
+        </h1>
+        <p class="mt-2 text-sm text-slate-600">
+          Bitte versuchen Sie es erneut.
+        </p>
+        <button
+          type="button"
+          class="mt-5 rounded-lg bg-[#2c3e50] px-4 py-2 font-bold text-white"
+          @click="refreshBuildings()"
+        >
+          Erneut versuchen
+        </button>
+      </div>
+    </div>
+
+    <div
+      v-else
+      class="grid h-full min-h-0 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_560px]"
+    >
+      <div class="relative min-h-0 overflow-hidden">
+        <ClientOnly>
+          <BuildingsMap
+            :features="buildingFeatures"
+            :filtered-ids="filteredBuildingIds"
+            :selected-id="selectedId"
+            :selection-bottom-padding="mapBottomPadding"
+            @select="selectBuilding"
+          />
+          <template #fallback
+            ><div class="h-full w-full animate-pulse bg-slate-300"
+          /></template>
+        </ClientOnly>
+      </div>
+
+      <div
+        class="mobile-sheet absolute inset-x-0 bottom-0 z-30 h-[var(--sheet-height)] min-h-[72px] overflow-hidden rounded-t-2xl border-t border-default bg-white shadow-[0_-16px_40px_rgba(15,23,42,0.24)] transition-[height] duration-300 ease-out lg:static lg:inset-auto lg:z-auto lg:h-full lg:rounded-none lg:border-l lg:border-t lg:shadow-[-12px_0_32px_rgba(15,23,42,0.14)]"
+        :class="draggedSheetHeight !== null ? '!duration-0' : ''"
+        :style="{ '--sheet-height': `${sheetHeight}px` }"
+      >
+        <button
+          type="button"
+          class="flex h-7 w-full touch-none cursor-ns-resize items-center justify-center bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-[#d9a441] lg:hidden"
+          :aria-label="`Gebäudebereich ${sheetState === 'collapsed' ? 'öffnen' : sheetState === 'half' ? 'vergrößern' : 'einklappen'}`"
+          @pointerdown="startSheetDrag"
+          @click="cycleSheet"
+        >
+          <span
+            class="h-1.5 w-12 rounded-full bg-slate-300"
+            aria-hidden="true"
+          />
+        </button>
+        <div class="h-[calc(100%-1.75rem)] min-h-0 lg:h-full">
+          <BuildingsSidebar
+            :buildings="filteredBuildings"
+            :buildings-pending="buildingsPending"
+            :selected-building="selectedBuilding"
+            :search="search"
+            :district="district"
+            :quarter="quarter"
+            :object-type="objectType"
+            :georeferenced="georeferenced"
+            :district-options="districtOptions"
+            :quarter-options="quarterOptions"
+            :object-type-options="objectTypeOptions"
+            :associated-people="associatedPeople"
+            :associated-people-pending="associatedPeoplePending"
+            :associated-people-error="Boolean(associatedPeopleError)"
+            :has-previous="hasPrevious"
+            :has-next="hasNext"
+            @update:search="search = $event"
+            @update:district="district = $event"
+            @update:quarter="quarter = $event"
+            @update:object-type="objectType = $event"
+            @update:georeferenced="georeferenced = $event"
+            @select="selectBuilding"
+            @deselect="deselectBuilding"
+            @previous="selectPrevious"
+            @next="selectNext"
+            @clear-filters="clearFilters"
+            @retry-relationships="refreshAssociatedPeople"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
 </template>
 
 <style scoped>
-
+.mobile-sheet {
+  overflow-anchor: none;
+}
 </style>

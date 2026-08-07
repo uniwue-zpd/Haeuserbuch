@@ -5,7 +5,7 @@ import type { RasterLayerSpecification, RasterSourceSpecification} from "maplibr
 
 export const useTileStore = defineStore('tile', () => {
     const tiles = ref<Tile[]>([] as Tile[]);
-    const sources = ref<Record<string, RasterSourceSpecification>>({
+    const baseSources = ref<Record<string, RasterSourceSpecification>>({
         osm: {
             type: 'raster',
             tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
@@ -13,13 +13,17 @@ export const useTileStore = defineStore('tile', () => {
             attribution: '&copy; OpenStreetMap Contributors'
         }
     });
-    const layers = ref<RasterLayerSpecification[]>([
+    const baseLayers = ref<RasterLayerSpecification[]>([
         {
             id: 'osm-layer',
             type: 'raster',
             source: 'osm'
         }
     ]);
+    const historicalSources = ref<Record<string, RasterSourceSpecification>>({});
+    const historicalLayers = ref<RasterLayerSpecification[]>([]);
+    const sources = ref<Record<string, RasterSourceSpecification>>({ ...baseSources.value });
+    const layers = ref<RasterLayerSpecification[]>([...baseLayers.value]);
 
     const isLoaded = computed(() => tiles.value.length > 0);
 
@@ -27,33 +31,50 @@ export const useTileStore = defineStore('tile', () => {
         if (isLoaded.value) return;
         const {data, error} = await useFetch('/tiles/index.json');
         if (error.value) {
-            console.error('Error fetching tiles:', error.value, 'Setting OSM as default tile');
+            console.error('Error fetching tiles:', error.value);
             return;
         }
-        tiles.value = data.value as Tile[];
-        getMaplibreSources(data.value as Tile[]);
+        const renderedTiles = (data.value as Tile[]).filter(
+            tile => tile.format === 'webp'
+        );
+        tiles.value = renderedTiles;
+        getMaplibreSources(renderedTiles);
     }
 
     function getMaplibreSources(tileList: Tile[]): void {
         tileList.forEach(tile => {
             if (!sources.value[tile.id]) {
-                sources.value[tile.id] = {
+                const source: RasterSourceSpecification = {
                     type: 'raster',
                     tiles: tile.tiles,
                     tileSize: 256,
+                    bounds: tile.bounds,
+                    minzoom: tile.minzoom,
+                    maxzoom: tile.maxzoom,
                     attribution: '&copy;'
                 };
-                layers.value.push({
+                const layer: RasterLayerSpecification = {
                     id: `${tile.id}-layer`,
                     type: 'raster',
-                    source: tile.id
-                });
+                    source: tile.id,
+                    paint: {
+                        'raster-fade-duration': 0
+                    }
+                };
+                historicalSources.value[tile.id] = source;
+                historicalLayers.value.push(layer);
+                sources.value[tile.id] = source;
+                layers.value.push(layer);
             }
         });
     }
 
     return {
         tiles,
+        baseSources,
+        baseLayers,
+        historicalSources,
+        historicalLayers,
         sources,
         layers,
         fetchTiles
