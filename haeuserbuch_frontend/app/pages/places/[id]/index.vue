@@ -55,7 +55,6 @@ onMounted(() => {
     "map",
     mapCenter.value,
     5.5,
-    70,
     sources.value as Record<string, RasterSourceSpecification>,
     // @ts-ignore
     layers.value as RasterLayerSpecification[],

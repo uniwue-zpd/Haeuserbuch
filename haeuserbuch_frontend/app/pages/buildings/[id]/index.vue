@@ -130,7 +130,6 @@ onMounted(async () => {
     "building-detail-map",
     DEFAULT_MAP_CENTER,
     14,
-    70,
     sources.value as Record<string, RasterSourceSpecification>,
     layers.value as RasterLayerSpecification[],
   );

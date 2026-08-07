@@ -55,7 +55,6 @@ onMounted(() => {
     `person-${props.personId}_origin_map`,
     DEFAULT_MAP_CENTER,
     4,
-    0,
     sources.value as Record<string, RasterSourceSpecification>,
     // @ts-ignore
     layers.value as RasterLayerSpecification[],

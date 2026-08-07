@@ -433,11 +433,10 @@ watch(() => props.selectionBottomPadding, () => {
 onMounted(() => {
   if (!mapContainer.value) return;
   map = initMap(
-      mapContainer.value.id,
-      DEFAULT_MAP_CENTER,
-      15.5,
-      0,
-      sources.value as Record<string, RasterSourceSpecification>,
+       mapContainer.value.id,
+       DEFAULT_MAP_CENTER,
+       15.5,
+       sources.value as Record<string, RasterSourceSpecification>,
       layers.value as RasterLayerSpecification[],
       {
         // Keep the small, static archive tiles available while the user wheel-zooms

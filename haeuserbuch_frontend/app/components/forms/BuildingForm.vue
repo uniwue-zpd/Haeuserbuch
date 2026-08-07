@@ -132,7 +132,6 @@ onMounted(async () => {
     "form_map_building",
     center.value,
     17,
-    0,
     sources.value as Record<string, RasterSourceSpecification>,
     // @ts-ignore
     layers.value as RasterLayerSpecification[],

@@ -35,7 +35,6 @@ export function initMap(
     containerId: string,
     center: [number, number],
     zoom: number = 12,
-    pitch: number = 0,
     sources: Record<string, maplibregl.SourceSpecification>,
     layers: RasterLayerSpecification[],
     mapOptions: Pick<
