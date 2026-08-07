@@ -92,7 +92,6 @@ onBeforeUnmount(() => {
   <div v-else class="place-page">
     <header class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
       <div>
-        <p class="text-sm font-medium text-muted">Orteverzeichnis</p>
         <h1 class="mt-1 text-4xl font-bold tracking-tight text-highlighted">
           {{ properties?.realName }}
         </h1>
@@ -101,22 +100,15 @@ onBeforeUnmount(() => {
     </header>
 
     <div v-if="properties" class="place-bento-grid">
-      <section class="bento-card place-map-card lg:col-span-8 lg:row-span-2">
-        <div class="bento-card-heading">
-          <div>
-            <p class="bento-eyebrow">Räumliche Einordnung</p>
-            <h2>Standort</h2>
-          </div>
-          <Icon name="material-symbols-public" class="text-2xl text-muted" aria-hidden="true" />
-        </div>
+      <section class="bento-card place-map-card lg:col-span-8">
         <div
           v-if="geometry"
           id="map"
-          class="h-[320px] w-full overflow-hidden rounded-lg bg-elevated sm:h-[420px] lg:h-full lg:min-h-[520px]"
+          class="place-map-frame w-full bg-elevated"
         />
         <div
           v-else
-          class="flex min-h-[320px] flex-col items-center justify-center gap-4 rounded-lg bg-warning/10 p-6 text-center sm:min-h-[420px] lg:min-h-[520px]"
+          class="flex min-h-[320px] flex-1 flex-col items-center justify-center gap-4 bg-warning/10 p-6 text-center"
         >
           <Icon name="material-symbols-location-off-outline" class="text-5xl text-warning" aria-hidden="true" />
           <p class="max-w-sm text-lg font-medium text-highlighted">
@@ -125,33 +117,9 @@ onBeforeUnmount(() => {
         </div>
       </section>
 
-      <section class="bento-card lg:col-span-4">
-        <div class="bento-card-heading">
-          <h2>Informationen zum Ort</h2>
-          <Icon name="material-symbols-info-outline" class="text-2xl text-muted" aria-hidden="true" />
-        </div>
-        <div class="detail-list">
-          <div v-if="properties.type" class="detail-row">
-            <p class="detail-label">Typ</p>
-            <p class="font-semibold text-highlighted">{{ properties.type }}</p>
-          </div>
-          <div class="detail-row">
-            <p class="detail-label">Georeferenziert</p>
-            <p class="font-semibold text-highlighted">{{ geometry ? "Ja" : "Nein" }}</p>
-          </div>
-          <div v-if="properties.isUncertain !== null" class="detail-row">
-            <p class="detail-label">Ortszuordnung</p>
-            <p class="font-semibold text-highlighted">
-              {{ properties.isUncertain ? "Unsicher" : "Gesichert" }}
-            </p>
-          </div>
-        </div>
-      </section>
-
       <section v-if="properties.altNames?.length" class="bento-card lg:col-span-4">
         <div class="bento-card-heading">
           <h2>Namensvarianten</h2>
-          <Icon name="material-symbols-history" class="text-2xl text-muted" aria-hidden="true" />
         </div>
         <div class="detail-list">
           <div v-for="name in properties.altNames" :key="name" class="detail-row">
@@ -161,21 +129,16 @@ onBeforeUnmount(() => {
       </section>
 
       <section
-        v-if="properties.generalNotes || properties.internalNotes"
+        v-if="properties.generalNotes"
         class="bento-card lg:col-span-8"
       >
         <div class="bento-card-heading">
           <h2>Notizen und Anmerkungen</h2>
-          <Icon name="material-symbols-sticky-note-2-outline" class="text-2xl text-muted" aria-hidden="true" />
         </div>
         <div class="detail-list">
-          <div v-if="properties.generalNotes" class="detail-row">
-            <p class="detail-label">Anmerkungen</p>
+          <div class="detail-row">
+            <p class="detail-label">Notizen allgemein</p>
             <p class="whitespace-pre-wrap text-highlighted">{{ properties.generalNotes }}</p>
-          </div>
-          <div v-if="properties.internalNotes" class="detail-row">
-            <p class="detail-label">Notizen</p>
-            <p class="whitespace-pre-wrap text-highlighted">{{ properties.internalNotes }}</p>
           </div>
         </div>
       </section>
@@ -183,7 +146,6 @@ onBeforeUnmount(() => {
       <section class="bento-card lg:col-span-7">
         <div class="bento-card-heading">
           <h2>Beziehungen zu anderen Entitäten</h2>
-          <Icon name="material-symbols-group-outline" class="text-2xl text-muted" aria-hidden="true" />
         </div>
         <div class="detail-list">
           <div class="detail-row">
@@ -206,7 +168,6 @@ onBeforeUnmount(() => {
       <section class="bento-card lg:col-span-5">
         <div class="bento-card-heading">
           <h2>Über den Eintrag</h2>
-          <Icon name="material-symbols-history-edu" class="text-2xl text-muted" aria-hidden="true" />
         </div>
         <div class="detail-list">
           <div v-if="properties.createdDate" class="detail-row">
@@ -249,6 +210,16 @@ onBeforeUnmount(() => {
   box-shadow: 0 8px 24px rgb(15 23 42 / 0.06);
 }
 
+.place-map-card {
+  overflow: hidden;
+  border: 0;
+  padding: 0;
+}
+
+.place-map-frame {
+  height: 24rem;
+}
+
 .bento-card-heading {
   display: flex;
   align-items: flex-start;
@@ -261,15 +232,6 @@ onBeforeUnmount(() => {
   font-size: 1.2rem;
   font-weight: 650;
   line-height: 1.25;
-}
-
-.bento-eyebrow {
-  margin-bottom: 0.25rem;
-  color: var(--ui-text-muted);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .detail-list {
@@ -322,6 +284,10 @@ onBeforeUnmount(() => {
   .place-bento-grid {
     grid-template-columns: repeat(12, minmax(0, 1fr));
     grid-auto-rows: minmax(10rem, auto);
+  }
+
+  .place-map-frame {
+    height: 31rem;
   }
 }
 </style>
