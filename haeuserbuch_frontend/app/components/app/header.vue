@@ -5,7 +5,6 @@ const route = useRoute();
 const mobileMenuOpen = ref(false);
 const searchOpen = ref(false);
 const isScrolled = ref(false);
-const isOverHero = computed(() => false);
 const projectNavigation = [
   {
     label: "Das Projekt",
@@ -85,9 +84,7 @@ const headerUi = computed(() => ({
   content: "bg-default",
   header: "border-b border-transparent",
   body: "space-y-6",
-  toggle: isOverHero.value
-    ? "text-white hover:bg-white/10 hover:text-white"
-    : "text-highlighted hover:bg-elevated hover:text-highlighted",
+  toggle: "text-highlighted hover:bg-elevated hover:text-highlighted",
 }));
 
 const researchIsActive = computed(() =>
@@ -136,7 +133,7 @@ defineShortcuts({
         alt="Würzburger Häuserprojekt"
         :class="[
           'h-10 w-auto brightness-0 sm:h-12',
-          isOverHero ? 'hidden' : 'dark:hidden',
+          'dark:hidden',
         ]"
       />
       <img
@@ -145,7 +142,7 @@ defineShortcuts({
         aria-hidden="true"
         :class="[
           'h-10 w-auto sm:h-12',
-          isOverHero ? 'block' : 'hidden dark:block',
+          'hidden dark:block',
         ]"
       />
     </template>
@@ -173,10 +170,8 @@ defineShortcuts({
           "
           :class="[
             'rounded-xl px-4 text-sm font-semibold',
-            isOverHero
-              ? 'text-white hover:bg-white/10 hover:text-white'
-              : 'text-highlighted hover:bg-elevated hover:text-highlighted',
-            researchIsActive && (isOverHero ? 'bg-white/10' : 'bg-elevated'),
+            'text-highlighted hover:bg-elevated hover:text-highlighted',
+            researchIsActive && 'bg-elevated',
           ]"
           aria-label="Recherchebereiche öffnen"
         />
@@ -276,10 +271,8 @@ defineShortcuts({
           "
           :class="[
             'rounded-xl px-4 text-sm font-semibold',
-            isOverHero
-              ? 'text-white hover:bg-white/10 hover:text-white'
-              : 'text-highlighted hover:bg-elevated hover:text-highlighted',
-            projectIsActive && (isOverHero ? 'bg-white/10' : 'bg-elevated'),
+            'text-highlighted hover:bg-elevated hover:text-highlighted',
+            projectIsActive && 'bg-elevated',
           ]"
           aria-label="Projektbereiche öffnen"
         />
@@ -334,10 +327,8 @@ defineShortcuts({
       variant="ghost"
       :class="[
         'rounded-xl px-4 text-sm font-semibold',
-        isOverHero
-          ? 'text-white hover:bg-white/10 hover:text-white'
-          : 'text-highlighted hover:bg-elevated hover:text-highlighted',
-        isActive('/kontakt') && (isOverHero ? 'bg-white/10' : 'bg-elevated'),
+        'text-highlighted hover:bg-elevated hover:text-highlighted',
+        isActive('/kontakt') && 'bg-elevated',
       ]"
     />
 
@@ -357,9 +348,7 @@ defineShortcuts({
           aria-label="Suche öffnen"
           :class="[
             'rounded-xl',
-            isOverHero
-              ? 'text-white hover:bg-white/10 hover:text-white'
-              : 'text-highlighted hover:bg-elevated hover:text-highlighted',
+            'text-highlighted hover:bg-elevated hover:text-highlighted',
           ]"
         />
 
@@ -377,9 +366,7 @@ defineShortcuts({
         variant="ghost"
         :class="[
           'rounded-xl',
-          isOverHero
-            ? 'text-white hover:bg-white/10 hover:text-white'
-            : 'text-highlighted hover:bg-elevated hover:text-highlighted',
+          'text-highlighted hover:bg-elevated hover:text-highlighted',
         ]"
       />
 
