@@ -32,9 +32,11 @@ const props = withDefaults(defineProps<{
   filteredIds: number[];
   selectedId?: number | null;
   selectionBottomPadding?: number;
+  borderless?: boolean;
 }>(), {
   selectedId: null,
   selectionBottomPadding: 0,
+  borderless: false,
 });
 
 const emit = defineEmits<{
@@ -121,28 +123,28 @@ function getDistrictColor(feature: BuildingFeature) {
 }
 
 function getPolygonColor({ feature }: PolygonDatum): Color {
-  if (!isMatching(feature)) return [184, 190, 194, 68];
+  if (!isMatching(feature)) return [174, 182, 188, 112];
   const [red, green, blue] = getDistrictColor(feature);
   return [red, green, blue, 220];
 }
 
 function getPolygonWireframeColor({ feature }: PolygonDatum): Color {
-  if (!isMatching(feature)) return [100, 116, 139, 42];
+  if (!isMatching(feature)) return [83, 99, 116, 94];
   return [51, 65, 85, 145];
 }
 
 function getBuildingElevation({ feature }: PolygonDatum) {
-  return isMatching(feature) ? 10 : 6;
+  return isMatching(feature) ? 10 : 7;
 }
 
 function getLineColor({ feature }: LineDatum): Color {
   if (isMatching(feature)) return [200, 101, 32, 225];
-  return [127, 137, 146, 58];
+  return [104, 117, 130, 108];
 }
 
 function getPointColor({ feature }: PointDatum): Color {
   if (isMatching(feature)) return [217, 111, 30, 235];
-  return [127, 137, 146, 68];
+  return [104, 117, 130, 116];
 }
 
 function getPolygonGeometry(datum: PolygonDatum) {
@@ -474,7 +476,8 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-      class="relative h-full w-full border-t border-stone-300 bg-stone-50 dark:border-zinc-700 dark:bg-zinc-950"
+      class="relative h-full w-full bg-stone-50 dark:bg-zinc-950"
+      :class="{ 'border-t border-stone-300 dark:border-zinc-700': !props.borderless }"
       role="region"
       aria-label="Interaktive Karte der Gebäude"
       :aria-busy="isMapLoading"

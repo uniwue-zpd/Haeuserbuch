@@ -11,12 +11,14 @@ const props = withDefaults(
     associatedPeoplePending?: boolean;
     associatedPeopleError?: boolean;
     compact?: boolean;
+    bento?: boolean;
   }>(),
   {
     associatedPeople: () => [],
     associatedPeoplePending: false,
     associatedPeopleError: false,
     compact: false,
+    bento: false,
   },
 );
 
@@ -46,7 +48,10 @@ function formatDate(value: number | null) {
 <template>
   <div
     class="building-details flex flex-col gap-4"
-    :class="{ 'building-details--compact': compact }"
+    :class="{
+      'building-details--compact': compact,
+      'building-details--bento': bento,
+    }"
   >
     <div
       :class="
@@ -414,5 +419,38 @@ function formatDate(value: number | null) {
 .building-details--compact .detail-link:focus-visible {
   box-shadow: none;
   text-decoration-color: currentColor;
+}
+
+.building-details--bento {
+  grid-column: 1 / -1;
+  display: block;
+  column-count: 1;
+  column-gap: 1rem;
+}
+
+.building-details--bento > div {
+  display: contents;
+}
+
+.building-details--bento .detail-section {
+  break-inside: avoid;
+  gap: 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgb(209 213 219);
+  border-radius: 1rem;
+  background: var(--ui-bg);
+  padding: 1.25rem;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 0.06);
+}
+
+.building-details--bento .detail-section h2 {
+  margin-bottom: 0;
+  font-size: 1.2rem;
+}
+
+@media (min-width: 1024px) {
+  .building-details--bento {
+    column-count: 2;
+  }
 }
 </style>
