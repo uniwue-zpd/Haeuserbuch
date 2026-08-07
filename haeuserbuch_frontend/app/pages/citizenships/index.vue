@@ -1,258 +1,348 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { title_shortener } from '~/utils/helpers';
-import { FilterMatchMode } from "@primevue/core";
+import { h, onMounted, reactive, ref, resolveComponent, watch } from "vue";
+import type { TableColumn } from "@nuxt/ui";
+import type { Column } from "@tanstack/vue-table";
+import { title_shortener } from "~/utils/helpers";
+import { debounce } from "~/utils/debounce";
 
 const citizenship_store = useCitizenshipStore();
+const UButton = resolveComponent("UButton");
 
-const rows = ref<CitizenshipDTO[]>([]);
+type CitizenshipTableRow = CitizenshipDTO & {
+  personName: string | null;
+  primarySourceTitle: string | null;
+  secondarySourceTitle: string | null;
+};
+
+const rows = ref<CitizenshipTableRow[]>([]);
 const loading = ref(false);
 const page = ref(0);
 const rowsPerPage = ref(10);
 const rowsPerPageOptions = [5, 10, 25, 50, 100];
 const totalRecords = ref(0);
-const sortField = ref<string | null>(null);
-const sortOrder = ref<1 | -1 | null>(null);
+const sorting = ref<{ id: string; desc: boolean }[]>([]);
 
-const filters = ref({
-  refNumber: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  signature: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  'person.fullName': { value: null, matchMode: FilterMatchMode.CONTAINS },
-  dateNaturalization: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  'primarySource.title': { value: null, matchMode: FilterMatchMode.CONTAINS },
-  'secondarySource.title': { value: null, matchMode: FilterMatchMode.CONTAINS }
+const filterValues = reactive({
+  refNumber: "",
+  signature: "",
+  personName: "",
+  primarySourceTitle: "",
+  secondarySourceTitle: "",
 });
+
+const sortableHeader = (label: string) =>
+  ({ column }: { column: Column<CitizenshipTableRow, unknown> }) =>
+    h(
+      UButton,
+      {
+        color: "neutral",
+        variant: "ghost",
+        label,
+        icon:
+          column.getIsSorted() === "asc"
+            ? "i-lucide-arrow-up-narrow-wide"
+            : column.getIsSorted() === "desc"
+              ? "i-lucide-arrow-down-wide-narrow"
+              : "i-lucide-arrow-up-down",
+        class: "-mx-2.5",
+        onClick: () =>
+          column.toggleSorting(column.getIsSorted() === "asc"),
+      },
+    );
+
+const columns: TableColumn<CitizenshipTableRow>[] = [
+  {
+    id: "actions",
+    header: "",
+    enableSorting: false,
+    enableGlobalFilter: false,
+    meta: { class: { th: "w-12", td: "w-12" } },
+    cell: ({ row }) =>
+      h(UButton, {
+        to: `/citizenships/${row.original.id}`,
+        color: "neutral",
+        variant: "ghost",
+        icon: "i-lucide-arrow-up-right",
+        "aria-label": `Matrikel ${row.original.refNumber} öffnen`,
+        title: "Matrikel öffnen",
+      }),
+  },
+  {
+    accessorKey: "refNumber",
+    header: sortableHeader("Meyer-Erlach-Referenz"),
+  },
+  {
+    accessorKey: "signature",
+    header: sortableHeader("Signatur"),
+    meta: { class: { td: "whitespace-nowrap" } },
+  },
+  {
+    id: "person",
+    accessorFn: (row) => row.personName,
+    header: "Eingebürgerte Person",
+    enableSorting: false,
+  },
+  {
+    id: "primarySource",
+    accessorFn: (row) => row.primarySourceTitle,
+    header: sortableHeader("Primärquelle"),
+  },
+  {
+    id: "secondarySource",
+    accessorFn: (row) => row.secondarySourceTitle,
+    header: sortableHeader("Sekundärquelle"),
+  },
+];
 
 const loadData = async () => {
   loading.value = true;
   try {
-    const sort = sortField.value && sortOrder.value
-        ? `${sortField.value},${sortOrder.value === 1 ? 'asc' : 'desc'}`
-        : undefined;
+    const sortField = sorting.value[0]?.id;
+    const sort = sorting.value[0]
+      ? `${sortField},${sorting.value[0].desc ? "desc" : "asc"}`
+      : undefined;
     const res = await citizenship_store.fetchCitizenships({
       page: page.value,
       size: rowsPerPage.value,
       sort,
-      refnumber: filters.value.refNumber?.value || undefined,
-      signature: filters.value.signature?.value || undefined,
-      naturalizedperson: filters.value['person.fullName']?.value || undefined,
-      datenaturalization: filters.value.dateNaturalization?.value || undefined,
-      primarysource: filters.value['primarySource.title']?.value || undefined,
-      secondarysource: filters.value['secondarySource.title']?.value || undefined
+      refnumber: filterValues.refNumber || undefined,
+      signature: filterValues.signature || undefined,
+      naturalizedperson: filterValues.personName || undefined,
+      primarysource: filterValues.primarySourceTitle || undefined,
+      secondarysource: filterValues.secondarySourceTitle || undefined,
     });
-    rows.value = res.content;
+    rows.value = res.content.map((citizenship) => ({
+      ...citizenship,
+      personName: citizenship.person?.fullName ?? null,
+      primarySourceTitle: citizenship.primarySource?.title ?? null,
+      secondarySourceTitle: citizenship.secondarySource?.title ?? null,
+    }));
     totalRecords.value = res.totalElements;
   } finally {
     loading.value = false;
   }
 };
 
-const onPage = (event: any) => {
-  page.value = event.page;
-  rowsPerPage.value = event.rows;
-  loadData();
-};
-
-const onSort = (event: any) => {
-  sortField.value = event.sortField;
-  sortOrder.value = event.sortOrder;
-  loadData();
-};
-
-const onFilter = (event: any) => {
-  filters.value = event.filters;
-  page.value = 0;
-  debouncedLoadData();
-};
-
-// Applies only if additional params are set
 const debouncedLoadData = debounce(() => {
   loadData();
-}, 1000);
+}, 500);
+
+const onPageChange = (nextPage: number) => {
+  page.value = nextPage - 1;
+  loadData();
+};
+
+const onRowsPerPageChange = () => {
+  page.value = 0;
+  loadData();
+};
+
+watch(
+  filterValues,
+  () => {
+    page.value = 0;
+    debouncedLoadData();
+  },
+  { deep: true },
+);
+
+watch(
+  sorting,
+  () => {
+    page.value = 0;
+    loadData();
+  },
+  { deep: true },
+);
 
 onMounted(() => {
   loadData();
 });
+
+useHead(() => ({
+  title: "Bürgermatrikel - Verzeichnis",
+}));
 </script>
 
 <template>
-  <Card>
-    <template #title>
-      <div class="flex flex-col gap-2">
-        <h1 class="text-3xl font-bold text-black montserrat-headline">
-          Bürgermatrikel
-        </h1>
-        <p class="text-lg roboto-plain font-medium">
+  <div class="w-full">
+    <div class="flex flex-col gap-2">
+      <h1 class="text-3xl font-bold text-black">Bürgermatrikel</h1>
+      <div
+        class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <p class="text-lg font-medium">
           Einträge insgesamt: {{ totalRecords }}
         </p>
-      </div>
-    </template>
-    <template #content>
-      <div class="flex flex-col gap-2">
-        <div class="flex flex-col md:flex-row gap-2">
-          <NuxtLink
-              to="/citizenships/description"
-              class="group flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-100 p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md"
+        <div class="flex flex-wrap justify-end gap-2">
+          <UModal
+            title="Beschreibung der Bürgermatrikel"
+            scrollable
+            :ui="{ content: 'max-w-7xl', body: 'p-5 sm:p-8' }"
           >
-            <div class="flex h-10 w-10 items-center justify-center rounded-md bg-gray-200 transition-colors group-hover:bg-blue-100">
-              <Icon name="material-symbols-book-5-outline-rounded" class="text-2xl text-gray-700"/>
-            </div>
-            <div class="flex flex-col">
-              <h2 class="text-base font-bold montserrat-headline text-black">Beschreibung</h2>
-              <p class="text-sm roboto-plain text-gray-600">Informationen zu Bürgermatrikeln</p>
-            </div>
-          </NuxtLink>
-          <NuxtLink
-              to="/citizenships/fulltextsearch"
-              class="group flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-100 p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md"
+            <UButton
+              color="neutral"
+              variant="outline"
+              icon="i-lucide-book-open"
+              label="Beschreibung"
+            />
+
+            <template #body>
+              <CitizenshipsDescriptionContent />
+            </template>
+          </UModal>
+          <UPopover
+            mode="click"
+            :content="{ align: 'end', side: 'bottom', sideOffset: 8 }"
           >
-            <div class="flex h-10 w-10 items-center justify-center rounded-md bg-gray-200 transition-colors group-hover:bg-blue-100">
-              <Icon name="material-symbols-manage-search-rounded" class="text-2xl text-gray-700"/>
-            </div>
-            <div class="flex flex-col">
-              <h2 class="text-base font-bold montserrat-headline text-black">Volltextsuche</h2>
-              <p class="text-sm roboto-plain text-gray-600">Bürgermatrikel-Einträge durchsuchen</p>
-            </div>
-          </NuxtLink>
-        </div>
-        <Accordion :value="null">
-          <AccordionPanel value="0">
-            <AccordionHeader>
-              <h1 class="text-base font-bold text-black montserrat-headline">Hinweise</h1>
-            </AccordionHeader>
-            <AccordionContent>
-              <ul class="list-disc list-inside outfit-headline text-sm">
-                <li>Beim Klicken auf die Nummer der jeweiligen Matrikel öffnet sich die Seite mit zusätzlichen Informationen</li>
-                <li>Manche Felder besitzen einen Sortierknopf <i class="pi pi-sort-alt"/>, mit dem man die Werte alphabetisch sortieren kann</li>
+            <UButton
+              color="neutral"
+              variant="outline"
+              icon="i-lucide-info"
+              label="Hinweise"
+            />
+
+            <template #content>
+              <ul class="max-w-sm list-inside list-disc space-y-2 p-4 text-sm">
+                <li>
+                  Beim Klicken auf die Nummer der jeweiligen Matrikel öffnet
+                  sich die Seite mit zusätzlichen Informationen
+                </li>
+                <li>
+                  Über die Sortierknöpfe in den Spaltenüberschriften können die
+                  Werte alphabetisch sortiert werden
+                </li>
               </ul>
-            </AccordionContent>
-          </AccordionPanel>
-        </Accordion>
-        <DataTable
-            v-model:filters="filters"
-            :value="rows"
-            paginator
-            lazy
-            filterDisplay="row"
-            :rows="rowsPerPage"
-            :rowsPerPageOptions="rowsPerPageOptions"
-            :totalRecords="totalRecords"
-            :loading="loading"
-            stripedRows
-            @page="onPage"
-            @sort="onSort"
-            @filter="onFilter"
-            removableSort
-        >
-          <Column field="refNumber" header="Meyer-Erlach-Referenz" :sortable="true" :showFilterMenu="false">
-            <template #body="slotProps">
-              <NuxtLink
-                  :to="`/citizenships/${slotProps.data.id}`"
-                  class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md"
-                  prefetch
-              >
-                {{ slotProps.data.refNumber }}
-              </NuxtLink>
             </template>
-            <template #filter="{ filterModel, filterCallback }">
-              <InputText
-                  v-model="filterModel.value"
-                  placeholder="Suche Referenz"
-                  @input="filterCallback()"
-              />
-            </template>
-          </Column>
-          <Column field="signature" header="Signatur" class="roboto-plain text-nowrap" :sortable="true" :showFilterMenu="false">
-            <template #filter="{ filterModel, filterCallback }">
-              <InputText
-                  v-model="filterModel.value"
-                  placeholder="Suche Signatur"
-                  @input="filterCallback()"
-              />
-            </template>
-          </Column>
-          <Column field="person" filterField="person.fullName" header="Eingebürgerte Person" class="roboto-plain" :showFilterMenu="false">
-            <template #body="slotProps">
-              <div v-if="slotProps.data.person">
-                <NuxtLink
-                    :to="`/persons/${ slotProps.data.person.id }`"
-                    class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md text-nowrap"
-                    prefetch
-                >
-                  {{ slotProps.data.person.fullName }}
-                </NuxtLink>
-              </div>
-              <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
-            </template>
-            <template #filter="{ filterModel, filterCallback }">
-              <InputText
-                  v-model="filterModel.value"
-                  placeholder="Suche Person"
-                  @input="filterCallback()"
-              />
-            </template>
-          </Column>
-          <Column field="dateNaturalization" header="Einbürgerung" class="roboto-plain" :sortable="true" :showFilterMenu="false">
-            <template #body="slotProps">
-              <div v-if="slotProps.data.dateNaturalization" class="text-nowrap">
-                {{ slotProps.data.dateNaturalization }}
-              </div>
-              <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
-            </template>
-            <template #filter="{ filterModel, filterCallback }">
-              <InputText
-                  v-model="filterModel.value"
-                  placeholder="Suche Datum"
-                  @input="filterCallback()"
-              />
-            </template>
-          </Column>
-          <Column field="primarySource" filterField="primarySource.title" header="Primärquelle" class="roboto-plain" :sortable="true" :showFilterMenu="false">
-            <template #body="slotProps">
-              <div v-if="slotProps.data.primarySource">
-                <NuxtLink
-                    :to="`/sources/${ slotProps.data.primarySource.id }`"
-                    class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md text-nowrap"
-                >
-                  {{ title_shortener(slotProps.data.primarySource.title) }}
-                </NuxtLink>
-              </div>
-              <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
-            </template>
-            <template #filter="{ filterModel, filterCallback }">
-              <InputText
-                  v-model="filterModel.value"
-                  placeholder="Suche Quelle"
-                  @input="filterCallback()"
-              />
-            </template>
-          </Column>
-          <Column field="secondarySource" filterField="secondarySource.title" header="Sekundärquelle" class="roboto-plain" :sortable="true" :showFilterMenu="false">
-            <template #body="slotProps">
-              <div v-if="slotProps.data.secondarySource">
-                <NuxtLink
-                    :to="`/sources/${ slotProps.data.secondarySource.id }`"
-                    class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md text-nowrap"
-                >
-                  {{ title_shortener(slotProps.data.secondarySource.title) }}
-                </NuxtLink>
-              </div>
-              <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
-            </template>
-            <template #filter="{ filterModel, filterCallback }">
-              <InputText
-                  v-model="filterModel.value"
-                  placeholder="Suche Quelle"
-                  @input="filterCallback()"
-              />
-            </template>
-          </Column>
-        </DataTable>
+          </UPopover>
+          <UButton
+            to="/citizenships/fulltextsearch"
+            color="neutral"
+            variant="outline"
+            icon="i-lucide-search"
+            label="Volltextsuche"
+          />
+        </div>
       </div>
-    </template>
-  </Card>
+
+      <div class="grid gap-6 lg:grid-cols-[18rem_minmax(0,1fr)]">
+        <aside class="h-fit overflow-hidden rounded-lg border border-default bg-default">
+          <div class="border-b border-default px-4 py-4">
+            <h2 class="text-xl font-semibold">Filter</h2>
+          </div>
+          <details open class="border-b border-default p-4">
+            <summary class="cursor-pointer list-none text-base font-semibold">
+              <span class="flex items-center justify-between">
+                Meyer-Erlach-Referenz
+                <UIcon name="i-lucide-chevron-down" class="size-4" />
+              </span>
+            </summary>
+            <UInput v-model="filterValues.refNumber" class="mt-3 w-full" placeholder="Suchen..." />
+          </details>
+          <details open class="border-b border-default p-4">
+            <summary class="cursor-pointer list-none text-base font-semibold">
+              <span class="flex items-center justify-between">
+                Signatur
+                <UIcon name="i-lucide-chevron-down" class="size-4" />
+              </span>
+            </summary>
+            <UInput v-model="filterValues.signature" class="mt-3 w-full" placeholder="Suchen..." />
+          </details>
+          <details open class="border-b border-default p-4">
+            <summary class="cursor-pointer list-none text-base font-semibold">
+              <span class="flex items-center justify-between">
+                Eingebürgerte Person
+                <UIcon name="i-lucide-chevron-down" class="size-4" />
+              </span>
+            </summary>
+            <UInput v-model="filterValues.personName" class="mt-3 w-full" placeholder="Suchen..." />
+          </details>
+          <details open class="border-b border-default p-4">
+            <summary class="cursor-pointer list-none text-base font-semibold">
+              <span class="flex items-center justify-between">
+                Primärquelle
+                <UIcon name="i-lucide-chevron-down" class="size-4" />
+              </span>
+            </summary>
+            <UInput v-model="filterValues.primarySourceTitle" class="mt-3 w-full" placeholder="Suchen..." />
+          </details>
+          <details open class="p-4">
+            <summary class="cursor-pointer list-none text-base font-semibold">
+              <span class="flex items-center justify-between">
+                Sekundärquelle
+                <UIcon name="i-lucide-chevron-down" class="size-4" />
+              </span>
+            </summary>
+            <UInput v-model="filterValues.secondarySourceTitle" class="mt-3 w-full" placeholder="Suchen..." />
+          </details>
+        </aside>
+        <div class="min-w-0">
+          <UTable
+            :data="rows"
+            :columns="columns"
+            :loading="loading"
+            v-model:sorting="sorting"
+            :sorting-options="{ manualSorting: true }"
+            class="w-full"
+          >
+        <template #refNumber-cell="{ row }">
+          <NuxtLink :to="`/citizenships/${row.original.id}`" prefetch>
+            {{ row.original.refNumber }}
+          </NuxtLink>
+        </template>
+        <template #person-cell="{ row }">
+          <NuxtLink
+            v-if="row.original.person"
+            :to="`/persons/${row.original.person.id}`"
+            class="whitespace-nowrap"
+            prefetch
+          >
+            {{ row.original.personName }}
+          </NuxtLink>
+          <span v-else class="italic text-gray-500">unbekannt</span>
+        </template>
+        <template #primarySource-cell="{ row }">
+          <NuxtLink
+            v-if="row.original.primarySource"
+            :to="`/sources/${row.original.primarySource.id}`"
+            class="whitespace-nowrap"
+          >
+            {{ title_shortener(row.original.primarySourceTitle ?? "") }}
+          </NuxtLink>
+          <span v-else class="italic text-gray-500">unbekannt</span>
+        </template>
+        <template #secondarySource-cell="{ row }">
+          <NuxtLink
+            v-if="row.original.secondarySource"
+            :to="`/sources/${row.original.secondarySource.id}`"
+            class="whitespace-nowrap"
+          >
+            {{ title_shortener(row.original.secondarySourceTitle ?? "") }}
+          </NuxtLink>
+          <span v-else class="italic text-gray-500">unbekannt</span>
+        </template>
+          </UTable>
+
+          <div
+            class="flex flex-col gap-4 border-t border-default pt-4 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <USelect
+              v-model="rowsPerPage"
+              :items="rowsPerPageOptions"
+              class="w-24"
+              @update:model-value="onRowsPerPageChange"
+            />
+            <UPagination
+              :page="page + 1"
+              :items-per-page="rowsPerPage"
+              :total="totalRecords"
+              @update:page="onPageChange"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -1,38 +1,40 @@
 <script setup lang="ts">
 const quarterStore = useQuarterStore();
 
-const { data: quarters } = useAsyncData('quarters', () => quarterStore.fetchQuarters());
+const { data: quarters } = useAsyncData("quarters", () =>
+  quarterStore.fetchQuarters(),
+);
 
 useHead(() => ({
-  title: 'Viertel - Verzeichnis der Viertel'
+  title: "Viertel - Verzeichnis der Viertel",
 }));
 </script>
 
 <template>
   <Card>
     <template #title>
-      <h1 class="text-3xl font-bold text-black montserrat-headline">Viertel</h1>
+      <h1 class="text-3xl font-bold text-black">Viertel</h1>
     </template>
     <template #content>
       <div class="flex flex-col gap-2">
         <Panel class="rounded-md">
           <template #header>
-            <h1 class="text-base font-bold text-black montserrat-headline">Hinweise</h1>
+            <h1 class="text-base font-bold text-black">Hinweise</h1>
           </template>
-          <div class="description roboto-plain">
+          <div class="description">
             <div>Viertel sind Einheiten, die ...</div>
             <div>
-              Beim Klicken auf das jeweilige Viertel gelangen Sie auf die Übersichtsseite,
-              wo Sie die weiterführenden Informationen finden.
+              Beim Klicken auf das jeweilige Viertel gelangen Sie auf die
+              Übersichtsseite, wo Sie die weiterführenden Informationen finden.
             </div>
           </div>
         </Panel>
         <div
-            v-for="quarter in quarters"
-            class="bg-[#F1F2F2] shadow-md rounded-md p-3 hover:shadow-lg hover:translate-x-2 transition-transform duration-300"
+          v-for="quarter in quarters"
+          class="bg-[#F1F2F2] shadow-md rounded-md p-3 hover:shadow-lg hover:translate-x-2 transition-transform duration-300"
         >
           <NuxtLink :to="`/quarters/${quarter.id}`" class="no-underline">
-            <h2 class="text-xl font-bold text-black montserrat-headline">{{ quarter.name }}</h2>
+            <h2 class="text-xl font-bold text-black">{{ quarter.name }}</h2>
           </NuxtLink>
         </div>
       </div>
@@ -40,6 +42,4 @@ useHead(() => ({
   </Card>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
