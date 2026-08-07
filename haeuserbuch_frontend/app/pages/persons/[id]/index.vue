@@ -71,7 +71,7 @@ useHead(() => ({
     <div class="grid grid-cols-[minmax(0,1fr)] gap-4 lg:auto-rows-[minmax(10rem,auto)] lg:grid-cols-12 lg:items-start">
       <div
         v-if="hasProfileContent"
-        class="row-span-2 flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-[var(--ui-bg)] p-5 shadow-[0_8px_24px_rgb(15_23_42_/_0.06)] lg:col-span-7"
+        class="row-span-2 flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-7"
       >
         <h2 class="text-[1.2rem] font-[650] leading-[1.25] text-highlighted">Über die Person</h2>
         <div
@@ -182,7 +182,7 @@ useHead(() => ({
       />
       <div
         v-if="personItem.generalNotes"
-        class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-[var(--ui-bg)] p-5 shadow-[0_8px_24px_rgb(15_23_42_/_0.06)] lg:col-span-5"
+        class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-5"
       >
         <h2 class="text-[1.2rem] font-[650] leading-[1.25] text-highlighted">Notizen und Anmerkungen</h2>
         <div class="flex flex-col gap-[0.45rem] border-l-0 border-t border-muted py-3">

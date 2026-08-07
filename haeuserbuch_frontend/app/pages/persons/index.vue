@@ -216,7 +216,7 @@ useHead(() => ({
     </div>
 
     <div class="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(16rem,18rem)_minmax(0,1fr)] lg:items-start">
-      <aside class="min-w-0 overflow-hidden rounded-2xl border border-gray-300 bg-[var(--ui-bg)] p-0 shadow-[0_8px_24px_rgb(15_23_42_/_0.06)]">
+      <aside class="min-w-0 overflow-hidden rounded-2xl border border-gray-300 bg-default p-0 shadow-md">
         <div class="border-b border-muted p-5">
           <h2 class="text-[1.2rem] font-[650] text-highlighted">Filter</h2>
         </div>
@@ -282,7 +282,7 @@ useHead(() => ({
           </details>
         </div>
       </aside>
-      <section class="min-w-0 overflow-hidden rounded-2xl border border-gray-300 bg-[var(--ui-bg)] p-0 shadow-[0_8px_24px_rgb(15_23_42_/_0.06)]">
+      <section class="min-w-0 overflow-hidden rounded-2xl border border-gray-300 bg-default p-0 shadow-md">
           <UTable
             :data="rows"
             :columns="columns"

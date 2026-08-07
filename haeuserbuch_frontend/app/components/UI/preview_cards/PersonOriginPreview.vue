@@ -86,7 +86,7 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="person-origin-card flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-[var(--ui-bg)] p-5 shadow-[0_8px_24px_rgb(15_23_42_/_0.06)]"
+    class="person-origin-card flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md"
   >
     <h2 class="text-[1.2rem] font-[650] leading-[1.25] text-highlighted">Herkunft</h2>
     <div v-if="personOrigin.originalText" class="flex flex-col gap-[0.45rem] border-t border-muted py-3">

@@ -100,7 +100,7 @@ onBeforeUnmount(() => {
     </header>
 
     <div v-if="properties" class="grid grid-cols-[minmax(0,1fr)] auto-rows-[minmax(0,auto)] gap-4 lg:auto-rows-[minmax(10rem,auto)] lg:grid-cols-12">
-      <section class="flex min-w-0 flex-col gap-5 overflow-hidden rounded-2xl border-0 bg-[var(--ui-bg)] p-0 shadow-[0_8px_24px_rgb(15_23_42_/_0.06)] lg:col-span-8">
+      <section class="flex min-w-0 flex-col gap-5 overflow-hidden rounded-2xl border-0 bg-default p-0 shadow-md lg:col-span-8">
         <div
           v-if="geometry"
           id="map"
@@ -117,7 +117,7 @@ onBeforeUnmount(() => {
         </div>
       </section>
 
-      <section v-if="properties.altNames?.length" class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-[var(--ui-bg)] p-5 shadow-[0_8px_24px_rgb(15_23_42_/_0.06)] lg:col-span-4">
+      <section v-if="properties.altNames?.length" class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-4">
         <div class="flex items-start justify-between gap-4">
           <h2 class="text-[1.2rem] font-[650] leading-[1.25] text-highlighted">Namensvarianten</h2>
         </div>
@@ -130,7 +130,7 @@ onBeforeUnmount(() => {
 
       <section
         v-if="properties.generalNotes"
-        class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-[var(--ui-bg)] p-5 shadow-[0_8px_24px_rgb(15_23_42_/_0.06)] lg:col-span-8"
+        class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-8"
       >
         <div class="flex items-start justify-between gap-4">
           <h2 class="text-[1.2rem] font-[650] leading-[1.25] text-highlighted">Notizen und Anmerkungen</h2>
@@ -143,7 +143,7 @@ onBeforeUnmount(() => {
         </div>
       </section>
 
-       <section class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-[var(--ui-bg)] p-5 shadow-[0_8px_24px_rgb(15_23_42_/_0.06)] lg:col-span-7">
+       <section class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-7">
          <div class="flex items-start justify-between gap-4">
            <h2 class="text-[1.2rem] font-[650] leading-[1.25] text-highlighted">Beziehungen zu anderen Entitäten</h2>
         </div>

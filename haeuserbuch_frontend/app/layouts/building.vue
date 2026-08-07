@@ -110,7 +110,7 @@ function handleMapSelect(id: number) {
       </header>
 
       <div class="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(22rem,1fr)] lg:items-start">
-        <section class="flex h-96 min-w-0 flex-col overflow-hidden rounded-2xl border-0 bg-[var(--ui-bg)] shadow-[0_8px_24px_rgb(15_23_42_/_0.06)] lg:h-[31rem]">
+        <section class="flex h-96 min-w-0 flex-col overflow-hidden rounded-2xl border-0 bg-default shadow-md lg:h-[31rem]">
           <ClientOnly>
             <BuildingsMap
               :features="buildingFeatures"
