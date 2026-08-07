@@ -9,7 +9,3 @@ useHead(() => ({
 <template>
   <PlaceForm header="Neuen Ort erstellen" action="create"/>
 </template>
-
-<style scoped>
-
-</style>

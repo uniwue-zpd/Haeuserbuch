@@ -21,7 +21,3 @@ const { data: buildingItem, error: hasError } = await useAsyncData(() => buildin
       :building="buildingItem ?? undefined"
   />
 </template>
-
-<style scoped>
-
-</style>

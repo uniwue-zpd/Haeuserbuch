@@ -5,5 +5,3 @@
     <div class="text-3xl font-bold">FAQ</div>
   </div>
 </template>
-
-<style scoped></style>

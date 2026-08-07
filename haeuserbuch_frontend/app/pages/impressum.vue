@@ -5,5 +5,3 @@
     <div class="text-3xl font-bold">Impressum</div>
   </div>
 </template>
-
-<style scoped></style>

@@ -117,5 +117,3 @@ const submit = async (formData: Partial<StreetInput>) => {
     </div>
   </div>
 </template>
-
-<style scoped></style>

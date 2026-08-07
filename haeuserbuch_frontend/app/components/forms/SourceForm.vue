@@ -140,5 +140,3 @@ const submit = async (formData: Partial<SourceInput>) => {
     </div>
   </div>
 </template>
-
-<style scoped></style>

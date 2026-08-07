@@ -95,5 +95,3 @@ useHead(() => ({
     </template>
   </Card>
 </template>
-
-<style scoped></style>

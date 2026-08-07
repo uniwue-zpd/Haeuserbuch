@@ -187,5 +187,3 @@ const actions = {
     </button>
   </div>
 </template>
-
-<style scoped></style>

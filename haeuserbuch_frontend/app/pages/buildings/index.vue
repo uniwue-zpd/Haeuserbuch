@@ -464,7 +464,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div
-        class="mobile-sheet absolute inset-x-0 bottom-0 z-30 h-[var(--sheet-height)] min-h-[72px] overflow-hidden rounded-t-2xl border-t border-default bg-white shadow-[0_-16px_40px_rgba(15,23,42,0.24)] transition-[height] duration-300 ease-out lg:static lg:inset-auto lg:z-auto lg:h-full lg:rounded-none lg:border-l lg:border-t lg:shadow-[-12px_0_32px_rgba(15,23,42,0.14)]"
+         class="absolute inset-x-0 bottom-0 z-30 h-[var(--sheet-height)] min-h-[72px] overflow-anchor-none overflow-hidden rounded-t-2xl border-t border-default bg-white shadow-[0_-16px_40px_rgba(15,23,42,0.24)] transition-[height] duration-300 ease-out lg:static lg:inset-auto lg:z-auto lg:h-full lg:rounded-none lg:border-l lg:border-t lg:shadow-[-12px_0_32px_rgba(15,23,42,0.14)]"
         :class="draggedSheetHeight !== null ? '!duration-0' : ''"
         :style="{ '--sheet-height': `${sheetHeight}px` }"
       >
@@ -515,9 +515,3 @@ onBeforeUnmount(() => {
     </div>
   </section>
 </template>
-
-<style scoped>
-.mobile-sheet {
-  overflow-anchor: none;
-}
-</style>

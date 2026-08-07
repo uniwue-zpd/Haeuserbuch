@@ -15,7 +15,3 @@ useHead(() => ({
 <template>
   <SourceForm header="Quelle bearbeiten" action="edit" :source="source_item ?? undefined"/>
 </template>
-
-<style scoped>
-
-</style>

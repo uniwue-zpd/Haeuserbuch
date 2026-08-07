@@ -5,5 +5,3 @@
     <div class="text-3xl font-bold">Datenschutzerklärung</div>
   </div>
 </template>
-
-<style scoped></style>

@@ -540,7 +540,7 @@ watch(
                   type="button"
                   role="option"
                   :aria-selected="false"
-                  class="group flex h-full w-full flex-col justify-center border-b border-muted px-6 py-3 text-left transition-colors hover:bg-elevated focus-visible:bg-elevated focus-visible:outline-none"
+                   class="group flex h-full w-full flex-col justify-center border-b border-muted px-6 py-3 text-left transition-colors hover:bg-elevated focus-visible:bg-elevated focus-visible:outline-none focus-visible:[box-shadow:inset_0_0_0_2px_var(--ui-color-neutral-400)]"
                   @click="emit('select', buildings[virtualRow.index]!.id)"
                 >
                   <div class="flex items-start justify-between gap-2">
@@ -640,9 +640,3 @@ watch(
     </template>
   </aside>
 </template>
-
-<style scoped>
-button[role="option"]:focus-visible {
-  box-shadow: inset 0 0 0 2px var(--ui-color-neutral-400);
-}
-</style>

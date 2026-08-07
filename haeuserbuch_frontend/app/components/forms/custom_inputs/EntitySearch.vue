@@ -95,7 +95,3 @@ const value = computed({
       :multiple="isMultiple"
   />
 </template>
-
-<style scoped>
-
-</style>

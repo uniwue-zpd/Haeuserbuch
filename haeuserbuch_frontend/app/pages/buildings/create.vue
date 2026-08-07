@@ -6,7 +6,3 @@ import BuildingForm from "~/components/forms/BuildingForm.vue";
 <template>
   <BuildingForm action="create" header="Neues Gebäude-Objekt erstellen"/>
 </template>
-
-<style scoped>
-
-</style>

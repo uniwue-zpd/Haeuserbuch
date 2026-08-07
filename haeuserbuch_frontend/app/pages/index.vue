@@ -11,7 +11,7 @@ useHead(() => ({
 <template>
   <div class="flex flex-col gap-16 pb-10 sm:gap-20 lg:gap-24">
     <section
-      class="hero relative flex min-h-[calc(100svh-6rem)] w-full overflow-hidden rounded-3xl bg-cover bg-center sm:min-h-[calc(100svh-6.5rem)] sm:rounded-4xl"
+      class="relative flex min-h-[calc(100svh-6rem)] w-full overflow-hidden rounded-3xl bg-[url('/hero_image.webp')] bg-cover bg-center sm:min-h-[calc(100svh-6.5rem)] sm:rounded-4xl"
       aria-labelledby="hero-title"
     >
       <div class="absolute inset-0 bg-[#17261f]/70" />
@@ -102,9 +102,3 @@ useHead(() => ({
     </section>
   </div>
 </template>
-
-<style scoped>
-.hero {
-  background-image: url("/hero_image.webp");
-}
-</style>

@@ -307,5 +307,3 @@ const submit = async (formData: Partial<PersonInput>) => {
     </FormKit>
   </div>
 </template>
-
-<style scoped></style>

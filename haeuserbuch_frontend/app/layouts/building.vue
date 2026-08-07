@@ -82,13 +82,13 @@ function handleMapSelect(id: number) {
 <template>
   <AppShell main-class="mx-auto flex w-full grow max-w-[120rem] flex-col px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
       <div class="building-page flex min-h-full flex-col gap-6">
-      <header v-if="selectedBuilding" class="building-page__header">
-        <h1 class="building-title">{{ buildingLabel(selectedBuilding) }}</h1>
+      <header v-if="selectedBuilding" class="flex items-start justify-between gap-6 max-md:flex-col">
+        <h1 class="text-[clamp(2.25rem,5vw,4.5rem)] font-[750] leading-[0.98] tracking-[-0.055em] text-highlighted">{{ buildingLabel(selectedBuilding) }}</h1>
         <div class="flex items-start gap-2">
-          <div class="building-navigation" aria-label="Gebäude wechseln">
+            <div class="flex gap-[0.35rem]" aria-label="Gebäude wechseln">
             <button
               type="button"
-              class="building-navigation__button"
+              class="grid size-11 place-items-center rounded-xl border border-[var(--ui-border-accented)] text-highlighted transition-colors duration-150 hover:border-[#d9a441] hover:bg-elevated focus-visible:border-[#d9a441] focus-visible:bg-elevated focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-[0.35]"
               :disabled="!previousBuilding"
               aria-label="Vorheriges Gebäude"
               @click="navigateToBuilding(previousBuilding)"
@@ -97,7 +97,7 @@ function handleMapSelect(id: number) {
             </button>
             <button
               type="button"
-              class="building-navigation__button"
+              class="grid size-11 place-items-center rounded-xl border border-[var(--ui-border-accented)] text-highlighted transition-colors duration-150 hover:border-[#d9a441] hover:bg-elevated focus-visible:border-[#d9a441] focus-visible:bg-elevated focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-[0.35]"
               :disabled="!nextBuilding"
               aria-label="Nächstes Gebäude"
               @click="navigateToBuilding(nextBuilding)"
@@ -109,8 +109,8 @@ function handleMapSelect(id: number) {
         </div>
       </header>
 
-      <div class="building-bento-grid">
-        <section class="bento-card building-map-card">
+      <div class="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(22rem,1fr)] lg:items-start">
+        <section class="flex h-96 min-w-0 flex-col overflow-hidden rounded-2xl border-0 bg-[var(--ui-bg)] shadow-[0_8px_24px_rgb(15_23_42_/_0.06)] lg:h-[31rem]">
           <ClientOnly>
             <BuildingsMap
               :features="buildingFeatures"
@@ -123,7 +123,7 @@ function handleMapSelect(id: number) {
             <template #fallback><div class="h-full w-full animate-pulse bg-slate-300" /></template>
           </ClientOnly>
         </section>
-        <main class="building-route__content">
+        <main class="contents min-w-0">
           <slot />
         </main>
       </div>
@@ -135,100 +135,3 @@ function handleMapSelect(id: number) {
     </div>
   </AppShell>
 </template>
-
-<style scoped>
-.building-page__header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1.5rem;
-}
-
-.building-title {
-  color: var(--ui-text-highlighted);
-  font-size: clamp(2.25rem, 5vw, 4.5rem);
-  font-weight: 750;
-  letter-spacing: -0.055em;
-  line-height: 0.98;
-}
-
-.building-navigation {
-  display: flex;
-  gap: 0.35rem;
-}
-
-.building-navigation__button {
-  display: grid;
-  width: 2.75rem;
-  height: 2.75rem;
-  place-items: center;
-  border: 1px solid var(--ui-border-accented);
-  border-radius: 0.75rem;
-  color: var(--ui-text-highlighted);
-  transition: background-color 150ms ease, border-color 150ms ease, opacity 150ms ease;
-}
-
-.building-navigation__button:hover:not(:disabled),
-.building-navigation__button:focus-visible {
-  border-color: #d9a441;
-  background: var(--ui-bg-elevated);
-  outline: none;
-}
-
-.building-navigation__button:disabled {
-  cursor: not-allowed;
-  opacity: 0.35;
-}
-
-.building-bento-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 1rem;
-}
-
-.bento-card {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  border: 1px solid rgb(209 213 219);
-  border-radius: 1rem;
-  background: var(--ui-bg);
-  box-shadow: 0 8px 24px rgb(15 23 42 / 0.06);
-}
-
-.building-map-card {
-  height: 24rem;
-  overflow: hidden;
-  border: 0;
-}
-
-.building-route__content {
-  display: contents;
-  min-width: 0;
-}
-
-.building-route__content :deep(.building-details--bento) {
-  display: contents;
-}
-
-.building-route__content :deep(.building-details--bento > div) {
-  display: contents;
-}
-
-@media (min-width: 1024px) {
-  .building-bento-grid {
-    grid-template-columns: minmax(0, 1.5fr) minmax(22rem, 1fr);
-    align-items: start;
-  }
-
-  .building-map-card {
-    height: 31rem;
-  }
-}
-
-@media (max-width: 767px) {
-  .building-page__header {
-    flex-direction: column;
-  }
-}
-</style>

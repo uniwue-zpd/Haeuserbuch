@@ -40,7 +40,3 @@
     <div class="h-[8vh] bg-gray-300 rounded-md animate-pulse"/>
   </div>
 </template>
-
-<style scoped>
-
-</style>

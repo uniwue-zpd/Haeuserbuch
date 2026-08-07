@@ -15,7 +15,3 @@ const { data: citizenshipItem, status } = await useAsyncData(`citizenship-${ cit
 <template>
   <CitizenshipForm header="Bürgermatrikel bearbeiten" action="edit" :citizenship="citizenshipItem ?? undefined"/>
 </template>
-
-<style scoped>
-
-</style>

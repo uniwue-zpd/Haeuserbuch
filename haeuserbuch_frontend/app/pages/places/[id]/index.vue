@@ -99,12 +99,12 @@ onBeforeUnmount(() => {
       <TaskBar :id="placeId" entity_type="places" />
     </header>
 
-    <div v-if="properties" class="place-bento-grid">
-      <section class="bento-card place-map-card lg:col-span-8">
+    <div v-if="properties" class="grid grid-cols-[minmax(0,1fr)] auto-rows-[minmax(0,auto)] gap-4 lg:auto-rows-[minmax(10rem,auto)] lg:grid-cols-12">
+      <section class="flex min-w-0 flex-col gap-5 overflow-hidden rounded-2xl border-0 bg-[var(--ui-bg)] p-0 shadow-[0_8px_24px_rgb(15_23_42_/_0.06)] lg:col-span-8">
         <div
           v-if="geometry"
           id="map"
-          class="place-map-frame w-full bg-elevated"
+          class="h-96 w-full bg-elevated lg:h-[31rem]"
         />
         <div
           v-else
@@ -117,12 +117,12 @@ onBeforeUnmount(() => {
         </div>
       </section>
 
-      <section v-if="properties.altNames?.length" class="bento-card lg:col-span-4">
-        <div class="bento-card-heading">
-          <h2>Namensvarianten</h2>
+      <section v-if="properties.altNames?.length" class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-[var(--ui-bg)] p-5 shadow-[0_8px_24px_rgb(15_23_42_/_0.06)] lg:col-span-4">
+        <div class="flex items-start justify-between gap-4">
+          <h2 class="text-[1.2rem] font-[650] leading-[1.25] text-highlighted">Namensvarianten</h2>
         </div>
-        <div class="detail-list">
-          <div v-for="name in properties.altNames" :key="name" class="detail-row">
+        <div class="flex flex-col">
+          <div v-for="name in properties.altNames" :key="name" class="flex flex-col gap-[0.45rem] border-t border-muted py-[0.85rem] first:border-t-0 first:pt-0 last:pb-0">
             <p class="font-semibold text-highlighted">{{ name }}</p>
           </div>
         </div>
@@ -130,32 +130,32 @@ onBeforeUnmount(() => {
 
       <section
         v-if="properties.generalNotes"
-        class="bento-card lg:col-span-8"
+        class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-[var(--ui-bg)] p-5 shadow-[0_8px_24px_rgb(15_23_42_/_0.06)] lg:col-span-8"
       >
-        <div class="bento-card-heading">
-          <h2>Notizen und Anmerkungen</h2>
+        <div class="flex items-start justify-between gap-4">
+          <h2 class="text-[1.2rem] font-[650] leading-[1.25] text-highlighted">Notizen und Anmerkungen</h2>
         </div>
-        <div class="detail-list">
-          <div class="detail-row">
-            <p class="detail-label">Notizen allgemein</p>
+        <div class="flex flex-col">
+          <div class="flex flex-col gap-[0.45rem] border-t border-muted py-[0.85rem] first:border-t-0 first:pt-0 last:pb-0">
+            <p class="text-[0.8125rem] font-semibold text-muted">Notizen allgemein</p>
             <p class="whitespace-pre-wrap text-highlighted">{{ properties.generalNotes }}</p>
           </div>
         </div>
       </section>
 
-      <section class="bento-card lg:col-span-7">
-        <div class="bento-card-heading">
-          <h2>Beziehungen zu anderen Entitäten</h2>
+       <section class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-[var(--ui-bg)] p-5 shadow-[0_8px_24px_rgb(15_23_42_/_0.06)] lg:col-span-7">
+         <div class="flex items-start justify-between gap-4">
+           <h2 class="text-[1.2rem] font-[650] leading-[1.25] text-highlighted">Beziehungen zu anderen Entitäten</h2>
         </div>
-        <div class="detail-list">
-          <div class="detail-row">
-            <p class="detail-label">Möglicher Herkunftsort von</p>
+         <div class="flex flex-col">
+           <div class="flex flex-col gap-[0.45rem] border-t border-muted py-[0.85rem] first:border-t-0 first:pt-0 last:pb-0">
+             <p class="text-[0.8125rem] font-semibold text-muted">Möglicher Herkunftsort von</p>
             <div v-if="associatedPeople?.length" class="flex flex-wrap gap-2">
               <NuxtLink
                 v-for="person in associatedPeople"
                 :key="person.id ?? person.fullName ?? 'person'"
                 :to="`/persons/${person.id}`"
-                class="detail-link"
+                 class="inline-flex max-w-full rounded-lg border border-[var(--ui-border-accented)] px-[0.65rem] py-[0.45rem] text-sm font-semibold leading-[1.25] text-highlighted transition-colors duration-150 hover:bg-elevated hover:border-[var(--ui-border-accented)]"
               >
                 {{ person.fullName || `Person mit ID ${person.id}` }}
               </NuxtLink>
@@ -172,105 +172,3 @@ onBeforeUnmount(() => {
     />
   </div>
 </template>
-
-<style scoped>
-.place-bento-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 1rem;
-  grid-auto-rows: minmax(0, auto);
-}
-
-.bento-card {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 1.25rem;
-  border: 1px solid rgb(209 213 219);
-  border-radius: 1rem;
-  background: var(--ui-bg);
-  padding: 1.25rem;
-  box-shadow: 0 8px 24px rgb(15 23 42 / 0.06);
-}
-
-.place-map-card {
-  overflow: hidden;
-  border: 0;
-  padding: 0;
-}
-
-.place-map-frame {
-  height: 24rem;
-}
-
-.bento-card-heading {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.bento-card-heading h2 {
-  color: var(--ui-text-highlighted);
-  font-size: 1.2rem;
-  font-weight: 650;
-  line-height: 1.25;
-}
-
-.detail-list {
-  display: flex;
-  flex-direction: column;
-}
-
-.detail-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  border-top: 1px solid var(--ui-border-muted);
-  padding: 0.85rem 0;
-}
-
-.detail-row:first-child {
-  border-top: 0;
-  padding-top: 0;
-}
-
-.detail-row:last-child {
-  padding-bottom: 0;
-}
-
-.detail-label {
-  color: var(--ui-text-muted);
-  font-size: 0.8125rem;
-  font-weight: 600;
-}
-
-.detail-link {
-  display: inline-flex;
-  max-width: 100%;
-  border: 1px solid var(--ui-border-accented);
-  border-radius: 0.5rem;
-  padding: 0.45rem 0.65rem;
-  color: var(--ui-text-highlighted);
-  font-size: 0.875rem;
-  font-weight: 600;
-  line-height: 1.25;
-  transition: background-color 150ms ease, border-color 150ms ease;
-}
-
-.detail-link:hover {
-  border-color: var(--ui-border-accented);
-  background: var(--ui-bg-elevated);
-}
-
-@media (min-width: 1024px) {
-  .place-bento-grid {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    grid-auto-rows: minmax(10rem, auto);
-  }
-
-  .place-map-frame {
-    height: 31rem;
-  }
-}
-</style>

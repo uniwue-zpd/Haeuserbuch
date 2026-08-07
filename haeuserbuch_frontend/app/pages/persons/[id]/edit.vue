@@ -19,7 +19,3 @@ const { data: personItem, status } = await useAsyncData(`person-${ person_id }`,
       :person="personItem ?? undefined"
   />
 </template>
-
-<style scoped>
-
-</style>

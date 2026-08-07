@@ -195,5 +195,3 @@ const submit = async (formData: Partial<CitizenshipInput>) => {
     </FormKit>
   </div>
 </template>
-
-<style scoped></style>

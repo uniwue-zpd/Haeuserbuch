@@ -64,16 +64,16 @@ useHead(() => ({
     v-else-if="personItem"
     class="person-page flex min-h-full flex-col gap-8"
   >
-    <header class="person-page__header">
-      <h1 class="person-title">{{ personItem.fullName }}</h1>
+    <header class="flex items-start justify-between gap-6 max-sm:items-center">
+      <h1 class="text-[clamp(2.25rem,5vw,4.5rem)] font-[750] leading-[0.98] tracking-[-0.055em] text-highlighted">{{ personItem.fullName }}</h1>
       <TaskBar :id="personId" entity_type="persons" />
     </header>
-    <div class="person-bento-grid">
+    <div class="grid grid-cols-[minmax(0,1fr)] gap-4 lg:auto-rows-[minmax(10rem,auto)] lg:grid-cols-12 lg:items-start">
       <div
         v-if="hasProfileContent"
-        class="person-card person-card--profile"
+        class="row-span-2 flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-[var(--ui-bg)] p-5 shadow-[0_8px_24px_rgb(15_23_42_/_0.06)] lg:col-span-7"
       >
-        <h2>Über die Person</h2>
+        <h2 class="text-[1.2rem] font-[650] leading-[1.25] text-highlighted">Über die Person</h2>
         <div
           v-if="personItem.firstName || personItem.lastName"
           class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
@@ -136,7 +136,7 @@ useHead(() => ({
           <div>
             <NuxtLink
               :to="`/buildings/${personItem.associatedBuilding.id}`"
-              class="p-1.5 border-2 border-gray-300 rounded-lg shadow-sm hover:shadow-md font-semibold"
+              class="rounded-lg border-2 border-gray-300 p-1.5 font-semibold shadow-sm hover:shadow-md"
             >
               {{ personItem.associatedBuilding.districtPropertyNumber }}
             </NuxtLink>
@@ -178,22 +178,23 @@ useHead(() => ({
         v-if="hasOriginContent && personItem?.origin"
         :personId="personId"
         :personOrigin="personItem.origin"
+        class="lg:col-span-5"
       />
       <div
         v-if="personItem.generalNotes"
-        class="person-card"
+        class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-[var(--ui-bg)] p-5 shadow-[0_8px_24px_rgb(15_23_42_/_0.06)] lg:col-span-5"
       >
-        <h2>Notizen und Anmerkungen</h2>
-        <div class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
-          <p class="text-sm text-gray-500 font-medium">Anmerkungen</p>
-          <p class="text-justify">{{ personItem.generalNotes }}</p>
+        <h2 class="text-[1.2rem] font-[650] leading-[1.25] text-highlighted">Notizen und Anmerkungen</h2>
+        <div class="flex flex-col gap-[0.45rem] border-l-0 border-t border-muted py-3">
+          <p class="text-xs font-bold leading-[1.25] text-muted">Anmerkungen</p>
+          <p class="text-justify leading-[1.45] text-highlighted">{{ personItem.generalNotes }}</p>
         </div>
         <div
           v-if="personItem.internalNotes"
-          class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
+          class="flex flex-col gap-[0.45rem] border-l-0 border-t border-muted py-3"
         >
-          <p class="text-sm text-gray-500 font-medium">Notizen</p>
-          <p class="text-justify">{{ personItem.internalNotes }}</p>
+          <p class="text-xs font-bold leading-[1.25] text-muted">Notizen</p>
+          <p class="text-justify leading-[1.45] text-highlighted">{{ personItem.internalNotes }}</p>
         </div>
       </div>
     </div>
@@ -203,129 +204,3 @@ useHead(() => ({
     />
   </div>
 </template>
-
-<style scoped>
-.person-page__header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1.5rem;
-}
-
-.person-title {
-  color: var(--ui-text-highlighted);
-  font-size: clamp(2.25rem, 5vw, 4.5rem);
-  font-weight: 750;
-  letter-spacing: -0.055em;
-  line-height: 0.98;
-}
-
-.person-bento-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 1rem;
-}
-
-.person-card {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 1.25rem;
-  border: 1px solid rgb(209 213 219);
-  border-radius: 1rem;
-  background: var(--ui-bg);
-  padding: 1.25rem;
-  box-shadow: 0 8px 24px rgb(15 23 42 / 0.06);
-}
-
-.person-card h2 {
-  color: var(--ui-text-highlighted);
-  font-size: 1.2rem;
-  font-weight: 650;
-  line-height: 1.25;
-}
-
-.person-card :deep(.border-l-4) {
-  gap: 0.45rem;
-  border-top: 1px solid var(--ui-border-muted);
-  border-left-width: 0;
-  padding: 0.75rem 0;
-}
-
-.person-card :deep(.border-l-4 > p:first-child) {
-  color: var(--ui-text-muted);
-  font-size: 0.75rem;
-  font-weight: 700;
-  line-height: 1.25;
-}
-
-.person-card :deep(.border-l-4 > p:not(:first-child)) {
-  color: var(--ui-text-highlighted);
-  line-height: 1.45;
-}
-
-.person-card--profile {
-  grid-row: span 2;
-}
-
-.person-bento-grid :deep(.person-origin-card) {
-  min-width: 0;
-  border: 1px solid rgb(209 213 219);
-  border-radius: 1rem;
-  background: var(--ui-bg);
-  padding: 1.25rem;
-  box-shadow: 0 8px 24px rgb(15 23 42 / 0.06);
-}
-
-.person-bento-grid :deep(.person-origin-card h2) {
-  color: var(--ui-text-highlighted);
-  font-size: 1.2rem;
-  font-weight: 650;
-  line-height: 1.25;
-}
-
-.person-bento-grid :deep(.person-origin-card > div:not(.h-\[220px\])) {
-  gap: 0.45rem;
-  border-top: 1px solid var(--ui-border-muted);
-  padding: 0.75rem 0;
-}
-
-.person-bento-grid :deep(.person-origin-card .text-xs) {
-  color: var(--ui-text-muted);
-  font-size: 0.75rem;
-  font-weight: 700;
-  line-height: 1.25;
-}
-
-.person-bento-grid :deep(.person-origin-card .h-\[220px\]) {
-  border: 0;
-  border-radius: 0.75rem;
-  box-shadow: none;
-}
-
-@media (min-width: 1024px) {
-  .person-bento-grid {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    grid-auto-rows: minmax(10rem, auto);
-    align-items: start;
-  }
-
-  .person-card--profile {
-    grid-column: span 7;
-  }
-
-  .person-card--profile + * {
-    grid-column: span 5;
-  }
-
-  .person-card:not(.person-card--profile) {
-    grid-column: span 5;
-  }
-}
-
-@media (max-width: 640px) {
-  .person-page__header {
-    align-items: center;
-  }
-}
-</style>

@@ -43,48 +43,57 @@ const addressesOld = computed(() =>
 
 <template>
   <div
-    class="building-details flex flex-col gap-4"
+    class="flex flex-col gap-4 [&_.detail-section]:flex [&_.detail-section]:flex-col [&_.detail-section]:gap-5 [&_.detail-section]:rounded-xl [&_.detail-section]:border [&_.detail-section]:border-gray-300 [&_.detail-section]:bg-white [&_.detail-section]:p-4 [&_.detail-section]:shadow-[0_8px_24px_rgb(15_23_42_/_0.06)] [&_.detail-section_h2]:font-sans [&_.detail-section_h2]:text-xl [&_.detail-section_h2]:font-[650] [&_.detail-section_h2]:text-[#22374b] [&_.detail-row]:flex [&_.detail-row]:flex-col [&_.detail-row]:gap-2 [&_.detail-row]:py-1.5 [&_.detail-label]:text-[0.8125rem] [&_.detail-label]:font-semibold [&_.detail-label]:text-gray-500 [&_.detail-link]:inline-flex [&_.detail-link]:rounded-lg [&_.detail-link]:border [&_.detail-link]:border-gray-300 [&_.detail-link]:px-[0.55rem] [&_.detail-link]:py-[0.35rem] [&_.detail-link]:text-sm [&_.detail-link]:font-semibold [&_.detail-link]:text-[#22374b] [&_.detail-link]:transition-colors [&_.detail-link]:duration-150 [&_.detail-link:hover]:border-[#d9a441] [&_.detail-link:hover]:text-[#172a3a] [&_.detail-link:hover]:shadow-[0_4px_12px_rgb(15_23_42_/_0.12)] [&_.detail-link:focus-visible]:border-[#d9a441] [&_.detail-link:focus-visible]:text-[#172a3a] [&_.detail-link:focus-visible]:shadow-[0_4px_12px_rgb(15_23_42_/_0.12)] [&_.detail-link:focus-visible]:outline-none"
     :class="{
-      'building-details--compact': compact,
-      'building-details--bento': bento,
+      'building-details--compact gap-0 [&>div]:gap-0 [&_.detail-section]:gap-0 [&_.detail-section]:rounded-none [&_.detail-section]:border-0 [&_.detail-section]:border-b [&_.detail-section]:border-muted [&_.detail-section]:bg-transparent [&_.detail-section]:px-0 [&_.detail-section]:py-5 [&_.detail-section]:text-[var(--ui-text)] [&_.detail-section]:shadow-none [&_.detail-section_h2]:mb-2 [&_.detail-section_h2]:text-[0.95rem] [&_.detail-section_h2]:font-bold [&_.detail-section_h2]:text-highlighted [&_.detail-row]:grid [&_.detail-row]:grid-cols-[minmax(0,9.5rem)_minmax(0,1fr)] [&_.detail-row]:items-start [&_.detail-row]:gap-3 [&_.detail-row]:py-2.5 [&_.detail-label]:leading-[1.35rem] [&_.detail-label]:text-muted [&_.detail-label]:[overflow-wrap:anywhere] [&_.detail-link]:rounded-none [&_.detail-link]:border-0 [&_.detail-link]:p-0 [&_.detail-link]:text-highlighted [&_.detail-link]:underline [&_.detail-link]:decoration-[var(--ui-text-dimmed)] [&_.detail-link]:underline-offset-[0.2rem] [&_.detail-link:hover]:shadow-none [&_.detail-link:hover]:decoration-current [&_.detail-link:focus-visible]:shadow-none [&_.detail-link:focus-visible]:decoration-current': compact,
+      'building-details--bento col-span-full columns-1 gap-4 lg:columns-2 [&>div]:contents [&_.detail-section]:mb-4 [&_.detail-section]:break-inside-avoid [&_.detail-section]:gap-5 [&_.detail-section]:rounded-2xl [&_.detail-section]:border [&_.detail-section]:border-gray-300 [&_.detail-section]:bg-[var(--ui-bg)] [&_.detail-section]:p-5 [&_.detail-section]:shadow-[0_8px_24px_rgb(15_23_42_/_0.06)] [&_.detail-section_h2]:mb-0 [&_.detail-section_h2]:text-[1.2rem]': bento,
     }"
   >
     <div
       :class="
         compact
-          ? 'flex flex-col gap-4'
-          : 'grid grid-cols-1 gap-4 md:grid-cols-2'
+          ? 'flex flex-col gap-0'
+          : bento
+            ? 'contents'
+            : 'grid grid-cols-1 gap-4 md:grid-cols-2'
       "
     >
       <section
-        class="detail-section"
+        class="flex flex-col gap-5 rounded-xl border border-gray-300 bg-white p-4 shadow-[0_8px_24px_rgb(15_23_42_/_0.06)]"
+        :class="compact
+          ? 'gap-0 rounded-none border-0 border-b border-muted bg-transparent px-0 py-5 text-[var(--ui-text)] shadow-none'
+          : bento
+            ? 'mb-4 break-inside-avoid rounded-2xl bg-[var(--ui-bg)] p-5 shadow-[0_8px_24px_rgb(15_23_42_/_0.06)]'
+            : ''"
         :aria-labelledby="`${headingPrefix}-location`"
       >
-        <h2 :id="`${headingPrefix}-location`">Adressen und Flurstücke</h2>
+        <h2 class="font-sans text-xl font-[650] text-[#22374b]" :class="compact ? 'mb-2 text-[0.95rem] font-bold text-highlighted' : bento ? 'mb-0 text-[1.2rem]' : ''" :id="`${headingPrefix}-location`">Adressen und Flurstücke</h2>
 
-        <div v-if="details.propertyNumber" class="detail-row">
-          <p class="detail-label">Historische Besitznummer</p>
+         <div v-if="details.propertyNumber" class="flex flex-col gap-2 py-1.5" :class="compact ? 'grid grid-cols-[minmax(0,9.5rem)_minmax(0,1fr)] items-start gap-3 py-2.5' : ''">
+           <p class="text-[0.8125rem] font-semibold text-gray-500" :class="compact ? 'leading-[1.35rem] text-muted [overflow-wrap:anywhere]' : ''">Historische Besitznummer</p>
           <p class="font-semibold">{{ details.propertyNumber }}</p>
         </div>
 
-        <div v-if="details.district" class="detail-row">
-          <p class="detail-label">Distrikt</p>
+         <div v-if="details.district" class="flex flex-col gap-2 py-1.5" :class="compact ? 'grid grid-cols-[minmax(0,9.5rem)_minmax(0,1fr)] items-start gap-3 py-2.5' : ''">
+           <p class="text-[0.8125rem] font-semibold text-gray-500" :class="compact ? 'leading-[1.35rem] text-muted [overflow-wrap:anywhere]' : ''">Distrikt</p>
           <div>
             <NuxtLink
               :to="`/districts/${details.district.id}`"
-              class="detail-link"
+              class="inline-flex rounded-lg border border-gray-300 px-[0.55rem] py-[0.35rem] text-sm font-semibold text-[#22374b] transition-colors duration-150 hover:border-[#d9a441] hover:text-[#172a3a] hover:shadow-[0_4px_12px_rgb(15_23_42_/_0.12)] focus-visible:border-[#d9a441] focus-visible:text-[#172a3a] focus-visible:shadow-[0_4px_12px_rgb(15_23_42_/_0.12)] focus-visible:outline-none"
+              :class="compact ? 'rounded-none border-0 p-0 text-highlighted underline decoration-[var(--ui-text-dimmed)] underline-offset-[0.2rem] hover:shadow-none hover:decoration-current focus-visible:shadow-none focus-visible:decoration-current' : ''"
             >
               {{ details.district.name }}
             </NuxtLink>
           </div>
         </div>
 
-        <div v-if="details.quarter" class="detail-row">
-          <p class="detail-label">Viertel</p>
+         <div v-if="details.quarter" class="flex flex-col gap-2 py-1.5" :class="compact ? 'grid grid-cols-[minmax(0,9.5rem)_minmax(0,1fr)] items-start gap-3 py-2.5' : ''">
+           <p class="text-[0.8125rem] font-semibold text-gray-500" :class="compact ? 'leading-[1.35rem] text-muted [overflow-wrap:anywhere]' : ''">Viertel</p>
           <div>
             <NuxtLink
               :to="`/quarters/${details.quarter.id}`"
-              class="detail-link"
+              class="inline-flex rounded-lg border border-gray-300 px-[0.55rem] py-[0.35rem] text-sm font-semibold text-[#22374b] transition-colors duration-150 hover:border-[#d9a441] hover:text-[#172a3a] hover:shadow-[0_4px_12px_rgb(15_23_42_/_0.12)] focus-visible:border-[#d9a441] focus-visible:text-[#172a3a] focus-visible:shadow-[0_4px_12px_rgb(15_23_42_/_0.12)] focus-visible:outline-none"
+              :class="compact ? 'rounded-none border-0 p-0 text-highlighted underline decoration-[var(--ui-text-dimmed)] underline-offset-[0.2rem] hover:shadow-none hover:decoration-current focus-visible:shadow-none focus-visible:decoration-current' : ''"
             >
               {{ details.quarter.name }}
             </NuxtLink>
@@ -295,147 +304,3 @@ const addressesOld = computed(() =>
 
   </div>
 </template>
-
-<style scoped>
-.detail-section {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  border: 1px solid rgb(209 213 219);
-  border-radius: 0.75rem;
-  background: white;
-  padding: 1rem;
-  box-shadow: 0 8px 24px rgb(15 23 42 / 0.06);
-}
-
-.detail-section h2 {
-  font-family: "Archivo", sans-serif;
-  font-size: 1.25rem;
-  font-weight: 650;
-  color: #22374b;
-}
-
-.detail-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 0.375rem 0;
-}
-
-.detail-label {
-  color: rgb(107 114 128);
-  font-size: 0.8125rem;
-  font-weight: 600;
-}
-
-.detail-link {
-  display: inline-flex;
-  border: 1px solid rgb(209 213 219);
-  border-radius: 0.5rem;
-  padding: 0.35rem 0.55rem;
-  color: #22374b;
-  font-size: 0.875rem;
-  font-weight: 600;
-  transition:
-    border-color 150ms ease,
-    box-shadow 150ms ease,
-    color 150ms ease;
-}
-
-.detail-link:hover,
-.detail-link:focus-visible {
-  border-color: #d9a441;
-  color: #172a3a;
-  box-shadow: 0 4px 12px rgb(15 23 42 / 0.12);
-  outline: none;
-}
-
-.building-details--compact {
-  gap: 0;
-}
-
-.building-details--compact > div {
-  gap: 0;
-}
-
-.building-details--compact .detail-section {
-  gap: 0;
-  border: 0;
-  border-bottom: 1px solid var(--ui-border-muted);
-  border-radius: 0;
-  background: transparent;
-  padding: 1.25rem 0;
-  color: var(--ui-text);
-  box-shadow: none;
-}
-
-.building-details--compact .detail-section h2 {
-  margin-bottom: 0.5rem;
-  color: var(--ui-text-highlighted);
-  font-size: 0.95rem;
-  font-weight: 700;
-}
-
-.building-details--compact .detail-row {
-  display: grid;
-  grid-template-columns: minmax(0, 9.5rem) minmax(0, 1fr);
-  align-items: start;
-  gap: 0.75rem;
-  padding: 0.625rem 0;
-}
-
-.building-details--compact .detail-label {
-  color: var(--ui-text-muted);
-  line-height: 1.35rem;
-  overflow-wrap: anywhere;
-}
-
-.building-details--compact .detail-link {
-  border: 0;
-  border-radius: 0;
-  padding: 0;
-  color: var(--ui-text-highlighted);
-  text-decoration: underline;
-  text-decoration-color: var(--ui-text-dimmed);
-  text-underline-offset: 0.2rem;
-}
-
-.building-details--compact .detail-link:hover,
-.building-details--compact .detail-link:focus-visible {
-  box-shadow: none;
-  text-decoration-color: currentColor;
-}
-
-.building-details--bento {
-  grid-column: 1 / -1;
-  display: block;
-  column-count: 1;
-  column-gap: 1rem;
-}
-
-.building-details--bento > div {
-  display: contents;
-}
-
-.building-details--bento .detail-section {
-  break-inside: avoid;
-  gap: 1.25rem;
-  margin-bottom: 1rem;
-  border: 1px solid rgb(209 213 219);
-  border-radius: 1rem;
-  background: var(--ui-bg);
-  padding: 1.25rem;
-  box-shadow: 0 8px 24px rgb(15 23 42 / 0.06);
-}
-
-.building-details--bento .detail-section h2 {
-  margin-bottom: 0;
-  font-size: 1.2rem;
-}
-
-@media (min-width: 1024px) {
-  .building-details--bento {
-    column-count: 2;
-  }
-}
-</style>

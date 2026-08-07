@@ -183,9 +183,9 @@ useHead(() => ({
 </script>
 
 <template>
-  <div class="persons-page">
-    <header class="persons-page__header">
-      <h1 class="persons-title">Personen</h1>
+  <div class="flex flex-col gap-4">
+    <header class="flex items-start justify-between gap-4">
+      <h1 class="text-[clamp(2.25rem,5vw,4.5rem)] font-[750] leading-[0.98] tracking-[-0.055em] text-highlighted">Personen</h1>
       <UPopover
         mode="click"
         :content="{ align: 'end', side: 'bottom', sideOffset: 8 }"
@@ -211,16 +211,16 @@ useHead(() => ({
         </template>
       </UPopover>
     </header>
-    <div class="persons-summary person-card">
+    <div class="w-fit rounded-2xl border border-gray-300 bg-[var(--ui-bg)] p-[0.8rem_1rem] text-base font-[650] text-highlighted shadow-[0_8px_24px_rgb(15_23_42_/_0.06)]">
       <p>Einträge insgesamt: {{ totalRecords }}</p>
     </div>
 
-    <div class="persons-bento-grid">
-      <aside class="person-filter-card person-card">
-        <div class="person-card__heading">
-          <h2>Filter</h2>
+    <div class="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(16rem,18rem)_minmax(0,1fr)] lg:items-start">
+      <aside class="min-w-0 overflow-hidden rounded-2xl border border-gray-300 bg-[var(--ui-bg)] p-0 shadow-[0_8px_24px_rgb(15_23_42_/_0.06)]">
+        <div class="border-b border-muted p-5">
+          <h2 class="text-[1.2rem] font-[650] text-highlighted">Filter</h2>
         </div>
-        <div class="person-filter-fields">
+        <div class="flex flex-col">
           <details open class="border-b border-default p-4">
             <summary class="cursor-pointer list-none text-base font-semibold">
               <span class="flex items-center justify-between">
@@ -282,7 +282,7 @@ useHead(() => ({
           </details>
         </div>
       </aside>
-      <section class="person-table-card person-card">
+      <section class="min-w-0 overflow-hidden rounded-2xl border border-gray-300 bg-[var(--ui-bg)] p-0 shadow-[0_8px_24px_rgb(15_23_42_/_0.06)]">
           <UTable
             :data="rows"
             :columns="columns"
@@ -343,83 +343,12 @@ useHead(() => ({
 </template>
 
 <style scoped>
-.persons-page {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.persons-page__header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.persons-title {
-  color: var(--ui-text-highlighted);
-  font-size: clamp(2.25rem, 5vw, 4.5rem);
-  font-weight: 750;
-  letter-spacing: -0.055em;
-  line-height: 0.98;
-}
-
-.person-card {
-  border: 1px solid rgb(209 213 219);
-  border-radius: 1rem;
-  background: var(--ui-bg);
-  box-shadow: 0 8px 24px rgb(15 23 42 / 0.06);
-}
-
-.persons-summary {
-  width: fit-content;
-  padding: 0.8rem 1rem;
-  color: var(--ui-text-highlighted);
-  font-size: 1rem;
-  font-weight: 650;
-}
-
-.persons-bento-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 1rem;
-}
-
-.person-filter-card,
-.person-table-card {
-  min-width: 0;
-  overflow: hidden;
-  padding: 0;
-}
-
-.person-filter-card h2 {
-  color: var(--ui-text-highlighted);
-  font-size: 1.2rem;
-  font-weight: 650;
-}
-
-.person-card__heading {
-  border-bottom: 1px solid var(--ui-border-muted);
-  padding: 1.25rem;
-}
-
-.person-filter-fields {
-  display: flex;
-  flex-direction: column;
-}
-
-.person-table-card :deep(table) {
+section :deep(table) {
   border: 0;
 }
 
-.person-table-card > :deep(.flex.flex-col) {
+section > :deep(.flex.flex-col) {
   padding: 1.25rem;
 }
 
-@media (min-width: 1024px) {
-  .persons-bento-grid {
-    grid-template-columns: minmax(16rem, 18rem) minmax(0, 1fr);
-    align-items: start;
-  }
-}
 </style>

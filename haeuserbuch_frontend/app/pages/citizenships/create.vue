@@ -91,5 +91,3 @@ import PersonForm from "~/components/forms/PersonForm.vue";
     </Stepper>
   </div>
 </template>
-
-<style scoped></style>

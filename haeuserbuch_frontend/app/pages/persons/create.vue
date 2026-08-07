@@ -9,7 +9,3 @@ useHead(() => ({
 <template>
   <PersonForm header="Neues Person-Objekt erstellen" action="create"/>
 </template>
-
-<style scoped>
-
-</style>

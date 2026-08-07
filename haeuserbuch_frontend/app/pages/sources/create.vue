@@ -9,7 +9,3 @@ useHead({
 <template>
   <SourceForm header="Neue Quelle hinzufügen" action="create"/>
 </template>
-
-<style scoped>
-
-</style>

@@ -86,19 +86,19 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="person-origin-card flex flex-col gap-5 p-4 rounded-lg shadow-lg border border-gray-300"
+    class="person-origin-card flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-[var(--ui-bg)] p-5 shadow-[0_8px_24px_rgb(15_23_42_/_0.06)]"
   >
-    <h2 class="text-2xl font-semibold">Herkunft</h2>
-    <div v-if="personOrigin.originalText" class="flex flex-col gap-1">
-      <span class="text-xs font-semibold uppercase tracking-wide text-gray-500">
+    <h2 class="text-[1.2rem] font-[650] leading-[1.25] text-highlighted">Herkunft</h2>
+    <div v-if="personOrigin.originalText" class="flex flex-col gap-[0.45rem] border-t border-muted py-3">
+      <span class="text-xs font-bold leading-[1.25] text-muted">
         Eingetragener Ort
       </span>
       <span class="text-base italic">
         {{ personOrigin.originalText }}
       </span>
     </div>
-    <div v-if="personOrigin.places.length > 0" class="flex flex-col gap-2">
-      <span class="text-xs font-semibold uppercase tracking-wide text-gray-500">
+    <div v-if="personOrigin.places.length > 0" class="flex flex-col gap-[0.45rem] border-t border-muted py-3">
+      <span class="text-xs font-bold leading-[1.25] text-muted">
         Möglicherweise
       </span>
       <div class="flex flex-wrap gap-2">
@@ -112,8 +112,8 @@ onUnmounted(() => {
         </NuxtLink>
       </div>
     </div>
-    <div v-if="personOrigin.certainty" class="flex flex-col gap-2">
-      <span class="text-xs font-semibold uppercase tracking-wide text-gray-500">
+    <div v-if="personOrigin.certainty" class="flex flex-col gap-[0.45rem] border-t border-muted py-3">
+      <span class="text-xs font-bold leading-[1.25] text-muted">
         Lokalisierbarkeit
       </span>
       <div>
@@ -126,10 +126,8 @@ onUnmounted(() => {
     </div>
     <div
       v-if="hasGeoData"
-      class="h-[220px] w-full rounded-lg border border-gray-300 shadow-inner overflow-hidden"
+      class="h-[220px] w-full overflow-hidden rounded-xl border-0 shadow-none"
       :id="`person-${props.personId}_origin_map`"
     />
   </div>
 </template>
-
-<style scoped></style>
