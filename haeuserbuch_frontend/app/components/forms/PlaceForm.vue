@@ -36,8 +36,12 @@ const center = computed(() => {
 });
 
 // Map sources and layers from the store
-const sources = computed(() => tile_store.sources);
-const layers = computed(() => tile_store.layers);
+const sources = computed(() =>
+  props.action === "edit" ? tile_store.baseSources : tile_store.sources,
+);
+const layers = computed(() =>
+  props.action === "edit" ? tile_store.baseLayers : tile_store.layers,
+);
 
 // Handle updates of coordinates
 const onCoordinatesUpdate = () => {
