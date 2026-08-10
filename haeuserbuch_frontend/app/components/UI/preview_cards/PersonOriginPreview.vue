@@ -105,7 +105,7 @@ onUnmounted(() => {
         <NuxtLink
           v-for="place in personOrigin.places"
           :key="place.id"
-          :to="`/places/${place.id}`"
+          :to="`/orte/${place.id}`"
           class="p-1.5 border-2 border-gray-300 rounded-lg shadow-sm hover:shadow-md font-semibold"
         >
           {{ place.realName }}

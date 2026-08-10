@@ -41,7 +41,7 @@ useHead(() => ({
         </div>
 
         <NuxtLink
-          to="/buildings"
+          to="/katasterplan"
           class="group grid grid-cols-[minmax(0,1fr)_7rem] overflow-hidden rounded-2xl bg-white text-slate-800 shadow-2xl transition-transform duration-300 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:grid-cols-[minmax(0,1fr)_9rem] lg:absolute lg:bottom-14 lg:right-14 lg:w-104 lg:grid-cols-[minmax(0,1fr)_10rem] xl:bottom-20 xl:right-20"
         >
           <div class="flex min-h-32 flex-col p-4 sm:min-h-44 sm:p-5">

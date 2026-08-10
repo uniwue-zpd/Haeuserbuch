@@ -66,7 +66,7 @@ const columns: TableColumn<PersonTableRow>[] = [
     meta: { class: { th: "w-12", td: "w-12" } },
     cell: ({ row }) =>
       h(UButton, {
-        to: `/persons/${row.original.id}`,
+        to: `/personen/${row.original.id}`,
         color: "neutral",
         variant: "ghost",
         icon: "i-lucide-arrow-up-right",
@@ -293,7 +293,7 @@ useHead(() => ({
             class="w-full"
           >
         <template #fullName-cell="{ row }">
-          <NuxtLink :to="`/persons/${row.original.id}`" prefetch>
+          <NuxtLink :to="`/personen/${row.original.id}`" prefetch>
             {{ row.original.fullName }}
           </NuxtLink>
         </template>

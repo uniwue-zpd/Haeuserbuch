@@ -38,7 +38,7 @@ const submit = async (formData: Partial<PersonInput>) => {
         description: "Erfolgreich upgedated",
         duration: 3000,
       });
-      navigateTo(`/persons/${id}`);
+      navigateTo(`/personen/${id}`);
     }
     submitted.value = true;
   } catch (error) {

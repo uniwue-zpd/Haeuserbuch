@@ -3,15 +3,17 @@ import { useToast as useNuxtToast } from "@nuxt/ui/composables";
 import { useConfirm } from "primevue/useconfirm";
 import { PROJECT_DOMAIN } from "~/utils/constant_values";
 
+type EntityType =
+  | "buildings"
+  | "citizenships"
+  | "persons"
+  | "places"
+  | "sources"
+  | "streets";
+
 const props = defineProps<{
   id: number;
-  entity_type:
-    | "buildings"
-    | "citizenships"
-    | "persons"
-    | "places"
-    | "sources"
-    | "streets";
+  entity_type: EntityType;
 }>();
 
 const { loggedIn } = useUserSession();
@@ -20,10 +22,20 @@ const toast = useNuxtToast();
 
 const show_toolbar = ref(false);
 
+// Public page slugs differ from the backend entity names for the renamed routes.
+const routeSlugs: Record<EntityType, string> = {
+  buildings: "katasterplan",
+  citizenships: "buergermatrikel",
+  persons: "personen",
+  places: "orte",
+  sources: "quellen",
+  streets: "streets",
+};
+
 // Paths
-const path = ref(`/${props.entity_type}/${props.id}`);
+const path = ref(`/${routeSlugs[props.entity_type]}/${props.id}`);
 const edit_path = ref(`${path.value}/edit`);
-const api_path = ref(`/api${path.value}`);
+const api_path = ref(`/api/${props.entity_type}/${props.id}`);
 
 // Stores
 const building_store = useBuildingStore();
@@ -97,14 +109,16 @@ const actions = {
       },
       accept: async () => {
         try {
-          await deleteHandlers[props.entity_type](props.id);
+          const deleteHandler = deleteHandlers[props.entity_type];
+          if (!deleteHandler) return;
+          await deleteHandler(props.id);
           toast.add({
             color: "info",
             title: "Bestätigung",
             description: "Löschvorgang erfolgreich",
             duration: 3000,
           });
-          navigateTo(`/${props.entity_type}`);
+          navigateTo(`/${routeSlugs[props.entity_type]}`);
         } catch (err) {
           toast.add({
             color: "error",

@@ -6,7 +6,7 @@ const props = defineProps<{
 
 <template>
   <NuxtLink
-    :to="`/citizenships/${props.citizenship.id}`"
+    :to="`/buergermatrikel/${props.citizenship.id}`"
     class="flex flex-col gap-3 rounded-lg border border-default p-3 text-highlighted transition-colors hover:border-accented hover:text-primary focus-visible:border-accented focus-visible:outline-none"
   >
     <span class="text-sm font-semibold text-highlighted">Bürgermatrikel</span>

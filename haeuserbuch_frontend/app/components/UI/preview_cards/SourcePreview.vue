@@ -9,7 +9,7 @@ const props = defineProps<{
 <template>
   <div>
     <NuxtLink
-        :to="`/sources/${ props.source.id }`"
+        :to="`/quellen/${ props.source.id }`"
         class="rounded-lg shadow-sm hover:shadow-md p-1.5 font-medium border-2 border-gray-300"
     >
       {{ props.source.title ? title_shortener(props.source.title) : 'Ohne Titel' }}

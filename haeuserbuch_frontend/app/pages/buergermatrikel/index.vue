@@ -59,7 +59,7 @@ const columns: TableColumn<CitizenshipTableRow>[] = [
     meta: { class: { th: "w-12", td: "w-12" } },
     cell: ({ row }) =>
       h(UButton, {
-        to: `/citizenships/${row.original.id}`,
+        to: `/buergermatrikel/${row.original.id}`,
         color: "neutral",
         variant: "ghost",
         icon: "i-lucide-arrow-up-right",
@@ -174,7 +174,7 @@ useHead(() => ({
           </h1>
         </div>
         <div class="flex flex-wrap gap-2 sm:justify-end">
-          <UButton to="/citizenships/fulltextsearch" color="neutral" variant="outline" icon="i-lucide-search" label="Volltextsuche" />
+          <UButton to="/buergermatrikel/fulltextsearch" color="neutral" variant="outline" icon="i-lucide-search" label="Volltextsuche" />
         </div>
       </header>
       <div
@@ -289,14 +289,14 @@ useHead(() => ({
             class="w-full"
           >
         <template #refNumber-cell="{ row }">
-          <NuxtLink :to="`/citizenships/${row.original.id}`" prefetch>
+          <NuxtLink :to="`/buergermatrikel/${row.original.id}`" prefetch>
             {{ row.original.refNumber }}
           </NuxtLink>
         </template>
         <template #person-cell="{ row }">
           <NuxtLink
             v-if="row.original.person"
-            :to="`/persons/${row.original.person.id}`"
+            :to="`/personen/${row.original.person.id}`"
             class="whitespace-nowrap"
             prefetch
           >
@@ -307,7 +307,7 @@ useHead(() => ({
         <template #primarySource-cell="{ row }">
           <NuxtLink
             v-if="row.original.primarySource"
-            :to="`/sources/${row.original.primarySource.id}`"
+            :to="`/quellen/${row.original.primarySource.id}`"
             class="whitespace-nowrap"
           >
             {{ title_shortener(row.original.primarySourceTitle ?? "") }}
@@ -317,7 +317,7 @@ useHead(() => ({
         <template #secondarySource-cell="{ row }">
           <NuxtLink
             v-if="row.original.secondarySource"
-            :to="`/sources/${row.original.secondarySource.id}`"
+            :to="`/quellen/${row.original.secondarySource.id}`"
             class="whitespace-nowrap"
           >
             {{ title_shortener(row.original.secondarySourceTitle ?? "") }}

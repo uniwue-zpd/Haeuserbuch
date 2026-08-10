@@ -78,7 +78,7 @@ const placeColumns: TableColumn<PlaceTableRow>[] = [
     meta: { class: { th: "w-12", td: "w-12" } },
     cell: ({ row }) =>
       h(UButton, {
-        to: `/places/${row.original.id}`,
+        to: `/orte/${row.original.id}`,
         color: "neutral",
         variant: "ghost",
         icon: "i-lucide-arrow-up-right",
@@ -221,7 +221,7 @@ onMounted(async () => {
     popUpLink.setAttribute("class", "cursor-pointer font-bold ");
     const id = feature.id;
     popUpLink.addEventListener("click", () => {
-      navigateTo(`/places/${id}`);
+      navigateTo(`/orte/${id}`);
     });
     new maplibregl.Popup()
       .setLngLat(coordinates)
@@ -382,7 +382,7 @@ onBeforeUnmount(() => {
         </template>
         <template #realName-cell="{ row }">
           <NuxtLink
-            :to="`/places/${row.original.id}`"
+            :to="`/orte/${row.original.id}`"
             prefetch
           >
             {{ row.original.realName }}

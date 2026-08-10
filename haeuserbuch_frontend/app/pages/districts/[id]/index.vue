@@ -57,7 +57,7 @@ useHead(() => ({
               >
                 <template #body="{ data }">
                   <NuxtLink
-                    :to="`/buildings/${data.id}`"
+                    :to="`/katasterplan/${data.id}`"
                     class="font-bold text-black"
                   >
                     {{ data.districtPropertyNumber }}

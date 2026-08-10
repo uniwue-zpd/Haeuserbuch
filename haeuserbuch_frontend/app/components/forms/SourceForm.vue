@@ -40,7 +40,7 @@ const submit = async (formData: Partial<SourceInput>) => {
       });
       const form = getNode("source_edit");
       form?.reset();
-      navigateTo(`/sources/${props.source?.id}`);
+      navigateTo(`/quellen/${props.source?.id}`);
     }
   } catch (error) {
     console.log(error);

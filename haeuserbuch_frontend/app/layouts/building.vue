@@ -71,11 +71,11 @@ function buildingLabel(feature: BuildingFeature) {
 }
 
 function navigateToBuilding(feature: BuildingFeature | null) {
-  if (feature) navigateTo(`/buildings/${feature.id}`);
+  if (feature) navigateTo(`/katasterplan/${feature.id}`);
 }
 
 function handleMapSelect(id: number) {
-  if (id !== buildingId.value) navigateTo(`/buildings/${id}`);
+  if (id !== buildingId.value) navigateTo(`/katasterplan/${id}`);
 }
 </script>
 

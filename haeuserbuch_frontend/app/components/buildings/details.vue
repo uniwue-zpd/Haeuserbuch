@@ -168,7 +168,7 @@ const addressesOld = computed(() =>
               {{ name.name }}
               <NuxtLink
                 v-if="name.source?.id"
-                :to="`/sources/${name.source.id}`"
+                :to="`/quellen/${name.source.id}`"
                 class="text-blue-600 hover:text-blue-800"
                 title="Quelle öffnen"
               >
@@ -206,7 +206,7 @@ const addressesOld = computed(() =>
           <NuxtLink
             v-for="source in details.sources"
             :key="source.id ?? source.title ?? 'source'"
-            :to="`/sources/${source.id}`"
+            :to="`/quellen/${source.id}`"
             class="detail-link"
           >
             {{
@@ -224,7 +224,7 @@ const addressesOld = computed(() =>
           <NuxtLink
             v-for="source in details.literature"
             :key="source.id ?? source.title ?? 'literature'"
-            :to="`/sources/${source.id}`"
+            :to="`/quellen/${source.id}`"
             class="detail-link"
           >
             {{
@@ -291,7 +291,7 @@ const addressesOld = computed(() =>
           <NuxtLink
             v-for="person in associatedPeople"
             :key="person.id ?? person.fullName ?? 'person'"
-            :to="`/persons/${person.id}`"
+            :to="`/personen/${person.id}`"
             class="detail-link"
           >
             {{ person.fullName || `Person mit ID ${person.id}` }}

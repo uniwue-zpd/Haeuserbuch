@@ -113,7 +113,7 @@ const submit = async (formData: Partial<Feature>) => {
         description: "Erfolgreich upgedated",
         duration: 3000,
       });
-      navigateTo(`/buildings/${id}`);
+      navigateTo(`/katasterplan/${id}`);
     } catch (e) {
       console.error(e);
       toast.add({

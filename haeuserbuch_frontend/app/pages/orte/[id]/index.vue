@@ -154,7 +154,7 @@ onBeforeUnmount(() => {
               <NuxtLink
                 v-for="person in associatedPeople"
                 :key="person.id ?? person.fullName ?? 'person'"
-                :to="`/persons/${person.id}`"
+                :to="`/personen/${person.id}`"
                  class="inline-flex max-w-full rounded-lg border border-accented px-2 py-2 text-sm font-semibold leading-tight text-highlighted transition-colors duration-150 hover:border-accented hover:bg-elevated"
               >
                 {{ person.fullName || `Person mit ID ${person.id}` }}

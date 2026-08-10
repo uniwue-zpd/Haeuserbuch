@@ -108,7 +108,7 @@ useHead(() => ({
         <NuxtLink
           v-for="source in filteredSources"
           :key="source.id"
-          :to="`/sources/${source.id}`"
+          :to="`/quellen/${source.id}`"
           class="group grid gap-4 px-5 py-5 transition-colors hover:bg-elevated/50 focus-visible:bg-elevated/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center sm:px-6"
         >
           <span

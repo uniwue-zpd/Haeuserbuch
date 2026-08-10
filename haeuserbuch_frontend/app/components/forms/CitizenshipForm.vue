@@ -37,7 +37,7 @@ const submit = async (formData: Partial<CitizenshipInput>) => {
         description: "Erfolgreich upgedated",
         duration: 3000,
       });
-      navigateTo(`/citizenships/${id}`);
+      navigateTo(`/buergermatrikel/${id}`);
     }
     submitted.value = true;
   } catch (error) {

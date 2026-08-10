@@ -139,7 +139,7 @@ useHead(() => ({
           <p class="text-base text-gray-500 font-medium">Bezug zum Gebäude</p>
           <div>
             <NuxtLink
-              :to="`/buildings/${personItem.associatedBuilding.id}`"
+              :to="`/katasterplan/${personItem.associatedBuilding.id}`"
               class="rounded-lg border-2 border-gray-300 p-1.5 font-semibold shadow-sm hover:shadow-md"
             >
               {{ personItem.associatedBuilding.districtPropertyNumber }}

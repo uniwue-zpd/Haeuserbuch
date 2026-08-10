@@ -64,7 +64,7 @@ watch([query, () => searchParams.value.exact], () => {
           Volltextsuche
         </h1>
       </div>
-      <UButton to="/citizenships" color="neutral" variant="outline" icon="i-lucide-arrow-left" label="Zum Verzeichnis" />
+      <UButton to="/buergermatrikel" color="neutral" variant="outline" icon="i-lucide-arrow-left" label="Zum Verzeichnis" />
     </header>
 
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-start">
@@ -135,7 +135,7 @@ watch([query, () => searchParams.value.exact], () => {
         <article v-for="result in data.content" :key="result.id" class="overflow-hidden rounded-2xl border border-default bg-elevated/40">
           <div class="grid grid-cols-1 gap-x-4 gap-y-1 border-b border-muted px-4 py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]">
             <p class="content-table-label">Eintrag</p>
-            <NuxtLink :to="`/citizenships/${result.id}`" class="font-semibold text-highlighted underline decoration-muted underline-offset-4 hover:decoration-current">
+            <NuxtLink :to="`/buergermatrikel/${result.id}`" class="font-semibold text-highlighted underline decoration-muted underline-offset-4 hover:decoration-current">
               {{ result.signature || "Signatur fehlt" }}
             </NuxtLink>
             <p class="content-table-label">Referenz Meyer-Erlach</p>

@@ -222,7 +222,7 @@ watch(
             @click="emit('next')"
           />
           <UButton
-            :to="`/buildings/${selectedBuilding.id}`"
+            :to="`/katasterplan/${selectedBuilding.id}`"
             color="neutral"
             variant="link"
             trailing-icon="i-material-symbols-open-in-new-rounded"
