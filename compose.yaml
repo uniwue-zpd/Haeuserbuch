@@ -34,7 +34,7 @@ services:
 
   backend:
     build:
-      context: ./haeuserbuch_backend
+      context: ./backend
       dockerfile: Dockerfile
     environment:
       SPRING_PROFILES_ACTIVE: dev
@@ -44,7 +44,7 @@ services:
       HAEUSERBUCH_UPLOAD_DIR: /uploads
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: ${KEYCLOAK_ISSUER_URI}
     volumes:
-      - ./haeuserbuch_backend:/app
+      - ./backend:/app
       - maven_cache:/root/.m2
       - uploads_data:/uploads
     depends_on:
@@ -61,7 +61,7 @@ services:
 
   frontend:
     build:
-      context: ./haeuserbuch_frontend
+      context: ./frontend
       dockerfile: Dockerfile
     environment:
       NODE_ENV: development
@@ -77,7 +77,7 @@ services:
       NUXT_OAUTH_KEYCLOAK_CLIENT_SECRET: ${NUXT_OAUTH_KEYCLOAK_CLIENT_SECRET}
       NUXT_SESSION_PASSWORD: ${NUXT_SESSION_PASSWORD}
     volumes:
-      - ./haeuserbuch_frontend:/app
+      - ./frontend:/app
       - frontend_node_modules:/app/node_modules
     ports:
       - "127.0.0.1:${FRONTEND_PORT:-3000}:3000"

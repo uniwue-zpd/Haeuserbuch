@@ -53,7 +53,7 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
-          cache-dependency-path: haeuserbuch_backend/pom.xml
+          cache-dependency-path: backend/pom.xml
 
       - name: Create runtime directories
         env:
@@ -61,7 +61,7 @@ jobs:
         run: mkdir -p "${HAEUSERBUCH_UPLOAD_DIR}"
 
       - name: Verify with Maven
-        working-directory: haeuserbuch_backend
+        working-directory: backend
         env:
           HAEUSERBUCH_UPLOAD_DIR: ${{ runner.temp }}/uploads
         run: mvn --batch-mode verify
@@ -84,14 +84,14 @@ jobs:
         with:
           node-version: '22'
           cache: pnpm
-          cache-dependency-path: haeuserbuch_frontend/pnpm-lock.yaml
+          cache-dependency-path: frontend/pnpm-lock.yaml
 
       - name: Install dependencies
-        working-directory: haeuserbuch_frontend
+        working-directory: frontend
         run: pnpm install --frozen-lockfile
 
       - name: Build frontend
-        working-directory: haeuserbuch_frontend
+        working-directory: frontend
         run: pnpm build
 
   containers:
@@ -141,11 +141,11 @@ jobs:
       matrix:
         include:
           - component: backend
-            context: ./haeuserbuch_backend
-            dockerfile: ./haeuserbuch_backend/Dockerfile.prod
+            context: ./backend
+            dockerfile: ./backend/Dockerfile.prod
           - component: frontend
-            context: ./haeuserbuch_frontend
-            dockerfile: ./haeuserbuch_frontend/Dockerfile.prod
+            context: ./frontend
+            dockerfile: ./frontend/Dockerfile.prod
           - component: db-backup
             context: ./db_backup
             dockerfile: ./db_backup/Dockerfile
