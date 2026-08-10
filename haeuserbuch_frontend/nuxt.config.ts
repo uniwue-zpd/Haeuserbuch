@@ -38,14 +38,18 @@ export default defineNuxtConfig({
   devtools: { enabled: process.env.NODE_ENV !== 'production' },
   runtimeConfig: {
     apiBaseUrl: 'http://localhost:8080',
-    tileserverApiUrl: 'http://localhost:8081'
+    tileserverApiUrl: 'http://localhost:8081',
+    oauth: {
+      keycloak: {
+        serverUrl: '',
+        realm: '',
+        clientId: '',
+        clientSecret: '',
+        redirectURL: '',
+      }
+    }
   },
-  modules: [
-    '@primevue/nuxt-module',
-    '@formkit/nuxt',
-    '@pinia/nuxt',
-    '@nuxt/icon',
-  ],
+  modules: ['@primevue/nuxt-module', '@formkit/nuxt', '@pinia/nuxt', '@nuxt/icon', 'nuxt-auth-utils'],
   primevue: {
     options: {
       theme: {

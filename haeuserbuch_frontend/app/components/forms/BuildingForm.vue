@@ -8,12 +8,15 @@ import '@watergis/maplibre-gl-terradraw/dist/maplibre-gl-terradraw.css';
 import type { Position } from 'geojson';
 import type { GeoJSONStoreGeometries } from "terra-draw";
 import type { Feature } from "~/utils/GeoJsonTypes";
+import NotAuthorized from "~/components/UI/NotAuthorized.vue";
 
 const props = defineProps<{
   header: string;
   action: 'create' | 'edit';
   building?: Feature;
 }>();
+
+const { loggedIn } = useUserSession();
 
 const toast = useToast();
 const buildingStore = useBuildingStore();
@@ -87,6 +90,7 @@ const submit = async (formData: Partial<Feature>) => {
 };
 
 onMounted(async () => {
+  if (!loggedIn.value) return;
   await nextTick();
   map = initMap(
       'form_map_building',
@@ -143,251 +147,251 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-4 w-[80%] mx-auto">
-    <h1 class="text-2xl montserrat-headline-headline text-black font-bold">{{ props.header }}</h1>
-    <p class="roboto-plain">
-      Füllen Sie bitte die untenstehenden Felder aus, um ein Objekt zu erstellen oder anzupassen.
-      Falls Sie ein Gebäude mit Koordinaten versehen möchten, können Sie dies auf der Karte tun.
-    </p>
-    <Message v-if="(props.building?.geometry?.coordinates.length ?? 0) > 1 " severity="error">
-      Polygone mit inneren Ringen können aktuell nicht angezeigt werden
-    </Message>
-    <div id="form_map_building" class="h-[500px] w-full rounded-md"/>
-    <FormKit
-        type="form"
-        :id="`${ props.action }_building`"
-        submit-label="Erstellen"
-        @submit="submit"
-        :actions="false"
-        :value="initialValue"
-        :key="props.building?.id || 'create'"
-        #default="{ value }"
-    >
-      <div class="flex flex-col gap-2 bg-gray-100 rounded-md shadow-md p-4 border border-gray-200 mb-4">
-        <FormKit type="hidden" name="type" value="Feature" />
-        <FormKit type="group" name="properties">
-          <div class="flex flex-col gap-2">
-            <FormKit
-                type="hidden"
-                name="type"
-                value="building"
-                contenteditable="false"
-            />
-            <FormKit type="list" :value="[]" name="names" dynamic #default="{ items, node, value }">
-              <FormKit
-                  type="group"
-                  v-for="(item, index) in items"
-                  :key="item"
-                  :index="index"
-              >
-                <div class="flex flex-col gap-1 bg-gray-200 rounded-md p-4 border border-gray-300">
-                  <div class="grid grid-cols-2 gap-2">
-                    <FormKit
-                        type="entityAutocomplete"
-                        entityType="source"
-                        optionLabel="title"
-                        name="source"
-                        label="Quelle"
-                        outer-class="max-w-full"
-                    />
-                    <FormKit
-                        type="text"
-                        name="name"
-                        label="Name"
-                        placeholder="Zum goldenen Löwen"
-                        outer-class="max-w-full"
-                    />
-                    <FormKit
-                        type="text"
-                        name="fromDate"
-                        label="Von Datum"
-                        placeholder="1600"
-                        outer-class="max-w-full"
-                    />
-                    <FormKit
-                        type="text"
-                        name="toDate"
-                        label="Bis Datum"
-                        placeholder="1865"
-                        outer-class="max-w-full"
-                    />
-                  </div>
-                  <button
-                      type="button"
-                      @click="() => node.input(value?.filter((_, i) => i !== index))"
-                      class="text-sm roboto-plain border border-red-600 text-red-600 p-1 rounded-md shadow-sm hover:shadow-md bg-blue-50 font-medium max-w-1/7 mx-auto"
-                  >
-                    Entfernen
-                  </button>
-                </div>
-              </FormKit>
-              <button
-                  type="button"
-                  @click="() => node.input(value?.concat({ source: {}, name: '', fromDate: '', toDate: '' }))"
-                  class="text-sm roboto-plain border border-blue-600 text-blue-600 p-1 rounded-md bg-blue-50 font-medium max-w-1/6 mx-auto"
-              >Namen hinzufügen</button>
-            </FormKit>
-            <Divider/>
-            <FormKit type="list" :value="[]" name="addresses" dynamic #default="{ items, node, value }">
-              <FormKit
-                  type="group"
-                  v-for="(item, index) in items"
-                  :key="item"
-                  :index="index"
-              >
-                <div class="flex flex-col gap-1 bg-gray-200 rounded-md shadow-md p-4 border border-gray-300">
-                  <div class="grid grid-cols-2 gap-2">
-                    <FormKit
-                        type="entityAutocomplete"
-                        entityType="street"
-                        optionLabel="name"
-                        name="street"
-                        label="Straße"
-                        outer-class="max-w-full"
-                    />
-                    <FormKit
-                        type="text"
-                        name="houseNumber"
-                        label="Hausnummer"
-                        placeholder="145"
-                        outer-class="max-w-full"
-                    />
-                    <FormKit
-                        type="text"
-                        name="fromDate"
-                        label="Von Datum"
-                        placeholder="1600"
-                        outer-class="max-w-full"
-                    />
-                    <FormKit
-                        type="text"
-                        name="toDate"
-                        label="Bis Datum"
-                        placeholder="1865"
-                        outer-class="max-w-full"
-                    />
-                  </div>
-                  <button
-                      type="button"
-                      @click="() => node.input(value?.filter((_, i) => i !== index))"
-                      class="text-sm roboto-plain border border-red-600 text-red-600 p-1 rounded-md shadow-sm hover:shadow-md bg-blue-50 font-medium max-w-1/7 mx-auto"
-                  >
-                    Entfernen
-                  </button>
-                </div>
-              </FormKit>
-              <button
-                  type="button"
-                  @click="() => node.input(value?.concat({ street: {}, houseNumber: '', fromDate: '', toDate: '' }))"
-                  class="text-sm roboto-plain border border-blue-600 text-blue-600 p-1 rounded-md bg-blue-50 font-medium max-w-1/6 mx-auto"
-              >Adressen hinzufügen</button>
-            </FormKit>
-            <Divider/>
-            <FormKit
-                type="number"
-                name="year"
-                label="Jahr"
-                placeholder="1832"
-                outer-class="max-w-full"
-            />
-            <FormKit
-                type="number"
-                name="parcelNumber"
-                label="Flurstücksnummer"
-                placeholder="88356"
-                outer-class="max-w-full"
-            />
-            <FormKit
-                type="number"
-                name="parcelNumberCounter"
-                label="Flurstücksnummerzähler"
-                placeholder="3"
-                outer-class="max-w-full"
-            />
-            <div class="md:grid md:grid-cols-2 gap-2 flex flex-col">
-              <FormKit
-                  type="text"
-                  name="partType"
-                  label="Bauteil"
-                  prefix-icon="text"
-                  outer-class="max-w-full"
-              />
-              <FormKit
-                type="text"
-                name="object"
-                label="Objekt"
-                prefix-icon="text"
-                outer-class="max-w-full"
-              />
-            </div>
-            <div class="md:grid md:grid-cols-2 gap-2 flex flex-col">
-              <FormKit
-                  type="entityAutocomplete"
-                  entityType="quarter"
-                  optionLabel="name"
-                  name="quarter"
-                  label="Viertel"
-                  outer-class="max-w-full"
-              />
-              <FormKit
-                  type="entityAutocomplete"
-                  entityType="district"
-                  optionLabel="name"
-                  name="district"
-                  label="Distrikt"
-                  outer-class="max-w-full"
-              />
-            </div>
-            <div class="md:grid md:grid-cols-2 gap-2 flex flex-col">
-              <FormKit
-                  type="number"
-                  number
-                  name="propertyNumber"
-                  label="Besitznummer"
-                  prefix-icon="number"
-                  outer-class="max-w-full"
-              />
-              <FormKit
-                  type="text"
-                  name="districtPropertyNumber"
-                  label="Distrikt & Besitznummer"
-                  prefix-icon="text"
-                  outer-class="max-w-full"
-                  help="Schreibweise: Distrikt/Historische Besitznummer"
-              />
-            </div>
-            <FormKit
-                type="entityAutocomplete"
-                entityType="source"
-                optionLabel="title"
-                name="sources"
-                label="Quellen (Mehrfachauswahl möglich)"
-                :isMultiple="true"
-                outer-class="max-w-full"
-            />
-            <FormKit
-                type="entityAutocomplete"
-                entityType="source"
-                optionLabel="title"
-                name="literature"
-                label="Literatur (Mehrfachauswahl möglich)"
-                :isMultiple="true"
-                outer-class="max-w-full"
-            />
+  <AuthState v-slot="{ loggedIn }">
+    <div class="flex flex-col gap-4 w-[80%] mx-auto" v-if="loggedIn">
+      <h1 class="text-2xl montserrat-headline-headline text-black font-bold">{{ props.header }}</h1>
+      <p class="roboto-plain">
+        Füllen Sie bitte die untenstehenden Felder aus, um ein Objekt zu erstellen oder anzupassen.
+        Falls Sie ein Gebäude mit Koordinaten versehen möchten, können Sie dies auf der Karte tun.
+      </p>
+      <Message v-if="(props.building?.geometry?.coordinates.length ?? 0) > 1 " severity="error">
+        Polygone mit inneren Ringen können aktuell nicht angezeigt werden
+      </Message>
+      <div id="form_map_building" class="h-[500px] w-full rounded-md"/>
+      <FormKit
+          type="form"
+          :id="`${ props.action }_building`"
+          submit-label="Erstellen"
+          @submit="submit"
+          :actions="false"
+          :value="initialValue"
+          :key="props.building?.id || 'create'"
+          #default="{ value }"
+      >
+        <div class="flex flex-col gap-2 bg-gray-100 rounded-md shadow-md p-4 border border-gray-200 mb-4">
+          <FormKit type="hidden" name="type" value="Feature" />
+          <FormKit type="group" name="properties">
             <div class="flex flex-col gap-2">
               <FormKit
-                  type="textarea"
-                  name="internalNotes"
-                  label="Notizen intern"
-                  prefix-icon="list"
+                  type="hidden"
+                  name="type"
+                  value="building"
+                  contenteditable="false"
+              />
+              <FormKit type="list" :value="[]" name="names" dynamic #default="{ items, node, value }">
+                <FormKit
+                    type="group"
+                    v-for="(item, index) in items"
+                    :key="item"
+                    :index="index"
+                >
+                  <div class="flex flex-col gap-1 bg-gray-200 rounded-md p-4 border border-gray-300">
+                    <div class="grid grid-cols-2 gap-2">
+                      <FormKit
+                          type="entityAutocomplete"
+                          entityType="source"
+                          optionLabel="title"
+                          name="source"
+                          label="Quelle"
+                          outer-class="max-w-full"
+                      />
+                      <FormKit
+                          type="text"
+                          name="name"
+                          label="Name"
+                          placeholder="Zum goldenen Löwen"
+                          outer-class="max-w-full"
+                      />
+                      <FormKit
+                          type="text"
+                          name="fromDate"
+                          label="Von Datum"
+                          placeholder="1600"
+                          outer-class="max-w-full"
+                      />
+                      <FormKit
+                          type="text"
+                          name="toDate"
+                          label="Bis Datum"
+                          placeholder="1865"
+                          outer-class="max-w-full"
+                      />
+                    </div>
+                    <button
+                        type="button"
+                        @click="() => node.input(value?.filter((_, i) => i !== index))"
+                        class="text-sm roboto-plain border border-red-600 text-red-600 p-1 rounded-md shadow-sm hover:shadow-md bg-blue-50 font-medium max-w-1/7 mx-auto"
+                    >
+                      Entfernen
+                    </button>
+                  </div>
+                </FormKit>
+                <button
+                    type="button"
+                    @click="() => node.input(value?.concat({ source: {}, name: '', fromDate: '', toDate: '' }))"
+                    class="text-sm roboto-plain border border-blue-600 text-blue-600 p-1 rounded-md bg-blue-50 font-medium max-w-1/6 mx-auto"
+                >Namen hinzufügen</button>
+              </FormKit>
+              <Divider/>
+              <FormKit type="list" :value="[]" name="addresses" dynamic #default="{ items, node, value }">
+                <FormKit
+                    type="group"
+                    v-for="(item, index) in items"
+                    :key="item"
+                    :index="index"
+                >
+                  <div class="flex flex-col gap-1 bg-gray-200 rounded-md shadow-md p-4 border border-gray-300">
+                    <div class="grid grid-cols-2 gap-2">
+                      <FormKit
+                          type="entityAutocomplete"
+                          entityType="street"
+                          optionLabel="name"
+                          name="street"
+                          label="Straße"
+                          outer-class="max-w-full"
+                      />
+                      <FormKit
+                          type="text"
+                          name="houseNumber"
+                          label="Hausnummer"
+                          placeholder="145"
+                          outer-class="max-w-full"
+                      />
+                      <FormKit
+                          type="text"
+                          name="fromDate"
+                          label="Von Datum"
+                          placeholder="1600"
+                          outer-class="max-w-full"
+                      />
+                      <FormKit
+                          type="text"
+                          name="toDate"
+                          label="Bis Datum"
+                          placeholder="1865"
+                          outer-class="max-w-full"
+                      />
+                    </div>
+                    <button
+                        type="button"
+                        @click="() => node.input(value?.filter((_, i) => i !== index))"
+                        class="text-sm roboto-plain border border-red-600 text-red-600 p-1 rounded-md shadow-sm hover:shadow-md bg-blue-50 font-medium max-w-1/7 mx-auto"
+                    >
+                      Entfernen
+                    </button>
+                  </div>
+                </FormKit>
+                <button
+                    type="button"
+                    @click="() => node.input(value?.concat({ street: {}, houseNumber: '', fromDate: '', toDate: '' }))"
+                    class="text-sm roboto-plain border border-blue-600 text-blue-600 p-1 rounded-md bg-blue-50 font-medium max-w-1/6 mx-auto"
+                >Adressen hinzufügen</button>
+              </FormKit>
+              <Divider/>
+              <FormKit
+                  type="number"
+                  name="year"
+                  label="Jahr"
+                  placeholder="1832"
                   outer-class="max-w-full"
               />
               <FormKit
-                  type="textarea"
-                  name="generalNotes"
-                  label="Notizen allgemein"
-                  prefix-icon="list"
+                  type="number"
+                  name="parcelNumber"
+                  label="Flurstücksnummer"
+                  placeholder="88356"
                   outer-class="max-w-full"
+              />
+              <FormKit
+                  type="number"
+                  name="parcelNumberCounter"
+                  label="Flurstücksnummerzähler"
+                  placeholder="3"
+                  outer-class="max-w-full"
+              />
+              <div class="md:grid md:grid-cols-2 gap-2 flex flex-col">
+                <FormKit
+                    type="text"
+                    name="partType"
+                    label="Bauteil"
+                    prefix-icon="text"
+                    outer-class="max-w-full"
+                />
+                <FormKit
+                    type="text"
+                    name="object"
+                    label="Objekt"
+                    prefix-icon="text"
+                    outer-class="max-w-full"
+                />
+              </div>
+              <div class="md:grid md:grid-cols-2 gap-2 flex flex-col">
+                <FormKit
+                    type="entityAutocomplete"
+                    entityType="quarter"
+                    optionLabel="name"
+                    name="quarter"
+                    label="Viertel"
+                    outer-class="max-w-full"
+                />
+                <FormKit
+                    type="entityAutocomplete"
+                    entityType="district"
+                    optionLabel="name"
+                    name="district"
+                    label="Distrikt"
+                    outer-class="max-w-full"
+                />
+              </div>
+              <div class="md:grid md:grid-cols-2 gap-2 flex flex-col">
+                <FormKit
+                    type="number"
+                    number
+                    name="propertyNumber"
+                    label="Besitznummer"
+                    prefix-icon="number"
+                    outer-class="max-w-full"
+                />
+                <FormKit
+                    type="text"
+                    name="districtPropertyNumber"
+                    label="Distrikt & Besitznummer"
+                    prefix-icon="text"
+                    outer-class="max-w-full"
+                    help="Schreibweise: Distrikt/Historische Besitznummer"
+                />
+              </div>
+              <FormKit
+                  type="entityAutocomplete"
+                  entityType="source"
+                  optionLabel="title"
+                  name="sources"
+                  label="Quellen (Mehrfachauswahl möglich)"
+                  :isMultiple="true"
+                  outer-class="max-w-full"
+              />
+              <FormKit
+                  type="entityAutocomplete"
+                  entityType="source"
+                  optionLabel="title"
+                  name="literature"
+                  label="Literatur (Mehrfachauswahl möglich)"
+                  :isMultiple="true"
+                  outer-class="max-w-full"
+              />
+              <div class="flex flex-col gap-2">
+                <FormKit
+                    type="textarea"
+                    name="internalNotes"
+                    label="Notizen intern"
+                    prefix-icon="list"
+                    outer-class="max-w-full"
+                />
+                <FormKit
+                    type="textarea"
+                    name="generalNotes"
+                    label="Notizen allgemein"
+                    prefix-icon="list"outer-class="max-w-full"
               />
               <FormKit
                 type="entityAutocomplete"
@@ -396,44 +400,46 @@ onBeforeUnmount(() => {
                 optionLabel="originalName"
                 label="Dateien (Mehrfachauswahl möglich)"
                 :isMultiple="true"
-                outer-class="max-w-full"
-              />
-            </div>
-          </div>
-        </FormKit>
-        <div v-if="geometry_type">
-          <FormKit type="group" name="geometry">
-            <div class="flex flex-col gap-2">
-              <FormKit
-                  type="hidden"
-                  name="type"
-                  label="Geometrietyp"
-                  v-model="geometry_type"
-              />
-              <FormKit
-                  type="hidden"
-                  name="coordinates"
-                  label="Koordinaten"
-                  v-model="coordinates"
-              />
+                    outer-class="max-w-full"
+                />
+              </div>
             </div>
           </FormKit>
+          <div v-if="geometry_type">
+            <FormKit type="group" name="geometry">
+              <div class="flex flex-col gap-2">
+                <FormKit
+                    type="hidden"
+                    name="type"
+                    label="Geometrietyp"
+                    v-model="geometry_type"
+                />
+                <FormKit
+                    type="hidden"
+                    name="coordinates"
+                    label="Koordinaten"
+                    v-model="coordinates"
+                />
+              </div>
+            </FormKit>
+          </div>
         </div>
-      </div>
-      <Fieldset class="mb-4">
-        <template #legend>
-          <div class="montserrat-headline font-semibold text-black text-xl">Eingabe-Vorschau</div>
-        </template>
-        <div class="max-h-[500px] overflow-y-auto bg-gray-100 border border-gray-300 rounded-md">
-          <pre wrap class="text-sm p-2">{{ value }}</pre>
-        </div>
-      </Fieldset>
-      <FormKit
-          type="submit"
-          :label="props.action === 'create' ? 'Erstellen' : 'Ändern'"
-      />
-    </FormKit>
-  </div>
+        <Fieldset class="mb-4">
+          <template #legend>
+            <div class="montserrat-headline font-semibold text-black text-xl">Eingabe-Vorschau</div>
+          </template>
+          <div class="max-h-[500px] overflow-y-auto bg-gray-100 border border-gray-300 rounded-md">
+            <pre wrap class="text-sm p-2">{{ value }}</pre>
+          </div>
+        </Fieldset>
+        <FormKit
+            type="submit"
+            :label="props.action === 'create' ? 'Erstellen' : 'Ändern'"
+        />
+      </FormKit>
+    </div>
+    <NotAuthorized v-else/>
+  </AuthState>
 </template>
 
 <style scoped>
