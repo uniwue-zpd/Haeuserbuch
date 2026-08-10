@@ -45,3 +45,6 @@ Thumbs.db
 
 # Keycloak realm
 keycloak/realm.json
+
+# Miscellaneous
+.dockerManager.conf
