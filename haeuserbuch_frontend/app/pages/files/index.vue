@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import type { FileDTO, Pageable } from "~/utils/types";
-import NotAuthorized from "~/components/UI/NotAuthorized.vue";
 
 definePageMeta({
   middleware: 'auth',
 });
-
-const { loggedIn } = useUserSession();
 
 const fileApi = useFiles();
 
@@ -99,8 +96,7 @@ const formatFileSize = (bytes?: number) => {
 </script>
 
 <template>
-  <AuthState v-slot="{ loggedIn }">
-    <div v-if="loggedIn" class="flex flex-col gap-6">
+  <div class="flex flex-col gap-6">
       <h1 class="text-3xl font-bold montserrat-headline">Dateimanagement</h1>
       <div class="flex flex-col md:flex-row justify-between items-center gap-3">
         <FileUpload
@@ -226,7 +222,5 @@ const formatFileSize = (bytes?: number) => {
           <i class="pi pi-angle-double-right"/>
         </button>
       </div>
-    </div>
-    <NotAuthorized v-else/>
-  </AuthState>
+  </div>
 </template>
