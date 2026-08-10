@@ -185,7 +185,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-4 w-[80%] mx-auto">
+  <div class="mx-auto flex w-4/5 flex-col gap-4">
     <h1 class="text-2xl text-black font-bold">{{ props.header }}</h1>
     <p>
       Füllen Sie bitte die untenstehenden Felder aus, um ein Objekt zu erstellen
@@ -198,7 +198,7 @@ onBeforeUnmount(() => {
     >
       Polygone mit inneren Ringen können aktuell nicht angezeigt werden
     </Message>
-    <div id="form_map_building" class="h-[500px] w-full rounded-md" />
+    <div id="form_map_building" class="h-128 w-full rounded-md" />
     <FormKit
       type="form"
       :id="`${props.action}_building`"
@@ -508,7 +508,7 @@ onBeforeUnmount(() => {
           <div class="font-semibold text-black text-xl">Eingabe-Vorschau</div>
         </template>
         <div
-          class="max-h-[500px] overflow-y-auto bg-gray-100 border border-gray-300 rounded-md"
+          class="max-h-128 overflow-y-auto rounded-md border border-gray-300 bg-gray-100"
         >
           <pre wrap class="text-sm p-2">{{ value }}</pre>
         </div>

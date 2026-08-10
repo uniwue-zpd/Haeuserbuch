@@ -99,16 +99,16 @@ onBeforeUnmount(() => {
       <TaskBar :id="placeId" entity_type="places" />
     </header>
 
-    <div v-if="properties" class="grid grid-cols-[minmax(0,1fr)] auto-rows-[minmax(0,auto)] gap-4 lg:auto-rows-[minmax(10rem,auto)] lg:grid-cols-12">
+    <div v-if="properties" class="grid grid-cols-1 auto-rows-auto gap-4 lg:auto-rows-auto lg:grid-cols-12">
       <section class="flex min-w-0 flex-col gap-5 overflow-hidden rounded-2xl border-0 bg-default p-0 shadow-md lg:col-span-8">
         <div
           v-if="geometry"
           id="map"
-          class="h-96 w-full bg-elevated lg:h-[31rem]"
+          class="h-96 w-full bg-elevated lg:h-124"
         />
         <div
           v-else
-          class="flex min-h-[320px] flex-1 flex-col items-center justify-center gap-4 bg-warning/10 p-6 text-center"
+          class="flex min-h-80 flex-1 flex-col items-center justify-center gap-4 bg-warning/10 p-6 text-center"
         >
           <Icon name="material-symbols-location-off-outline" class="text-5xl text-warning" aria-hidden="true" />
           <p class="max-w-sm text-lg font-medium text-highlighted">
@@ -119,10 +119,10 @@ onBeforeUnmount(() => {
 
       <section v-if="properties.altNames?.length" class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-4">
         <div class="flex items-start justify-between gap-4">
-          <h2 class="text-[1.2rem] font-[650] leading-[1.25] text-highlighted">Namensvarianten</h2>
+          <h2 class="text-xl font-semibold leading-tight text-highlighted">Namensvarianten</h2>
         </div>
         <div class="flex flex-col">
-          <div v-for="name in properties.altNames" :key="name" class="flex flex-col gap-[0.45rem] border-t border-muted py-[0.85rem] first:border-t-0 first:pt-0 last:pb-0">
+          <div v-for="name in properties.altNames" :key="name" class="flex flex-col gap-2 border-t border-muted py-3 first:border-t-0 first:pt-0 last:pb-0">
             <p class="font-semibold text-highlighted">{{ name }}</p>
           </div>
         </div>
@@ -133,11 +133,11 @@ onBeforeUnmount(() => {
         class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-8"
       >
         <div class="flex items-start justify-between gap-4">
-          <h2 class="text-[1.2rem] font-[650] leading-[1.25] text-highlighted">Notizen und Anmerkungen</h2>
+          <h2 class="text-xl font-semibold leading-tight text-highlighted">Notizen und Anmerkungen</h2>
         </div>
         <div class="flex flex-col">
-          <div class="flex flex-col gap-[0.45rem] border-t border-muted py-[0.85rem] first:border-t-0 first:pt-0 last:pb-0">
-            <p class="text-[0.8125rem] font-semibold text-muted">Notizen allgemein</p>
+          <div class="flex flex-col gap-2 border-t border-muted py-3 first:border-t-0 first:pt-0 last:pb-0">
+             <p class="text-sm font-semibold text-muted">Notizen allgemein</p>
             <p class="whitespace-pre-wrap text-highlighted">{{ properties.generalNotes }}</p>
           </div>
         </div>
@@ -145,17 +145,17 @@ onBeforeUnmount(() => {
 
        <section class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-7">
          <div class="flex items-start justify-between gap-4">
-           <h2 class="text-[1.2rem] font-[650] leading-[1.25] text-highlighted">Beziehungen zu anderen Entitäten</h2>
+           <h2 class="text-xl font-semibold leading-tight text-highlighted">Beziehungen zu anderen Entitäten</h2>
         </div>
          <div class="flex flex-col">
-           <div class="flex flex-col gap-[0.45rem] border-t border-muted py-[0.85rem] first:border-t-0 first:pt-0 last:pb-0">
-             <p class="text-[0.8125rem] font-semibold text-muted">Möglicher Herkunftsort von</p>
+           <div class="flex flex-col gap-2 border-t border-muted py-3 first:border-t-0 first:pt-0 last:pb-0">
+              <p class="text-sm font-semibold text-muted">Möglicher Herkunftsort von</p>
             <div v-if="associatedPeople?.length" class="flex flex-wrap gap-2">
               <NuxtLink
                 v-for="person in associatedPeople"
                 :key="person.id ?? person.fullName ?? 'person'"
                 :to="`/persons/${person.id}`"
-                 class="inline-flex max-w-full rounded-lg border border-[var(--ui-border-accented)] px-[0.65rem] py-[0.45rem] text-sm font-semibold leading-[1.25] text-highlighted transition-colors duration-150 hover:bg-elevated hover:border-[var(--ui-border-accented)]"
+                 class="inline-flex max-w-full rounded-lg border border-accented px-2 py-2 text-sm font-semibold leading-tight text-highlighted transition-colors duration-150 hover:border-accented hover:bg-elevated"
               >
                 {{ person.fullName || `Person mit ID ${person.id}` }}
               </NuxtLink>

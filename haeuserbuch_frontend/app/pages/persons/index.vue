@@ -185,7 +185,7 @@ useHead(() => ({
 <template>
   <div class="flex flex-col gap-4">
     <header class="flex items-start justify-between gap-4">
-      <h1 class="text-[clamp(2.25rem,5vw,4.5rem)] font-[750] leading-[0.98] tracking-[-0.055em] text-highlighted">Personen</h1>
+      <h1 class="text-4xl font-bold leading-none tracking-tighter text-highlighted sm:text-6xl">Personen</h1>
       <UPopover
         mode="click"
         :content="{ align: 'end', side: 'bottom', sideOffset: 8 }"
@@ -211,14 +211,14 @@ useHead(() => ({
         </template>
       </UPopover>
     </header>
-    <div class="w-fit rounded-2xl border border-gray-300 bg-[var(--ui-bg)] p-[0.8rem_1rem] text-base font-[650] text-highlighted shadow-[0_8px_24px_rgb(15_23_42_/_0.06)]">
+    <div class="w-fit rounded-2xl border border-gray-300 bg-default px-4 py-3 text-base font-semibold text-highlighted shadow-md">
       <p>Einträge insgesamt: {{ totalRecords }}</p>
     </div>
 
-    <div class="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(16rem,18rem)_minmax(0,1fr)] lg:items-start">
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(16rem,18rem)_minmax(0,1fr)] lg:items-start">
       <aside class="min-w-0 overflow-hidden rounded-2xl border border-gray-300 bg-default p-0 shadow-md">
         <div class="border-b border-muted p-5">
-          <h2 class="text-[1.2rem] font-[650] text-highlighted">Filter</h2>
+          <h2 class="text-xl font-semibold text-highlighted">Filter</h2>
         </div>
         <div class="flex flex-col">
           <details open class="border-b border-default p-4">

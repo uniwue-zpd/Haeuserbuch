@@ -274,7 +274,7 @@ watch(
 
             <template #body>
               <div class="space-y-8 text-base leading-7 text-highlighted sm:text-lg sm:leading-8">
-                    <h2 class="text-center font-[Montserrat] text-2xl font-semibold text-highlighted sm:text-3xl">
+                    <h2 class="text-center font-sans text-2xl font-semibold text-highlighted sm:text-3xl">
                       Die Würzburger Uraufnahme von 1832
                     </h2>
 
@@ -452,7 +452,7 @@ watch(
         <div class="mt-3 grid grid-cols-3 gap-2">
           <UFormField
             label="Distrikt"
-            :ui="{ label: 'text-[0.6875rem] font-semibold text-muted' }"
+            :ui="{ label: 'text-xs font-semibold text-muted' }"
           >
             <USelect
               v-model="districtModel"
@@ -463,7 +463,7 @@ watch(
           </UFormField>
           <UFormField
             label="Viertel"
-            :ui="{ label: 'text-[0.6875rem] font-semibold text-muted' }"
+            :ui="{ label: 'text-xs font-semibold text-muted' }"
           >
             <USelect
               v-model="quarterModel"
@@ -474,7 +474,7 @@ watch(
           </UFormField>
           <UFormField
             label="Objekttyp"
-            :ui="{ label: 'text-[0.6875rem] font-semibold text-muted' }"
+            :ui="{ label: 'text-xs font-semibold text-muted' }"
           >
             <USelect
               v-model="objectTypeModel"
@@ -485,7 +485,7 @@ watch(
           </UFormField>
           <UFormField
             label="Geodaten"
-            :ui="{ label: 'text-[0.6875rem] font-semibold text-muted' }"
+            :ui="{ label: 'text-xs font-semibold text-muted' }"
           >
             <USelect
               v-model="georeferencedModel"
@@ -540,7 +540,7 @@ watch(
                   type="button"
                   role="option"
                   :aria-selected="false"
-                   class="group flex h-full w-full flex-col justify-center border-b border-muted px-6 py-3 text-left transition-colors hover:bg-elevated focus-visible:bg-elevated focus-visible:outline-none focus-visible:[box-shadow:inset_0_0_0_2px_var(--ui-color-neutral-400)]"
+                    class="group flex h-full w-full flex-col justify-center border-b border-muted !p-4 text-left transition-colors hover:bg-elevated focus-visible:bg-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-400"
                   @click="emit('select', buildings[virtualRow.index]!.id)"
                 >
                   <div class="flex items-start justify-between gap-2">

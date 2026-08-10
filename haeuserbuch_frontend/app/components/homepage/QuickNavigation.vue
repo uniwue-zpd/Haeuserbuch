@@ -11,7 +11,7 @@ import { researchNavigation } from "~/utils/researchNavigation";
         v-if="item.to"
         :to="item.to"
         prefetch
-        class="group flex min-h-56 flex-col justify-between border-b border-r border-default bg-default p-6 transition-colors duration-200 hover:bg-elevated focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary sm:p-7"
+        class="group flex min-h-56 flex-col justify-between border-b border-r border-default bg-default p-6 transition-colors duration-200 hover:bg-elevated focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:p-7"
       >
         <div class="flex items-start justify-between gap-4">
           <UIcon
@@ -25,7 +25,7 @@ import { researchNavigation } from "~/utils/researchNavigation";
         </div>
         <div class="mt-12">
           <h3
-            class="font-sans text-xl font-semibold tracking-[-0.02em] text-highlighted sm:text-2xl"
+            class="font-sans text-xl font-semibold tracking-tight text-highlighted sm:text-2xl"
           >
             {{ item.label }}
           </h3>
@@ -46,7 +46,7 @@ import { researchNavigation } from "~/utils/researchNavigation";
         </div>
         <div class="mt-12">
           <h3
-            class="font-sans text-xl font-semibold tracking-[-0.02em] text-muted sm:text-2xl"
+            class="font-sans text-xl font-semibold tracking-tight text-muted sm:text-2xl"
           >
             {{ item.label }}
           </h3>

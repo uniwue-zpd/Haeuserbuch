@@ -65,25 +65,25 @@ useHead(() => ({
     class="person-page flex min-h-full flex-col gap-8"
   >
     <header class="flex items-start justify-between gap-6 max-sm:items-center">
-      <h1 class="text-[clamp(2.25rem,5vw,4.5rem)] font-[750] leading-[0.98] tracking-[-0.055em] text-highlighted">{{ personItem.fullName }}</h1>
+      <h1 class="text-4xl font-bold leading-none tracking-tighter text-highlighted sm:text-6xl">{{ personItem.fullName }}</h1>
       <TaskBar :id="personId" entity_type="persons" />
     </header>
-    <div class="grid grid-cols-[minmax(0,1fr)] gap-4 lg:auto-rows-[minmax(10rem,auto)] lg:grid-cols-12 lg:items-start">
+    <div class="grid grid-cols-1 gap-4 lg:auto-rows-auto lg:grid-cols-12 lg:items-start">
       <div
         v-if="hasProfileContent"
         class="row-span-2 flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-7"
       >
-        <h2 class="text-[1.2rem] font-[650] leading-[1.25] text-highlighted">Über die Person</h2>
+        <h2 class="text-xl font-semibold leading-tight text-highlighted">Über die Person</h2>
         <div
           v-if="personItem.firstName || personItem.lastName"
           class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
         >
           <template v-if="personItem.firstName">
-            <p class="text-sm text-gray-500 font-medium">Vorname</p>
+            <p class="text-base text-gray-500 font-medium">Vorname</p>
             <p class="font-semibold">{{ personItem.firstName }}</p>
           </template>
           <template v-if="personItem.lastName">
-            <p class="text-sm text-gray-500 font-medium">Nachname</p>
+            <p class="text-base text-gray-500 font-medium">Nachname</p>
             <p class="font-semibold">{{ personItem.lastName }}</p>
           </template>
         </div>
@@ -91,14 +91,14 @@ useHead(() => ({
           v-if="personItem.sex"
           class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
         >
-          <p class="text-sm text-gray-500 font-medium">Geschlecht</p>
+          <p class="text-base text-gray-500 font-medium">Geschlecht</p>
           <p class="font-semibold">{{ personItem.sex }}</p>
         </div>
         <div
           v-if="personItem.altNames.length > 0"
           class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
         >
-          <p class="text-sm text-gray-500 font-medium">Namensvarianten</p>
+          <p class="text-base text-gray-500 font-medium">Namensvarianten</p>
           <ul class="list-inside list-disc">
             <li v-for="name in personItem.altNames" class="font-semibold">
               {{ name }}
@@ -109,7 +109,7 @@ useHead(() => ({
           v-if="personItem.isCitizen"
           class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
         >
-          <p class="text-sm text-gray-500 font-medium">Bürger?</p>
+          <p class="text-base text-gray-500 font-medium">Bürger?</p>
           <Icon
             name="material-symbols-check-circle-outline"
             class="text-4xl text-green-600"
@@ -119,7 +119,7 @@ useHead(() => ({
           v-if="naturalizationEntry && naturalizationEntry.length > 0"
           class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
         >
-          <p class="text-sm text-gray-500 font-medium">
+          <p class="text-base text-gray-500 font-medium">
             Nachweis der Einbürgerung
           </p>
           <div>
@@ -132,7 +132,7 @@ useHead(() => ({
           v-if="personItem.associatedBuilding"
           class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
         >
-          <p class="text-sm text-gray-500 font-medium">Bezug zum Gebäude</p>
+          <p class="text-base text-gray-500 font-medium">Bezug zum Gebäude</p>
           <div>
             <NuxtLink
               :to="`/buildings/${personItem.associatedBuilding.id}`"
@@ -145,7 +145,7 @@ useHead(() => ({
         <div
           class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
         >
-          <p class="text-sm text-gray-500 font-medium">Berufliche Situation</p>
+          <p class="text-base text-gray-500 font-medium">Berufliche Situation</p>
           <div>
             <PersonJobPreview v-if="personJob" :job="personJob" />
             <p v-else class="text-sm text-muted">
@@ -157,7 +157,7 @@ useHead(() => ({
           v-if="personReligion && personReligion.originalText"
           class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
         >
-          <p class="text-sm text-gray-500 font-medium">
+          <p class="text-base text-gray-500 font-medium">
             Religiöse Zugehörigkeit
           </p>
           <div>
@@ -168,7 +168,7 @@ useHead(() => ({
           v-if="personWeapons && personWeapons.length > 0"
           class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
         >
-          <p class="text-sm text-gray-500 font-medium">Bewaffnung</p>
+          <p class="text-base text-gray-500 font-medium">Bewaffnung</p>
           <div>
             <PersonWeaponsPreview :weapons="personWeapons" />
           </div>
@@ -184,17 +184,17 @@ useHead(() => ({
         v-if="personItem.generalNotes"
         class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-5"
       >
-        <h2 class="text-[1.2rem] font-[650] leading-[1.25] text-highlighted">Notizen und Anmerkungen</h2>
-        <div class="flex flex-col gap-[0.45rem] border-l-0 border-t border-muted py-3">
-          <p class="text-xs font-bold leading-[1.25] text-muted">Anmerkungen</p>
-          <p class="text-justify leading-[1.45] text-highlighted">{{ personItem.generalNotes }}</p>
+        <h2 class="text-xl font-semibold leading-tight text-highlighted">Notizen und Anmerkungen</h2>
+        <div class="flex flex-col gap-2 border-l-0 border-t border-muted py-3">
+          <p class="text-sm font-bold leading-tight text-muted">Anmerkungen</p>
+          <p class="text-justify leading-normal text-highlighted">{{ personItem.generalNotes }}</p>
         </div>
         <div
           v-if="personItem.internalNotes"
-          class="flex flex-col gap-[0.45rem] border-l-0 border-t border-muted py-3"
+          class="flex flex-col gap-2 border-l-0 border-t border-muted py-3"
         >
-          <p class="text-xs font-bold leading-[1.25] text-muted">Notizen</p>
-          <p class="text-justify leading-[1.45] text-highlighted">{{ personItem.internalNotes }}</p>
+          <p class="text-sm font-bold leading-tight text-muted">Notizen</p>
+          <p class="text-justify leading-normal text-highlighted">{{ personItem.internalNotes }}</p>
         </div>
       </div>
     </div>

@@ -80,15 +80,15 @@ function handleMapSelect(id: number) {
 </script>
 
 <template>
-  <AppShell main-class="mx-auto flex w-full grow max-w-[120rem] flex-col px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+  <AppShell main-class="mx-auto flex w-full grow max-w-screen-2xl flex-col px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
       <div class="building-page flex min-h-full flex-col gap-6">
       <header v-if="selectedBuilding" class="flex items-start justify-between gap-6 max-md:flex-col">
-        <h1 class="text-[clamp(2.25rem,5vw,4.5rem)] font-[750] leading-[0.98] tracking-[-0.055em] text-highlighted">{{ buildingLabel(selectedBuilding) }}</h1>
+        <h1 class="text-4xl font-bold leading-none tracking-tighter text-highlighted sm:text-6xl">{{ buildingLabel(selectedBuilding) }}</h1>
         <div class="flex items-start gap-2">
-            <div class="flex gap-[0.35rem]" aria-label="Gebäude wechseln">
+            <div class="flex gap-1" aria-label="Gebäude wechseln">
             <button
               type="button"
-              class="grid size-11 place-items-center rounded-xl border border-[var(--ui-border-accented)] text-highlighted transition-colors duration-150 hover:border-[#d9a441] hover:bg-elevated focus-visible:border-[#d9a441] focus-visible:bg-elevated focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-[0.35]"
+              class="grid size-11 place-items-center rounded-xl border border-accented text-highlighted transition-colors duration-150 hover:border-amber-500 hover:bg-elevated focus-visible:border-amber-500 focus-visible:bg-elevated focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               :disabled="!previousBuilding"
               aria-label="Vorheriges Gebäude"
               @click="navigateToBuilding(previousBuilding)"
@@ -97,7 +97,7 @@ function handleMapSelect(id: number) {
             </button>
             <button
               type="button"
-              class="grid size-11 place-items-center rounded-xl border border-[var(--ui-border-accented)] text-highlighted transition-colors duration-150 hover:border-[#d9a441] hover:bg-elevated focus-visible:border-[#d9a441] focus-visible:bg-elevated focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-[0.35]"
+              class="grid size-11 place-items-center rounded-xl border border-accented text-highlighted transition-colors duration-150 hover:border-amber-500 hover:bg-elevated focus-visible:border-amber-500 focus-visible:bg-elevated focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               :disabled="!nextBuilding"
               aria-label="Nächstes Gebäude"
               @click="navigateToBuilding(nextBuilding)"
@@ -109,8 +109,8 @@ function handleMapSelect(id: number) {
         </div>
       </header>
 
-      <div class="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(22rem,1fr)] lg:items-start">
-        <section class="flex h-96 min-w-0 flex-col overflow-hidden rounded-2xl border-0 bg-default shadow-md lg:h-[31rem]">
+      <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(22rem,1fr)] lg:items-start">
+        <section class="flex h-96 min-w-0 flex-col overflow-hidden rounded-2xl border-0 bg-default shadow-md lg:col-span-full lg:h-124">
           <ClientOnly>
             <BuildingsMap
               :features="buildingFeatures"

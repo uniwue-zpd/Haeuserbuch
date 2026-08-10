@@ -38,11 +38,11 @@ const partners = [
 
 <template>
   <footer
-    class="bg-[#ececec] text-[#283036] transition-colors dark:bg-[#242525] dark:text-[#f1f0ec]"
+    class="bg-gray-200 text-slate-800 transition-colors dark:bg-zinc-800 dark:text-stone-100"
   >
     <div class="mx-auto max-w-375 px-5 pb-5 pt-12 sm:px-8 sm:pt-16 lg:px-10">
       <div
-        class="grid items-start gap-10 border-b border-black/10 pb-10 dark:border-white/10 lg:grid-cols-[1.5fr_0.7fr_0.9fr] lg:gap-16"
+        class="grid items-start gap-10 border-b border-black/10 pb-10 dark:border-white/10 lg:grid-cols-3 lg:gap-16"
       >
         <div>
           <NuxtLink to="/" aria-label="Zur Startseite" class="inline-block">
@@ -62,44 +62,44 @@ const partners = [
 
         <nav aria-label="Footer-Navigation">
           <p
-            class="font-sans text-sm font-semibold uppercase tracking-[0.16em] text-[#283036]/50 dark:text-white/45"
+            class="font-sans text-sm font-semibold uppercase tracking-widest text-slate-800/50 dark:text-white/45"
           >
             Navigation
           </p>
           <div class="mt-4 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-1">
             <NuxtLink
               to="/projekt"
-              class="w-fit text-[#283036]/75 transition-colors hover:text-[#283036] dark:text-white/70 dark:hover:text-white"
+              class="w-fit text-slate-800/75 transition-colors hover:text-slate-800 dark:text-white/70 dark:hover:text-white"
               >Projekt</NuxtLink
             >
             <NuxtLink
               to="/faq"
-              class="w-fit text-[#283036]/75 transition-colors hover:text-[#283036] dark:text-white/70 dark:hover:text-white"
+              class="w-fit text-slate-800/75 transition-colors hover:text-slate-800 dark:text-white/70 dark:hover:text-white"
               >FAQ</NuxtLink
             >
             <NuxtLink
               to="/team"
-              class="w-fit text-[#283036]/75 transition-colors hover:text-[#283036] dark:text-white/70 dark:hover:text-white"
+              class="w-fit text-slate-800/75 transition-colors hover:text-slate-800 dark:text-white/70 dark:hover:text-white"
               >Über uns</NuxtLink
             >
             <NuxtLink
               to="/buildings"
-              class="w-fit text-[#283036]/75 transition-colors hover:text-[#283036] dark:text-white/70 dark:hover:text-white"
+              class="w-fit text-slate-800/75 transition-colors hover:text-slate-800 dark:text-white/70 dark:hover:text-white"
               >Katasterplan</NuxtLink
             >
             <NuxtLink
               to="/places"
-              class="w-fit text-[#283036]/75 transition-colors hover:text-[#283036] dark:text-white/70 dark:hover:text-white"
+              class="w-fit text-slate-800/75 transition-colors hover:text-slate-800 dark:text-white/70 dark:hover:text-white"
               >Orte</NuxtLink
             >
             <NuxtLink
               to="/persons"
-              class="w-fit text-[#283036]/75 transition-colors hover:text-[#283036] dark:text-white/70 dark:hover:text-white"
+              class="w-fit text-slate-800/75 transition-colors hover:text-slate-800 dark:text-white/70 dark:hover:text-white"
               >Personen</NuxtLink
             >
             <NuxtLink
               to="/citizenships"
-              class="w-fit text-[#283036]/75 transition-colors hover:text-[#283036] dark:text-white/70 dark:hover:text-white"
+              class="w-fit text-slate-800/75 transition-colors hover:text-slate-800 dark:text-white/70 dark:hover:text-white"
               >Bürgermatrikel</NuxtLink
             >
           </div>
@@ -107,13 +107,13 @@ const partners = [
 
         <div>
           <p
-            class="font-sans text-sm font-semibold uppercase tracking-[0.16em] text-[#283036]/50 dark:text-white/45"
+            class="font-sans text-sm font-semibold uppercase tracking-widest text-slate-800/50 dark:text-white/45"
           >
             Kontakt
           </p>
           <NuxtLink
             to="/kontakt"
-            class="mt-4 block w-fit text-sm text-[#283036]/75 transition-colors hover:text-[#283036] dark:text-white/70 dark:hover:text-white"
+            class="mt-4 block w-fit text-sm text-slate-800/75 transition-colors hover:text-slate-800 dark:text-white/70 dark:hover:text-white"
           >
             Kontakt
           </NuxtLink>
@@ -122,7 +122,7 @@ const partners = [
 
       <div class="py-8">
         <p
-          class="font-sans text-xs font-semibold uppercase tracking-[0.16em] text-[#283036]/45 dark:text-white/40"
+          class="font-sans text-xs font-semibold uppercase tracking-widest text-slate-800/45 dark:text-white/40"
         >
           Gefördert und unterstützt von
         </p>
@@ -142,7 +142,7 @@ const partners = [
               :src="partner.image"
               :alt="partner.alt"
               :class="[
-                'max-h-18 max-w-[18rem] object-contain',
+                'max-h-18 max-w-72 object-contain',
                 partner.monochrome && 'brightness-0 dark:invert',
               ]"
             />
@@ -151,23 +151,23 @@ const partners = [
       </div>
 
       <div
-        class="flex flex-col gap-3 border-t border-black/10 pt-5 text-xs text-[#283036]/50 dark:border-white/10 dark:text-white/45 sm:flex-row sm:items-center sm:justify-between"
+        class="flex flex-col gap-3 border-t border-black/10 pt-5 text-xs text-slate-800/50 dark:border-white/10 dark:text-white/45 sm:flex-row sm:items-center sm:justify-between"
       >
         <p>&copy; {{ year }} Würzburger Häuserprojekt</p>
         <div class="flex items-center gap-4">
           <NuxtLink
             to="/impressum"
-            class="transition-colors hover:text-[#283036] dark:hover:text-white"
+            class="transition-colors hover:text-slate-800 dark:hover:text-white"
             >Impressum</NuxtLink
           >
           <NuxtLink
             to="/data-protection"
-            class="transition-colors hover:text-[#283036] dark:hover:text-white"
+            class="transition-colors hover:text-slate-800 dark:hover:text-white"
             >Datenschutz</NuxtLink
           >
           <NuxtLink
             to="/login"
-            class="transition-colors hover:text-[#283036] dark:hover:text-white"
+            class="transition-colors hover:text-slate-800 dark:hover:text-white"
             >Login</NuxtLink
           >
         </div>

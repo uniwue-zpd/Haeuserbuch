@@ -88,17 +88,17 @@ onUnmounted(() => {
   <div
     class="person-origin-card flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md"
   >
-    <h2 class="text-[1.2rem] font-[650] leading-[1.25] text-highlighted">Herkunft</h2>
-    <div v-if="personOrigin.originalText" class="flex flex-col gap-[0.45rem] border-t border-muted py-3">
-      <span class="text-xs font-bold leading-[1.25] text-muted">
+    <h2 class="text-xl font-semibold leading-tight text-highlighted">Herkunft</h2>
+    <div v-if="personOrigin.originalText" class="flex flex-col gap-2 border-t border-muted py-3">
+      <span class="text-sm font-bold leading-tight text-muted">
         Eingetragener Ort
       </span>
       <span class="text-base italic">
         {{ personOrigin.originalText }}
       </span>
     </div>
-    <div v-if="personOrigin.places.length > 0" class="flex flex-col gap-[0.45rem] border-t border-muted py-3">
-      <span class="text-xs font-bold leading-[1.25] text-muted">
+    <div v-if="personOrigin.places.length > 0" class="flex flex-col gap-2 border-t border-muted py-3">
+      <span class="text-sm font-bold leading-tight text-muted">
         Möglicherweise
       </span>
       <div class="flex flex-wrap gap-2">
@@ -112,8 +112,8 @@ onUnmounted(() => {
         </NuxtLink>
       </div>
     </div>
-    <div v-if="personOrigin.certainty" class="flex flex-col gap-[0.45rem] border-t border-muted py-3">
-      <span class="text-xs font-bold leading-[1.25] text-muted">
+    <div v-if="personOrigin.certainty" class="flex flex-col gap-2 border-t border-muted py-3">
+      <span class="text-sm font-bold leading-tight text-muted">
         Lokalisierbarkeit
       </span>
       <div>
@@ -126,7 +126,7 @@ onUnmounted(() => {
     </div>
     <div
       v-if="hasGeoData"
-      class="h-[220px] w-full overflow-hidden rounded-xl border-0 shadow-none"
+      class="h-56 w-full overflow-hidden rounded-xl border-0 shadow-none"
       :id="`person-${props.personId}_origin_map`"
     />
   </div>

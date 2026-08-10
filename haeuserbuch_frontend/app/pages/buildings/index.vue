@@ -395,16 +395,16 @@ onBeforeUnmount(() => {
 
 <template>
   <section
-    class="relative h-[calc(100svh-79px)] min-h-[560px] w-full overflow-hidden bg-[#d8ddd7]"
+    class="relative h-[calc(100svh-79px)] min-h-140 w-full overflow-hidden bg-gray-200"
   >
     <div
       v-if="notice"
-      class="absolute left-1/2 top-4 z-40 flex max-w-[calc(100%-2rem)] -translate-x-1/2 items-center gap-2 rounded-xl bg-[#22374b] px-4 py-3 text-sm font-semibold text-white shadow-xl"
+      class="absolute left-1/2 top-4 z-40 flex max-w-full -translate-x-1/2 items-center gap-2 rounded-xl bg-slate-800 px-4 py-3 text-sm font-semibold text-white shadow-xl"
       role="status"
     >
       <Icon
         name="material-symbols-info-outline-rounded"
-        class="shrink-0 text-xl text-[#f2ad35]"
+        class="shrink-0 text-xl text-amber-500"
       />
       {{ notice }}
       <button
@@ -428,7 +428,7 @@ onBeforeUnmount(() => {
           name="material-symbols-error-outline-rounded"
           class="text-5xl text-red-700"
         />
-        <h1 class="mt-3 text-2xl font-bold text-[#22374b]">
+        <h1 class="mt-3 text-2xl font-bold text-slate-800">
           Gebäude konnten nicht geladen werden
         </h1>
         <p class="mt-2 text-sm text-slate-600">
@@ -436,7 +436,7 @@ onBeforeUnmount(() => {
         </p>
         <button
           type="button"
-          class="mt-5 rounded-lg bg-[#2c3e50] px-4 py-2 font-bold text-white"
+          class="mt-5 rounded-lg bg-slate-700 px-4 py-2 font-bold text-white"
           @click="refreshBuildings()"
         >
           Erneut versuchen
@@ -464,13 +464,13 @@ onBeforeUnmount(() => {
       </div>
 
       <div
-         class="absolute inset-x-0 bottom-0 z-30 h-[var(--sheet-height)] min-h-[72px] overflow-anchor-none overflow-hidden rounded-t-2xl border-t border-default bg-white shadow-[0_-16px_40px_rgba(15,23,42,0.24)] transition-[height] duration-300 ease-out lg:static lg:inset-auto lg:z-auto lg:h-full lg:rounded-none lg:border-l lg:border-t lg:shadow-[-12px_0_32px_rgba(15,23,42,0.14)]"
+         class="absolute inset-x-0 bottom-0 z-30 h-[var(--sheet-height)] min-h-18 overflow-anchor-none overflow-hidden rounded-t-2xl border-t border-default bg-white shadow-xl transition-all duration-300 ease-out lg:static lg:inset-auto lg:z-auto lg:h-full lg:rounded-none lg:border-l lg:border-t lg:shadow-lg"
         :class="draggedSheetHeight !== null ? '!duration-0' : ''"
         :style="{ '--sheet-height': `${sheetHeight}px` }"
       >
         <button
           type="button"
-          class="flex h-7 w-full touch-none cursor-ns-resize items-center justify-center bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-[#d9a441] lg:hidden"
+          class="flex h-7 w-full touch-none cursor-ns-resize items-center justify-center bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-amber-500 lg:hidden"
           :aria-label="`Gebäudebereich ${sheetState === 'collapsed' ? 'öffnen' : sheetState === 'half' ? 'vergrößern' : 'einklappen'}`"
           @pointerdown="startSheetDrag"
           @click="cycleSheet"
@@ -480,7 +480,7 @@ onBeforeUnmount(() => {
             aria-hidden="true"
           />
         </button>
-        <div class="h-[calc(100%-1.75rem)] min-h-0 lg:h-full">
+        <div class="h-full min-h-0 lg:h-full">
           <BuildingsSidebar
             :buildings="filteredBuildings"
             :buildings-pending="buildingsPending"

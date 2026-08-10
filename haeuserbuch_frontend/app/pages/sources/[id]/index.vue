@@ -34,7 +34,7 @@ useHead(() => ({
       <template #title>
         <div class="flex flex-col gap-2">
           <div class="flex flex-row justify-between">
-            <h1 class="text-3xl font-bold text-black max-w-[80%]">
+            <h1 class="max-w-4/5 text-3xl font-bold text-black">
               {{ sourceItem?.title }}
             </h1>
             <TaskBar :id="sourceId" entity_type="sources" />

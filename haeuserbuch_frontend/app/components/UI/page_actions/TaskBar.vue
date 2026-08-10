@@ -129,7 +129,7 @@ const actions = {
 <template>
   <div class="relative flex items-start">
     <Transition
-      enter-active-class="transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]"
+      enter-active-class="transition-all duration-200 ease-out"
       enter-from-class="opacity-0 translate-x-2 scale-95"
       enter-to-class="opacity-100 translate-x-0 scale-100"
       leave-active-class="transition-all duration-150 ease-in"
@@ -142,7 +142,7 @@ const actions = {
         >
           <NuxtLink
             :to="edit_path"
-            class="flex flex-row space-x-2 p-1 rounded-md text-gray-600 hover:bg-[#f1f5f9] hover:text-black whitespace-nowrap items-center"
+            class="flex flex-row items-center space-x-2 whitespace-nowrap rounded-md p-1 text-gray-600 hover:bg-slate-100 hover:text-black"
             @click="actions.edit_page()"
           >
             <Icon
@@ -153,7 +153,7 @@ const actions = {
           </NuxtLink>
           <NuxtLink
             :to="api_path"
-            class="flex flex-row space-x-2 p-1 rounded-md text-gray-600 hover:bg-[#f1f5f9] hover:text-black whitespace-nowrap items-center"
+            class="flex flex-row items-center space-x-2 whitespace-nowrap rounded-md p-1 text-gray-600 hover:bg-slate-100 hover:text-black"
             @click="actions.api_view()"
             target="_blank"
           >
@@ -162,7 +162,7 @@ const actions = {
           </NuxtLink>
           <button
             @click="actions.copy_url()"
-            class="flex flex-row space-x-2 p-1 rounded-md text-gray-600 hover:bg-[#f1f5f9] hover:text-black whitespace-nowrap items-center"
+            class="flex flex-row items-center space-x-2 whitespace-nowrap rounded-md p-1 text-gray-600 hover:bg-slate-100 hover:text-black"
           >
             <Icon name="material-symbols-share-outline" class="text-xl" />
             <span class="text-sm leading-none">Teilen</span>
@@ -170,7 +170,7 @@ const actions = {
           <ConfirmDialog />
           <button
             @click="actions.delete_page()"
-            class="flex flex-row space-x-2 p-1 rounded-md hover:bg-[#f1f5f9] text-red-600 hover:text-red-700 whitespace-nowrap items-center"
+            class="flex flex-row items-center space-x-2 whitespace-nowrap rounded-md p-1 text-red-600 hover:bg-slate-100 hover:text-red-700"
           >
             <Icon name="material-symbols-delete-outline" class="text-xl" />
             <span class="text-sm leading-none">Eintrag löschen</span>

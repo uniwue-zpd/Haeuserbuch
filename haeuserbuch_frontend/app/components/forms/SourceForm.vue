@@ -55,13 +55,13 @@ const submit = async (formData: Partial<SourceInput>) => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-2 w-[80%] mx-auto">
+  <div class="mx-auto flex w-4/5 flex-col gap-2">
     <h1 class="text-2xl text-black font-bold">{{ props.header }}</h1>
     <p>
       Füllen Sie bitte die untenstehenden Felder aus, um ein Objekt zu erstellen
       oder anzupassen.
     </p>
-    <div class="p-3 bg-[#F1F2F2] shadow-md rounded-md">
+    <div class="rounded-md bg-gray-100 p-3 shadow-md">
       <FormKit
         type="form"
         :id="action === 'create' ? 'source_create' : 'source_edit'"
@@ -129,7 +129,7 @@ const submit = async (formData: Partial<SourceInput>) => {
             prefix-icon="text"
             outer-class="max-w-full"
           />
-          <div class="border-solid border-2 rounded-md p-5 bg-[#F1F2F5] mb-2">
+          <div class="mb-2 rounded-md border-2 border-solid bg-gray-100 p-5">
             <div class="font-mono">JSON-Preview</div>
             <hr />
             <pre wrap class="text-sm">{{ value }}</pre>

@@ -31,7 +31,7 @@ useHead(() => ({
         </Panel>
         <div
           v-for="quarter in quarters"
-          class="bg-[#F1F2F2] shadow-md rounded-md p-3 hover:shadow-lg hover:translate-x-2 transition-transform duration-300"
+          class="rounded-md bg-gray-100 p-3 shadow-md transition-transform duration-300 hover:translate-x-2 hover:shadow-lg"
         >
           <NuxtLink :to="`/quarters/${quarter.id}`" class="no-underline">
             <h2 class="text-xl font-bold text-black">{{ quarter.name }}</h2>

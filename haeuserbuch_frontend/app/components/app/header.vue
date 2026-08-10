@@ -75,7 +75,7 @@ const commandGroups = computed(() => [
 const headerUi = computed(() => ({
   root: "top-0 z-50 h-auto border-0 bg-default !backdrop-blur-none sticky",
   container: [
-    "w-full min-h-20 max-w-none rounded-none bg-default px-4 shadow-none transition-[border-color] duration-200 sm:px-6",
+    "w-full min-h-20 max-w-none rounded-none bg-default px-4 shadow-none transition-colors duration-200 sm:px-6",
     isScrolled.value ? "border-b border-default" : "border-b border-transparent",
   ].join(" "),
   center: "hidden items-center gap-1 lg:flex",
@@ -157,7 +157,7 @@ defineShortcuts({
       }"
       :ui="{
         content:
-          'w-[min(1180px,calc(100vw-2rem))] overflow-hidden rounded-3xl border border-default bg-default p-0 shadow-2xl ring-0',
+          'w-full max-w-7xl overflow-hidden rounded-3xl border border-default bg-default p-0 shadow-2xl ring-0',
       }"
     >
       <template #default="{ open }">
@@ -182,7 +182,7 @@ defineShortcuts({
           <div class="mb-5 flex items-end justify-between gap-4">
             <div>
               <p
-                class="text-xs font-semibold uppercase tracking-[0.18em] text-muted"
+                class="text-xs font-semibold uppercase tracking-widest text-muted"
               >
                 Forschungsdaten
               </p>
@@ -229,7 +229,7 @@ defineShortcuts({
               <div class="flex items-start justify-between gap-3">
                 <UIcon :name="item.icon" class="size-5 text-dimmed" />
                 <span
-                  class="rounded-full bg-accented px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-wider text-muted"
+                  class="rounded-full bg-accented px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-muted"
                 >
                   Demnächst
                 </span>
@@ -258,7 +258,7 @@ defineShortcuts({
       }"
       :ui="{
         content:
-          'w-[min(1180px,calc(100vw-2rem))] overflow-hidden rounded-3xl border border-default bg-default p-0 shadow-2xl ring-0',
+          'w-full max-w-7xl overflow-hidden rounded-3xl border border-default bg-default p-0 shadow-2xl ring-0',
       }"
     >
       <template #default="{ open }">
@@ -281,7 +281,7 @@ defineShortcuts({
       <template #content="{ close }">
         <div class="p-5 sm:p-7">
           <p
-            class="text-xs font-semibold uppercase tracking-[0.18em] text-muted"
+            class="text-xs font-semibold uppercase tracking-widest text-muted"
           >
             Würzburger Häuserbuch
           </p>
@@ -337,7 +337,7 @@ defineShortcuts({
         v-model:open="searchOpen"
         :ui="{
           content:
-            'w-[min(640px,calc(100vw-2rem))] overflow-hidden rounded-2xl p-0',
+            'w-full max-w-xl overflow-hidden rounded-2xl p-0',
         }"
       >
         <UButton
@@ -380,7 +380,7 @@ defineShortcuts({
         <section aria-labelledby="mobile-research-heading">
           <h2
             id="mobile-research-heading"
-            class="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted"
+            class="mb-4 text-xs font-semibold uppercase tracking-widest text-muted"
           >
             Recherche
           </h2>
@@ -408,7 +408,7 @@ defineShortcuts({
         <section aria-labelledby="mobile-project-heading">
           <h2
             id="mobile-project-heading"
-            class="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted"
+            class="mb-4 text-xs font-semibold uppercase tracking-widest text-muted"
           >
             Projekt
           </h2>
