@@ -14,7 +14,7 @@ useHead(() => ({
       class="relative flex min-h-[calc(100svh-6rem)] w-full overflow-hidden rounded-3xl bg-[url('/hero_image.webp')] bg-cover bg-center sm:min-h-[calc(100svh-6.5rem)] sm:rounded-4xl"
       aria-labelledby="hero-title"
     >
-      <div class="absolute inset-0 bg-emerald-950/70" />
+      <div class="absolute inset-0 bg-[#17261f]/70" />
 
       <div
         class="relative flex min-h-[calc(100svh-6rem)] w-full flex-col gap-12 px-6 py-10 text-white sm:min-h-[calc(100svh-6.5rem)] sm:px-10 sm:py-14 lg:px-14 lg:py-14 xl:px-20"
