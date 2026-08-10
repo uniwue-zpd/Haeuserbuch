@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, watch } from "vue";
 import maplibregl, {
   LngLat,
   type RasterLayerSpecification,
@@ -11,6 +11,12 @@ import { getPaginationRowModel } from "@tanstack/vue-table";
 import { initMap } from "~/service/map_init";
 import UniversalSkeleton from "~/components/UI/skeletons/UniversalSkeleton.vue";
 import ErrorComponent from "~/components/UI/FetchError.vue";
+import type {
+  Feature,
+  FeatureCollection,
+  PlaceProperties,
+  Point,
+} from "~/utils/GeoJsonTypes";
 
 const placeStore = usePlaceStore();
 const tile_store = useTileStore();
@@ -19,6 +25,8 @@ const {
   pending: loadingData,
   error: hasError,
 } = await useAsyncData("places", () => placeStore.getPlaces());
+
+const globalFilter = ref("");
 
 type PlaceTableRow = {
   id?: number;
@@ -38,6 +46,27 @@ const places_table_data = computed(() =>
     };
   }),
 );
+
+const filteredPlaces = computed<FeatureCollection>(() => {
+  const query = globalFilter.value.toLowerCase();
+  const features = places.value?.features ?? [];
+
+  if (!query) {
+    return { type: "FeatureCollection", features };
+  }
+
+  return {
+    type: "FeatureCollection",
+    features: features.filter((place: Feature) => {
+      const properties = place.properties as PlaceProperties | null;
+      const names = [properties?.realName, ...(properties?.altNames ?? [])];
+
+      return names.some((name) =>
+        name?.toLowerCase().includes(query),
+      );
+    }),
+  };
+});
 
 const placeColumns: TableColumn<PlaceTableRow>[] = [
   {
@@ -59,7 +88,6 @@ const placeColumns: TableColumn<PlaceTableRow>[] = [
 ];
 
 const table = useTemplateRef("table");
-const globalFilter = ref("");
 const sorting = ref<{ id: string; desc: boolean }[]>([]);
 const pagination = ref({
   pageIndex: 0,
@@ -68,6 +96,15 @@ const pagination = ref({
 const sources = computed(() => tile_store.baseSources);
 const layers = computed(() => tile_store.baseLayers);
 let map: maplibregl.Map | null = null;
+
+function updateMapPlaces() {
+  const source = map?.getSource("places") as maplibregl.GeoJSONSource | undefined;
+  source?.setData(
+    filteredPlaces.value as Parameters<maplibregl.GeoJSONSource["setData"]>[0],
+  );
+}
+
+watch(filteredPlaces, updateMapPlaces);
 
 useHead(() => ({
   title: "Orte - Orteverzeichnis",
@@ -88,7 +125,7 @@ onMounted(async () => {
     map!.addSource("places", {
       type: "geojson",
       // @ts-ignore
-      data: places.value as FeatureCollection,
+      data: filteredPlaces.value as FeatureCollection,
       cluster: true,
       clusterRadius: 50,
     });
@@ -138,6 +175,7 @@ onMounted(async () => {
         "circle-stroke-width": 2,
       },
     });
+    updateMapPlaces();
   });
   map.on("click", "places_clusters", async (e) => {
     const feature = e.features?.[0];
