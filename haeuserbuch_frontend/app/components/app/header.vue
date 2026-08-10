@@ -13,12 +13,6 @@ const projectNavigation = [
     to: "/projekt",
   },
   {
-    label: "FAQ",
-    description: "Antworten auf häufige Fragen zum Projekt und zur Nutzung.",
-    icon: "i-lucide-circle-help",
-    to: "/faq",
-  },
-  {
     label: "Team",
     description: "Lernen Sie das Team hinter dem Häuserbuch kennen.",
     icon: "i-lucide-users-round",

@@ -73,11 +73,6 @@ const partners = [
               >Projekt</NuxtLink
             >
             <NuxtLink
-              to="/faq"
-              class="w-fit text-slate-800/75 transition-colors hover:text-slate-800 dark:text-white/70 dark:hover:text-white"
-              >FAQ</NuxtLink
-            >
-            <NuxtLink
               to="/team"
               class="w-fit text-slate-800/75 transition-colors hover:text-slate-800 dark:text-white/70 dark:hover:text-white"
               >Über uns</NuxtLink
