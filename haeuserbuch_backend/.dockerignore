@@ -1,0 +1,7 @@
+.git
+.idea
+.mvn
+target
+*.log
+*.tmp
+src/main/resources/application-local.yml

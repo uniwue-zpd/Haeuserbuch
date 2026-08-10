@@ -137,7 +137,7 @@ const actions = {
     </Transition>
     <button
         @click="show_toolbar = !show_toolbar"
-        class="p-2 leading-none rounded-md hover:bg-[#f1f5f9] cursor-pointer"
+        class="p-2 leading-none rounded-md hover:bg-gray-300 cursor-pointer"
         title="Mehr Optionen"
     >
       <Icon name="material-symbols-more-vert" class="text-xl" />

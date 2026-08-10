@@ -1,17 +1,16 @@
-FROM maven:3.9.16-amazoncorretto-21 AS build
+FROM maven:3.9.16-amazoncorretto-21
+
+LABEL description="Development image for the Haeuserbuch Spring Boot backend"
 
 WORKDIR /app
 
-COPY . .
+COPY pom.xml ./
+RUN mvn --batch-mode dependency:go-offline -DskipTests
 
-RUN mvn clean package -DskipTests
-
-FROM gradle:jdk21-corretto
-
-WORKDIR /app
-
-COPY --from=build /app/target/haeuserbuch_backend-0.0.1-SNAPSHOT.jar /app/app.jar
+COPY src ./src
+COPY docker/dev-entrypoint.sh /usr/local/bin/haeuserbuch-dev
+RUN chmod 755 /usr/local/bin/haeuserbuch-dev
 
 EXPOSE 8080
 
-CMD ["java", "-jar", "/app/app.jar"]
+ENTRYPOINT ["/usr/local/bin/haeuserbuch-dev"]

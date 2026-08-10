@@ -89,6 +89,32 @@ onMounted(() => {
     </template>
     <template #content>
       <div class="flex flex-col gap-2">
+        <div class="flex flex-col md:flex-row gap-2">
+          <NuxtLink
+              to="/citizenships/description"
+              class="group flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-100 p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md"
+          >
+            <div class="flex h-10 w-10 items-center justify-center rounded-md bg-gray-200 transition-colors group-hover:bg-blue-100">
+              <Icon name="material-symbols-book-5-outline-rounded" class="text-2xl text-gray-700"/>
+            </div>
+            <div class="flex flex-col">
+              <h2 class="text-base font-bold montserrat-headline text-black">Beschreibung</h2>
+              <p class="text-sm roboto-plain text-gray-600">Informationen zu Bürgermatrikeln</p>
+            </div>
+          </NuxtLink>
+          <NuxtLink
+              to="/citizenships/fulltextsearch"
+              class="group flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-100 p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md"
+          >
+            <div class="flex h-10 w-10 items-center justify-center rounded-md bg-gray-200 transition-colors group-hover:bg-blue-100">
+              <Icon name="material-symbols-manage-search-rounded" class="text-2xl text-gray-700"/>
+            </div>
+            <div class="flex flex-col">
+              <h2 class="text-base font-bold montserrat-headline text-black">Volltextsuche</h2>
+              <p class="text-sm roboto-plain text-gray-600">Bürgermatrikel-Einträge durchsuchen</p>
+            </div>
+          </NuxtLink>
+        </div>
         <Accordion :value="null">
           <AccordionPanel value="0">
             <AccordionHeader>

@@ -16,7 +16,7 @@ export interface Auditable {
 /** Represents a preview DTO of a building. */
 export interface BuildingDTO {
     id: number | null;
-    districtHouseNumber: string | null;
+    districtPropertyNumber: string | null;
 }
 
 /** Represents an object containing data of available names of a building. */
@@ -100,6 +100,21 @@ export interface FilterCitizenship {
     datenaturalization?: string;
     primarysource?: string;
     secondarysource?: string;
+}
+
+export interface CitizenshipFullTextResult {
+    id: number;
+    signature: string | null;
+    refNumber: string | null;
+    queryResult: string;
+}
+
+export interface SearchCitizenshipFullText {
+    query: string;
+    page?: number;
+    size?: number;
+    sort?: string;
+    exact?: boolean;
 }
 
 // PERSONS
@@ -330,4 +345,64 @@ export interface Tile {
     bounds: [number, number, number, number];
     center: [number, number, number];
     tilejson: string;
+}
+
+export interface Page<T> {
+    content: T[];
+    pageable: {
+        pageNumber: number;
+        pageSize: number;
+        sort: {
+            empty: boolean;
+            unsorted: boolean;
+            sorted: boolean;
+        };
+        offset: number;
+        unpaged: boolean;
+        pages: boolean;
+    };
+    last: boolean;
+    totalPages: number;
+    totalElements: number;
+    size: number;
+    number: number;
+    sort: {
+        empty: boolean;
+        unsorted: boolean;
+        sorted: boolean;
+    };
+    numberOfElements: number;
+    first: boolean;
+    empty: boolean;
+}
+
+/**
+ * Data transfer object representing a stored file.
+ * Contains file metadata exposed by the backend API.
+ * The DTO does not include internal storage information such as
+ * the filesystem path.
+ */
+export interface FileDTO extends Auditable {
+    originalName: string | null;
+    name: string | null;
+    type: string | null;
+    size: number | null;
+}
+
+/**
+ * Lightweight data transfer object representing a stored file
+ */
+export interface FilePreviewDTO {
+    id: number;
+    originalName: string;
+}
+
+/**
+ * Parameters used for requesting paginated data.
+ * Corresponds to Spring Data's {@code Pageable} parameters.
+ */
+export interface Pageable {
+    page?: number;
+    size?: number;
+    sort?: string | string[];
 }

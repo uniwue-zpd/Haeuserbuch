@@ -1,19 +1,25 @@
-FROM node:20-alpine AS build
+FROM node:22-alpine
+
+LABEL description="Development image for the Haeuserbuch Nuxt frontend"
+
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+
+RUN corepack enable \
+    && corepack prepare pnpm@11.9.0 --activate
 
 WORKDIR /app
 
-COPY package*.json /app
-
-RUN npm ci && npm cache clean --force
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+RUN pnpm install --frozen-lockfile \
+    && pnpm store prune
 
 COPY . .
 
-RUN npm run build
+ENV NODE_ENV=development
+ENV NUXT_HOST=0.0.0.0
+ENV NUXT_PORT=3000
 
-FROM node:20-alpine
+EXPOSE 3000
 
-WORKDIR /app
-
-COPY --from=build /app/.output /app/.output
-
-ENTRYPOINT ["node", ".output/server/index.mjs"]
+CMD ["pnpm", "dev", "--host", "0.0.0.0"]

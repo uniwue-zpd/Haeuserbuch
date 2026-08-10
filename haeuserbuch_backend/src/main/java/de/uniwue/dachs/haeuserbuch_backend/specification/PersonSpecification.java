@@ -53,7 +53,7 @@ public class PersonSpecification {
         return (root, query, criteriaBuilder) -> {
             Join<Person, Building> buildingJoin = root.join("associatedBuilding", JoinType.LEFT);
             String pattern = "%" + building.strip().toLowerCase().replace("/", "%") + "%";
-            return criteriaBuilder.like(criteriaBuilder.lower(buildingJoin.get("districtHouseNumber")), pattern);
+            return criteriaBuilder.like(criteriaBuilder.lower(buildingJoin.get("districtPropertyNumber")), pattern);
         };
     }
 

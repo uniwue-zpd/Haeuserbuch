@@ -1,8 +1,9 @@
-import { joinURL } from "ufo";
-import { getAccessToken } from '#server/utils/auth'
+import { defineEventHandler, proxyRequest, type H3Event } from 'h3';
+import { joinURL } from 'ufo';
+import { getAccessToken } from '#server/utils/auth';
 
-export default defineEventHandler(async (event) => {
-    const proxyUrl = useRuntimeConfig().apiBaseUrl;
+export default defineEventHandler(async (event: H3Event) => {
+    const proxyUrl = useRuntimeConfig(event).apiBaseUrl;
     const path = event.path.replace(/^\/api/, '');
     const target = joinURL(proxyUrl, path);
 

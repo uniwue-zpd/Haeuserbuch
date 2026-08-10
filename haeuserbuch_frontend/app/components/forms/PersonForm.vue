@@ -110,45 +110,45 @@ const submit = async (formData: Partial<PersonInput>) => {
                     { label: 'männlich', value: 'männlich' },
                     { label: 'weiblich', value: 'weiblich' }
                   ]"
-              select-icon="select"
-              outer-class="max-w-full"
-          />
-          <FormKit
-              type="select"
-              name="isCitizen"
-              label="Bürger"
-              :options="[
+            select-icon="select"
+            outer-class="max-w-full"
+        />
+        <FormKit
+            type="select"
+            name="isCitizen"
+            label="Bürger"
+            :options="[
                     { label: 'unbekannt', value: null },
                     { label: 'ja', value: true },
                     { label: 'nein', value: false }
                   ]"
-              select-icon="select"
-              outer-class="max-w-full"
-          />
-          <div class="text-center roboto-plain font-bold text-2xl">Herkunft</div>
-          <FormKit type="group" name="origin">
-            <div class="flex flex-col gap-2 p-4 bg-gray-200 border border-gray-300 rounded-md shadow-sm">
-              <FormKit
-                  type="text"
-                  name="originalText"
-                  label="Eingetragener Ortsname"
-                  prefix-icon="text"
-                  outer-class="max-w-full"
-              />
-              <FormKit
-                  type="entityAutocomplete"
-                  entityType="place"
-                  optionLabel="realName"
-                  :isMultiple="true"
-                  name="places"
-                  label="Mögliche Herkunftsorte"
-                  outer-class="max-w-full"
-              />
-              <FormKit
-                  type="select"
-                  name="certainty"
-                  label="Herkunftsort lokalisierbar"
-                  :options="[
+            select-icon="select"
+            outer-class="max-w-full"
+        />
+        <div class="text-center roboto-plain font-bold text-2xl">Herkunft</div>
+        <FormKit type="group" name="origin">
+          <div class="flex flex-col gap-2 p-4 bg-gray-200 border border-gray-300 rounded-md shadow-sm">
+            <FormKit
+                type="text"
+                name="originalText"
+                label="Eingetragener Ortsname"
+                prefix-icon="text"
+                outer-class="max-w-full"
+            />
+            <FormKit
+                type="entityAutocomplete"
+                entityType="place"
+                optionLabel="realName"
+                :isMultiple="true"
+                name="places"
+                label="Mögliche Herkunftsorte"
+                outer-class="max-w-full"
+            />
+            <FormKit
+                type="select"
+                name="certainty"
+                label="Herkunftsort lokalisierbar"
+                :options="[
                     { label: 'Unbekannt', value: null },
                     { label: 'Nicht identifizierbar', value: 'UNKNOWN' },
                     { label: 'Unsicher', value: 'AMBIGUOUS' },
@@ -163,7 +163,7 @@ const submit = async (formData: Partial<PersonInput>) => {
           <FormKit
               type="entityAutocomplete"
               entityType="building"
-              optionLabel="districtHouseNumber"
+              optionLabel="districtPropertyNumber"
               name="associatedBuilding"
               label="Erwähntes Gebäude"
               outer-class="max-w-full"

@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: haeuserbuch-backend
+
+  jpa:
+    defer-datasource-initialization: true
+    show-sql: false
+
+  sql:
+    init:
+      mode: always
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 500MB
+
+haeuserbuch:
+  files:
+    upload-dir: ${HAEUSERBUCH_UPLOAD_DIR:/uploads}
+
+server:
+  compression:
+    enabled: true
+    mime-types: application/json
+    min-response-size: 1024
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true

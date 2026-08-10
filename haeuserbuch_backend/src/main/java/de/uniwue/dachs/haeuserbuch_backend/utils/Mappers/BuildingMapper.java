@@ -22,14 +22,16 @@ public class BuildingMapper {
     private final BuildingNameMapper buildingNameMapper;
     private final BuildingRepository buildingRepository;
     private final AddressMapper addressMapper;
+    private final FileMapper fileMapper;
 
-    public BuildingMapper(SourceMapper sourceMapper, DistrictMapper districtMapper, QuarterMapper quarterMapper, BuildingNameMapper buildingNameMapper, BuildingRepository buildingRepository, AddressMapper addressMapper) {
+    public BuildingMapper(SourceMapper sourceMapper, DistrictMapper districtMapper, QuarterMapper quarterMapper, BuildingNameMapper buildingNameMapper, BuildingRepository buildingRepository, AddressMapper addressMapper, FileMapper fileMapper) {
         this.sourceMapper = sourceMapper;
         this.districtMapper = districtMapper;
         this.quarterMapper = quarterMapper;
         this.buildingNameMapper = buildingNameMapper;
         this.buildingRepository = buildingRepository;
         this.addressMapper = addressMapper;
+        this.fileMapper = fileMapper;
     }
 
     public Feature BuildingToFeature(Building building) {
@@ -41,14 +43,15 @@ public class BuildingMapper {
         properties.setParcelNumberCounter(building.getParcelNumberCounter());
         properties.setNames(buildingNameMapper.BuildingNamesToDTOs(building.getNames()));
         properties.setPartType(building.getPartType());
-        properties.setSpecialStatus(building.getSpecialStatus());
+        properties.setObject(building.getObject());
         properties.setAddresses(addressMapper.AddressesToDTOs(building.getAddresses()));
         properties.setQuarter(quarterMapper.QuarterToDTO(building.getQuarter()));
         properties.setDistrict(districtMapper.DistrictToDTO(building.getDistrict()));
-        properties.setHouseNumber(building.getHouseNumber());
-        properties.setDistrictHouseNumber(building.getDistrictHouseNumber());
-        properties.setPrimarySources(sourceMapper.SourcesToDTOs(building.getPrimarySources()));
-        properties.setSecondarySources(sourceMapper.SourcesToDTOs(building.getSecondarySources()));
+        properties.setPropertyNumber(building.getPropertyNumber());
+        properties.setDistrictPropertyNumber(building.getDistrictPropertyNumber());
+        properties.setSources(sourceMapper.SourcesToDTOs(building.getSources()));
+        properties.setLiterature(sourceMapper.SourcesToDTOs(building.getLiterature()));
+        properties.setFiles(fileMapper.toPreviewDTOs(building.getFiles()));
         properties.setInternalNotes(building.getInternalNotes());
         properties.setGeneralNotes(building.getGeneralNotes());
         properties.setCreatedDate(building.getCreatedDate());
@@ -63,7 +66,7 @@ public class BuildingMapper {
 
     public List<Feature> BuildingsToFeatures(List<Building> buildings) {
         return buildings.stream()
-                .sorted(Comparator.comparing(Building::getDistrictHouseNumber))
+                .sorted(Comparator.comparing(Building::getId))
                 .map(this::BuildingToFeature)
                 .filter(Objects::nonNull)
                 .toList();
@@ -78,14 +81,15 @@ public class BuildingMapper {
                 building.setParcelNumberCounter(properties.getParcelNumberCounter());
                 building.setNames(buildingNameMapper.BuildingNameDTOsToBuildingNames(properties.getNames()));
                 building.setPartType(properties.getPartType());
-                building.setSpecialStatus(properties.getSpecialStatus());
+                building.setObject(properties.getObject());
                 building.setAddresses(addressMapper.AddressDTOsToAddresses(properties.getAddresses()));
                 building.setQuarter(quarterMapper.QuarterDTOToQuarter(properties.getQuarter()));
                 building.setDistrict(districtMapper.DistrictDTOToDistrict(properties.getDistrict()));
-                building.setHouseNumber(properties.getHouseNumber());
-                building.setDistrictHouseNumber(properties.getDistrictHouseNumber());
-                building.setPrimarySources(sourceMapper.SourceDTOsToSources(properties.getPrimarySources()));
-                building.setSecondarySources(sourceMapper.SourceDTOsToSources(properties.getSecondarySources()));
+                building.setPropertyNumber(properties.getPropertyNumber());
+                building.setDistrictPropertyNumber(properties.getDistrictPropertyNumber());
+                building.setSources(sourceMapper.SourceDTOsToSources(properties.getSources()));
+                building.setLiterature(sourceMapper.SourceDTOsToSources(properties.getLiterature()));
+                building.setFiles(fileMapper.toFiles(properties.getFiles()));
                 building.setInternalNotes(properties.getInternalNotes());
                 building.setGeneralNotes(properties.getGeneralNotes());
             } else {
@@ -108,7 +112,7 @@ public class BuildingMapper {
         if (building == null) return null;
         BuildingDTO buildingDTO = new BuildingDTO();
         buildingDTO.setId(building.getId());
-        buildingDTO.setDistrictHouseNumber(building.getDistrictHouseNumber());
+        buildingDTO.setDistrictPropertyNumber(building.getDistrictPropertyNumber());
         return buildingDTO;
     }
 

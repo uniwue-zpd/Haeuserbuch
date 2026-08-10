@@ -1,6 +1,7 @@
 package de.uniwue.dachs.haeuserbuch_backend.service;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.CitizenshipDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.FullTextSearch.CitizenshipFullTextSearchResult;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.CitizenshipPreviewDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.*;
 import de.uniwue.dachs.haeuserbuch_backend.repository.CitizenshipRepository;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 @Service
 public class CitizenshipService {
@@ -25,6 +27,9 @@ public class CitizenshipService {
     private final CitizenshipMapper citizenshipMapper;
     private final SourceMapper sourceMapper;
     private final PersonMapper personMapper;
+
+    private static final Pattern HTML_TAG_PATTERN = Pattern.compile("<[^>]*>");
+    private static final Pattern SPECIAL_CHAR_PATTERN = Pattern.compile("[^\\p{L}\\p{N}\\s\"'-]");
 
     public CitizenshipService(CitizenshipRepository citizenshipRepository, CitizenshipMapper citizenshipMapper, SourceMapper sourceMapper, PersonMapper personMapper) {
         this.citizenshipRepository = citizenshipRepository;
@@ -166,5 +171,26 @@ public class CitizenshipService {
             throw new RuntimeException("Citizenship with id '" + id + "' does not exist");
         }
         citizenshipRepository.deleteById(id);
+    }
+
+    /**
+     * Searches citizenship entries using a full-text search query.
+     * <p>The search can be performed either as a standard full-text search or as an
+     * exact search depending on the provided parameters. Results are returned as a
+     * paginated collection of matching citizenship entries.</p>
+     * @param query the search query entered by the user
+     * @param exact whether the search should match exact terms only
+     * @param pageable pagination information including page number, page size, and sorting
+     * @return a {@link Page} of {@link CitizenshipFullTextSearchResult} objects containing
+     * metadata and highlighted text fragments of matching citizenship entries
+     */
+    public Page<CitizenshipFullTextSearchResult> searchCitizenshipFullText(String query, boolean exact, Pageable pageable) {
+        if (query == null || query.isBlank()) return Page.empty(pageable);
+        String sanitizedQuery = query
+                .replaceAll(HTML_TAG_PATTERN.pattern(), "")
+                .replaceAll(SPECIAL_CHAR_PATTERN.pattern(), "")
+                .trim();
+        if (exact) return citizenshipRepository.searchFullTextExact(sanitizedQuery, pageable);
+        return citizenshipRepository.searchFullText(sanitizedQuery, pageable);
     }
 }

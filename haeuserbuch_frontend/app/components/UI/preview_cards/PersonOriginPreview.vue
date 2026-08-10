@@ -84,17 +84,18 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-4 rounded-lg shadow-md p-4 bg-gray-200 border border-gray-300">
+  <div class="roboto-plain flex flex-col gap-5 p-4 rounded-lg shadow-lg border border-gray-300">
+    <h2 class="text-2xl font-semibold montserrat-headline">Herkunft</h2>
     <div v-if="personOrigin.originalText" class="flex flex-col gap-1">
-      <span class="text-xs font-semibold uppercase tracking-wide text-gray-600">
+      <span class="text-xs font-semibold uppercase tracking-wide text-gray-500">
         Eingetragener Ort
       </span>
-      <span class="text-sm text-black italic">
+      <span class="text-base italic">
         {{ personOrigin.originalText }}
       </span>
     </div>
     <div v-if="personOrigin.places.length > 0" class="flex flex-col gap-2">
-      <span class="text-xs font-semibold uppercase tracking-wide text-gray-600">
+      <span class="text-xs font-semibold uppercase tracking-wide text-gray-500">
         Möglicherweise
       </span>
       <div class="flex flex-wrap gap-2">
@@ -102,18 +103,18 @@ onUnmounted(() => {
             v-for="place in personOrigin.places"
             :key="place.id"
             :to="`/places/${place.id}`"
-            class="p-1.5 rounded-md bg-gray-300 text-sm font-medium shadow-sm hover:shadow-md"
+            class="p-1.5 border-2 border-gray-300 rounded-lg shadow-sm hover:shadow-md font-semibold"
         >
           {{ place.realName }}
         </NuxtLink>
       </div>
     </div>
     <div v-if="personOrigin.certainty" class="flex flex-col gap-2">
-      <span class="text-xs font-semibold uppercase tracking-wide text-gray-600">
+      <span class="text-xs font-semibold uppercase tracking-wide text-gray-500">
         Lokalisierbarkeit
       </span>
       <div>
-        <span :class="`border border-gray-400 p-1.5 rounded-md text-xs font-bold uppercase tracking-wide shadow-sm ${originCertainty[personOrigin.certainty].color}`">
+        <span :class="`border border-gray-400 p-1.5 rounded-md text-xs font-bold uppercase tracking-wide shadow-sm ${ originCertainty[personOrigin.certainty].color }`">
         {{ originCertainty[personOrigin.certainty].label }}
       </span>
       </div>

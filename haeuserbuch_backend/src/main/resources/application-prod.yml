@@ -1,0 +1,5 @@
+spring:
+  jpa:
+    # Retained until the project adopts versioned database migrations.
+    hibernate:
+      ddl-auto: update

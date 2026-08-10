@@ -1,4 +1,8 @@
-.idea
+# IDEs and editors
+.idea/
+.vscode/
+.fleet/
+*.iml
 
 # Backend
 **/target/
@@ -11,18 +15,26 @@
 !**/src/main/**/target/
 !**/src/test/**/target/
 **/HELP.md
-**/src/main/resources/application.yml
 
 # Frontend
 haeuserbuch_frontend/node_modules/
+haeuserbuch_frontend/.pnpm-store/
 haeuserbuch_frontend/dist/
 haeuserbuch_frontend/.nuxt/
 haeuserbuch_frontend/.output/
 haeuserbuch_frontend/.cache/
 
 # Environment variables and secrets
+.env
+.env.*
+!.env.example
+!.env.prod.example
 env-dev
-nginx/.htpasswd
+
+# Local runtime data
+/db_data/
+/tiles/
+/backups/
 
 # OS
 .DS_Store

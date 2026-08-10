@@ -25,7 +25,7 @@ export const useTileStore = defineStore('tile', () => {
 
     async function fetchTiles() {
         if (isLoaded.value) return;
-        const {data, error} = await useFetch('/index.json', { baseURL: useRuntimeConfig().tileserverApiUrl });
+        const {data, error} = await useFetch('/tiles/index.json');
         if (error.value) {
             console.error('Error fetching tiles:', error.value, 'Setting OSM as default tile');
             return;

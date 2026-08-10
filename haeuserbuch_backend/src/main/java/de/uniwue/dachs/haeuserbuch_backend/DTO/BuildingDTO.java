@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 public class BuildingDTO {
     private Long id;
-    private String districtHouseNumber;
+    private String districtPropertyNumber;
 }
