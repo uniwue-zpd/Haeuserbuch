@@ -2,6 +2,7 @@
 import { researchNavigation } from "~/utils/researchNavigation";
 
 const year = new Date().getFullYear();
+const { loggedIn } = useUserSession();
 
 const footerGroups = [
   {
@@ -137,10 +138,11 @@ const partners = [
             class="transition-colors hover:text-slate-800 dark:hover:text-white"
             >Datenschutz</NuxtLink
           >
-          <NuxtLink
-            to="/login"
+          <a
+            v-if="!loggedIn"
+            href="/auth/login"
             class="transition-colors hover:text-slate-800 dark:hover:text-white"
-            >Login</NuxtLink
+            >Login</a
           >
         </div>
       </div>

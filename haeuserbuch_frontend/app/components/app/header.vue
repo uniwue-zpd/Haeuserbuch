@@ -371,6 +371,7 @@ defineShortcuts({
       />
 
       <UPopover
+        v-if="loggedIn"
         mode="click"
         :content="{
           align: 'end',
@@ -380,7 +381,7 @@ defineShortcuts({
         }"
       >
         <UButton
-          :label="loggedIn ? user?.name || 'Konto' : 'Anmelden'"
+          :label="user?.name || 'Konto'"
           icon="i-lucide-user-round"
           size="lg"
           color="neutral"
@@ -394,42 +395,23 @@ defineShortcuts({
 
         <template #content>
           <div class="w-72 space-y-4 p-4">
-            <template v-if="loggedIn">
-              <div class="flex items-center gap-3">
-                <UAvatar :alt="user?.name || 'Häuserbuch-Mitglied'" />
-                <div class="min-w-0">
-                  <p class="truncate font-semibold text-highlighted">
-                    {{ user?.name || "Häuserbuch-Mitglied" }}
-                  </p>
-                  <p class="text-sm text-muted">Angemeldet</p>
-                </div>
-              </div>
-              <UButton
-                label="Abmelden"
-                icon="i-lucide-log-out"
-                color="error"
-                variant="soft"
-                block
-                @click="logout"
-              />
-            </template>
-            <template v-else>
-              <div>
-                <p class="font-semibold text-highlighted">Willkommen</p>
-                <p class="mt-1 text-sm leading-5 text-muted">
-                  Melden Sie sich an, um erweiterten Zugriff auf das Projekt zu
-                  erhalten.
+            <div class="flex items-center gap-3">
+              <UAvatar :alt="user?.name || 'Häuserbuch-Mitglied'" />
+              <div class="min-w-0">
+                <p class="truncate font-semibold text-highlighted">
+                  {{ user?.name || "Häuserbuch-Mitglied" }}
                 </p>
+                <p class="text-sm text-muted">Angemeldet</p>
               </div>
-              <a href="/auth/login">
-                <UButton
-                    label="Anmelden"
-                    icon="i-lucide-log-in"
-                    color="primary"
-                    block
-                />
-              </a>
-            </template>
+            </div>
+            <UButton
+              label="Abmelden"
+              icon="i-lucide-log-out"
+              color="error"
+              variant="soft"
+              block
+              @click="logout"
+            />
           </div>
         </template>
       </UPopover>
