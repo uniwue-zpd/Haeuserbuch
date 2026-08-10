@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import StreetForm from "~/components/forms/StreetForm.vue";
 
+definePageMeta({
+  middleware: 'auth',
+});
+
 const route = useRoute();
 const streetId = Number(route.params.id);
 const street_store = useStreetStore();

@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import StreetForm from "~/components/forms/StreetForm.vue";
 
+definePageMeta({
+  middleware: 'auth',
+});
+
 useHead(() => ({
   title: 'Neue Straße erstellen',
 }));

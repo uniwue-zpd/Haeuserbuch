@@ -2,6 +2,10 @@
 import BuildingForm from "~/components/forms/BuildingForm.vue";
 import FetchError from "~/components/UI/FetchError.vue";
 
+definePageMeta({
+  middleware: 'auth',
+});
+
 useHead(() => ({
   title: 'Gebäude bearbeiten'
 }));

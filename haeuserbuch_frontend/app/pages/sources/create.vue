@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import SourceForm from "~/components/forms/SourceForm.vue";
 
+definePageMeta({
+  middleware: 'auth',
+});
+
 useHead({
   title: 'Neue Quelle hinzufügen - Häuserbuch',
 });

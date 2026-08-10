@@ -2,6 +2,10 @@
 import PlaceForm from "~/components/forms/PlaceForm.vue";
 import FetchError from "~/components/UI/FetchError.vue";
 
+definePageMeta({
+  middleware: 'auth',
+});
+
 useHead(() => ({
   title: 'Ort bearbeiten'
 }));

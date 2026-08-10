@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import PersonForm from "~/components/forms/PersonForm.vue";
 
+definePageMeta({
+  middleware: 'auth',
+});
+
 useHead(() => ({
   title: 'Person bearbeiten',
 }));

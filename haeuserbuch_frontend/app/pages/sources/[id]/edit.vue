@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import SourceForm from "~/components/forms/SourceForm.vue";
 
+definePageMeta({
+  middleware: 'auth',
+});
+
 const route = useRoute();
 const sourceId = Number(route.params.id);
 const source_store = useSourceStore();

@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import PlaceForm from "~/components/forms/PlaceForm.vue";
 
+definePageMeta({
+  middleware: 'auth',
+});
+
 useHead(() => ({
   title: 'Ort erstellen'
 }));

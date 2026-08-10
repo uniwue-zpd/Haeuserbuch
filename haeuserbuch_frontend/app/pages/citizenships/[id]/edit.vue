@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import CitizenshipForm from "~/components/forms/CitizenshipForm.vue";
 
+definePageMeta({
+  middleware: 'auth',
+});
+
 useHead(() => ({
   title: 'Bürgermatrikel bearbeiten'
 }));

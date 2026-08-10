@@ -2,6 +2,10 @@
 import type { FileDTO, Pageable } from "~/utils/types";
 import NotAuthorized from "~/components/UI/NotAuthorized.vue";
 
+definePageMeta({
+  middleware: 'auth',
+});
+
 const { loggedIn } = useUserSession();
 
 const fileApi = useFiles();
