@@ -18,112 +18,189 @@ const personJob = computed(() => personItem.value?.job);
 const personReligion = computed(() => personItem.value?.religion);
 const personWeapons = computed(() => personItem.value?.weapons);
 
-const { data: personItem, pending: isLoading, error: hasError } = await useAsyncData(`person-${ personId }-details`, () => person_store.fetchPersonById(personId));
-const { data: naturalizationEntry } = await useAsyncData(`person-${ personId }-naturalization`, () => citizenshipStore.filterCitizenships({'naturalizedperson-id': personId}));
+const {
+  data: personItem,
+  pending: isLoading,
+  error: hasError,
+} = await useAsyncData(`person-${personId}-details`, () =>
+  person_store.fetchPersonById(personId),
+);
+const { data: naturalizationEntry } = await useAsyncData(
+  `person-${personId}-naturalization`,
+  () =>
+    citizenshipStore.filterCitizenships({ "naturalizedperson-id": personId }),
+);
 
+const hasProfileContent = computed(() => {
+  const person = personItem.value;
+  return Boolean(
+    person &&
+      (person.firstName ||
+        person.lastName ||
+        person.sex ||
+        person.altNames.length ||
+        person.isCitizen ||
+        naturalizationEntry.value?.length ||
+        person.associatedBuilding ||
+        person.religion?.originalText ||
+        person.weapons?.length),
+  );
+});
+const hasOriginContent = computed(() => {
+  const origin = personItem.value?.origin;
+  return Boolean(origin && (origin.originalText || origin.places.length || origin.certainty));
+});
 useHead(() => ({
-  title: personItem.value ? `${personItem.value.fullName} - Personenverzeichnis` : 'Nicht gefunden',
+  title: personItem.value
+    ? `${personItem.value.fullName} - Personenverzeichnis`
+    : "Nicht gefunden",
 }));
 </script>
 
 <template>
-  <PersonSkeleton v-if="isLoading"/>
-  <FetchError v-else-if="hasError" :error="hasError"/>
-  <div v-else-if="personItem" class="flex flex-col gap-4 p-4 rounded-lg shadow-lg border-2 border-gray-300">
-    <div class="flex flex-row justify-between">
-      <h1 class="text-3xl montserrat-headline font-bold">{{ personItem.fullName }}</h1>
-      <TaskBar :id="personId" entity_type="persons"/>
-    </div>
-    <div class="flex flex-col gap-4">
-      <div class="roboto-plain flex flex-col gap-5 p-4 rounded-lg shadow-lg border border-gray-300">
-        <h2 class="text-2xl font-semibold montserrat-headline">Über die Person</h2>
-        <div v-if="personItem.firstName || personItem.lastName" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
-          <p class="text-sm text-gray-500 font-medium">Vor- und Nachname</p>
-          <p class="font-semibold">{{ personItem.firstName }} {{ personItem.lastName }}</p>
+  <PersonSkeleton v-if="isLoading" />
+  <FetchError v-else-if="hasError" :error="hasError" />
+  <div
+    v-else-if="personItem"
+    class="person-page flex min-h-full flex-col gap-8"
+  >
+    <header class="flex items-start justify-between gap-6 max-sm:items-center">
+      <h1 class="text-4xl font-bold leading-none tracking-tighter text-highlighted sm:text-6xl">{{ personItem.fullName }}</h1>
+      <TaskBar :id="personId" entity_type="persons" />
+    </header>
+    <div class="grid grid-cols-1 gap-4 lg:auto-rows-auto lg:grid-cols-12 lg:items-start">
+      <div
+        v-if="hasProfileContent"
+        class="row-span-2 flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-7"
+      >
+        <h2 class="text-xl font-semibold leading-tight text-highlighted">Über die Person</h2>
+        <div
+          v-if="personItem.firstName || personItem.lastName"
+          class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
+        >
+          <template v-if="personItem.firstName">
+            <p class="text-base text-gray-500 font-medium">Vorname</p>
+            <p class="font-semibold">{{ personItem.firstName }}</p>
+          </template>
+          <template v-if="personItem.lastName">
+            <p class="text-base text-gray-500 font-medium">Nachname</p>
+            <p class="font-semibold">{{ personItem.lastName }}</p>
+          </template>
         </div>
-        <div v-if="personItem.sex" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
-          <p class="text-sm text-gray-500 font-medium">Geschlecht</p>
+        <div
+          v-if="personItem.sex"
+          class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
+        >
+          <p class="text-base text-gray-500 font-medium">Geschlecht</p>
           <p class="font-semibold">{{ personItem.sex }}</p>
         </div>
-        <div v-if="personItem.altNames.length > 0" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
-          <p class="text-sm text-gray-500 font-medium">Namensvarianten</p>
+        <div
+          v-if="personItem.altNames.length > 0"
+          class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
+        >
+          <p class="text-base text-gray-500 font-medium">Namensvarianten</p>
           <ul class="list-inside list-disc">
             <li v-for="name in personItem.altNames" class="font-semibold">
               {{ name }}
             </li>
           </ul>
         </div>
-        <div v-if="personItem.isCitizen" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
-          <p class="text-sm text-gray-500 font-medium">Bürger?</p>
-          <Icon name="material-symbols-check-circle-outline" class="text-4xl text-green-600"/>
+        <div
+          v-if="personItem.isCitizen"
+          class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
+        >
+          <p class="text-base text-gray-500 font-medium">Bürger?</p>
+          <Icon
+            name="material-symbols-check-circle-outline"
+            class="text-4xl text-green-600"
+          />
         </div>
-        <div v-if="naturalizationEntry && naturalizationEntry.length > 0" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
-          <p class="text-sm text-gray-500 font-medium">Nachweis der Einbürgerung</p>
+        <div
+          v-if="naturalizationEntry && naturalizationEntry.length > 0"
+          class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
+        >
+          <p class="text-base text-gray-500 font-medium">
+            Nachweis der Einbürgerung
+          </p>
           <div>
-            <CitizenshipPreview :citizenship="naturalizationEntry[0] as CitizenshipPreviewDTO"/>
+            <CitizenshipPreview
+              :citizenship="naturalizationEntry[0] as CitizenshipPreviewDTO"
+            />
           </div>
         </div>
-        <div v-if="personItem.associatedBuilding" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
-          <p class="text-sm text-gray-500 font-medium">Bezug zum Gebäude</p>
+        <div
+          v-if="personItem.associatedBuilding"
+          class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
+        >
+          <p class="text-base text-gray-500 font-medium">Bezug zum Gebäude</p>
           <div>
             <NuxtLink
-                :to="`/buildings/${ personItem.associatedBuilding.id }`"
-                class="p-1.5 border-2 border-gray-300 rounded-lg shadow-sm hover:shadow-md font-semibold"
+              :to="`/buildings/${personItem.associatedBuilding.id}`"
+              class="rounded-lg border-2 border-gray-300 p-1.5 font-semibold shadow-sm hover:shadow-md"
             >
               {{ personItem.associatedBuilding.districtPropertyNumber }}
             </NuxtLink>
           </div>
         </div>
-        <div v-if="personJob" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
-          <p class="text-sm text-gray-500 font-medium">Berufliche Situation</p>
+        <div
+          class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
+        >
+          <p class="text-base text-gray-500 font-medium">Berufliche Situation</p>
           <div>
-            <PersonJobPreview :job="personJob"/>
+            <PersonJobPreview v-if="personJob" :job="personJob" />
+            <p v-else class="text-sm text-muted">
+              Bisher keine berufliche Situation erfasst
+            </p>
           </div>
         </div>
-        <div v-if="personReligion && personReligion.originalText" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
-          <p class="text-sm text-gray-500 font-medium">Religiöse Zugehörigkeit</p>
+        <div
+          v-if="personReligion && personReligion.originalText"
+          class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
+        >
+          <p class="text-base text-gray-500 font-medium">
+            Religiöse Zugehörigkeit
+          </p>
           <div>
-            <PersonReligionPreview :religion="personReligion"/>
+            <PersonReligionPreview :religion="personReligion" />
           </div>
         </div>
-        <div v-if="personWeapons && personWeapons.length > 0" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
-          <p class="text-sm text-gray-500 font-medium">Bewaffnung</p>
+        <div
+          v-if="personWeapons && personWeapons.length > 0"
+          class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
+        >
+          <p class="text-base text-gray-500 font-medium">Bewaffnung</p>
           <div>
-            <PersonWeaponsPreview :weapons="personWeapons"/>
+            <PersonWeaponsPreview :weapons="personWeapons" />
           </div>
         </div>
       </div>
-      <PersonOriginPreview v-if="personItem && personItem.origin" :personId="personId" :personOrigin="personItem.origin"/>
+      <PersonOriginPreview
+        v-if="hasOriginContent && personItem?.origin"
+        :personId="personId"
+        :personOrigin="personItem.origin"
+        class="lg:col-span-5"
+      />
       <div
-          v-if="personItem.generalNotes"
-          class="roboto-plain flex flex-col gap-5 p-4 rounded-lg shadow-lg border border-gray-300"
+        v-if="personItem.generalNotes"
+        class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-5"
       >
-        <h2 class="text-2xl font-semibold montserrat-headline">Notizen und Anmerkungen</h2>
-        <div class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
-          <p class="text-sm text-gray-500 font-medium">Anmerkungen</p>
-          <p class="text-justify">{{ personItem.generalNotes }}</p>
+        <h2 class="text-xl font-semibold leading-tight text-highlighted">Notizen und Anmerkungen</h2>
+        <div class="flex flex-col gap-2 border-l-0 border-t border-muted py-3">
+          <p class="text-sm font-bold leading-tight text-muted">Anmerkungen</p>
+          <p class="text-justify leading-normal text-highlighted">{{ personItem.generalNotes }}</p>
         </div>
-        <div v-if="personItem.internalNotes" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
-          <p class="text-sm text-gray-500 font-medium">Notizen</p>
-          <p class="text-justify">{{ personItem.internalNotes }}</p>
+        <div
+          v-if="personItem.internalNotes"
+          class="flex flex-col gap-2 border-l-0 border-t border-muted py-3"
+        >
+          <p class="text-sm font-bold leading-tight text-muted">Notizen</p>
+          <p class="text-justify leading-normal text-highlighted">{{ personItem.internalNotes }}</p>
         </div>
-      </div>
-      <div class="roboto-plain flex flex-col gap-5 p-4 rounded-lg shadow-lg border border-gray-300">
-        <h2 class="text-2xl font-semibold montserrat-headline">Über den Eintrag</h2>
-        <div v-if="personItem.createdDate" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
-          <p class="text-sm text-gray-500 font-medium">Erstellt am</p>
-          <p class="text-justify">{{ new Date(personItem.createdDate).toLocaleDateString() }}</p>
-        </div>
-        <div v-if="personItem.lastModifiedDate" class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5">
-          <p class="text-sm text-gray-500 font-medium">Zuletzt aktualisiert am</p>
-          <p class="text-justify">{{ new Date(personItem.lastModifiedDate).toLocaleDateString() }}</p>
-        </div>
-        <!-- TO-DO: After Keycloak integration: createdBy & lastModifiedBy -->
       </div>
     </div>
+    <UIContentMetadata
+      :created-date="personItem.createdDate"
+      :last-modified-date="personItem.lastModifiedDate"
+    />
   </div>
 </template>
-
-<style scoped>
-
-</style>

@@ -49,7 +49,23 @@ export default defineNuxtConfig({
       }
     }
   },
-  modules: ['@primevue/nuxt-module', '@formkit/nuxt', '@pinia/nuxt', '@nuxt/icon', 'nuxt-auth-utils'],
+  modules: [
+    '@nuxt/ui',
+    '@primevue/nuxt-module',
+    '@formkit/nuxt',
+    '@pinia/nuxt',
+    '@nuxt/icon',
+    '@nuxt/fonts',
+    'nuxt-auth-utils',
+  ],
+  fonts: {
+    families: [
+      {
+        name: 'Archivo',
+        provider: 'google',
+      },
+    ],
+  },
   primevue: {
     options: {
       theme: {
@@ -72,7 +88,10 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
     optimizeDeps: {
       include: [
-          'maplibre-gl'
+        '@deck.gl/layers',
+        '@deck.gl/mapbox',
+        '@tanstack/vue-virtual',
+        'maplibre-gl', // CJS
       ]
     },
     ssr: {

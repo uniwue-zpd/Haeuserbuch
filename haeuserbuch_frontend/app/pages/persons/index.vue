@@ -1,230 +1,344 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import {FilterMatchMode} from "@primevue/core";
+import { h, onMounted, reactive, ref, resolveComponent, watch } from "vue";
+import type { TableColumn } from "@nuxt/ui";
+import type { Column } from "@tanstack/vue-table";
+import { debounce } from "~/utils/debounce";
 
 const personStore = usePersonStore();
+const UButton = resolveComponent("UButton");
 
-const rows = ref<PersonDTO[]>([]);
+type PersonTableRow = PersonDTO & {
+  jobText: string | null;
+  religionText: string | null;
+  originText: string | null;
+};
+
+type CitizenFilter = "all" | "citizen" | "not-citizen";
+
+const rows = ref<PersonTableRow[]>([]);
 const loading = ref(false);
 const page = ref(0);
 const rowsPerPage = ref(10);
 const totalRecords = ref(0);
-const sortField = ref<string | null>(null);
-const sortOrder = ref<1 | -1 | null>(null);
+const sorting = ref<{ id: string; desc: boolean }[]>([]);
+const citizenFilter = ref<CitizenFilter>("all");
 const rowsPerPageOptions = [5, 10, 25, 50];
+const citizenOptions = [
+  { label: "Alle", value: "all" },
+  { label: "Bürger", value: "citizen" },
+  { label: "Kein Bürger", value: "not-citizen" },
+];
 
-const defaultFilters = {
-  fullName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  sex: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  isCitizen: { value: undefined, matchMode: FilterMatchMode.EQUALS },
-  'job.originalText': { value: null, matchMode: FilterMatchMode.CONTAINS },
-  'religion.originalText': { value: null, matchMode: FilterMatchMode.CONTAINS },
-  'origin.originalText': { value: null, matchMode: FilterMatchMode.CONTAINS },
-};
+const filterValues = reactive({
+  fullName: "",
+  sex: "",
+  job: "",
+  religion: "",
+  origin: "",
+});
 
-const filters = ref({ ...defaultFilters });
+const sortableHeader = (label: string) =>
+  ({ column }: { column: Column<PersonTableRow, unknown> }) =>
+    h(
+      UButton,
+      {
+        color: "neutral",
+        variant: "ghost",
+        label,
+        icon:
+          column.getIsSorted() === "asc"
+            ? "i-lucide-arrow-up-narrow-wide"
+            : column.getIsSorted() === "desc"
+              ? "i-lucide-arrow-down-wide-narrow"
+              : "i-lucide-arrow-up-down",
+        class: "-mx-2.5",
+        onClick: () =>
+          column.toggleSorting(column.getIsSorted() === "asc"),
+      },
+    );
+
+const columns: TableColumn<PersonTableRow>[] = [
+  {
+    id: "actions",
+    header: "",
+    enableSorting: false,
+    enableGlobalFilter: false,
+    meta: { class: { th: "w-12", td: "w-12" } },
+    cell: ({ row }) =>
+      h(UButton, {
+        to: `/persons/${row.original.id}`,
+        color: "neutral",
+        variant: "ghost",
+        icon: "i-lucide-arrow-up-right",
+        "aria-label": `${row.original.fullName} öffnen`,
+        title: "Person öffnen",
+      }),
+  },
+  {
+    accessorKey: "fullName",
+    header: sortableHeader("Name"),
+  },
+  {
+    accessorKey: "isCitizen",
+    header: "Bürger",
+    enableSorting: false,
+    enableGlobalFilter: false,
+  },
+  {
+    accessorKey: "sex",
+    header: sortableHeader("Geschlecht"),
+    enableGlobalFilter: false,
+  },
+  {
+    id: "job",
+    accessorFn: (row) => row.jobText,
+    header: sortableHeader("Beruf"),
+    enableGlobalFilter: false,
+  },
+  {
+    id: "religion",
+    accessorFn: (row) => row.religionText,
+    header: sortableHeader("Religion"),
+    enableGlobalFilter: false,
+  },
+  {
+    id: "origin",
+    accessorFn: (row) => row.originText,
+    header: sortableHeader("Herkunft"),
+    enableGlobalFilter: false,
+  },
+];
 
 const loadData = async () => {
   loading.value = true;
   try {
-    const sort = sortField.value && sortOrder.value
-        ? `${sortField.value},${sortOrder.value === 1 ? 'asc' : 'desc'}`
-        : undefined;
+    const sort = sorting.value[0]
+      ? `${sorting.value[0].id},${sorting.value[0].desc ? "desc" : "asc"}`
+      : undefined;
     const res = await personStore.fetchPersons({
       page: page.value,
       size: rowsPerPage.value,
       sort,
-      name: filters.value.fullName?.value || undefined,
-      sex: filters.value.sex?.value || undefined,
-      'is-citizen': filters.value.isCitizen?.value,
-      job: filters.value['job.originalText']?.value || undefined,
-      religion: filters.value['religion.originalText']?.value || undefined,
-      'place-of-origin': filters.value['origin.originalText']?.value || undefined,
+      name: filterValues.fullName || undefined,
+      sex: filterValues.sex || undefined,
+      "is-citizen":
+        citizenFilter.value === "all"
+          ? undefined
+          : citizenFilter.value === "citizen",
+      job: filterValues.job || undefined,
+      religion: filterValues.religion || undefined,
+      "place-of-origin": filterValues.origin || undefined,
     });
-    rows.value = res.content;
+    rows.value = res.content.map((person) => ({
+      ...person,
+      jobText: person.job?.originalText ?? null,
+      religionText: person.religion?.originalText ?? null,
+      originText: person.origin?.originalText ?? null,
+    }));
     totalRecords.value = res.totalElements;
   } finally {
     loading.value = false;
   }
 };
 
-const onPage = (event: any) => {
-  page.value = event.page;
-  rowsPerPage.value = event.rows;
-  loadData();
-};
-
-const onSort = (event: any) => {
-  sortField.value = event.sortField;
-  sortOrder.value = event.sortOrder;
-  loadData();
-};
-
-const onFilter = (event: any) => {
-  filters.value = event.filters;
-  page.value = 0;
-  debouncedLoadData();
-};
-
-// Applies only if additional params are set
 const debouncedLoadData = debounce(() => {
   loadData();
-}, 1000);
+}, 500);
+
+const onPageChange = (nextPage: number) => {
+  page.value = nextPage - 1;
+  loadData();
+};
+
+const onRowsPerPageChange = () => {
+  page.value = 0;
+  loadData();
+};
+
+watch(
+  [filterValues, citizenFilter],
+  () => {
+    page.value = 0;
+    debouncedLoadData();
+  },
+  { deep: true },
+);
+
+watch(
+  sorting,
+  () => {
+    page.value = 0;
+    loadData();
+  },
+  { deep: true },
+);
 
 onMounted(() => {
   loadData();
 });
 
 useHead(() => ({
-  title: 'Personen - Personenverzeichnis',
+  title: "Personen - Personenverzeichnis",
 }));
 </script>
 
 <template>
-  <Card>
-    <template #title>
-      <div class="flex flex-col gap-2">
-        <h1 class="text-3xl font-bold text-black montserrat-headline">Personen</h1>
-        <p class="text-lg roboto-plain font-medium">Einträge insgesamt: {{ totalRecords }}</p>
-      </div>
-    </template>
-    <template #content>
-      <div class="flex flex-col gap-2">
-        <Accordion :value="null">
-          <AccordionPanel value="0">
-            <AccordionHeader>
-              <h1 class="text-base font-bold text-black montserrat-headline">Hinweise</h1>
-            </AccordionHeader>
-            <AccordionContent>
-              <ul class="list-disc list-inside outfit-headline text-sm">
-                <li>Beim Klicken auf den Namen der jeweiligen Person öffnet sich die Seite mit zusätzlichen Informationen</li>
-                <li>Jedes Feld besitzt einen Sortierknopf <i class="pi pi-sort-alt"/>, mit dem man die Werte alphabetisch sortieren kann</li>
-              </ul>
-            </AccordionContent>
-          </AccordionPanel>
-        </Accordion>
-        <DataTable
-            v-model:filters="filters"
-            :value="rows"
-            paginator
-            lazy
-            filterDisplay="row"
-            :rows="rowsPerPage"
-            :rowsPerPageOptions="rowsPerPageOptions"
-            :totalRecords="totalRecords"
+  <div class="flex flex-col gap-4">
+    <header class="flex items-start justify-between gap-4">
+      <h1 class="text-4xl font-bold leading-none tracking-tighter text-highlighted sm:text-6xl">Personen</h1>
+      <UPopover
+        mode="click"
+        :content="{ align: 'end', side: 'bottom', sideOffset: 8 }"
+      >
+        <UButton
+          color="neutral"
+          variant="outline"
+          icon="i-lucide-info"
+          label="Hinweise"
+        />
+
+        <template #content>
+          <ul class="max-w-sm list-inside list-disc space-y-2 p-4 text-sm">
+            <li>
+              Beim Klicken auf den Namen der jeweiligen Person öffnet sich
+              die Seite mit zusätzlichen Informationen
+            </li>
+            <li>
+              Über die Sortierknöpfe in den Spaltenüberschriften können die
+              Werte alphabetisch sortiert werden
+            </li>
+          </ul>
+        </template>
+      </UPopover>
+    </header>
+    <div>
+      <p>Einträge insgesamt: {{ totalRecords }}</p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(16rem,18rem)_minmax(0,1fr)] lg:items-start">
+      <aside class="overview-filter-panel">
+        <div class="border-b border-muted p-5">
+          <h2 class="text-xl font-semibold text-highlighted">Filter</h2>
+        </div>
+        <div class="flex flex-col">
+          <details open class="border-b border-default p-4">
+            <summary class="cursor-pointer list-none text-base font-semibold">
+              <span class="flex items-center justify-between">
+                Name
+                <UIcon name="i-lucide-chevron-down" class="size-4" />
+              </span>
+            </summary>
+            <UInput v-model="filterValues.fullName" class="mt-3 w-full" placeholder="Suchen..." />
+          </details>
+          <details open class="border-b border-default p-4">
+            <summary class="cursor-pointer list-none text-base font-semibold">
+              <span class="flex items-center justify-between">
+                Bürgerstatus
+                <UIcon name="i-lucide-chevron-down" class="size-4" />
+              </span>
+            </summary>
+            <USelect
+              v-model="citizenFilter"
+              :items="citizenOptions"
+              value-key="value"
+              class="mt-3 w-full"
+            />
+          </details>
+          <details open class="border-b border-default p-4">
+            <summary class="cursor-pointer list-none text-base font-semibold">
+              <span class="flex items-center justify-between">
+                Geschlecht
+                <UIcon name="i-lucide-chevron-down" class="size-4" />
+              </span>
+            </summary>
+            <UInput v-model="filterValues.sex" class="mt-3 w-full" placeholder="Suchen..." />
+          </details>
+          <details open class="border-b border-default p-4">
+            <summary class="cursor-pointer list-none text-base font-semibold">
+              <span class="flex items-center justify-between">
+                Beruf
+                <UIcon name="i-lucide-chevron-down" class="size-4" />
+              </span>
+            </summary>
+            <UInput v-model="filterValues.job" class="mt-3 w-full" placeholder="Suchen..." />
+          </details>
+          <details open class="border-b border-default p-4">
+            <summary class="cursor-pointer list-none text-base font-semibold">
+              <span class="flex items-center justify-between">
+                Religion
+                <UIcon name="i-lucide-chevron-down" class="size-4" />
+              </span>
+            </summary>
+            <UInput v-model="filterValues.religion" class="mt-3 w-full" placeholder="Suchen..." />
+          </details>
+          <details open class="p-4">
+            <summary class="cursor-pointer list-none text-base font-semibold">
+              <span class="flex items-center justify-between">
+                Herkunft
+                <UIcon name="i-lucide-chevron-down" class="size-4" />
+              </span>
+            </summary>
+            <UInput v-model="filterValues.origin" class="mt-3 w-full" placeholder="Suchen..." />
+          </details>
+        </div>
+      </aside>
+      <section class="overview-table-panel p-5">
+          <UTable
+            :data="rows"
+            :columns="columns"
             :loading="loading"
-            stripedRows
-            @page="onPage"
-            @sort="onSort"
-            @filter="onFilter"
-            removableSort
-        >
-          <Column field="fullName" header="Name" :sortable="true" :showFilterMenu="false">
-            <template #body="slotProps">
-              <NuxtLink
-                  :to="`/persons/${slotProps.data.id}`"
-                  class="roboto-plain text-black font-semibold p-2 rounded-md hover:shadow-md"
-                  prefetch
-              >
-                {{ slotProps.data.fullName }}
-              </NuxtLink>
-            </template>
-            <template #filter="{ filterModel, filterCallback }">
-              <InputText
-                  v-model="filterModel.value"
-                  @input="filterCallback()"
-              />
-            </template>
-          </Column>
-          <Column
-              field="isCitizen" filterField="isCitizen"
-              header="Bürger"
-              class="roboto-plain"
-              :showFilterMenu="false"
+            v-model:sorting="sorting"
+            :sorting-options="{ manualSorting: true }"
+            :ui="{ td: 'text-default' }"
+            class="w-full"
           >
-            <template #body="slotProps">
-              <div v-if="slotProps.data.isCitizen !== null">
-                <i :class="[slotProps.data.isCitizen ? 'pi pi-check text-green-500' : 'pi pi-times text-red-500']"/>
-              </div>
-              <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
-            </template>
-            <template #filter="{ filterModel, filterCallback }">
-              <Select
-                  v-model="filterModel.value"
-                  @change="filterCallback()"
-                  :options="[
-                    { label: 'Bürger', value: true },
-                    { label: 'kein Bürger', value: false }
-                  ]"
-                  placeholder="Bürgerstatus"
-                  optionValue="value"
-                  optionLabel="label"
-                  style="min-width: 10rem"
-                  showClear
-              />
-            </template>
-          </Column>
-          <Column
-              field="sex" filterField="sex"
-              header="Geschlecht"
-              class="roboto-plain"
-              :showFilterMenu="false" :sortable="true"
-          >
-            <template #body="slotProps">
-              <div v-if="slotProps.data.sex">
-                {{ slotProps.data.sex }}
-              </div>
-              <div v-else class="roboto-italic">unbekannt</div>
-            </template>
-            <template #filter="{ filterModel, filterCallback }">
-              <InputText
-                  v-model="filterModel.value"
-                  @input="filterCallback()"
-              />
-            </template>
-          </Column>
-          <Column field="job" header="Beruf" filterField="job.originalText" class="roboto-plain" :sortable="true" :showFilterMenu="false">
-            <template #body="slotProps">
-              <div v-if="slotProps.data.job.originalText">{{ slotProps.data.job.originalText }}</div>
-              <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
-            </template>
-            <template #filter="{ filterModel, filterCallback }">
-              <InputText
-                  v-model="filterModel.value"
-                  @input="filterCallback()"
-              />
-            </template>
-          </Column>
-          <Column field="religion" filterField="religion.originalText" header="Religion" class="roboto-plain" :sortable="true" :showFilterMenu="false">
-            <template #body="slotProps">
-              <div v-if="slotProps.data.religion.originalText">{{ slotProps.data.religion.originalText }}</div>
-              <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
-            </template>
-            <template #filter="{ filterModel, filterCallback }">
-              <InputText
-                  v-model="filterModel.value"
-                  @input="filterCallback()"
-              />
-            </template>
-          </Column>
-          <Column field="origin" header="Herkunft" filterField="origin.originalText" class="roboto-plain" :sortable="true" :showFilterMenu="false">
-            <template #body="slotProps">
-              <div v-if="slotProps.data.origin.originalText">{{ slotProps.data.origin.originalText }}</div>
-              <span v-else class="roboto-italic p-2 bg-red-100 rounded-md">unbekannt</span>
-            </template>
-            <template #filter="{ filterModel, filterCallback }">
-              <InputText
-                  v-model="filterModel.value"
-                  @input="filterCallback()"
-              />
-            </template>
-          </Column>
-        </DataTable>
-      </div>
-    </template>
-  </Card>
+        <template #fullName-cell="{ row }">
+          <NuxtLink :to="`/persons/${row.original.id}`" prefetch>
+            {{ row.original.fullName }}
+          </NuxtLink>
+        </template>
+        <template #isCitizen-cell="{ row }">
+          <UIcon
+            v-if="row.original.isCitizen !== null"
+            :name="row.original.isCitizen ? 'i-lucide-check' : 'i-lucide-x'"
+            :class="row.original.isCitizen ? 'text-green-500' : 'text-red-500'"
+            :aria-label="row.original.isCitizen ? 'Bürger' : 'Kein Bürger'"
+          />
+          <span v-else class="italic text-gray-500">unbekannt</span>
+        </template>
+        <template #sex-cell="{ row }">
+          <span v-if="row.original.sex">{{ row.original.sex }}</span>
+          <span v-else class="italic text-gray-500">unbekannt</span>
+        </template>
+        <template #job-cell="{ row }">
+          <span v-if="row.original.jobText">{{ row.original.jobText }}</span>
+          <span v-else class="italic text-gray-500">unbekannt</span>
+        </template>
+        <template #religion-cell="{ row }">
+          <span v-if="row.original.religionText">{{ row.original.religionText }}</span>
+          <span v-else class="italic text-gray-500">unbekannt</span>
+        </template>
+        <template #origin-cell="{ row }">
+          <span v-if="row.original.originText">{{ row.original.originText }}</span>
+          <span v-else class="italic text-gray-500">unbekannt</span>
+        </template>
+          </UTable>
+
+          <div class="flex flex-col gap-4 border-t border-default pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <USelect
+              v-model="rowsPerPage"
+              :items="rowsPerPageOptions"
+              class="w-24"
+              @update:model-value="onRowsPerPageChange"
+            />
+            <UPagination
+              :page="page + 1"
+              :items-per-page="rowsPerPage"
+              :total="totalRecords"
+              @update:page="onPageChange"
+            />
+          </div>
+      </section>
+    </div>
+  </div>
 </template>
-
-<style scoped>
-
-</style>

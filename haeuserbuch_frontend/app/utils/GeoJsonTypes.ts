@@ -20,6 +20,21 @@ export interface FeatureCollection {
     features: Feature[];
 }
 
+/** A fully identified building returned by the buildings GeoJSON endpoints. */
+export interface BuildingFeature {
+    type: 'Feature';
+    id: number;
+    properties: BuildingProperties;
+    geometry: GeometryType | null;
+}
+
+/** Narrows a generic GeoJSON feature to a building feature. */
+export function isBuildingFeature(feature: Feature): feature is BuildingFeature {
+    return typeof feature.id === 'number'
+        && feature.properties !== null
+        && 'districtPropertyNumber' in feature.properties;
+}
+
 /* GeoJSON `geometry` types */
 export type GeometryType = Point | Polygon | LineString | MultiPolygon;
 

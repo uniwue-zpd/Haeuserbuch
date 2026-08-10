@@ -9,7 +9,3 @@ useHead(() => ({
 <template>
   <StreetForm header="Neues Straßen-Objekt erstellen" action="create"/>
 </template>
-
-<style scoped>
-
-</style>

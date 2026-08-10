@@ -21,7 +21,3 @@ const { data: placeItem, error: hasError } = useAsyncData(() => placeStore.getPl
       :place="placeItem ?? undefined"
   />
 </template>
-
-<style scoped>
-
-</style>

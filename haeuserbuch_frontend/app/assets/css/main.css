@@ -1,9 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap')
-layer(base);
-
-@import 'tailwindcss';
+@import "tailwindcss";
+@import "@nuxt/ui";
 @source '../../../formkit.theme.ts';
 @source '../../../formkit.config.ts';
+
+@theme {
+  --font-sans: "Archivo", sans-serif;
+}
 
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
@@ -24,26 +26,64 @@ layer(base);
 }
 
 :root {
-    --p-tabs-tab-active-border-color: #1E293B !important;
-    --p-tabs-tab-active-color: #1E293B !important;
+  --ui-primary: black;
+  --ui-bg: #fafafa;
+  --p-tabs-tab-active-border-color: #1e293b !important;
+  --p-tabs-tab-active-color: #1e293b !important;
+}
+
+.dark {
+  --ui-primary: white;
+  --ui-bg: #0c0c0c;
 }
 
 #__nuxt {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+  min-height: 100vh;
 }
 
-.montserrat-headline {
-    font-family: 'Montserrat', sans-serif;
+html {
+  background: #ececec;
+  transition: background-color 200ms ease;
 }
 
-.roboto-plain {
-    font-family: 'Roboto', sans-serif;
-    font-style: normal;
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
-.roboto-italic {
-    font-family: 'Roboto', sans-serif;
-    font-style: italic;
+body {
+  min-width: 320px;
+  margin: 0;
+  font-family: "Archivo", sans-serif;
+  background: #ececec;
+  transition: background-color 200ms ease;
+}
+
+@layer components {
+  .overview-filter-panel,
+  .overview-table-panel {
+    @apply min-w-0 overflow-hidden rounded-2xl border border-default bg-default shadow-sm;
+  }
+
+  .overview-table-panel table {
+    border: 0;
+  }
+
+  .overview-table-panel tbody td {
+    @apply text-default;
+  }
+
+  .content-table-row {
+    @apply grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)];
+  }
+
+  .content-table-label {
+    @apply text-base font-medium text-muted;
+  }
+}
+
+html.dark,
+html.dark body {
+  background: var(--ui-bg);
 }

@@ -121,7 +121,3 @@ const value = computed({
     </AutoComplete>
   </div>
 </template>
-
-<style scoped>
-
-</style>

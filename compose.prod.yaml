@@ -15,15 +15,27 @@ x-app-security: &app-security
 
 services:
   database:
-    image: ${POSTGIS_IMAGE:-postgis/postgis:17-3.5-alpine}
+    image: ${POSTGIS_IMAGE:-imresamu/postgis:17-3.5-alpine}
     environment:
       POSTGRES_DB: ${DB_NAME:-haeuserbuch}
       POSTGRES_USER: ${DB_USER:-haeuserbuch}
       POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env.prod}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      # Optional: import a dump only when postgres_data is initialized for the first time.
-      # - ./dump.sql:/docker-entrypoint-initdb.d/05_dump.sql:ro
+      # The dump owns objects as haeuserbuch_user; prepare that role before restoring it.
+      - type: bind
+        source: ./database/init/00-create-dump-owner.sh
+        target: /docker-entrypoint-initdb.d/00-create-dump-owner.sh
+        read_only: true
+        bind:
+          create_host_path: false
+      # Import a dump only when postgres_data is initialized for the first time.
+      - type: bind
+        source: ./dump.sql
+        target: /docker-entrypoint-initdb.d/05_dump.sql
+        read_only: true
+        bind:
+          create_host_path: false
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-haeuserbuch} -d ${DB_NAME:-haeuserbuch}"]
       interval: 10s
@@ -39,6 +51,7 @@ services:
     volumes:
       - ${TILES_DIR:-./tiles}:/data:ro
       - ./tileserver/config.json:/config/config.json:ro
+      - ./tileserver/styles:/config/styles:ro
     healthcheck:
       test: ["CMD-SHELL", "node /usr/src/app/src/healthcheck.js"]
       interval: 15s

@@ -1,0 +1,18 @@
+{
+  "version": 8,
+  "name": "NW08051",
+  "sources": {
+    "raster": {
+      "type": "raster",
+      "tileSize": 256,
+      "url": "mbtiles://{nw08051}"
+    }
+  },
+  "layers": [
+    {
+      "id": "raster",
+      "type": "raster",
+      "source": "raster"
+    }
+  ]
+}

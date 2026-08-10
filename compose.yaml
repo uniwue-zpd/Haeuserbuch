@@ -8,7 +8,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       # Optional: import a dump only when postgres_data is initialized for the first time.
-      # - ./dump.sql:/docker-entrypoint-initdb.d/05_dump.sql:ro
+      - ./dump.sql:/docker-entrypoint-initdb.d/05_dump.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-haeuserbuch} -d ${DB_NAME:-haeuserbuch}"]
       interval: 5s
@@ -23,6 +23,7 @@ services:
     volumes:
       - ${TILES_DIR:-./tiles}:/data:ro
       - ./tileserver/config.json:/config/config.json:ro
+      - ./tileserver/styles:/config/styles:ro
     healthcheck:
       test: ["CMD-SHELL", "node /usr/src/app/src/healthcheck.js"]
       interval: 10s

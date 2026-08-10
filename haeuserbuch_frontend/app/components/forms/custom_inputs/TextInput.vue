@@ -23,7 +23,3 @@ const value = computed({
       class="min-w-full"
   />
 </template>
-
-<style scoped>
-
-</style>

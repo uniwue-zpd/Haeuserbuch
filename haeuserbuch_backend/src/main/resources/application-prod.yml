@@ -1,5 +1,6 @@
 spring:
   jpa:
-    # Retained until the project adopts versioned database migrations.
+    # Production schema is restored/managed outside Hibernate; fail fast on a
+    # missing or incompatible schema instead of partially creating one.
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate

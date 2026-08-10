@@ -19,7 +19,3 @@ const { data: personItem, status } = await useAsyncData(`person-edit-${ person_i
       :person="personItem ?? undefined"
   />
 </template>
-
-<style scoped>
-
-</style>

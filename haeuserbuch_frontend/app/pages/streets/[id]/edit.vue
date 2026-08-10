@@ -19,7 +19,3 @@ useHead(() => ({
       :street="streetItem ?? undefined"
   />
 </template>
-
-<style scoped>
-
-</style>

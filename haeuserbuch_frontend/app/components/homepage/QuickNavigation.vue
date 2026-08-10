@@ -1,56 +1,60 @@
 <script setup lang="ts">
-
+import { researchNavigation } from "~/utils/researchNavigation";
 </script>
 
 <template>
-  <div class="flex flex-col gap-4 md:grid md:grid-cols-3">
-    <NuxtLink to="/buildings" prefetch>
-      <div class="bg-[#F1F2F2] shadow-md rounded-md p-5 hover:shadow-lg hover:scale-105 transition-transform duration-300">
-        <div class="flex flex-col gap-3 items-center">
-          <i class="pi pi-home" style="font-size: 4.5rem"/>
-          <h3 class="text-center text-xl text-black montserrat-headline font-bold">Katasterplan</h3>
+  <div
+    class="grid border-l border-t border-default sm:grid-cols-2 lg:grid-cols-3"
+  >
+    <template v-for="item in researchNavigation" :key="item.label">
+      <NuxtLink
+        v-if="item.to"
+        :to="item.to"
+        prefetch
+        class="group flex min-h-56 flex-col justify-between border-b border-r border-default bg-default p-6 transition-colors duration-200 hover:bg-elevated focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:p-7"
+      >
+        <div class="flex items-start justify-between gap-4">
+          <UIcon
+            :name="item.icon"
+            class="size-6 text-muted transition-colors group-hover:text-highlighted"
+          />
+          <UIcon
+            name="i-lucide-arrow-up-right"
+            class="size-5 text-dimmed transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-highlighted"
+          />
+        </div>
+        <div class="mt-12">
+          <h3
+            class="font-sans text-xl font-semibold tracking-tight text-highlighted sm:text-2xl"
+          >
+            {{ item.label }}
+          </h3>
+          <p class="mt-2 max-w-xs text-sm leading-6 text-muted">
+            {{ item.description }}
+          </p>
+        </div>
+      </NuxtLink>
+
+      <div
+        v-else
+        class="flex min-h-56 flex-col justify-between border-b border-r border-default bg-muted/30 p-6 sm:p-7"
+        aria-disabled="true"
+      >
+        <div class="flex items-start justify-between gap-3">
+          <UIcon :name="item.icon" class="size-6 text-dimmed" />
+          <span class="text-xs font-medium text-dimmed"> In Vorbereitung </span>
+        </div>
+        <div class="mt-12">
+          <h3
+            class="font-sans text-xl font-semibold tracking-tight text-muted sm:text-2xl"
+          >
+            {{ item.label }}
+          </h3>
+          <p class="mt-2 max-w-xs text-sm leading-6 text-dimmed">
+            {{ item.description }}
+          </p>
         </div>
       </div>
-    </NuxtLink>
-    <NuxtLink to="/places" prefetch>
-      <div class="bg-[#F1F2F2] shadow-md rounded-md p-5 hover:shadow-lg hover:scale-105 transition-transform duration-300">
-        <div class="flex flex-col gap-3 items-center">
-          <i class="pi pi-map-marker" style="font-size: 4.5rem"/>
-          <h3 class="text-center text-xl text-black montserrat-headline font-bold">Orte</h3>
-        </div>
-      </div>
-    </NuxtLink>
-    <NuxtLink to="/persons" prefetch>
-      <div class="bg-[#F1F2F2] shadow-md rounded-md p-5 hover:shadow-lg hover:scale-105 transition-transform duration-300">
-        <div class="flex flex-col gap-3 items-center">
-          <i class="pi pi-user" style="font-size: 4.5rem"/>
-          <h3 class="text-center text-xl text-black montserrat-headline font-bold">Personen</h3>
-        </div>
-      </div>
-    </NuxtLink>
-    <NuxtLink to="/citizenships" prefetch>
-      <div class="bg-[#F1F2F2] shadow-md rounded-md p-5 hover:shadow-lg hover:scale-105 transition-transform duration-300">
-        <div class="flex flex-col gap-3 items-center">
-          <i class="pi pi-id-card" style="font-size: 4.5rem"/>
-          <h3 class="text-center text-xl text-black montserrat-headline font-bold">Bürgermatrikel</h3>
-        </div>
-      </div>
-    </NuxtLink>
-    <div class="bg-[#F1F2F2] shadow-md rounded-md p-5">
-      <div class="flex flex-col gap-3 items-center">
-        <i class="pi pi-book" style="font-size: 4.5rem; color:darkgray"/>
-        <h3 class="text-center text-xl text-[darkgray] montserrat-headline font-bold">Eigentumsverhältnisse</h3>
-      </div>
-    </div>
-    <div class="bg-[#F1F2F2] shadow-md rounded-md p-5">
-      <div class="flex flex-col gap-3 items-center">
-        <i class="pi pi-building-columns" style="font-size: 4.5rem; color:darkgray"/>
-        <h3 class="text-center text-xl text-[darkgray] montserrat-headline font-bold">Steuerbucheinträge</h3>
-      </div>
-    </div>
+    </template>
   </div>
 </template>
-
-<style scoped>
-
-</style>
