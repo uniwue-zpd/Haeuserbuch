@@ -31,6 +31,12 @@ export const researchNavigation: readonly ResearchNavigationItem[] = [
     to: '/citizenships',
   },
   {
+    label: 'Quellenverzeichnis',
+    description: 'Verwendete Quellen und Literatur durchsuchen.',
+    icon: 'i-lucide-library',
+    to: '/sources',
+  },
+  {
     label: 'Eigentumsverhältnisse',
     description: 'Historische Besitzfolgen – in Vorbereitung.',
     icon: 'i-lucide-book-open',
