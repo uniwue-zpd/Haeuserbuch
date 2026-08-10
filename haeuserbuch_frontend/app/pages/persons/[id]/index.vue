@@ -15,6 +15,9 @@ const route = useRoute();
 const personId = Number(route.params.id);
 const personOrigin = computed(() => personItem.value?.origin);
 const personJob = computed(() => personItem.value?.job);
+const hasJobContent = computed(() =>
+  Boolean(personJob.value?.originalText || personJob.value?.jobCategory),
+);
 const personReligion = computed(() => personItem.value?.religion);
 const personWeapons = computed(() => personItem.value?.weapons);
 
@@ -42,6 +45,7 @@ const hasProfileContent = computed(() => {
         person.isCitizen ||
         naturalizationEntry.value?.length ||
         person.associatedBuilding ||
+        hasJobContent.value ||
         person.religion?.originalText ||
         person.weapons?.length),
   );
@@ -143,14 +147,12 @@ useHead(() => ({
           </div>
         </div>
         <div
+          v-if="personJob && hasJobContent"
           class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
         >
           <p class="text-base text-gray-500 font-medium">Berufliche Situation</p>
           <div>
-            <PersonJobPreview v-if="personJob" :job="personJob" />
-            <p v-else class="text-sm text-muted">
-              Bisher keine berufliche Situation erfasst
-            </p>
+            <PersonJobPreview :job="personJob" />
           </div>
         </div>
         <div
