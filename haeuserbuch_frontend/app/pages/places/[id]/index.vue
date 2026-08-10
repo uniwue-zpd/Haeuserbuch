@@ -117,13 +117,13 @@ onBeforeUnmount(() => {
         </div>
       </section>
 
-      <section v-if="properties.altNames?.length" class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-4">
+      <section v-if="properties.altNames?.length" class="flex min-w-0 flex-col gap-5 self-start rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-4">
         <div class="flex items-start justify-between gap-4">
           <h2 class="text-xl font-semibold leading-tight text-highlighted">Namensvarianten</h2>
         </div>
         <div class="flex flex-col">
           <div v-for="name in properties.altNames" :key="name" class="flex flex-col gap-2 border-t border-muted py-3 first:border-t-0 first:pt-0 last:pb-0">
-            <p class="font-semibold text-highlighted">{{ name }}</p>
+            <p class="font-normal text-highlighted">{{ name }}</p>
           </div>
         </div>
       </section>
