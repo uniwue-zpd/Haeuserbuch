@@ -423,6 +423,7 @@ defineShortcuts({
               </div>
               <UButton
                 to="/auth/login"
+                external
                 label="Anmelden"
                 icon="i-lucide-log-in"
                 color="primary"
