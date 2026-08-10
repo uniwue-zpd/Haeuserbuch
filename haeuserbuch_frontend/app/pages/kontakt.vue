@@ -1,20 +1,7 @@
 <script setup lang="ts">
-const form = reactive({
-  name: "",
-  email: "",
-  subject: "",
-  message: "",
-});
-
-const submitted = ref(false);
-
 useHead(() => ({
   title: "Kontakt - Würzburger Häuserprojekt",
 }));
-
-function submitForm() {
-  submitted.value = true;
-}
 </script>
 
 <template>
@@ -51,77 +38,15 @@ function submitForm() {
           <h2 id="formular-title" class="font-sans text-2xl font-semibold tracking-tight text-highlighted">
             Kontaktformular
           </h2>
-          <p class="mt-2 text-sm leading-6 text-muted">
-            Füllen Sie bitte die Felder aus. Die mit * markierten Angaben sind erforderlich.
-          </p>
         </div>
 
-        <form class="space-y-5" @submit.prevent="submitForm">
-          <div class="grid gap-5 sm:grid-cols-2">
-            <UFormField label="Name" name="name" required>
-              <UInput
-                v-model="form.name"
-                class="w-full"
-                placeholder="Ihr Name"
-                autocomplete="name"
-                required
-              />
-            </UFormField>
-
-            <UFormField label="E-Mail-Adresse" name="email" required>
-              <UInput
-                v-model="form.email"
-                class="w-full"
-                type="email"
-                placeholder="name@beispiel.de"
-                autocomplete="email"
-                required
-              />
-            </UFormField>
-          </div>
-
-          <UFormField label="Betreff" name="subject" required>
-            <UInput
-              v-model="form.subject"
-              class="w-full"
-              placeholder="Worum geht es?"
-              required
-            />
-          </UFormField>
-
-          <UFormField label="Nachricht" name="message" required>
-            <UTextarea
-              v-model="form.message"
-              class="w-full"
-              :rows="7"
-              placeholder="Ihre Nachricht an das Projektteam"
-              required
-            />
-          </UFormField>
-
-          <div class="flex flex-col gap-4 border-t border-default pt-5 sm:flex-row sm:items-center sm:justify-between">
-            <p class="text-xs leading-5 text-dimmed">
-              Mit dem Absenden stimmen Sie der Verarbeitung Ihrer Angaben zur
-              Bearbeitung Ihrer Anfrage zu.
-            </p>
-            <UButton
-              type="submit"
-              label="Nachricht vorbereiten"
-              trailing-icon="i-lucide-arrow-right"
-              color="primary"
-              class="shrink-0"
-            />
-          </div>
-
-          <p
-            v-if="submitted"
-            class="flex items-center gap-2 rounded-xl bg-success/10 px-4 py-3 text-sm text-success"
-            role="status"
-          >
-            <UIcon name="i-lucide-circle-check" class="size-4" />
-            Vielen Dank. Ihre Nachricht ist vorbereitet.
+        <div class="flex items-start gap-3 rounded-2xl bg-primary/10 px-4 py-4 text-sm leading-6 text-muted" role="status">
+          <UIcon name="i-lucide-info" class="mt-1 size-4 shrink-0 text-primary" />
+          <p>
+            Das Kontaktformular wird derzeit noch nicht unterstützt. Wir arbeiten
+            daran und werden es zu einem späteren Zeitpunkt bereitstellen.
           </p>
-        </form>
+        </div>
       </section>
     </div>
   </div>
