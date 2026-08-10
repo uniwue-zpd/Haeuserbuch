@@ -26,9 +26,9 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/**").hasAnyRole("editor", "admin")
-                        .requestMatchers(HttpMethod.PUT, "/**").hasAnyRole("editor", "admin")
-                        .requestMatchers(HttpMethod.DELETE, "/**").hasRole("admin")
+                        .requestMatchers(HttpMethod.POST, "/**").hasAnyRole("editor", "admin", "api-service")
+                        .requestMatchers(HttpMethod.PUT, "/**").hasAnyRole("editor", "admin", "api-service")
+                        .requestMatchers(HttpMethod.DELETE, "/**").hasAnyRole("admin", "api-service")
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth -> oauth
