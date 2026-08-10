@@ -142,12 +142,10 @@ const actions = {
           class="flex flex-col gap-1 p-1 border border-gray-300 rounded-md shadow-md bg-white whitespace-nowrap"
         >
           <NuxtLink
+            v-if="loggedIn"
             :to="edit_path"
             class="flex flex-row items-center space-x-2 whitespace-nowrap rounded-md p-1 text-gray-600 hover:bg-slate-100 hover:text-black"
-            :class="{ 'pointer-events-none cursor-not-allowed opacity-50': !loggedIn }"
-            :aria-disabled="!loggedIn"
-            :tabindex="loggedIn ? 0 : -1"
-            @click="(event) => { if (!loggedIn) event.preventDefault(); else actions.edit_page(); }"
+            @click="actions.edit_page()"
           >
             <Icon
               name="material-symbols-edit-square-outline-sharp"
@@ -173,9 +171,9 @@ const actions = {
           </button>
           <ConfirmDialog />
           <button
+            v-if="loggedIn"
             @click="actions.delete_page()"
-            :disabled="!loggedIn"
-            class="flex flex-row items-center space-x-2 whitespace-nowrap rounded-md p-1 text-red-600 hover:bg-slate-100 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+            class="flex flex-row items-center space-x-2 whitespace-nowrap rounded-md p-1 text-red-600 hover:bg-slate-100 hover:text-red-700"
           >
             <Icon name="material-symbols-delete-outline" class="text-xl" />
             <span class="text-sm leading-none">Eintrag löschen</span>
