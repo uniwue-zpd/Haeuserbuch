@@ -107,6 +107,11 @@ const districtColors: Record<string, readonly [number, number, number]> = {
 };
 
 const defaultDistrictColor = [127, 137, 146] as const;
+const DEFAULT_BUILDING_ELEVATION = 10;
+const DIMMED_BUILDING_ELEVATION = 7;
+const SELECTED_BUILDING_FILL_COLOR: Color = [6, 182, 212, 165];
+const SELECTED_BUILDING_HALO_COLOR: Color = [23, 42, 58, 235];
+const SELECTED_BUILDING_OUTLINE_COLOR: Color = [34, 211, 238, 255];
 let map: maplibregl.Map | null = null;
 let deckOverlay: MapboxOverlay | null = null;
 let resizeObserver: ResizeObserver | null = null;
@@ -125,7 +130,7 @@ function getDistrictColor(feature: BuildingFeature) {
 function getPolygonColor({ feature }: PolygonDatum): Color {
   if (!isMatching(feature)) return [174, 182, 188, 112];
   const [red, green, blue] = getDistrictColor(feature);
-  return [red, green, blue, 220];
+  return [red, green, blue, feature.id === props.selectedId ? 120 : 220];
 }
 
 function getPolygonWireframeColor({ feature }: PolygonDatum): Color {
@@ -134,7 +139,7 @@ function getPolygonWireframeColor({ feature }: PolygonDatum): Color {
 }
 
 function getBuildingElevation({ feature }: PolygonDatum) {
-  return isMatching(feature) ? 10 : 7;
+  return isMatching(feature) ? DEFAULT_BUILDING_ELEVATION : DIMMED_BUILDING_ELEVATION;
 }
 
 function getLineColor({ feature }: LineDatum): Color {
@@ -273,8 +278,8 @@ function createDeckLayers() {
       filled: true,
       stroked: false,
       wireframe: false,
-      getElevation: 18,
-      getFillColor: [242, 173, 53, 238],
+      getElevation: DEFAULT_BUILDING_ELEVATION,
+      getFillColor: SELECTED_BUILDING_FILL_COLOR,
       material: {
         ambient: 0.55,
         diffuse: 0.65,
@@ -291,8 +296,24 @@ function createDeckLayers() {
       filled: false,
       stroked: false,
       wireframe: true,
-      getElevation: 18,
-      getLineColor: [23, 42, 58, 255],
+      getElevation: DEFAULT_BUILDING_ELEVATION,
+      getLineColor: SELECTED_BUILDING_HALO_COLOR,
+      getLineWidth: 6,
+      lineWidthUnits: 'pixels',
+      pickable: false,
+    }),
+    new PolygonLayer<PolygonDatum>({
+      id: 'selected-building-polygon-outline',
+      data: selectedPolygonData.value,
+      getPolygon: getPolygonGeometry,
+      extruded: true,
+      filled: false,
+      stroked: true,
+      wireframe: false,
+      getElevation: DEFAULT_BUILDING_ELEVATION,
+      getLineColor: SELECTED_BUILDING_OUTLINE_COLOR,
+      getLineWidth: 3,
+      lineWidthUnits: 'pixels',
       pickable: false,
     }),
     new PathLayer<LineDatum>({
@@ -310,7 +331,7 @@ function createDeckLayers() {
       id: 'selected-building-line',
       data: selectedLineData.value,
       getPath: getLineGeometry,
-      getColor: [242, 173, 53, 255],
+      getColor: SELECTED_BUILDING_OUTLINE_COLOR,
       getWidth: 9,
       widthUnits: 'pixels',
       capRounded: true,
@@ -325,7 +346,7 @@ function createDeckLayers() {
       radiusUnits: 'pixels',
       filled: true,
       stroked: true,
-      getFillColor: [242, 173, 53, 255],
+      getFillColor: SELECTED_BUILDING_FILL_COLOR,
       getLineColor: [23, 42, 58, 255],
       getLineWidth: 3,
       lineWidthUnits: 'pixels',
@@ -342,6 +363,7 @@ function updateBaseLayers() {
 
 function updateSelectionLayers() {
   if (!mapLoaded || !deckOverlay) return;
+  baseStyleRevision += 1;
   deckOverlay.setProps({ layers: createDeckLayers() });
 }
 
