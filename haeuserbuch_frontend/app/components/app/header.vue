@@ -421,14 +421,14 @@ defineShortcuts({
                   erhalten.
                 </p>
               </div>
-              <UButton
-                to="/auth/login"
-                external
-                label="Anmelden"
-                icon="i-lucide-log-in"
-                color="primary"
-                block
-              />
+              <a href="/auth/login">
+                <UButton
+                    label="Anmelden"
+                    icon="i-lucide-log-in"
+                    color="primary"
+                    block
+                />
+              </a>
             </template>
           </div>
         </template>
