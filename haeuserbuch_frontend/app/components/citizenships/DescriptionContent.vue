@@ -1,17 +1,20 @@
 <template>
-  <div class="space-y-7 text-base leading-7 text-highlighted sm:text-lg sm:leading-8">
-    <div class="space-y-4">
-      <div class="flex flex-col gap-2 text-center">
-        <h1 class="font-bold text-2xl">
+  <article class="citizenship-description flex flex-col gap-4 text-base leading-7 text-highlighted sm:text-lg sm:leading-8">
+    <header class="flex flex-col gap-3 rounded-2xl border border-gray-300 bg-default p-6 text-center shadow-md sm:p-8">
+      <p class="text-sm font-semibold uppercase tracking-[0.18em] text-muted">Quellenbeschreibung</p>
+      <h1 class="font-bold text-2xl tracking-tight sm:text-3xl">
           Die Bürgermatrikel der Jahre 1405 bis 1613 des Würzburger Stadtarchivs
-        </h1>
-        <h2 class="font-semibold text-lg">
+      </h1>
+      <h2 class="font-semibold text-lg text-muted">
           Stadtarchiv Würzburg, RB 207–209, 211–213, 215
-        </h2>
-        <div>Stand: 15.6.2026 / RS / CN</div>
-      </div>
-      <hr class="border-default" />
-      <div class="space-y-5 text-justify">
+      </h2>
+      <p class="text-sm text-dimmed">Stand: 15.6.2026 / RS / CN</p>
+    </header>
+
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-start">
+      <section class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-7">
+        <h2 class="text-xl font-semibold leading-tight text-highlighted">Bestand und Erschließung</h2>
+        <div class="space-y-5 text-justify">
         <p>
           Die vorliegende Datenbank basiert auf sieben Amtsbüchern, die im
           Stadtarchiv Würzburg unter den Signaturen Ratsbuch (RB) 207–209,
@@ -109,12 +112,17 @@
         <p>
           Genauso wurde bei Personennamen, Berufen und der Bewaffnung verfahren.
         </p>
-        <div class="flex flex-row gap-3 mt-4">
-          <h3 class="text-xl font-bold" id="persons">1. Personennamen</h3>
-          <NuxtLink to="#persons" class="inline-flex items-center">
-            <Icon name="material-symbols-link-2" class="hover:text-blue-400" />
+        </div>
+      </section>
+
+      <section id="persons" class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-5">
+        <div class="flex items-center gap-3">
+          <h2 class="text-xl font-semibold leading-tight text-highlighted">1. Personennamen</h2>
+          <NuxtLink to="#persons" aria-label="Zu Personennamen verlinken" class="text-muted hover:text-highlighted">
+            <Icon name="material-symbols-link-2" />
           </NuxtLink>
         </div>
+        <div class="space-y-5 text-justify">
         <p>
           Da außer den in Ratsbüchern und Ratsprotokollen verzeichneten 12.987
           Neubürgern auch die Namen der Zeugen und Bürgen erfasst wurden, sind
@@ -127,12 +135,17 @@
           „Lutzen“ zu „Lutz“). Die weibliche Namensform auf -in („Barbara
           Linhartin“) wird in dieser Version übernommen.
         </p>
-        <div class="flex flex-row gap-3 mt-4">
-          <h3 class="text-xl font-bold" id="places">2. Orte</h3>
-          <NuxtLink to="#places" class="inline-flex items-center">
-            <Icon name="material-symbols-link-2" class="hover:text-blue-400" />
+        </div>
+      </section>
+
+      <section id="places" class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-7">
+        <div class="flex items-center gap-3">
+          <h2 class="text-xl font-semibold leading-tight text-highlighted">2. Orte</h2>
+          <NuxtLink to="#places" aria-label="Zu Orte verlinken" class="text-muted hover:text-highlighted">
+            <Icon name="material-symbols-link-2" />
           </NuxtLink>
         </div>
+        <div class="space-y-5 text-justify">
         <p>
           Für die Datenbank wurden die genannten Orte nach der heutigen
           Verwaltungszugehörigkeit (Randersacker, LK Würzburg) aufgenommen und
@@ -178,12 +191,17 @@
           (7351 Orte), Kategorie 2 (1053), Kategorie 3 (97, davon 16 mit
           Asterisk), Kategorie 4 (12) und Kategorie 5 (204).
         </p>
-        <div class="flex flex-row gap-3 mt-4">
-          <h3 class="text-xl font-bold" id="occupations">3. Berufe</h3>
-          <NuxtLink to="#occupations" class="inline-flex items-center">
-            <Icon name="material-symbols-link-2" class="hover:text-blue-400" />
+        </div>
+      </section>
+
+      <section id="occupations" class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-5">
+        <div class="flex items-center gap-3">
+          <h2 class="text-xl font-semibold leading-tight text-highlighted">3. Berufe</h2>
+          <NuxtLink to="#occupations" aria-label="Zu Berufen verlinken" class="text-muted hover:text-highlighted">
+            <Icon name="material-symbols-link-2" />
           </NuxtLink>
         </div>
+        <div class="space-y-5 text-justify">
         <p>
           Die 8819 verzeichneten Berufsangaben wurden auf eine heute geläufige
           Form zurückgeführt (Beckh → Bäcker), wobei auch Unterkategorien
@@ -195,23 +213,33 @@
           Dienstherrn angeben (Hoflakai = Lakai/fürstbischöflicher Hof;
           Syndicus/Domkapitel; Koch/Kloster St. Stephan).
         </p>
-        <div class="flex flex-row gap-3 mt-4">
-          <h3 class="text-xl font-bold" id="weapons">4. Bewaffnung</h3>
-          <NuxtLink to="#weapons" class="inline-flex items-center">
-            <Icon name="material-symbols-link-2" class="hover:text-blue-400" />
+        </div>
+      </section>
+
+      <section id="weapons" class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-5">
+        <div class="flex items-center gap-3">
+          <h2 class="text-xl font-semibold leading-tight text-highlighted">4. Bewaffnung</h2>
+          <NuxtLink to="#weapons" aria-label="Zu Bewaffnung verlinken" class="text-muted hover:text-highlighted">
+            <Icon name="material-symbols-link-2" />
           </NuxtLink>
         </div>
+        <div class="space-y-5 text-justify">
         <p>
           Wie bei den bisher behandelten Kategorien wird bei der Bewaffung (2434
           Einträge) außer der Schreibform auch eine normalisierte angeboten
           („sturmbhutt“ ist „Sturmhut“ oder „hellbarten“ ist „Hellebarde“ usw.)
         </p>
-        <div class="flex flex-row gap-3 mt-4">
-          <h3 class="text-xl font-bold" id="bibliography">Literatur</h3>
-          <NuxtLink to="#bibliography" class="inline-flex items-center">
-            <Icon name="material-symbols-link-2" class="hover:text-blue-400" />
+        </div>
+      </section>
+
+      <section id="bibliography" class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-7">
+        <div class="flex items-center gap-3">
+          <h2 class="text-xl font-semibold leading-tight text-highlighted">Literatur</h2>
+          <NuxtLink to="#bibliography" aria-label="Zu Literatur verlinken" class="text-muted hover:text-highlighted">
+            <Icon name="material-symbols-link-2" />
           </NuxtLink>
         </div>
+        <div class="space-y-5 text-justify">
         <ul class="list-disc list-inside">
           <li>
             Bergerhausen, Hans-Wolfgang: Ratseide. Einleitung zu Anhang 2, in:
@@ -241,7 +269,8 @@
             Stadtarchivs Würzburg 11), Würzburg 2003.
           </li>
         </ul>
-      </div>
+        </div>
+      </section>
     </div>
-  </div>
+  </article>
 </template>

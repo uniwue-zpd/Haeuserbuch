@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, watch } from "vue";
+import { h, onMounted, resolveComponent, watch } from "vue";
 import maplibregl, {
   LngLat,
   type RasterLayerSpecification,
@@ -20,6 +20,7 @@ import type {
 
 const placeStore = usePlaceStore();
 const tile_store = useTileStore();
+const UButton = resolveComponent("UButton");
 const {
   data: places,
   pending: loadingData,
@@ -69,6 +70,22 @@ const filteredPlaces = computed<FeatureCollection>(() => {
 });
 
 const placeColumns: TableColumn<PlaceTableRow>[] = [
+  {
+    id: "actions",
+    header: "",
+    enableSorting: false,
+    enableGlobalFilter: false,
+    meta: { class: { th: "w-12", td: "w-12" } },
+    cell: ({ row }) =>
+      h(UButton, {
+        to: `/places/${row.original.id}`,
+        color: "neutral",
+        variant: "ghost",
+        icon: "i-lucide-arrow-up-right",
+        "aria-label": `${row.original.realName ?? "Ort"} öffnen`,
+        title: "Ort öffnen",
+      }),
+  },
   {
     accessorKey: "realName",
     header: "Name",
@@ -309,11 +326,10 @@ onBeforeUnmount(() => {
       </UModal>
     </div>
     <div id="map" class="h-125 w-full rounded-md" />
-    <Divider />
-    <div class="grid gap-6 pb-4 lg:grid-cols-[18rem_minmax(0,1fr)]">
-      <aside class="h-fit overflow-hidden rounded-lg border border-default bg-default">
-        <div class="border-b border-default px-4 py-4">
-          <h2 class="text-xl font-semibold">Filter</h2>
+    <div class="grid gap-4 pb-4 lg:grid-cols-[minmax(16rem,18rem)_minmax(0,1fr)]">
+      <aside class="overview-filter-panel h-fit">
+        <div class="border-b border-muted p-5">
+          <h2 class="text-xl font-semibold text-highlighted">Filter</h2>
         </div>
         <details open class="border-b border-default p-4 last:border-b-0">
           <summary class="cursor-pointer list-none text-base font-semibold">
@@ -330,7 +346,7 @@ onBeforeUnmount(() => {
           />
         </details>
       </aside>
-      <div class="min-w-0 space-y-4">
+      <section class="overview-table-panel min-w-0 p-5">
         <UTable
           ref="table"
           v-model:global-filter="globalFilter"
@@ -345,6 +361,7 @@ onBeforeUnmount(() => {
           :pagination-options="{
             getPaginationRowModel: getPaginationRowModel(),
           }"
+          :ui="{ td: 'text-default' }"
           class="w-full"
         >
         <template #realName-header="{ column }">
@@ -432,7 +449,7 @@ onBeforeUnmount(() => {
             @update:page="(page) => table?.tableApi?.setPageIndex(page - 1)"
           />
         </div>
-      </div>
+      </section>
     </div>
   </div>
 </template>

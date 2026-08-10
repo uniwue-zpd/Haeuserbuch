@@ -111,7 +111,7 @@ const loadData = async () => {
       primarysource: filterValues.primarySourceTitle || undefined,
       secondarysource: filterValues.secondarySourceTitle || undefined,
     });
-    rows.value = res.content.map((citizenship) => ({
+    rows.value = res.content.map((citizenship: CitizenshipDTO) => ({
       ...citizenship,
       personName: citizenship.person?.fullName ?? null,
       primarySourceTitle: citizenship.primarySource?.title ?? null,
@@ -165,15 +165,24 @@ useHead(() => ({
 </script>
 
 <template>
-  <div class="w-full">
-    <div class="flex flex-col gap-2">
-      <h1 class="text-3xl font-bold text-black">Bürgermatrikel</h1>
+  <div class="citizenship-overview flex min-h-full flex-col gap-8">
+    <div class="flex flex-col gap-4">
+      <header class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 class="text-4xl font-bold leading-none tracking-tighter text-highlighted sm:text-6xl">
+            Bürgermatrikel
+          </h1>
+        </div>
+        <div class="flex flex-wrap gap-2 sm:justify-end">
+          <UButton to="/citizenships/fulltextsearch" color="neutral" variant="outline" icon="i-lucide-search" label="Volltextsuche" />
+        </div>
+      </header>
       <div
         class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
       >
-        <p class="text-lg font-medium">
+        <div>
           Einträge insgesamt: {{ totalRecords }}
-        </p>
+        </div>
         <div class="flex flex-wrap justify-end gap-2">
           <UModal
             title="Beschreibung der Bürgermatrikel"
@@ -215,20 +224,13 @@ useHead(() => ({
               </ul>
             </template>
           </UPopover>
-          <UButton
-            to="/citizenships/fulltextsearch"
-            color="neutral"
-            variant="outline"
-            icon="i-lucide-search"
-            label="Volltextsuche"
-          />
         </div>
       </div>
 
-      <div class="grid gap-6 lg:grid-cols-[18rem_minmax(0,1fr)]">
-        <aside class="h-fit overflow-hidden rounded-lg border border-default bg-default">
-          <div class="border-b border-default px-4 py-4">
-            <h2 class="text-xl font-semibold">Filter</h2>
+      <div class="grid gap-4 lg:grid-cols-[minmax(16rem,18rem)_minmax(0,1fr)]">
+        <aside class="overview-filter-panel h-fit">
+          <div class="border-b border-muted p-5">
+            <h2 class="text-xl font-semibold text-highlighted">Filter</h2>
           </div>
           <details open class="border-b border-default p-4">
             <summary class="cursor-pointer list-none text-base font-semibold">
@@ -276,13 +278,14 @@ useHead(() => ({
             <UInput v-model="filterValues.secondarySourceTitle" class="mt-3 w-full" placeholder="Suchen..." />
           </details>
         </aside>
-        <div class="min-w-0">
+        <section class="overview-table-panel min-w-0 p-5">
           <UTable
             :data="rows"
             :columns="columns"
             :loading="loading"
             v-model:sorting="sorting"
             :sorting-options="{ manualSorting: true }"
+            :ui="{ td: 'text-default' }"
             class="w-full"
           >
         <template #refNumber-cell="{ row }">
@@ -339,7 +342,7 @@ useHead(() => ({
               @update:page="onPageChange"
             />
           </div>
-        </div>
+        </section>
       </div>
     </div>
   </div>

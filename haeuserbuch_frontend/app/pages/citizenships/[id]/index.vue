@@ -28,120 +28,87 @@ useHead(() => ({
 <template>
   <CitizenshipSkeleton v-if="isLoading" />
   <FetchError v-else-if="hasError" :error="hasError" />
-  <div v-else class="flex min-h-full flex-col gap-4">
-    <div
-      v-if="citizenshipItem"
-      class="flex flex-col gap-4 p-4 rounded-lg shadow-lg border-2 border-gray-300"
-    >
-      <div class="flex flex-row justify-between">
-        <h1 class="text-3xl font-bold">{{ citizenshipItem?.signature }}</h1>
-        <TaskBar :id="citizenship_id" entity_type="citizenships" />
+  <div
+    v-else-if="citizenshipItem"
+    class="citizenship-page flex min-h-full flex-col gap-8"
+  >
+    <header class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div>
+        <h1 class="text-4xl font-bold leading-none tracking-tighter text-highlighted sm:text-6xl">
+          {{ citizenshipItem.signature || `Eintrag ${citizenship_id}` }}
+        </h1>
       </div>
-      <div class="flex flex-col gap-4">
-        <div
-          class="flex flex-col gap-5 p-4 rounded-lg shadow-lg border border-gray-300"
-        >
-          <h2 class="text-2xl font-semibold">Informationen zum Eintrag</h2>
-          <div
-            v-if="citizenshipItem.signature"
-            class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
-          >
-            <p class="text-sm text-gray-500 font-medium">Signatur</p>
+      <TaskBar :id="citizenship_id" entity_type="citizenships" />
+    </header>
+
+    <div class="grid grid-cols-1 gap-4 lg:auto-rows-auto lg:grid-cols-12 lg:items-start">
+      <section class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-7">
+        <h2 class="text-xl font-semibold leading-tight text-highlighted">Angaben zum Eintrag</h2>
+        <div class="flex flex-col">
+          <div v-if="citizenshipItem.signature" class="content-table-row">
+            <p class="content-table-label">Signatur</p>
             <p class="font-semibold">{{ citizenshipItem.signature }}</p>
           </div>
-          <div
-            v-if="citizenshipItem.refNumber"
-            class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
-          >
-            <p class="text-sm text-gray-500 font-medium">
-              Referenz Meyer-Erlach
-            </p>
+          <div v-if="citizenshipItem.refNumber" class="content-table-row">
+            <p class="content-table-label">Referenz Meyer-Erlach</p>
             <p class="font-semibold">{{ citizenshipItem.refNumber }}</p>
           </div>
-          <div
-            v-if="citizenshipItem.dateNaturalization"
-            class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
-          >
-            <p class="text-sm text-gray-500 font-medium">
-              Datum der Einbürgerung
-            </p>
-            <p class="font-semibold">
-              {{ citizenshipItem.dateNaturalization }}
-            </p>
+          <div v-if="citizenshipItem.dateNaturalization" class="content-table-row">
+            <p class="content-table-label">Datum der Einbürgerung</p>
+            <p class="font-semibold">{{ citizenshipItem.dateNaturalization }}</p>
           </div>
-          <div
-            v-if="citizenshipItem.dateMisc"
-            class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
-          >
-            <p class="text-sm text-gray-500 font-medium">
-              Andere Datumsangaben
-            </p>
+          <div v-if="citizenshipItem.dateMisc" class="content-table-row">
+            <p class="content-table-label">Andere Datumsangaben</p>
             <p class="font-semibold">{{ citizenshipItem.dateMisc }}</p>
           </div>
-          <div
-            v-if="citizenshipItem.person"
-            class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
-          >
-            <p class="text-sm text-gray-500 font-medium">
-              Eingebürgerte Person
-            </p>
+          <div v-if="citizenshipItem.person" class="content-table-row">
+            <p class="content-table-label">Eingebürgerte Person</p>
             <PersonPreview :person="citizenshipItem.person" />
           </div>
-          <div
-            v-if="citizenshipItem.mentionedPersons.length > 0"
-            class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
-          >
-            <p class="text-sm text-gray-500 font-medium">
-              Weitere erwähnte Personen
-            </p>
+          <div v-if="citizenshipItem.mentionedPersons.length > 0" class="content-table-row">
+            <p class="content-table-label">Weitere erwähnte Personen</p>
             <div class="flex flex-wrap gap-2">
               <PersonPreview
-                v-for="person in citizenshipItem.mentionedPersons"
+                v-for="(person, personIndex) in citizenshipItem.mentionedPersons"
+                :key="person.id ?? person.fullName ?? `mentioned-person-${personIndex}`"
                 :person="person"
               />
             </div>
           </div>
-          <div
-            v-if="citizenshipItem.entryText"
-            class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
-          >
-            <p class="text-sm text-gray-500 font-medium">Text des Eintrags</p>
-            <p class="text-justify">{{ citizenshipItem.entryText }}</p>
-          </div>
-          <div
-            v-if="citizenshipItem.addendum"
-            class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
-          >
-            <p class="text-sm text-gray-500 font-medium">Nachtrag</p>
-            <p class="text-justify">{{ citizenshipItem.addendum }}</p>
-          </div>
         </div>
-        <div
-          v-if="
-            citizenshipItem.primarySource || citizenshipItem.secondarySource
-          "
-          class="flex flex-col gap-5 p-4 rounded-lg shadow-lg border border-gray-300"
-        >
-          <h2 class="text-2xl font-semibold">Quellen- und Literaturangaben</h2>
-          <div
-            v-if="citizenshipItem.primarySource"
-            class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
-          >
-            <p class="text-sm text-gray-500 font-medium">Primärquelle</p>
+      </section>
+
+      <section class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-5">
+        <h2 class="text-xl font-semibold leading-tight text-highlighted">Quellen</h2>
+        <div class="flex flex-col gap-3">
+          <div v-if="citizenshipItem.primarySource" class="content-table-row !grid-cols-1 !gap-2 sm:!grid-cols-1">
+            <p class="content-table-label">Primärquelle</p>
             <SourcePreview :source="citizenshipItem.primarySource" />
           </div>
-          <div
-            v-if="citizenshipItem.secondarySource"
-            class="flex flex-col gap-2 border-l-4 border-gray-300 pl-3 py-1.5"
-          >
-            <p class="text-sm text-gray-500 font-medium">Sekundärquelle</p>
+          <div v-if="citizenshipItem.secondarySource" class="content-table-row !grid-cols-1 !gap-2 sm:!grid-cols-1">
+            <p class="content-table-label">Sekundärquelle</p>
             <SourcePreview :source="citizenshipItem.secondarySource" />
           </div>
         </div>
-      </div>
+      </section>
+
+      <section
+        v-if="citizenshipItem.entryText || citizenshipItem.addendum"
+        class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-12"
+      >
+        <h2 class="text-xl font-semibold leading-tight text-highlighted">Text des Eintrags</h2>
+        <div class="flex flex-col">
+          <div v-if="citizenshipItem.entryText" class="border-t border-muted py-3 first:border-t-0 first:pt-0">
+            <p class="whitespace-pre-wrap text-justify leading-7 text-highlighted">{{ citizenshipItem.entryText }}</p>
+          </div>
+          <div v-if="citizenshipItem.addendum" class="content-table-row !grid-cols-1 !gap-2 sm:!grid-cols-1">
+            <p class="content-table-label">Nachtrag</p>
+            <p class="whitespace-pre-wrap text-justify leading-7 text-highlighted">{{ citizenshipItem.addendum }}</p>
+          </div>
+        </div>
+      </section>
     </div>
     <UIContentMetadata
-      v-if="citizenshipItem"
       :created-date="citizenshipItem.createdDate"
       :last-modified-date="citizenshipItem.lastModifiedDate"
     />

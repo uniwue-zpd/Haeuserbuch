@@ -36,10 +36,10 @@ useHead(() => ({
       <h1 class="text-3xl font-bold text-black">Straßen</h1>
     </template>
     <template #content>
-      <div class="grid gap-6 lg:grid-cols-[18rem_minmax(0,1fr)]">
-        <aside class="h-fit overflow-hidden rounded-lg border border-default bg-default">
-          <div class="border-b border-default px-4 py-4">
-            <h2 class="text-xl font-semibold">Filter</h2>
+      <div class="grid gap-4 lg:grid-cols-[minmax(16rem,18rem)_minmax(0,1fr)]">
+        <aside class="overview-filter-panel h-fit">
+          <div class="border-b border-muted p-5">
+            <h2 class="text-xl font-semibold text-highlighted">Filter</h2>
           </div>
           <details open class="p-4">
             <summary class="cursor-pointer list-none text-base font-semibold">
@@ -57,7 +57,7 @@ useHead(() => ({
           </details>
         </aside>
 
-        <div class="min-w-0">
+        <section class="overview-table-panel min-w-0 p-5">
           <UTable
             v-model:global-filter="globalFilter"
             v-model:sorting="sorting"
@@ -66,6 +66,7 @@ useHead(() => ({
             :columns="columns"
             :loading="pending"
             :pagination-options="{ getPaginationRowModel: getPaginationRowModel() }"
+            :ui="{ td: 'text-default' }"
             class="w-full"
           >
             <template #name-cell="{ row }">
@@ -90,7 +91,7 @@ useHead(() => ({
               @update:page="(nextPage) => (pagination.pageIndex = nextPage - 1)"
             />
           </div>
-        </div>
+        </section>
       </div>
     </template>
   </Card>

@@ -211,12 +211,12 @@ useHead(() => ({
         </template>
       </UPopover>
     </header>
-    <div class="w-fit rounded-2xl border border-gray-300 bg-default px-4 py-3 text-base font-semibold text-highlighted shadow-md">
+    <div>
       <p>Einträge insgesamt: {{ totalRecords }}</p>
     </div>
 
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(16rem,18rem)_minmax(0,1fr)] lg:items-start">
-      <aside class="min-w-0 overflow-hidden rounded-2xl border border-gray-300 bg-default p-0 shadow-md">
+      <aside class="overview-filter-panel">
         <div class="border-b border-muted p-5">
           <h2 class="text-xl font-semibold text-highlighted">Filter</h2>
         </div>
@@ -282,13 +282,14 @@ useHead(() => ({
           </details>
         </div>
       </aside>
-      <section class="min-w-0 overflow-hidden rounded-2xl border border-gray-300 bg-default p-0 shadow-md">
+      <section class="overview-table-panel p-5">
           <UTable
             :data="rows"
             :columns="columns"
             :loading="loading"
             v-model:sorting="sorting"
             :sorting-options="{ manualSorting: true }"
+            :ui="{ td: 'text-default' }"
             class="w-full"
           >
         <template #fullName-cell="{ row }">
@@ -341,14 +342,3 @@ useHead(() => ({
     </div>
   </div>
 </template>
-
-<style scoped>
-section :deep(table) {
-  border: 0;
-}
-
-section > :deep(.flex.flex-col) {
-  padding: 1.25rem;
-}
-
-</style>

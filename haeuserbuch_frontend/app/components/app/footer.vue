@@ -1,5 +1,30 @@
 <script setup lang="ts">
+import { researchNavigation } from "~/utils/researchNavigation";
+
 const year = new Date().getFullYear();
+
+const footerGroups = [
+  {
+    label: "Recherche",
+    links: researchNavigation
+      .filter((item) => item.to)
+      .map((item) => ({ label: item.label, to: item.to as string })),
+  },
+  {
+    label: "Projekt",
+    links: [
+      { label: "Das Projekt", to: "/projekt" },
+      { label: "Team", to: "/team" },
+    ],
+  },
+  {
+    label: "Allgemein",
+    links: [
+      { label: "Startseite", to: "/" },
+      { label: "Kontakt", to: "/kontakt" },
+    ],
+  },
+];
 
 const partners = [
   {
@@ -44,75 +69,27 @@ const partners = [
       <div
         class="grid items-start gap-10 border-b border-black/10 pb-10 dark:border-white/10 lg:grid-cols-3 lg:gap-16"
       >
-        <div>
-          <NuxtLink to="/" aria-label="Zur Startseite" class="inline-block">
-            <img
-              src="/wue_haeuserbuch_logo_skyline_bright.svg"
-              alt="Würzburger Häuserprojekt"
-              class="h-24 w-auto brightness-0 dark:hidden sm:h-28"
-            />
-            <img
-              src="/wue_haeuserbuch_logo_skyline_white.svg"
-              alt=""
-              aria-hidden="true"
-              class="hidden h-24 w-auto dark:block sm:h-28"
-            />
-          </NuxtLink>
-        </div>
-
-        <nav aria-label="Footer-Navigation">
+        <nav
+          v-for="group in footerGroups"
+          :key="group.label"
+          :aria-label="`${group.label} im Footer`"
+        >
           <p
             class="font-sans text-sm font-semibold uppercase tracking-widest text-slate-800/50 dark:text-white/45"
           >
-            Navigation
+            {{ group.label }}
           </p>
-          <div class="mt-4 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-1">
+          <div class="mt-4 grid gap-3 text-sm">
             <NuxtLink
-              to="/projekt"
+              v-for="link in group.links"
+              :key="link.to"
+              :to="link.to"
               class="w-fit text-slate-800/75 transition-colors hover:text-slate-800 dark:text-white/70 dark:hover:text-white"
-              >Projekt</NuxtLink
             >
-            <NuxtLink
-              to="/team"
-              class="w-fit text-slate-800/75 transition-colors hover:text-slate-800 dark:text-white/70 dark:hover:text-white"
-              >Über uns</NuxtLink
-            >
-            <NuxtLink
-              to="/buildings"
-              class="w-fit text-slate-800/75 transition-colors hover:text-slate-800 dark:text-white/70 dark:hover:text-white"
-              >Katasterplan</NuxtLink
-            >
-            <NuxtLink
-              to="/places"
-              class="w-fit text-slate-800/75 transition-colors hover:text-slate-800 dark:text-white/70 dark:hover:text-white"
-              >Orte</NuxtLink
-            >
-            <NuxtLink
-              to="/persons"
-              class="w-fit text-slate-800/75 transition-colors hover:text-slate-800 dark:text-white/70 dark:hover:text-white"
-              >Personen</NuxtLink
-            >
-            <NuxtLink
-              to="/citizenships"
-              class="w-fit text-slate-800/75 transition-colors hover:text-slate-800 dark:text-white/70 dark:hover:text-white"
-              >Bürgermatrikel</NuxtLink
-            >
+              {{ link.label }}
+            </NuxtLink>
           </div>
         </nav>
-
-        <div>
-          <p
-            class="font-sans text-sm font-semibold uppercase tracking-widest text-slate-800/50 dark:text-white/45"
-          >
-            Kontakt
-          </p>
-          <NuxtLink
-            to="/kontakt"
-            class="mt-4 block w-fit text-sm text-slate-800/75 transition-colors hover:text-slate-800 dark:text-white/70 dark:hover:text-white"
-          >
-            Kontakt
-          </NuxtLink>
-        </div>
       </div>
 
       <div class="py-8">

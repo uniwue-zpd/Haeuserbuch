@@ -5,14 +5,23 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="flex flex-col gap-3 border-t border-muted py-3">
-    <div v-if="props.job.originalText" class="flex flex-wrap items-baseline gap-3 text-sm text-highlighted">
-      <span class="text-sm font-bold text-muted">Eingetragener Beruf</span>
+  <div class="flex w-full flex-col gap-3 rounded-lg border border-default p-3 text-highlighted">
+    <div
+      v-if="props.job.originalText"
+      class="grid grid-cols-[minmax(7rem,9rem)_minmax(0,1fr)] gap-x-3 border-t border-default pt-2 text-sm first:border-t-0 first:pt-0"
+    >
+      <span class="font-semibold text-muted">Eingetragener Beruf</span>
       <span>{{ props.job.originalText }}</span>
     </div>
-    <div v-if="props.job.jobCategory" class="flex flex-wrap items-baseline gap-3 text-sm text-highlighted">
-      <span class="text-sm font-bold text-muted">Kategorie</span>
-      <NuxtLink :to="`/jobs/${props.job.jobCategory.id}`" class="font-semibold text-highlighted underline underline-offset-4 hover:text-primary focus-visible:text-primary focus-visible:outline-none">
+    <div
+      v-if="props.job.jobCategory"
+      class="grid grid-cols-[minmax(7rem,9rem)_minmax(0,1fr)] gap-x-3 border-t border-default pt-2 text-sm"
+    >
+      <span class="font-semibold text-muted">Kategorie</span>
+      <NuxtLink
+        :to="`/jobs/${props.job.jobCategory.id}`"
+        class="font-semibold text-highlighted underline decoration-muted underline-offset-4 hover:decoration-current focus-visible:outline-none"
+      >
         {{ props.job.jobCategory.name }}
       </NuxtLink>
     </div>

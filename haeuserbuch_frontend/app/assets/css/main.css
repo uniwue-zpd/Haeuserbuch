@@ -60,6 +60,29 @@ body {
   transition: background-color 200ms ease;
 }
 
+@layer components {
+  .overview-filter-panel,
+  .overview-table-panel {
+    @apply min-w-0 overflow-hidden rounded-2xl border border-default bg-default shadow-sm;
+  }
+
+  .overview-table-panel table {
+    border: 0;
+  }
+
+  .overview-table-panel tbody td {
+    @apply text-default;
+  }
+
+  .content-table-row {
+    @apply grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)];
+  }
+
+  .content-table-label {
+    @apply text-base font-medium text-muted;
+  }
+}
+
 html.dark,
 html.dark body {
   background: var(--ui-bg);
