@@ -6,6 +6,7 @@ import de.uniwue.dachs.haeuserbuch_backend.model.Person;
 import de.uniwue.dachs.haeuserbuch_backend.model.PlaceCertainty;
 import de.uniwue.dachs.haeuserbuch_backend.model.Weaponry;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PersonRepository;
+import de.uniwue.dachs.haeuserbuch_backend.search.SearchIndexAffecting;
 import de.uniwue.dachs.haeuserbuch_backend.specification.PersonSpecification;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -174,6 +175,7 @@ public class PersonService {
      */
     @Transactional
     @CacheEvict(value = "persons", allEntries = true)
+    @SearchIndexAffecting
     public PersonDTO createPerson(PersonDTO personDTO) {
         return personMapper.PersonToDTO(
                 personRepository.save(personMapper.DTOToPerson(personDTO))
@@ -188,6 +190,7 @@ public class PersonService {
      */
     @Transactional
     @CacheEvict(value = "persons", allEntries = true)
+    @SearchIndexAffecting
     public PersonDTO updatePerson(Long id, PersonDTO updatedPerson) {
         return personRepository.findById(id)
                 .map(existingPerson -> {
@@ -218,6 +221,7 @@ public class PersonService {
      */
     @Transactional
     @CacheEvict(value = "persons", allEntries = true)
+    @SearchIndexAffecting
     public void deletePerson(Long id) {
         if (!personRepository.existsById(id)) throw new EntityNotFoundException("Person with ID " + id + " does not exist.");
         personRepository.deleteById(id);

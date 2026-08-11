@@ -3,6 +3,7 @@ package de.uniwue.dachs.haeuserbuch_backend.service;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.SourceDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Source;
 import de.uniwue.dachs.haeuserbuch_backend.repository.SourceRepository;
+import de.uniwue.dachs.haeuserbuch_backend.search.SearchIndexAffecting;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.SourceMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.cache.annotation.CacheEvict;
@@ -40,6 +41,7 @@ public class SourceService {
     // POST create a new source
     @Transactional
     @CacheEvict(value = "sources", allEntries = true)
+    @SearchIndexAffecting
     public Source createSource(Source source) {
         return sourceRepository.save(source);
     }
@@ -47,6 +49,7 @@ public class SourceService {
     // PUT update an existing source
     @Transactional
     @CacheEvict(value = "sources", allEntries = true)
+    @SearchIndexAffecting
     public Source updateSource(Long id, Source updatedSource) {
         return sourceRepository.findById(id)
                 .map(existingSource -> {
@@ -66,6 +69,7 @@ public class SourceService {
     // DELETE a source by ID
     @Transactional
     @CacheEvict(value = "sources", allEntries = true)
+    @SearchIndexAffecting
     public void deleteSource(Long id) {
         if (!sourceRepository.existsById(id)) {
             throw new IllegalArgumentException("Source with ID " + id + " does not exist.");

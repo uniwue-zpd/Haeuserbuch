@@ -7,6 +7,12 @@ export interface ResearchNavigationItem {
 
 export const researchNavigation: readonly ResearchNavigationItem[] = [
   {
+    label: 'Globale Suche',
+    description: 'Namen, Metadaten und Texte durchsuchen.',
+    icon: 'i-lucide-search',
+    to: '/suche',
+  },
+  {
     label: 'Katasterplan',
     description: 'Gebäude im historischen Stadtplan entdecken.',
     icon: 'i-lucide-map',

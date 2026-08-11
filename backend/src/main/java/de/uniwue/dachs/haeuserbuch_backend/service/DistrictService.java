@@ -3,6 +3,7 @@ package de.uniwue.dachs.haeuserbuch_backend.service;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.DistrictDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.District;
 import de.uniwue.dachs.haeuserbuch_backend.repository.DistrictRepository;
+import de.uniwue.dachs.haeuserbuch_backend.search.SearchIndexAffecting;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.DistrictMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -34,12 +35,14 @@ public class DistrictService {
 
     // POST create a new district
     @Transactional
+    @SearchIndexAffecting
     public District createDistrict(District district) {
         return districtRepository.save(district);
     }
 
     // PUT update an existing district
     @Transactional
+    @SearchIndexAffecting
     public District updateDistrict(Long id, District updatedDistrict) {
         return districtRepository.findById(id)
                 .map(entity -> {
@@ -54,6 +57,7 @@ public class DistrictService {
 
     // DELETE a district by its ID
     @Transactional
+    @SearchIndexAffecting
     public void deleteDistrict(Long id) {
         if (!districtRepository.existsById(id)) {
             throw new EntityNotFoundException("District with ID " + id + " does not exist.");

@@ -1,11 +1,27 @@
 <script setup lang="ts">
 import { researchNavigation } from "~/utils/researchNavigation";
+import { searchEntityConfig, type GlobalSearchResult } from "~/utils/globalSearch";
+import type { RouteLocationRaw } from "vue-router";
 
 const route = useRoute();
 const { user, loggedIn, clear } = useUserSession();
 const mobileMenuOpen = ref(false);
 const searchOpen = ref(false);
+const commandSearchTerm = ref("");
+const commandResults = ref<GlobalSearchResult[]>([]);
+const commandSearchPending = ref(false);
+const commandSearchError = ref(false);
 const isScrolled = ref(false);
+const globalSearchStore = useGlobalSearchStore();
+let commandSearchTimer: ReturnType<typeof setTimeout> | undefined;
+let commandSearchController: AbortController | undefined;
+const htmlEntities: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#039;",
+};
 const projectNavigation = [
   {
     label: "Das Projekt",
@@ -20,7 +36,7 @@ const projectNavigation = [
     to: "/team",
   },
 ];
-const commandGroups = computed(() => [
+const staticCommandGroups = computed(() => [
   {
     id: "research",
     label: "Recherche",
@@ -29,7 +45,7 @@ const commandGroups = computed(() => [
       .map((item) => ({
         ...item,
         onSelect: () => {
-          searchOpen.value = false;
+          selectCommandRoute(item.to!);
         },
       })),
   },
@@ -37,9 +53,9 @@ const commandGroups = computed(() => [
     id: "project",
     label: "Projekt",
     items: projectNavigation.map((item) => ({
-      ...item,
-      onSelect: () => {
-        searchOpen.value = false;
+        ...item,
+        onSelect: () => {
+          selectCommandRoute(item.to);
       },
     })),
   },
@@ -52,7 +68,7 @@ const commandGroups = computed(() => [
         icon: "i-lucide-house",
         to: "/",
         onSelect: () => {
-          searchOpen.value = false;
+          selectCommandRoute("/");
         },
       },
       {
@@ -60,12 +76,81 @@ const commandGroups = computed(() => [
         icon: "i-lucide-mail",
         to: "/kontakt",
         onSelect: () => {
-          searchOpen.value = false;
+          selectCommandRoute("/kontakt");
         },
       },
     ],
   },
 ]);
+
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, (character) => htmlEntities[character] ?? character);
+}
+
+function researchResultDescription(result: GlobalSearchResult) {
+  const description = [searchEntityConfig[result.entityType].label, result.subtitle]
+    .filter(Boolean)
+    .join(" · ");
+  if (!result.excerpt || !result.matchedFields.includes("FULL_TEXT")) {
+    return { description };
+  }
+
+  return {
+    description,
+    descriptionHtml: `${escapeHtml(description)}<span class="command-search-excerpt search-match-excerpt">${result.excerpt}</span>`,
+    ui: {
+      item: "py-2",
+      itemDescription: "overflow-visible whitespace-normal",
+    },
+  };
+}
+
+const commandGroups = computed(() => {
+  const query = commandSearchTerm.value.trim();
+  const dynamicGroups = query.length >= 2
+    ? [
+        {
+          id: "research-results",
+          label: "Forschungsdaten",
+          ignoreFilter: true,
+          items: commandSearchError.value
+            ? [{
+                label: "Ergebnisse konnten nicht geladen werden",
+                description: "Die erweiterte Suche kann weiterhin geöffnet werden.",
+                icon: "i-lucide-circle-alert",
+                disabled: true,
+              }]
+            : !commandSearchPending.value && commandResults.value.length === 0
+              ? [{
+                  label: "Keine Forschungsdaten gefunden",
+                  description: "Öffnen Sie die erweiterte Suche, um Filter anzupassen.",
+                  icon: "i-lucide-search-x",
+                  disabled: true,
+                }]
+              : commandResults.value.map((result) => ({
+                label: result.title,
+                ...researchResultDescription(result),
+                icon: searchEntityConfig[result.entityType].icon,
+                to: searchEntityConfig[result.entityType].to(result.entityId),
+                onSelect: () => selectCommandRoute(searchEntityConfig[result.entityType].to(result.entityId)),
+              })),
+        },
+        {
+          id: "advanced-search",
+          label: "Erweiterte Suche",
+          ignoreFilter: true,
+          items: [{
+            label: `Alle Ergebnisse für „${query}“ anzeigen`,
+            description: "Treffer filtern und die vollständige Ergebnisliste öffnen.",
+            icon: "i-lucide-list-filter",
+            to: { path: "/suche", query: { q: query } },
+            onSelect: () => selectCommandRoute({ path: "/suche", query: { q: query } }),
+          }],
+        },
+      ]
+    : [];
+  return [...dynamicGroups, ...staticCommandGroups.value];
+});
 
 const headerUi = computed(() => ({
   root: "top-0 z-50 h-auto border-0 bg-default !backdrop-blur-none sticky",
@@ -102,6 +187,60 @@ async function logout() {
   await clear();
 }
 
+function selectCommandRoute(to: RouteLocationRaw) {
+  void navigateTo(to);
+  searchOpen.value = false;
+}
+
+watch(commandSearchTerm, (value) => {
+  clearTimeout(commandSearchTimer);
+  commandSearchController?.abort();
+  commandSearchError.value = false;
+  const query = value.trim();
+  if (query.length < 2) {
+    commandResults.value = [];
+    commandSearchPending.value = false;
+    return;
+  }
+  commandSearchTimer = setTimeout(async () => {
+    const controller = new AbortController();
+    commandSearchController = controller;
+    commandSearchPending.value = true;
+    try {
+      const response = await globalSearchStore.search({
+        query,
+        page: 0,
+        size: 8,
+        includeFacets: false,
+      }, controller.signal);
+      if (commandSearchController === controller && commandSearchTerm.value.trim() === query) {
+        commandResults.value = response.content;
+      }
+    } catch (searchError) {
+      if (controller.signal.aborted) return;
+      if (commandSearchController === controller && commandSearchTerm.value.trim() === query) {
+        commandResults.value = [];
+        commandSearchError.value = true;
+      }
+    } finally {
+      if (commandSearchController === controller && commandSearchTerm.value.trim() === query) {
+        commandSearchPending.value = false;
+        commandSearchController = undefined;
+      }
+    }
+  }, 250);
+});
+
+watch(searchOpen, (open) => {
+  if (open) return;
+  clearTimeout(commandSearchTimer);
+  commandSearchController?.abort();
+  commandSearchTerm.value = "";
+  commandResults.value = [];
+  commandSearchPending.value = false;
+  commandSearchError.value = false;
+});
+
 onMounted(() => {
   updateHeaderState();
   window.addEventListener("scroll", updateHeaderState, { passive: true });
@@ -109,10 +248,15 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener("scroll", updateHeaderState);
+  clearTimeout(commandSearchTimer);
+  commandSearchController?.abort();
 });
 
 defineShortcuts({
   meta_k: () => {
+    searchOpen.value = true;
+  },
+  ctrl_k: () => {
     searchOpen.value = true;
   },
 });
@@ -354,8 +498,10 @@ defineShortcuts({
 
         <template #content>
           <UCommandPalette
+            v-model:search-term="commandSearchTerm"
             :groups="commandGroups"
-            placeholder="Suche nach einer Seite..."
+            :loading="commandSearchPending"
+            placeholder="Seiten und Forschungsdaten durchsuchen..."
           />
         </template>
       </UModal>

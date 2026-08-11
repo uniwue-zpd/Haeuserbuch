@@ -26,6 +26,7 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/search/refresh").hasAnyRole("admin", "api-service")
                         .requestMatchers(HttpMethod.POST, "/**").hasAnyRole("editor", "admin", "api-service")
                         .requestMatchers(HttpMethod.PUT, "/**").hasAnyRole("editor", "admin", "api-service")
                         .requestMatchers(HttpMethod.DELETE, "/**").hasAnyRole("admin", "api-service")

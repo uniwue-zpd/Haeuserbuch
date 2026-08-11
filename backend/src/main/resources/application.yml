@@ -26,6 +26,9 @@ spring:
 haeuserbuch:
   files:
     upload-dir: ${HAEUSERBUCH_UPLOAD_DIR:/uploads}
+  search:
+    refresh-delay: 750ms
+    refresh-retry-delay: 30s
 
 server:
   compression:

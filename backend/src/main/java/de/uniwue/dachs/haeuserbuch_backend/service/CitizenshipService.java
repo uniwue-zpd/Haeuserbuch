@@ -5,6 +5,7 @@ import de.uniwue.dachs.haeuserbuch_backend.DTO.FullTextSearch.CitizenshipFullTex
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.CitizenshipPreviewDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.*;
 import de.uniwue.dachs.haeuserbuch_backend.repository.CitizenshipRepository;
+import de.uniwue.dachs.haeuserbuch_backend.search.SearchIndexAffecting;
 import de.uniwue.dachs.haeuserbuch_backend.specification.CitizenshipSpecification;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.CitizenshipMapper;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PersonMapper;
@@ -126,6 +127,7 @@ public class CitizenshipService {
      */
     @Transactional
     @CacheEvict(value = "citizenships", allEntries = true)
+    @SearchIndexAffecting
     public CitizenshipDTO createCitizenship(CitizenshipDTO citizenshipDTO) {
         return citizenshipMapper.CitizenshipToDTO(
                 citizenshipRepository.save(citizenshipMapper.DTOToCitizenship(citizenshipDTO))
@@ -139,6 +141,7 @@ public class CitizenshipService {
      */
     @Transactional
     @CacheEvict(value = "citizenships", allEntries = true)
+    @SearchIndexAffecting
     public CitizenshipDTO updateCitizenship(Long id, CitizenshipDTO updatedCitizenshipDTO) {
         return citizenshipRepository.findById(id)
                 .map(existingCitizenship -> {
@@ -166,6 +169,7 @@ public class CitizenshipService {
      */
     @Transactional
     @CacheEvict(value = "citizenships", allEntries = true)
+    @SearchIndexAffecting
     public void deleteCitizenship(Long id) {
         if (!citizenshipRepository.existsById(id)) {
             throw new RuntimeException("Citizenship with id '" + id + "' does not exist");

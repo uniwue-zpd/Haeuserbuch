@@ -29,7 +29,7 @@ class FlywayMigrationIntegrationTests {
     );
 
     @Test
-    void migratesEmptyAndLegacyDatabasesToTheSameV2Schema() throws SQLException {
+    void migratesEmptyAndLegacyDatabasesToTheSameCurrentSchema() throws SQLException {
         createDatabase(EMPTY_DATABASE);
         createDatabase(LEGACY_DATABASE);
         enablePostgis(EMPTY_DATABASE);
@@ -39,8 +39,8 @@ class FlywayMigrationIntegrationTests {
         emptyFlyway.migrate();
 
         assertThat(migrationHistory(EMPTY_DATABASE))
-                .containsExactly("1:SQL", "2:SQL");
-        assertV2Schema(EMPTY_DATABASE);
+                .containsExactly("1:SQL", "2:SQL", "3:SQL");
+        assertCurrentSchema(EMPTY_DATABASE);
 
         Flyway legacySeed = flyway(LEGACY_DATABASE, false, MigrationVersion.fromVersion("1"));
         legacySeed.migrate();
@@ -50,8 +50,8 @@ class FlywayMigrationIntegrationTests {
         legacyFlyway.migrate();
 
         assertThat(migrationHistory(LEGACY_DATABASE))
-                .containsExactly("1:BASELINE", "2:SQL");
-        assertV2Schema(LEGACY_DATABASE);
+                .containsExactly("1:BASELINE", "2:SQL", "3:SQL");
+        assertCurrentSchema(LEGACY_DATABASE);
     }
 
     private static Flyway flyway(String database, boolean baselineOnMigrate, MigrationVersion target) {
@@ -79,7 +79,7 @@ class FlywayMigrationIntegrationTests {
         execute(database, "CREATE EXTENSION postgis WITH SCHEMA public");
     }
 
-    private static void assertV2Schema(String database) throws SQLException {
+    private static void assertCurrentSchema(String database) throws SQLException {
         try (Connection connection = connection(database);
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("""
@@ -90,7 +90,7 @@ class FlywayMigrationIntegrationTests {
             assertThat(resultSet.next()).isTrue();
             assertThat(resultSet.getString(1)).isEqualTo("file");
             assertThat(resultSet.getString(2)).isEqualTo("building_file");
-            assertThat(resultSet.getString(3)).isNull();
+            assertThat(resultSet.getString(3)).isEqualTo("global_search_document");
         }
     }
 
