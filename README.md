@@ -50,13 +50,25 @@ PostgreSQL uses the `postgres_data` volume, and uploads use the `uploads_data` v
 
 ### Initialize the database from a dump
 
-Place the dump at `./dump.sql` and uncomment this mount under the `database` service in `compose.yaml` before the first startup:
+Place the current project dump at `./dump.sql` before the first startup when the historical research dataset should be imported. Development Compose mounts it at:
 
 ```yaml
-# - ./dump.sql:/docker-entrypoint-initdb.d/05_dump.sql:ro
+- ./dump.sql:/docker-entrypoint-initdb.d/05_dump.sql:ro
 ```
 
-PostgreSQL imports the dump only when creating an empty `postgres_data` volume. It does not import into an existing database. Comment out the mount again after the import, and retain any old database data until the restored application has been verified.
+PostgreSQL imports the dump only when creating an empty `postgres_data` volume. It does not import into an existing database. Without imported data, Flyway still creates an empty but complete application schema by applying all migrations in order. Retain any old database data until the restored application has been verified.
+
+PostGIS is a database infrastructure prerequisite. The Compose database initializer enables it before either the dump import or Flyway runs. Operators using an externally managed PostgreSQL instance must enable the `postgis` extension before starting the backend; Flyway itself does not require extension-management privileges.
+
+### Database migrations
+
+`V1__baseline_schema.sql` represents the schema in the checked-in legacy dump. `V2__add_file_upload_schema.sql` adds the file-upload tables implemented after that dump. These are currently the only active migrations.
+
+For an existing database restored from the legacy project dump, enable `FLYWAY_BASELINE_ON_MIGRATE` for its first Flyway-managed startup. Flyway records that schema as baseline version `1`, skips the V1 schema creation, and applies V2. Disable the setting again as soon as the history table exists; leaving it enabled removes Flyway's protection against accidentally adopting an unrelated non-empty database. A new empty database runs V1 and V2 normally and does not require baselining.
+
+Development Compose enables the legacy-baseline switch by default because it mounts `dump.sql`. Production defaults it to `false` and requires an explicit, temporary opt-in. Flyway owns only the `public` schema, validates migration names and checksums on startup, and cannot run `clean`. Hibernate validates the resulting schema in development, tests, and production and does not modify it automatically.
+
+For every future schema change, add a new versioned migration. Never edit or rename a migration that has already been applied to a shared database. Check `flyway_schema_history` when diagnosing migration state.
 
 ## Production
 
@@ -69,6 +81,21 @@ cp .env.prod.example .env.prod
 Also configure `TILES_DIR` and `BACKUP_DIR` there if their default directories should not be used. The configured PostGIS image supports both AMD64 and ARM64.
 
 Production mounts `dump.sql` automatically. Its objects are owned by `haeuserbuch_user`; the included initializer prepares that role and grants it to the configured `DB_USER` before importing the dump. PostgreSQL only runs these initialization scripts for a new `postgres_data` volume.
+
+For the first deployment against the existing unversioned server database:
+
+1. Take and verify a database backup.
+2. Set `FLYWAY_BASELINE_ON_MIGRATE=true` in `.env.prod`.
+3. Start the new backend and wait for its health check.
+4. Verify that `flyway_schema_history` contains V1 as `BASELINE` and V2 as `SQL`:
+
+```bash
+docker compose --env-file .env.prod -f compose.prod.yaml exec -T database \
+  sh -lc 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c \
+  "SELECT installed_rank, version, description, type, success FROM public.flyway_schema_history ORDER BY installed_rank"'
+```
+
+5. Change `FLYWAY_BASELINE_ON_MIGRATE=false` and recreate the backend container. Re-enable it only when deliberately adopting another legacy database without Flyway history.
 
 If a production volume was initialized before this setup, or its initialization logs contain an error, it may contain only a partial database. If that volume does not contain data that must be retained, remove only the database volume and start the stack again:
 
