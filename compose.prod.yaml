@@ -29,6 +29,12 @@ services:
         read_only: true
         bind:
           create_host_path: false
+      - type: bind
+        source: ./database/init/01-enable-postgis.sql
+        target: /docker-entrypoint-initdb.d/01-enable-postgis.sql
+        read_only: true
+        bind:
+          create_host_path: false
       # Import a dump only when postgres_data is initialized for the first time.
       - type: bind
         source: ./dump.sql
@@ -68,6 +74,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/${DB_NAME:-haeuserbuch}
       SPRING_DATASOURCE_USERNAME: ${DB_USER:-haeuserbuch}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env.prod}
+      # Enable explicitly only for the first migration of the legacy database.
+      SPRING_FLYWAY_BASELINE_ON_MIGRATE: ${FLYWAY_BASELINE_ON_MIGRATE:-false}
       HAEUSERBUCH_UPLOAD_DIR: /uploads
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: ${KEYCLOAK_ISSUER_URI}
     volumes:

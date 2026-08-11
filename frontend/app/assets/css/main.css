@@ -81,6 +81,21 @@ body {
   .content-table-label {
     @apply text-base font-medium text-muted;
   }
+
+  .command-search-excerpt {
+    @apply mt-1 block line-clamp-2 whitespace-normal text-xs leading-4 text-muted;
+  }
+
+  .search-match-excerpt mark {
+    border-radius: 0.2rem;
+    background: var(--ui-color-warning-200);
+    color: var(--ui-color-warning-950);
+    padding-inline: 0.1rem;
+  }
+}
+
+.dark .search-match-excerpt mark {
+  background: var(--ui-color-warning-300);
 }
 
 html.dark,

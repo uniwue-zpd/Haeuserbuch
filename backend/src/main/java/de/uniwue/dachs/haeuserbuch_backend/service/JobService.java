@@ -3,6 +3,7 @@ package de.uniwue.dachs.haeuserbuch_backend.service;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.JobDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Job;
 import de.uniwue.dachs.haeuserbuch_backend.repository.JobRepository;
+import de.uniwue.dachs.haeuserbuch_backend.search.SearchIndexAffecting;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.JobMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,7 @@ public class JobService {
      * @return the created {@link Job}
      */
     @Transactional
+    @SearchIndexAffecting
     public Job createJob(Job job) {
         return jobRepository.save(job);
     }
@@ -56,6 +58,7 @@ public class JobService {
      * @throws EntityNotFoundException if the job with the given ID does not exist
      */
     @Transactional
+    @SearchIndexAffecting
     public Job updateJob(Long id, Job job) {
         return jobRepository.findById(id)
                 .map(existingEntity -> {
@@ -75,6 +78,7 @@ public class JobService {
      * @throws EntityNotFoundException if the occupation with the given ID does not exist
      */
     @Transactional
+    @SearchIndexAffecting
     public void deleteJob(Long id) {
         if (!jobRepository.existsById(id)) {
             throw new EntityNotFoundException("Job with ID " + id + " does not exist.");

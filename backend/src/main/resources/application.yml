@@ -3,12 +3,20 @@ spring:
     name: haeuserbuch-backend
 
   jpa:
-    defer-datasource-initialization: true
     show-sql: false
 
-  sql:
-    init:
-      mode: always
+  flyway:
+    enabled: true
+    # Keep disabled by default. Enable only while adopting a known legacy
+    # database that has no Flyway history, then disable it again.
+    baseline-on-migrate: false
+    baseline-version: 1
+    clean-disabled: true
+    default-schema: public
+    locations: classpath:db/migration
+    schemas: public
+    validate-migration-naming: true
+    validate-on-migrate: true
 
   servlet:
     multipart:
@@ -18,6 +26,9 @@ spring:
 haeuserbuch:
   files:
     upload-dir: ${HAEUSERBUCH_UPLOAD_DIR:/uploads}
+  search:
+    refresh-delay: 750ms
+    refresh-retry-delay: 30s
 
 server:
   compression:

@@ -6,6 +6,7 @@ import de.uniwue.dachs.haeuserbuch_backend.model.Address;
 import de.uniwue.dachs.haeuserbuch_backend.model.Building;
 import de.uniwue.dachs.haeuserbuch_backend.model.BuildingName;
 import de.uniwue.dachs.haeuserbuch_backend.repository.BuildingRepository;
+import de.uniwue.dachs.haeuserbuch_backend.search.SearchIndexAffecting;
 import de.uniwue.dachs.haeuserbuch_backend.specification.BuildingSpecifications;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.*;
 import org.springframework.cache.annotation.CacheEvict;
@@ -122,6 +123,7 @@ public class BuildingService {
      */
     @Transactional
     @CacheEvict(value = "buildings", allEntries = true)
+    @SearchIndexAffecting
     public Feature createBuilding(Feature feature) {
         Building building = buildingMapper.FeatureToBuilding(feature);
         Building savedBuilding = buildingRepository.save(building);
@@ -136,6 +138,7 @@ public class BuildingService {
      */
     @Transactional
     @CacheEvict(value = "buildings", allEntries = true)
+    @SearchIndexAffecting
     public Feature updateBuilding(Long id, Feature updatedFeature) {
         return buildingRepository.findById(id).map(entity -> {
             Building mappedBuilding = buildingMapper.FeatureToBuilding(updatedFeature);
@@ -179,6 +182,7 @@ public class BuildingService {
      */
     @Transactional
     @CacheEvict(value = "buildings", allEntries = true)
+    @SearchIndexAffecting
     public void deleteBuilding(Long id) {
         if (!buildingRepository.existsById(id)) {
             throw new NoSuchElementException("Building with id '" + id + "' does not exist");

@@ -3,6 +3,7 @@ package de.uniwue.dachs.haeuserbuch_backend.service;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.WeaponDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Weapon;
 import de.uniwue.dachs.haeuserbuch_backend.repository.WeaponRepository;
+import de.uniwue.dachs.haeuserbuch_backend.search.SearchIndexAffecting;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.WeaponMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,7 @@ public class WeaponService {
      * @return the created {@link Weapon}
      */
     @Transactional
+    @SearchIndexAffecting
     public Weapon createWeapon(Weapon weapon) {
         return weaponRepository.save(weapon);
     }
@@ -56,6 +58,7 @@ public class WeaponService {
      * @throws EntityNotFoundException if the weapon with the given ID does not exist
      */
     @Transactional
+    @SearchIndexAffecting
     public Weapon updateWeapon(Long id, Weapon weapon) {
         return weaponRepository.findById(id)
                 .map(existingEntity -> {
@@ -72,6 +75,7 @@ public class WeaponService {
      * @throws EntityNotFoundException if the weapon with the given ID does not exist
      */
     @Transactional
+    @SearchIndexAffecting
     public void deleteWeapon(Long id) {
         if (!weaponRepository.existsById(id)) {
             throw new EntityNotFoundException("Weapon with ID " + id + " not found");

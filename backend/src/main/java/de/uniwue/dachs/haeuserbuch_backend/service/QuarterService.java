@@ -3,6 +3,7 @@ package de.uniwue.dachs.haeuserbuch_backend.service;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.QuarterDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Quarter;
 import de.uniwue.dachs.haeuserbuch_backend.repository.QuarterRepository;
+import de.uniwue.dachs.haeuserbuch_backend.search.SearchIndexAffecting;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.QuarterMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -34,12 +35,14 @@ public class QuarterService {
 
     // POST create a new quarter
     @Transactional
+    @SearchIndexAffecting
     public Quarter createQuarter(Quarter quarter) {
         return quarterRepository.save(quarter);
     }
 
     // PUT update an existing quarter
     @Transactional
+    @SearchIndexAffecting
     public Quarter updateQuarter(Long id, Quarter updatedQuarter) {
         return quarterRepository.findById(id)
                 .map(entity -> {
@@ -54,6 +57,7 @@ public class QuarterService {
 
     // DELETE a quarter by its ID
     @Transactional
+    @SearchIndexAffecting
     public void deleteQuarter(Long id) {
         if (!quarterRepository.existsById(id)) {
             throw new EntityNotFoundException("Quarter with ID " + id + " does not exist.");

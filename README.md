@@ -50,13 +50,33 @@ PostgreSQL uses the `postgres_data` volume, and uploads use the `uploads_data` v
 
 ### Initialize the database from a dump
 
-Place the dump at `./dump.sql` and uncomment this mount under the `database` service in `compose.yaml` before the first startup:
+Place the current project dump at `./dump.sql` before the first startup when the historical research dataset should be imported. Development Compose mounts it at:
 
 ```yaml
-# - ./dump.sql:/docker-entrypoint-initdb.d/05_dump.sql:ro
+- ./dump.sql:/docker-entrypoint-initdb.d/05_dump.sql:ro
 ```
 
-PostgreSQL imports the dump only when creating an empty `postgres_data` volume. It does not import into an existing database. Comment out the mount again after the import, and retain any old database data until the restored application has been verified.
+PostgreSQL imports the dump only when creating an empty `postgres_data` volume. It does not import into an existing database. Without imported data, Flyway still creates an empty but complete application schema by applying all migrations in order. Retain any old database data until the restored application has been verified.
+
+PostGIS is a database infrastructure prerequisite. The Compose database initializer enables it before either the dump import or Flyway runs. Operators using an externally managed PostgreSQL instance must enable the `postgis` extension before starting the backend. Some migrations may enable additional trusted PostgreSQL extensions, so the migration role must own the database or otherwise have the required `CREATE` privilege.
+
+### Database migrations
+
+Versioned migrations live in `backend/src/main/resources/db/migration`. Their filenames and Flyway's `flyway_schema_history` table are the authoritative record of available and applied schema changes; the README deliberately does not duplicate that version history.
+
+For an existing database restored from an unversioned legacy dump, enable `FLYWAY_BASELINE_ON_MIGRATE` for its first Flyway-managed startup. Flyway records the configured baseline, skips migrations represented by that existing schema, and applies every pending migration after it. Disable the setting again as soon as the history table exists; leaving it enabled removes Flyway's protection against accidentally adopting an unrelated non-empty database. A new empty database runs the complete migration chain and does not require baselining.
+
+Development Compose enables the legacy-baseline switch by default because it mounts `dump.sql`. Production defaults it to `false` and requires an explicit, temporary opt-in. Flyway owns only the `public` schema, validates migration names and checksums on startup, and cannot run `clean`. Hibernate validates the resulting schema in development, tests, and production and does not modify it automatically.
+
+For every future schema change, add a new versioned migration. Never edit or rename a migration that has already been applied to a shared database. Check `flyway_schema_history` when diagnosing migration state.
+
+### Global search maintenance
+
+The normalized `global_search_document` is refreshed asynchronously after a successful transaction whose service method is marked with `@SearchIndexAffecting`. Mark every new mutation that changes a searchable title, metadata value, relationship, or full-text value explicitly; refresh behavior does not depend on method naming.
+
+Imports and maintenance scripts that write directly to PostgreSQL bypass application events. After such a write completes, an `admin` or `api-service` may queue a concurrent rebuild with `POST /search/refresh`. A `202 Accepted` response means the rebuild was queued and may be coalesced with other pending refresh requests.
+
+Full-text support is document-driven: any future search-document branch that provides both `full_text` and a compatible `full_text_vector` participates in full-text matching without a repository change. Add its schema and normalized search-document branch in a new Flyway migration.
 
 ## Production
 
@@ -69,6 +89,21 @@ cp .env.prod.example .env.prod
 Also configure `TILES_DIR` and `BACKUP_DIR` there if their default directories should not be used. The configured PostGIS image supports both AMD64 and ARM64.
 
 Production mounts `dump.sql` automatically. Its objects are owned by `haeuserbuch_user`; the included initializer prepares that role and grants it to the configured `DB_USER` before importing the dump. PostgreSQL only runs these initialization scripts for a new `postgres_data` volume.
+
+For the first deployment against the existing unversioned server database:
+
+1. Take and verify a database backup.
+2. Set `FLYWAY_BASELINE_ON_MIGRATE=true` in `.env.prod`.
+3. Start the new backend and wait for its health check.
+4. Verify that `flyway_schema_history` contains the expected baseline and that every subsequent migration completed successfully:
+
+```bash
+docker compose --env-file .env.prod -f compose.prod.yaml exec -T database \
+  sh -lc 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c \
+  "SELECT installed_rank, version, description, type, success FROM public.flyway_schema_history ORDER BY installed_rank"'
+```
+
+5. Change `FLYWAY_BASELINE_ON_MIGRATE=false` and recreate the backend container. Re-enable it only when deliberately adopting another legacy database without Flyway history.
 
 If a production volume was initialized before this setup, or its initialization logs contain an error, it may contain only a partial database. If that volume does not contain data that must be retained, remove only the database volume and start the stack again:
 

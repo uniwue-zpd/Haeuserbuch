@@ -3,6 +3,7 @@ package de.uniwue.dachs.haeuserbuch_backend.service;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PlaceDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Place;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PlaceRepository;
+import de.uniwue.dachs.haeuserbuch_backend.search.SearchIndexAffecting;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.FeatureCollection;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PlaceProperties;
@@ -50,6 +51,7 @@ public class PlaceService {
     // POST Create new place
     @Transactional
     @CacheEvict(value = "places", allEntries = true)
+    @SearchIndexAffecting
     public Feature createPlace(Feature feature) {
         return placeMapper.PlaceToFeature(placeRepository.save(placeMapper.FeatureToPlace(feature)));
     }
@@ -57,6 +59,7 @@ public class PlaceService {
     // PUT Update existing place
     @Transactional
     @CacheEvict(value = "places", allEntries = true)
+    @SearchIndexAffecting
     public Feature updatePlace(Long id, Feature updatedFeature) {
         return placeRepository.findById(id).map(entity -> {
             PlaceProperties properties = (PlaceProperties) updatedFeature.getProperties();
@@ -83,6 +86,7 @@ public class PlaceService {
     // DELETE place by ID
     @Transactional
     @CacheEvict(value = "places", allEntries = true)
+    @SearchIndexAffecting
     public void deletePlace(Long id) {
         if (!placeRepository.existsById(id)) {
             throw new RuntimeException("Place with id '" + id + "' does not exist");

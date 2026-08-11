@@ -3,6 +3,7 @@ package de.uniwue.dachs.haeuserbuch_backend.service;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.StreetDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Street;
 import de.uniwue.dachs.haeuserbuch_backend.repository.StreetRepository;
+import de.uniwue.dachs.haeuserbuch_backend.search.SearchIndexAffecting;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.StreetMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -34,12 +35,14 @@ public class StreetService {
 
     // POST create a new street
     @Transactional
+    @SearchIndexAffecting
     public Street createStreet(Street street) {
         return streetRepository.save(street);
     }
 
     // PUT update an existing street
     @Transactional
+    @SearchIndexAffecting
     public Street updateStreet(Long id, Street street) {
         return streetRepository.findById(id)
                 .map(entity -> {
@@ -54,6 +57,7 @@ public class StreetService {
     }
 
     // DELETE a street by its ID
+    @SearchIndexAffecting
     public void deleteStreet(Long id) {
         if (!streetRepository.existsById(id)) {
             throw new EntityNotFoundException("Street with ID " + id + " does not exist.");

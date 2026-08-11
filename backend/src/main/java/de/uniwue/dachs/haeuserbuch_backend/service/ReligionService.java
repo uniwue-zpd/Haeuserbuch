@@ -3,6 +3,7 @@ package de.uniwue.dachs.haeuserbuch_backend.service;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.ReligionDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Religion;
 import de.uniwue.dachs.haeuserbuch_backend.repository.ReligionRepository;
+import de.uniwue.dachs.haeuserbuch_backend.search.SearchIndexAffecting;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.ReligionMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,7 @@ public class ReligionService {
      * @return the created {@link Religion}
      */
     @Transactional
+    @SearchIndexAffecting
     public Religion createReligion(Religion religion) {
         return religionRepository.save(religion);
     }
@@ -56,6 +58,7 @@ public class ReligionService {
      * @throws EntityNotFoundException if the religion with the given ID does not exist
      */
     @Transactional
+    @SearchIndexAffecting
     public Religion updateReligion(Long id, Religion religion) {
         return religionRepository.findById(id)
                 .map(existingEntity -> {
@@ -72,6 +75,7 @@ public class ReligionService {
      * @throws EntityNotFoundException if the religion with the given ID does not exist
      */
     @Transactional
+    @SearchIndexAffecting
     public void deleteReligion(Long id) {
         if (!religionRepository.existsById(id)) {
             throw new EntityNotFoundException("Religion with id " + id + " does not exist.");

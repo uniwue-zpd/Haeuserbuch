@@ -64,7 +64,16 @@ watch([query, () => searchParams.value.exact], () => {
           Volltextsuche
         </h1>
       </div>
-      <UButton to="/buergermatrikel" color="neutral" variant="outline" icon="i-lucide-arrow-left" label="Zum Verzeichnis" />
+      <div class="flex flex-wrap gap-2">
+        <UButton
+          :to="{ path: '/suche', query: { fields: 'full_text', types: 'citizenship' } }"
+          color="neutral"
+          variant="outline"
+          icon="i-lucide-list-filter"
+          label="Globale Suche"
+        />
+        <UButton to="/buergermatrikel" color="neutral" variant="outline" icon="i-lucide-arrow-left" label="Zum Verzeichnis" />
+      </div>
     </header>
 
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-start">
