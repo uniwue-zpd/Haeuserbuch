@@ -1,0 +1,15 @@
+services:
+  database:
+    volumes:
+      - type: bind
+        source: ./database/init/00-create-dump-owner.sh
+        target: /docker-entrypoint-initdb.d/00-create-dump-owner.sh
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./dump.sql
+        target: /docker-entrypoint-initdb.d/05_dump.sql
+        read_only: true
+        bind:
+          create_host_path: false

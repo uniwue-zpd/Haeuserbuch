@@ -88,13 +88,22 @@ cp .env.prod.example .env.prod
 
 Also configure `TILES_DIR` and `BACKUP_DIR` there if their default directories should not be used. The configured PostGIS image supports both AMD64 and ARM64.
 
-Production mounts `dump.sql` automatically. Its objects are owned by `haeuserbuch_user`; the included initializer prepares that role and grants it to the configured `DB_USER` before importing the dump. PostgreSQL only runs these initialization scripts for a new `postgres_data` volume.
+Normal production startup does not require or mount a database dump. To initialize a fresh production volume from an unversioned legacy dump, place it at `./dump.sql` and add `compose.prod.restore.yaml` to the first startup command. The restore overlay prepares the dump owner and mounts the dump; PostgreSQL runs these initialization scripts only while creating an empty `postgres_data` volume. Omit the restore overlay from every subsequent startup.
 
-For the first deployment against the existing unversioned server database:
+For the first deployment after restoring an unversioned legacy dump:
 
 1. Take and verify a database backup.
 2. Set `FLYWAY_BASELINE_ON_MIGRATE=true` in `.env.prod`.
-3. Start the new backend and wait for its health check.
+3. Initialize the new volume and start the application with the restore overlay:
+
+```bash
+docker compose --env-file .env.prod \
+  -f compose.prod.yaml \
+  -f compose.prod.build.yaml \
+  -f compose.prod.restore.yaml \
+  up -d --build --wait
+```
+
 4. Verify that `flyway_schema_history` contains the expected baseline and that every subsequent migration completed successfully:
 
 ```bash
@@ -103,7 +112,16 @@ docker compose --env-file .env.prod -f compose.prod.yaml exec -T database \
   "SELECT installed_rank, version, description, type, success FROM public.flyway_schema_history ORDER BY installed_rank"'
 ```
 
-5. Change `FLYWAY_BASELINE_ON_MIGRATE=false` and recreate the backend container. Re-enable it only when deliberately adopting another legacy database without Flyway history.
+5. Change `FLYWAY_BASELINE_ON_MIGRATE=false` and recreate the application without `compose.prod.restore.yaml`:
+
+```bash
+docker compose --env-file .env.prod \
+  -f compose.prod.yaml \
+  -f compose.prod.build.yaml \
+  up -d --force-recreate --wait
+```
+
+Re-enable baselining and the restore overlay only when deliberately initializing another empty volume from a known legacy dump without Flyway history.
 
 If a production volume was initialized before this setup, or its initialization logs contain an error, it may contain only a partial database. If that volume does not contain data that must be retained, remove only the database volume and start the stack again:
 

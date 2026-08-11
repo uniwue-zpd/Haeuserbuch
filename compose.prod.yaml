@@ -22,23 +22,9 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env.prod}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      # The dump owns objects as haeuserbuch_user; prepare that role before restoring it.
-      - type: bind
-        source: ./database/init/00-create-dump-owner.sh
-        target: /docker-entrypoint-initdb.d/00-create-dump-owner.sh
-        read_only: true
-        bind:
-          create_host_path: false
       - type: bind
         source: ./database/init/01-enable-postgis.sql
         target: /docker-entrypoint-initdb.d/01-enable-postgis.sql
-        read_only: true
-        bind:
-          create_host_path: false
-      # Import a dump only when postgres_data is initialized for the first time.
-      - type: bind
-        source: ./dump.sql
-        target: /docker-entrypoint-initdb.d/05_dump.sql
         read_only: true
         bind:
           create_host_path: false
