@@ -1,6 +1,3 @@
--- File upload was implemented after the schema represented by dump.sql. Both a
--- fresh database and an existing database baselined at version 1 reach the same
--- schema through this migration.
 CREATE TABLE public.file (
     id bigint NOT NULL,
     created_by character varying(255),
