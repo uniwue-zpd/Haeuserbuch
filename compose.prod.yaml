@@ -65,7 +65,11 @@ services:
       HAEUSERBUCH_UPLOAD_DIR: /uploads
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: ${KEYCLOAK_ISSUER_URI}
     volumes:
-      - uploads_data:/uploads
+      - type: bind
+        source: ${UPLOADS_DIR:?Set UPLOADS_DIR in the production environment file}
+        target: /uploads
+        bind:
+          create_host_path: false
     depends_on:
       database:
         condition: service_healthy
@@ -137,4 +141,3 @@ services:
 
 volumes:
   postgres_data:
-  uploads_data:

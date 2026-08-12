@@ -86,7 +86,7 @@ Create the production environment file and replace its placeholder password:
 cp .env.prod.example .env.prod
 ```
 
-Also configure `TILES_DIR` and `BACKUP_DIR` there if their default directories should not be used. The configured PostGIS image supports both AMD64 and ARM64.
+Configure `UPLOADS_DIR` for persistent uploaded files. Also configure `TILES_DIR` and `BACKUP_DIR` if their default directories should not be used. Create these host directories before starting production; Compose will not create `UPLOADS_DIR` implicitly. The configured PostGIS image supports both AMD64 and ARM64.
 
 Normal production startup does not require or mount a database dump. To initialize a fresh production volume from an unversioned legacy dump, place it at `./dump.sql` and add `compose.prod.restore.yaml` to the first startup command. The restore overlay prepares the dump owner and mounts the dump; PostgreSQL runs these initialization scripts only while creating an empty `postgres_data` volume. Omit the restore overlay from every subsequent startup.
 
@@ -154,7 +154,7 @@ curl --fail http://127.0.0.1:3000/tiles/index.json
 
 Only this frontend port is published. Configure the server's Apache instance to proxy the public application to it. Apache handles TLS and optional authentication.
 
-Stop production without deleting its named database and upload volumes:
+Stop production without deleting its named database volume or bind-mounted uploads:
 
 ```bash
 docker compose --env-file .env.prod \

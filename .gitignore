@@ -35,6 +35,7 @@ env-dev
 /db_data/
 /tiles/
 /backups/
+/uploads/
 
 # OS
 .DS_Store
