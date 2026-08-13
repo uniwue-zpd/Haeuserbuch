@@ -9,6 +9,7 @@ const UButton = resolveComponent("UButton");
 
 type PersonTableRow = PersonDTO & {
   jobText: string | null;
+  weaponText: string | null;
   religionText: string | null;
   originText: string | null;
 };
@@ -33,6 +34,7 @@ const filterValues = reactive({
   fullName: "",
   sex: "",
   job: "",
+  weapon: "",
   religion: "",
   origin: "",
 });
@@ -96,6 +98,13 @@ const columns: TableColumn<PersonTableRow>[] = [
     enableGlobalFilter: false,
   },
   {
+    id: "weapons",
+    accessorFn: (row) => row.weaponText,
+    header: "Bewaffnung",
+    enableSorting: false,
+    enableGlobalFilter: false,
+  },
+  {
     id: "religion",
     accessorFn: (row) => row.religionText,
     header: sortableHeader("Religion"),
@@ -126,12 +135,23 @@ const loadData = async () => {
           ? undefined
           : citizenFilter.value === "citizen",
       job: filterValues.job || undefined,
+      weapon: filterValues.weapon || undefined,
       religion: filterValues.religion || undefined,
       "place-of-origin": filterValues.origin || undefined,
     });
-    rows.value = res.content.map((person) => ({
+    rows.value = res.content.map((person: PersonDTO) => ({
       ...person,
       jobText: person.job?.originalText ?? null,
+      weaponText:
+        person.weapons
+          ?.map((weaponry: WeaponryDTO) =>
+            weaponry.originalText || weaponry.weapon?.name
+          )
+          .filter(
+            (weapon: string | null | undefined): weapon is string =>
+              Boolean(weapon),
+          )
+          .join(", ") || null,
       religionText: person.religion?.originalText ?? null,
       originText: person.origin?.originalText ?? null,
     }));
@@ -265,6 +285,15 @@ useHead(() => ({
           <details open class="border-b border-default p-4">
             <summary class="cursor-pointer list-none text-base font-semibold">
               <span class="flex items-center justify-between">
+                Bewaffnung
+                <UIcon name="i-lucide-chevron-down" class="size-4" />
+              </span>
+            </summary>
+            <UInput v-model="filterValues.weapon" class="mt-3 w-full" placeholder="Suchen..." />
+          </details>
+          <details open class="border-b border-default p-4">
+            <summary class="cursor-pointer list-none text-base font-semibold">
+              <span class="flex items-center justify-between">
                 Religion
                 <UIcon name="i-lucide-chevron-down" class="size-4" />
               </span>
@@ -312,6 +341,10 @@ useHead(() => ({
         </template>
         <template #job-cell="{ row }">
           <span v-if="row.original.jobText">{{ row.original.jobText }}</span>
+          <span v-else class="italic text-gray-500">unbekannt</span>
+        </template>
+        <template #weapons-cell="{ row }">
+          <span v-if="row.original.weaponText">{{ row.original.weaponText }}</span>
           <span v-else class="italic text-gray-500">unbekannt</span>
         </template>
         <template #religion-cell="{ row }">
