@@ -261,11 +261,11 @@ onBeforeUnmount(() => {
       >
         <UButton
           color="neutral"
-          variant="ghost"
-          icon="i-lucide-info"
-          label="Info"
-          aria-label="Informationen zur Geokodierung der Herkunftsorte"
-          title="Informationen zur Geokodierung der Herkunftsorte"
+          variant="outline"
+          icon="i-lucide-book-open"
+          label="Beschreibung"
+          aria-label="Beschreibung zur Geokodierung der Herkunftsorte"
+          title="Beschreibung zur Geokodierung der Herkunftsorte"
         />
 
         <template #body>
