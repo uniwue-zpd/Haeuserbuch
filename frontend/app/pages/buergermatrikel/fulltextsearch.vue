@@ -81,7 +81,7 @@ watch([query, () => searchParams.value.exact], () => {
         <div class="flex items-start justify-between gap-4">
           <div>
             <h2 class="text-xl font-semibold leading-tight text-highlighted">Im Eintragstext suchen</h2>
-            <p class="mt-1 text-sm text-muted">Die Suche startet automatisch nach kurzer Eingabepause.</p>
+            <p class="mt-2 text-sm text-muted">Die Suche ist unabhängig von Groß- und Kleinschreibung.</p>
           </div>
           <UButton color="neutral" variant="ghost" icon="i-lucide-x" label="Zurücksetzen" @click="query = ''" />
         </div>

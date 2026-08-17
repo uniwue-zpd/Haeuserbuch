@@ -139,7 +139,7 @@ function clearSearch() {
         </div>
         <UButton v-if="inputQuery" color="neutral" variant="ghost" icon="i-lucide-x" label="Zurücksetzen" @click="clearSearch" />
       </div>
-      <p class="mt-3 text-sm text-muted">Die Suche wird nach einer kurzen Eingabepause automatisch aktualisiert.</p>
+      <p class="mt-2 text-sm text-muted">Die Suche ist unabhängig von Groß- und Kleinschreibung.</p>
     </section>
 
     <div class="grid gap-6 lg:grid-cols-[18rem_minmax(0,1fr)] lg:items-start">
