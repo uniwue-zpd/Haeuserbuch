@@ -168,10 +168,9 @@ useHead(() => ({
   <div class="citizenship-overview flex min-h-full flex-col gap-8">
     <div class="flex flex-col gap-4">
       <header class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 class="text-3xl font-bold leading-none tracking-tighter text-highlighted sm:text-5xl">
-            Verzeichnis der von 1405 bis 1613 aufgenommenen Würzburger Bürger (Bürgermatrikel)
-          </h1>
+        <div class="flex flex-col gap-2">
+          <h1 class="text-4xl font-bold leading-none tracking-tighter text-highlighted sm:text-6xl">Bürgermatrikel</h1>
+          <h1 class="text-xl sm:text-2xl">Verzeichnis der von 1405 bis 1613 aufgenommenen Würzburger Bürger (Bürgermatrikel)</h1>
         </div>
       </header>
       <div

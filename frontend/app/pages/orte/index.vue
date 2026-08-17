@@ -251,9 +251,12 @@ onBeforeUnmount(() => {
 <template>
   <UniversalSkeleton v-if="loadingData" />
   <ErrorComponent :error="hasError" v-else-if="hasError" />
-  <div v-else class="flex flex-col gap-2">
+  <div v-else class="flex flex-col gap-4">
     <div class="flex items-center justify-between gap-3">
-      <h1 class="text-3xl font-bold">Verzeichnis und Visualisierung der Herkunftsorte der von 1405 bis 1613 aufgenommenen Würzburger Bürger</h1>
+      <div class="flex flex-col gap-2">
+        <h1 class="text-4xl font-bold leading-none tracking-tighter text-highlighted sm:text-6xl">Herkunftsorte</h1>
+        <h1 class="text-xl sm:text-2xl">Verzeichnis und Visualisierung der Herkunftsorte der von 1405 bis 1613 aufgenommenen Würzburger Bürger</h1>
+      </div>
       <UModal
         title="Geokodierung der Herkunftsorte"
         scrollable

@@ -25,7 +25,7 @@ export const researchNavigation: readonly ResearchNavigationItem[] = [
     to: '/orte',
   },
   {
-    label: 'Personen',
+    label: 'Bürger',
     description: 'Die aufgenommenen Würzburger Bürger in alphabetischer Anordnung.',
     icon: 'i-lucide-users',
     to: '/personen',

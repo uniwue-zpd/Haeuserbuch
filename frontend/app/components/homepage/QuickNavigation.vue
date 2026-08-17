@@ -29,7 +29,7 @@ import { researchNavigation } from "~/utils/researchNavigation";
           >
             {{ item.label }}
           </h3>
-          <p class="mt-2 max-w-xs text-sm leading-6 text-muted">
+          <p class="mt-2 max-w-md text-sm leading-6 text-muted">
             {{ item.description }}
           </p>
         </div>
