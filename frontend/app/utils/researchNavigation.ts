@@ -20,7 +20,7 @@ export const researchNavigation: readonly ResearchNavigationItem[] = [
   },
   {
     label: 'Orte',
-    description: 'Orte und historische Adressen durchsuchen.',
+    description: 'Verzeichnis und Visualisierung der Herkunftsorte der von 1405 bis 1613 aufgenommenen Würzburger Bürger.',
     icon: 'i-lucide-map-pin',
     to: '/orte',
   },
@@ -32,7 +32,7 @@ export const researchNavigation: readonly ResearchNavigationItem[] = [
   },
   {
     label: 'Bürgermatrikel',
-    description: 'Bürgeraufnahmen und Zugehörigkeiten recherchieren.',
+    description: 'Verzeichnis der von 1405 bis 1613 aufgenommenen Würzburger Bürger.',
     icon: 'i-lucide-id-card',
     to: '/buergermatrikel',
   },
