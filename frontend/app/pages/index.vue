@@ -74,7 +74,7 @@ useHead(() => ({
         </NuxtLink>
 
         <a
-          href="#features"
+          href="#recherche"
           class="group mx-auto flex size-14 shrink-0 items-center justify-center rounded-full border border-white/70 text-white transition-colors hover:bg-white hover:text-slate-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:size-16 lg:absolute lg:bottom-14 lg:left-1/2 lg:-translate-x-1/2 xl:bottom-20"
           aria-label="Zu den Recherchebereichen scrollen"
         >
@@ -87,7 +87,7 @@ useHead(() => ({
     </section>
 
     <section
-      id="features"
+      id="recherche"
       class="mx-auto w-full max-w-360 scroll-mt-28 px-2 sm:px-3 lg:px-4"
     >
       <div class="mb-9 sm:mb-12">
