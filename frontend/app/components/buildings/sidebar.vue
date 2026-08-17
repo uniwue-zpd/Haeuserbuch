@@ -254,9 +254,9 @@ watch(
 
     <template v-else>
       <div class="z-10 border-b border-muted bg-default px-4 pb-4 pt-5">
-        <div class="flex items-center justify-between gap-3">
+        <div class="flex items-end justify-between gap-3">
           <h1 class="mt-0.5 text-2xl font-bold text-highlighted">
-            Gebäude entdecken
+            Gebäudezuordnung und Beschreibung auf der Grundlage des Urkatasterplans von 1832
           </h1>
           <UModal
             title="Die Würzburger Uraufnahme von 1832"

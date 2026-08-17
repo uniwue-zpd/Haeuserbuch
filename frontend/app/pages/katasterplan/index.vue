@@ -207,7 +207,7 @@ const mapBottomPadding = computed(() =>
   isDesktop.value ? 0 : sheetHeight.value,
 );
 
-useHead(() => ({ title: "Gebäude entdecken - Gebäudeverzeichnis" }));
+useHead(() => ({ title: "Gebäudezuordnung und Beschreibung auf der Grundlage des Urkatasterplans von 1832" }));
 
 function updateQueryBuilding(id: number | null) {
   if (!import.meta.client) return;

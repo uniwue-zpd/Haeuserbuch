@@ -13,8 +13,8 @@ export const researchNavigation: readonly ResearchNavigationItem[] = [
     to: '/suche',
   },
   {
-    label: 'Katasterplan',
-    description: 'Gebäude im historischen Stadtplan entdecken.',
+    label: 'Urkatasterplan von 1832',
+    description: 'Gebäudezuordnung und Beschreibung auf der Grundlage des Urkatasterplans von 1832.',
     icon: 'i-lucide-map',
     to: '/katasterplan',
   },
