@@ -85,12 +85,12 @@ const columns: TableColumn<CitizenshipTableRow>[] = [
   {
     id: "primarySource",
     accessorFn: (row) => row.primarySourceTitle,
-    header: sortableHeader("Primärquelle"),
+    header: sortableHeader("Quellen"),
   },
   {
     id: "secondarySource",
     accessorFn: (row) => row.secondarySourceTitle,
-    header: sortableHeader("Sekundärquelle"),
+    header: sortableHeader("Literatur"),
   },
 ];
 
@@ -262,7 +262,7 @@ useHead(() => ({
           <details open class="border-b border-default p-4">
             <summary class="cursor-pointer list-none text-base font-semibold">
               <span class="flex items-center justify-between">
-                Primärquelle
+                Quellen
                 <UIcon name="i-lucide-chevron-down" class="size-4" />
               </span>
             </summary>
@@ -271,7 +271,7 @@ useHead(() => ({
           <details open class="p-4">
             <summary class="cursor-pointer list-none text-base font-semibold">
               <span class="flex items-center justify-between">
-                Sekundärquelle
+                Literatur
                 <UIcon name="i-lucide-chevron-down" class="size-4" />
               </span>
             </summary>

@@ -80,7 +80,7 @@ const submit = async (formData: Partial<CitizenshipInput>) => {
             type="entityAutocomplete"
             entityType="source"
             optionLabel="title"
-            label="Primärquelle"
+            label="Quellen"
             name="primarySource"
             outer-class="max-w-full"
           />
@@ -142,7 +142,7 @@ const submit = async (formData: Partial<CitizenshipInput>) => {
             type="entityAutocomplete"
             entityType="source"
             optionLabel="title"
-            label="Sekundärrquelle"
+            label="Literatur"
             name="secondarySource"
             outer-class="max-w-full"
           />
