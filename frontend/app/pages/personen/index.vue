@@ -198,14 +198,14 @@ onMounted(() => {
 });
 
 useHead(() => ({
-  title: "Personen - Personenverzeichnis",
+  title: "Würzbuger Bürger",
 }));
 </script>
 
 <template>
   <div class="flex flex-col gap-4">
     <header class="flex items-start justify-between gap-4">
-      <h1 class="text-4xl font-bold leading-none tracking-tighter text-highlighted sm:text-6xl">Personen</h1>
+      <h1 class="text-4xl font-bold leading-none tracking-tighter text-highlighted sm:text-6xl">Die aufgenommenen Würzburger Bürger in alphabetischer Anordnung</h1>
       <UPopover
         mode="click"
         :content="{ align: 'end', side: 'bottom', sideOffset: 8 }"

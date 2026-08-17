@@ -26,7 +26,7 @@ export const researchNavigation: readonly ResearchNavigationItem[] = [
   },
   {
     label: 'Personen',
-    description: 'Biografische Einträge und Verknüpfungen finden.',
+    description: 'Die aufgenommenen Würzburger Bürger in alphabetischer Anordnung.',
     icon: 'i-lucide-users',
     to: '/personen',
   },
@@ -35,12 +35,6 @@ export const researchNavigation: readonly ResearchNavigationItem[] = [
     description: 'Verzeichnis der von 1405 bis 1613 aufgenommenen Würzburger Bürger.',
     icon: 'i-lucide-id-card',
     to: '/buergermatrikel',
-  },
-  {
-    label: 'Quellenverzeichnis',
-    description: 'Verwendete Quellen und Literatur durchsuchen.',
-    icon: 'i-lucide-library',
-    to: '/quellen',
   },
   {
     label: 'Eigentumsverhältnisse',
