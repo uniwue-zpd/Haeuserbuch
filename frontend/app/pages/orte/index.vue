@@ -253,7 +253,7 @@ onBeforeUnmount(() => {
   <ErrorComponent :error="hasError" v-else-if="hasError" />
   <div v-else class="flex flex-col gap-2">
     <div class="flex items-center justify-between gap-3">
-      <h1 class="text-3xl font-bold">Die Orte im Überblick</h1>
+      <h1 class="text-3xl font-bold">Verzeichnis und Visualisierung der Herkunftsorte der von 1405 bis 1613 aufgenommenen Würzburger Bürger</h1>
       <UModal
         title="Geokodierung der Herkunftsorte"
         scrollable

@@ -85,12 +85,12 @@ const columns: TableColumn<CitizenshipTableRow>[] = [
   {
     id: "primarySource",
     accessorFn: (row) => row.primarySourceTitle,
-    header: sortableHeader("Primärquelle"),
+    header: sortableHeader("Quellen"),
   },
   {
     id: "secondarySource",
     accessorFn: (row) => row.secondarySourceTitle,
-    header: sortableHeader("Sekundärquelle"),
+    header: sortableHeader("Literatur"),
   },
 ];
 
@@ -169,12 +169,9 @@ useHead(() => ({
     <div class="flex flex-col gap-4">
       <header class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 class="text-4xl font-bold leading-none tracking-tighter text-highlighted sm:text-6xl">
-            Bürgermatrikel
+          <h1 class="text-3xl font-bold leading-none tracking-tighter text-highlighted sm:text-5xl">
+            Verzeichnis der von 1405 bis 1613 aufgenommenen Würzburger Bürger (Bürgermatrikel)
           </h1>
-        </div>
-        <div class="flex flex-wrap gap-2 sm:justify-end">
-          <UButton to="/buergermatrikel/fulltextsearch" color="neutral" variant="outline" icon="i-lucide-search" label="Volltextsuche" />
         </div>
       </header>
       <div
@@ -224,6 +221,7 @@ useHead(() => ({
               </ul>
             </template>
           </UPopover>
+          <UButton to="/buergermatrikel/fulltextsearch" color="neutral" variant="outline" icon="i-lucide-search" label="Volltextsuche" />
         </div>
       </div>
 
@@ -262,7 +260,7 @@ useHead(() => ({
           <details open class="border-b border-default p-4">
             <summary class="cursor-pointer list-none text-base font-semibold">
               <span class="flex items-center justify-between">
-                Primärquelle
+                Quellen
                 <UIcon name="i-lucide-chevron-down" class="size-4" />
               </span>
             </summary>
@@ -271,7 +269,7 @@ useHead(() => ({
           <details open class="p-4">
             <summary class="cursor-pointer list-none text-base font-semibold">
               <span class="flex items-center justify-between">
-                Sekundärquelle
+                Literatur
                 <UIcon name="i-lucide-chevron-down" class="size-4" />
               </span>
             </summary>

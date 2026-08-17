@@ -7,40 +7,34 @@ export interface ResearchNavigationItem {
 
 export const researchNavigation: readonly ResearchNavigationItem[] = [
   {
-    label: 'Globale Suche',
+    label: 'Volltextsuche',
     description: 'Namen, Metadaten und Texte durchsuchen.',
     icon: 'i-lucide-search',
     to: '/suche',
   },
   {
-    label: 'Katasterplan',
-    description: 'Gebäude im historischen Stadtplan entdecken.',
+    label: 'Urkatasterplan von 1832',
+    description: 'Gebäudezuordnung und Beschreibung auf der Grundlage des Urkatasterplans von 1832.',
     icon: 'i-lucide-map',
     to: '/katasterplan',
   },
   {
-    label: 'Orte',
-    description: 'Orte und historische Adressen durchsuchen.',
+    label: 'Herkunftsorte',
+    description: 'Verzeichnis und Visualisierung der Herkunftsorte der von 1405 bis 1613 aufgenommenen Würzburger Bürger.',
     icon: 'i-lucide-map-pin',
     to: '/orte',
   },
   {
     label: 'Personen',
-    description: 'Biografische Einträge und Verknüpfungen finden.',
+    description: 'Die aufgenommenen Würzburger Bürger in alphabetischer Anordnung.',
     icon: 'i-lucide-users',
     to: '/personen',
   },
   {
     label: 'Bürgermatrikel',
-    description: 'Bürgeraufnahmen und Zugehörigkeiten recherchieren.',
+    description: 'Verzeichnis der von 1405 bis 1613 aufgenommenen Würzburger Bürger.',
     icon: 'i-lucide-id-card',
     to: '/buergermatrikel',
-  },
-  {
-    label: 'Quellenverzeichnis',
-    description: 'Verwendete Quellen und Literatur durchsuchen.',
-    icon: 'i-lucide-library',
-    to: '/quellen',
   },
   {
     label: 'Eigentumsverhältnisse',

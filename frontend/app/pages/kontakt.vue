@@ -24,11 +24,11 @@ useHead(() => ({
         <div class="border-t border-default pt-6 text-sm leading-6 text-muted">
           <p class="font-semibold text-highlighted">Direkter Kontakt</p>
           <a
-            href="mailto:christian.naser@uni-wuerzburg.de"
+            href="mailto:jmu-haeuserprojekt@uni-wuerzburg.de"
             class="mt-2 inline-flex items-center gap-2 text-primary transition-colors hover:underline"
           >
             <UIcon name="i-lucide-mail" class="size-4" />
-            christian.naser@uni-wuerzburg.de
+            jmu-haeuserprojekt@uni-wuerzburg.de
           </a>
         </div>
       </section>

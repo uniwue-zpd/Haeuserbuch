@@ -82,11 +82,11 @@ useHead(() => ({
         <h2 class="text-xl font-semibold leading-tight text-highlighted">Quellen</h2>
         <div class="flex flex-col gap-3">
           <div v-if="citizenshipItem.primarySource" class="content-table-row !grid-cols-1 !gap-2 sm:!grid-cols-1">
-            <p class="content-table-label">Primärquelle</p>
+            <p class="content-table-label">Quellen</p>
             <SourcePreview :source="citizenshipItem.primarySource" />
           </div>
           <div v-if="citizenshipItem.secondarySource" class="content-table-row !grid-cols-1 !gap-2 sm:!grid-cols-1">
-            <p class="content-table-label">Sekundärquelle</p>
+            <p class="content-table-label">Literatur</p>
             <SourcePreview :source="citizenshipItem.secondarySource" />
           </div>
         </div>
