@@ -169,12 +169,9 @@ useHead(() => ({
     <div class="flex flex-col gap-4">
       <header class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 class="text-4xl font-bold leading-none tracking-tighter text-highlighted sm:text-6xl">
-            Bürgermatrikel
+          <h1 class="text-3xl font-bold leading-none tracking-tighter text-highlighted sm:text-5xl">
+            Verzeichnis der von 1405 bis 1613 aufgenommenen Würzburger Bürger (Bürgermatrikel)
           </h1>
-        </div>
-        <div class="flex flex-wrap gap-2 sm:justify-end">
-          <UButton to="/buergermatrikel/fulltextsearch" color="neutral" variant="outline" icon="i-lucide-search" label="Volltextsuche" />
         </div>
       </header>
       <div
@@ -224,6 +221,7 @@ useHead(() => ({
               </ul>
             </template>
           </UPopover>
+          <UButton to="/buergermatrikel/fulltextsearch" color="neutral" variant="outline" icon="i-lucide-search" label="Volltextsuche" />
         </div>
       </div>
 
