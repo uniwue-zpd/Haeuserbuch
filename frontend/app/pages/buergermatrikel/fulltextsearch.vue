@@ -70,7 +70,7 @@ watch([query, () => searchParams.value.exact], () => {
           color="neutral"
           variant="outline"
           icon="i-lucide-list-filter"
-          label="Globale Suche"
+          label="Volltextsuche"
         />
         <UButton to="/buergermatrikel" color="neutral" variant="outline" icon="i-lucide-arrow-left" label="Zum Verzeichnis" />
       </div>
