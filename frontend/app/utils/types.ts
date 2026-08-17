@@ -174,10 +174,7 @@ export interface WeaponryDTO {
 }
 
 /** Available filters for persons. */
-export interface FilterPerson {
-    page?: number;
-    size?: number;
-    sort?: string;
+export interface FilterPerson extends Pageable {
     name?: string;
     sex?: "männlich" | "weiblich";
     job?: string;
