@@ -1,4 +1,8 @@
 <script setup lang="ts">
+definePageMeta({
+  middleware: 'disabled'
+})
+
 const sourceStore = useSourceStore();
 const query = ref("");
 
