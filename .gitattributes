@@ -1,0 +1,3 @@
+database/init/00-create-dump-owner.sh text eol=lf
+backend/docker/dev-entrypoint.sh text eol=lf
+db_backup/backup.sh text eol=lf
