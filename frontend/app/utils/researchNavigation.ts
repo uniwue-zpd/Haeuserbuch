@@ -19,7 +19,7 @@ export const researchNavigation: readonly ResearchNavigationItem[] = [
     to: '/katasterplan',
   },
   {
-    label: 'Orte',
+    label: 'Herkunftsorte',
     description: 'Verzeichnis und Visualisierung der Herkunftsorte der von 1405 bis 1613 aufgenommenen Würzburger Bürger.',
     icon: 'i-lucide-map-pin',
     to: '/orte',

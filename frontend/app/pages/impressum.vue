@@ -31,9 +31,9 @@
             <p class="text-base leading-7 text-highlighted">
               E-Mail:
               <a
-                href="mailto:christian.naser@uni-wuerzburg.de"
+                href="mailto:jmu-haeuserprojekt@uni-wuerzburg.de"
                 class="underline decoration-current/30 underline-offset-2 transition hover:decoration-current"
-                >christian.naser@uni-wuerzburg.de</a
+                >jmu-haeuserprojekt@uni-wuerzburg.de</a
               >
             </p>
           </div>
