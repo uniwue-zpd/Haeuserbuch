@@ -34,7 +34,7 @@ useHead(() => ({
   <div v-else class="flex min-h-full flex-col gap-4">
     <Card>
       <template #title>
-        <h1 class="text-3xl font-bold text-black">
+        <h1 class="text-3xl font-bold text-highlighted">
           Distrikt {{ districtItem?.name }}
         </h1>
       </template>
@@ -48,7 +48,7 @@ useHead(() => ({
           </div>
           <Divider />
           <div v-show="relatedBuildings.length > 0" class="flex flex-col gap-2">
-            <h2 class="text-lg font-bold text-black">Zugeordnete Gebäude</h2>
+            <h2 class="text-lg font-bold text-highlighted">Zugeordnete Gebäude</h2>
             <DataTable :value="relatedBuildings" paginator :rows="10" stripedRows>
               <Column
                 field="districtPropertyNumber"
@@ -58,7 +58,7 @@ useHead(() => ({
                 <template #body="{ data }">
                   <NuxtLink
                     :to="`/katasterplan/${data.id}`"
-                    class="font-bold text-black"
+                    class="font-bold text-highlighted"
                   >
                     {{ data.districtPropertyNumber }}
                   </NuxtLink>
@@ -71,9 +71,9 @@ useHead(() => ({
       <template #footer>
         <Panel header="Notizen" toggleable v-show="districtItem?.generalNotes">
           <template #header>
-            <p class="text-sm text-black font-bold">Notizen</p>
+            <p class="text-sm font-bold text-highlighted">Notizen</p>
           </template>
-          <p class="text-sm text-black">{{ districtItem?.generalNotes }}</p>
+          <p class="text-sm text-highlighted">{{ districtItem?.generalNotes }}</p>
         </Panel>
       </template>
     </Card>

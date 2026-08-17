@@ -66,6 +66,29 @@ body {
     @apply min-w-0 overflow-hidden rounded-2xl border border-default bg-default shadow-sm;
   }
 
+  .p-card,
+  .p-panel {
+    background-color: var(--ui-bg);
+    border-color: var(--ui-border);
+    color: var(--ui-text);
+  }
+
+  .p-card-title,
+  .p-panel-title {
+    color: var(--ui-text-highlighted);
+  }
+
+  .p-panel-header,
+  .p-panel-content,
+  .p-panel-footer,
+  .p-card-body,
+  .p-card-content,
+  .p-card-footer {
+    background-color: transparent;
+    border-color: var(--ui-border);
+    color: inherit;
+  }
+
   .overview-table-panel table {
     border: 0;
   }

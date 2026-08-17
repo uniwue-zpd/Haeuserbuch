@@ -77,7 +77,7 @@ watch([query, () => searchParams.value.exact], () => {
     </header>
 
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-start">
-      <section class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-8">
+      <section class="flex min-w-0 flex-col gap-5 rounded-2xl border border-default bg-default p-5 shadow-md lg:col-span-8">
         <div class="flex items-start justify-between gap-4">
           <div>
             <h2 class="text-xl font-semibold leading-tight text-highlighted">Im Eintragstext suchen</h2>
@@ -95,7 +95,7 @@ watch([query, () => searchParams.value.exact], () => {
         </label>
       </section>
 
-      <section class="flex min-w-0 flex-col gap-4 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-4">
+      <section class="flex min-w-0 flex-col gap-4 rounded-2xl border border-default bg-default p-5 shadow-md lg:col-span-4">
         <h2 class="text-xl font-semibold leading-tight text-highlighted">Suchsyntax</h2>
         <dl class="flex flex-col">
           <div class="content-table-row !grid-cols-1 !gap-1 sm:!grid-cols-1">
@@ -118,7 +118,7 @@ watch([query, () => searchParams.value.exact], () => {
       </section>
     </div>
 
-    <section class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md">
+    <section class="flex min-w-0 flex-col gap-5 rounded-2xl border border-default bg-default p-5 shadow-md">
       <div class="flex flex-col gap-4 border-b border-muted pb-4 sm:flex-row sm:items-center sm:justify-between">
         <div class="flex items-center gap-3">
           <h2 class="text-xl font-semibold leading-tight text-highlighted">Treffer</h2>

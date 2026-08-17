@@ -33,7 +33,7 @@ useHead(() => ({
 <template>
   <Card>
     <template #title>
-      <h1 class="text-3xl font-bold text-black">Straßen</h1>
+      <h1 class="text-3xl font-bold text-highlighted">Straßen</h1>
     </template>
     <template #content>
       <div class="grid gap-4 lg:grid-cols-[minmax(16rem,18rem)_minmax(0,1fr)]">
@@ -80,7 +80,7 @@ useHead(() => ({
                   {{ altName }}
                 </li>
               </ul>
-              <span v-else class="rounded-md bg-red-100 p-2 italic">unbekannt</span>
+              <span v-else class="rounded-md bg-error/10 p-2 italic text-error">unbekannt</span>
             </template>
           </UTable>
           <div class="flex justify-end border-t border-default pt-4">

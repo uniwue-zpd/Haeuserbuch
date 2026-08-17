@@ -118,8 +118,8 @@ const formatFileSize = (bytes?: number) => {
         </span>
         </div>
       </div>
-      <p class="text-sm text-gray-600 roboto-plain">Hinweis: Es sind nur Bilddateien erlaubt</p>
-      <hr class="border-2 border-gray-200"/>
+      <p class="roboto-plain text-sm text-muted">Hinweis: Es sind nur Bilddateien erlaubt</p>
+      <hr class="border-2 border-default"/>
       <div
           v-if="pending"
           class="flex flex-row gap-3 items-center"
@@ -134,9 +134,9 @@ const formatFileSize = (bytes?: number) => {
         <div
             v-for="file in files"
             :key="file.id"
-            class="flex flex-row items-center gap-4 rounded-lg border border-gray-200 p-3 shadow-md"
+            class="flex flex-row items-center gap-4 rounded-lg border border-default bg-default p-3 shadow-md"
         >
-          <div class="w-20 h-20 rounded-lg overflow-hidden bg-gray-100 border flex items-center justify-center shrink-0">
+          <div class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-default bg-elevated">
             <Image
                 :src="getPreviewUrl(file.id)"
                 :alt="file.originalName ?? 'Datei'"
@@ -150,8 +150,8 @@ const formatFileSize = (bytes?: number) => {
           </div>
           <div class="flex-1 flex flex-col gap-1 min-w-0">
             <span class="font-semibold roboto-plain truncate">{{ file.originalName }}</span>
-            <span class="text-sm text-gray-500 roboto-plain">{{ timestampToDate(file.createdDate) }}</span>
-            <span class="text-xs text-gray-500 roboto-plain">{{ formatFileSize(file.size) }}</span>
+            <span class="roboto-plain text-sm text-muted">{{ timestampToDate(file.createdDate) }}</span>
+            <span class="roboto-plain text-xs text-muted">{{ formatFileSize(file.size) }}</span>
           </div>
           <Button
               icon="pi pi-trash"
@@ -185,14 +185,14 @@ const formatFileSize = (bytes?: number) => {
         <button
             @click="changePage(0)"
             :disabled="data.first"
-            class="flex h-9 items-center justify-center rounded-lg border border-gray-200 px-2 text-sm shadow-sm transition-all hover:border-gray-300 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+            class="flex h-9 cursor-pointer items-center justify-center rounded-lg border border-default px-2 text-sm shadow-sm transition-all hover:border-accented hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
         >
           <i class="pi pi-angle-double-left"/>
         </button>
         <button
             @click="changePage(data.number - 1)"
             :disabled="data.first"
-            class="flex h-9 items-center justify-center rounded-lg border border-gray-200 px-2 text-sm shadow-sm transition-all hover:border-gray-300 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+            class="flex h-9 cursor-pointer items-center justify-center rounded-lg border border-default px-2 text-sm shadow-sm transition-all hover:border-accented hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
         >
           <i class="pi pi-angle-left"/>
         </button>
@@ -210,14 +210,14 @@ const formatFileSize = (bytes?: number) => {
         <button
             @click="changePage(data.number + 1)"
             :disabled="data.last"
-            class="flex h-9 items-center justify-center rounded-lg border border-gray-200 px-2 text-sm shadow-sm transition-all hover:border-gray-300 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+            class="flex h-9 cursor-pointer items-center justify-center rounded-lg border border-default px-2 text-sm shadow-sm transition-all hover:border-accented hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
         >
           <i class="pi pi-angle-right"/>
         </button>
         <button
             @click="changePage(data.totalPages - 1)"
             :disabled="data.last"
-            class="flex h-9 items-center justify-center rounded-lg border border-gray-200 px-2 text-sm shadow-sm transition-all hover:border-gray-300 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+            class="flex h-9 cursor-pointer items-center justify-center rounded-lg border border-default px-2 text-sm shadow-sm transition-all hover:border-accented hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
         >
           <i class="pi pi-angle-double-right"/>
         </button>

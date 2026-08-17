@@ -42,7 +42,7 @@ useHead(() => ({
 
         <NuxtLink
           to="/katasterplan"
-          class="group grid grid-cols-[minmax(0,1fr)_7rem] overflow-hidden rounded-2xl bg-white text-slate-800 shadow-2xl transition-transform duration-300 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:grid-cols-[minmax(0,1fr)_9rem] lg:absolute lg:bottom-14 lg:right-14 lg:w-104 lg:grid-cols-[minmax(0,1fr)_10rem] xl:bottom-20 xl:right-20"
+          class="group grid grid-cols-[minmax(0,1fr)_7rem] overflow-hidden rounded-2xl border border-default bg-default text-highlighted shadow-2xl transition-transform duration-300 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:grid-cols-[minmax(0,1fr)_9rem] lg:absolute lg:bottom-14 lg:right-14 lg:w-104 lg:grid-cols-[minmax(0,1fr)_10rem] xl:bottom-20 xl:right-20"
         >
           <div class="flex min-h-32 flex-col p-4 sm:min-h-44 sm:p-5">
             <h2
@@ -51,7 +51,7 @@ useHead(() => ({
               Katasterplan von 1832 interaktiv erkunden
             </h2>
             <div
-              class="mt-2 flex items-center gap-2 text-xs font-semibold text-emerald-800 sm:mt-3 sm:text-sm"
+              class="mt-2 flex items-center gap-2 text-xs font-semibold text-primary sm:mt-3 sm:text-sm"
             >
               <span>Karte öffnen</span>
               <UIcon

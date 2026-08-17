@@ -299,7 +299,7 @@ useHead(() => ({
           >
             {{ row.original.personName }}
           </NuxtLink>
-          <span v-else class="italic text-gray-500">unbekannt</span>
+          <span v-else class="italic text-muted">unbekannt</span>
         </template>
         <template #primarySource-cell="{ row }">
           <NuxtLink
@@ -309,7 +309,7 @@ useHead(() => ({
           >
             {{ title_shortener(row.original.primarySourceTitle ?? "") }}
           </NuxtLink>
-          <span v-else class="italic text-gray-500">unbekannt</span>
+          <span v-else class="italic text-muted">unbekannt</span>
         </template>
         <template #secondarySource-cell="{ row }">
           <NuxtLink
@@ -319,7 +319,7 @@ useHead(() => ({
           >
             {{ title_shortener(row.original.secondarySourceTitle ?? "") }}
           </NuxtLink>
-          <span v-else class="italic text-gray-500">unbekannt</span>
+          <span v-else class="italic text-muted">unbekannt</span>
         </template>
           </UTable>
 
