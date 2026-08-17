@@ -7,7 +7,7 @@ export interface ResearchNavigationItem {
 
 export const researchNavigation: readonly ResearchNavigationItem[] = [
   {
-    label: 'Volltextsuche',
+    label: 'Suche',
     description: 'Namen, Metadaten und Texte durchsuchen.',
     icon: 'i-lucide-search',
     to: '/suche',

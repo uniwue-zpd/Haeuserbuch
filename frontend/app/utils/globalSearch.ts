@@ -49,7 +49,7 @@ export interface GlobalSearchParams {
 export const searchFieldConfig: Record<SearchField, { label: string; description: string }> = {
   TITLE: { label: "Titel und Namen", description: "Bezeichnungen, Namen und Alternativnamen" },
   METADATA: { label: "Metadaten", description: "Kennungen, Datierungen und verknüpfte Angaben" },
-  FULL_TEXT: { label: "Volltext", description: "Eintragstexte der Bürgermatrikel" },
+  FULL_TEXT: { label: "Volltext", description: "Volltexte der Bürgermatrikel" },
 };
 
 export const searchEntityConfig: Record<

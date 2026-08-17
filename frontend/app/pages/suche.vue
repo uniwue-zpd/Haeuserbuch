@@ -56,7 +56,7 @@ watch(routeQuery, (value) => {
 });
 onBeforeUnmount(() => clearTimeout(queryTimer));
 
-useHead(() => ({ title: routeQuery.value ? `Suche nach ${routeQuery.value}` : "Volltextsuche" }));
+useHead(() => ({ title: routeQuery.value ? `Suche nach ${routeQuery.value}` : "Suche" }));
 
 function serializedSelection<T extends string>(selection: T[], allValues: readonly T[]) {
   return selection.length === allValues.length ? undefined : selection.join(",").toLowerCase();
@@ -108,9 +108,9 @@ function clearSearch() {
   <div class="flex min-h-full flex-col gap-8">
     <header class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
       <div class="max-w-3xl">
-        <h1 class="mt-2 text-4xl font-bold leading-none tracking-tighter text-highlighted sm:text-6xl">Volltextsuche</h1>
+        <h1 class="mt-2 text-4xl font-bold leading-none tracking-tighter text-highlighted sm:text-6xl">Suche</h1>
         <p class="mt-4 max-w-2xl text-base leading-7 text-muted">
-          Durchsuchen Sie Namen, Titel, Metadaten und die Eintragstexte der Bürgermatrikel.
+          Durchsuchen Sie Namen, Titel, Metadaten und die Volltexte der Bürgermatrikel.
         </p>
       </div>
       <UButton
