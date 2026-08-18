@@ -11,17 +11,17 @@ useHead(() => ({
 <template>
   <div class="flex flex-col gap-16 pb-10 sm:gap-20 lg:gap-24">
     <section
-      class="relative flex min-h-[calc(100svh-6rem)] w-full overflow-hidden rounded-3xl bg-[url('/hero_image.webp')] bg-cover bg-center sm:min-h-[calc(100svh-6.5rem)] sm:rounded-4xl"
+      class="relative flex min-h-[calc(100svh-6rem)] w-full overflow-hidden bg-[url('/hero_image.webp')] bg-cover bg-center sm:min-h-[calc(100svh-6.5rem)] rounded-md"
       aria-labelledby="hero-title"
     >
-      <div class="absolute inset-0 bg-[#17261f]/70" />
+      <div class="absolute inset-0 bg-black/70" />
 
       <div
         class="relative flex min-h-[calc(100svh-6rem)] w-full flex-col gap-12 px-6 py-10 text-white sm:min-h-[calc(100svh-6.5rem)] sm:px-10 sm:py-14 lg:px-14 lg:py-14 xl:px-20"
       >
         <div class="flex flex-1 flex-col justify-center">
           <p
-            class="mb-4 text-sm font-semibold tracking-widest text-white/75 sm:text-xl"
+            class="mb-4 text-sm font-semibold tracking-widest text-white/90 sm:text-xl"
           >
             Das Würzburger Häuserprojekt
           </p>
@@ -42,7 +42,7 @@ useHead(() => ({
 
         <NuxtLink
           to="/katasterplan"
-          class="group grid grid-cols-[minmax(0,1fr)_7rem] overflow-hidden rounded-2xl border border-default bg-default text-highlighted shadow-2xl transition-transform duration-300 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:grid-cols-[minmax(0,1fr)_9rem] lg:absolute lg:bottom-14 lg:right-14 lg:w-104 lg:grid-cols-[minmax(0,1fr)_10rem] xl:bottom-20 xl:right-20"
+          class="group grid grid-cols-[minmax(0,1fr)_7rem] overflow-hidden rounded-md border border-default bg-default text-highlighted shadow-2xl transition-transform duration-300 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:grid-cols-[minmax(0,1fr)_9rem] lg:absolute lg:bottom-14 lg:right-14 lg:w-104 lg:grid-cols-[minmax(0,1fr)_10rem] xl:bottom-20 xl:right-20"
         >
           <div class="flex min-h-32 flex-col p-4 sm:min-h-44 sm:p-5">
             <h2
