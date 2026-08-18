@@ -3,6 +3,7 @@ export interface ResearchNavigationItem {
   description: string
   icon: string
   to?: string
+  descriptionTo?: string
 }
 
 export const researchNavigation: readonly ResearchNavigationItem[] = [
@@ -35,6 +36,7 @@ export const researchNavigation: readonly ResearchNavigationItem[] = [
     description: 'Verzeichnis der von 1405 bis 1613 aufgenommenen Würzburger Bürger.',
     icon: 'i-lucide-id-card',
     to: '/buergermatrikel',
+    descriptionTo: '/buergermatrikel/description'
   },
   {
     label: 'Eigentumsverhältnisse',
