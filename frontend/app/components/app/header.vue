@@ -301,7 +301,7 @@ defineShortcuts({
       }"
       :ui="{
         content:
-          'w-full max-w-7xl overflow-hidden rounded-3xl border border-default bg-default p-0 shadow-2xl ring-0',
+          'w-full max-w-7xl overflow-hidden rounded-md border border-default bg-default p-0 shadow-2xl ring-0',
       }"
     >
       <template #default="{ open }">
@@ -313,7 +313,7 @@ defineShortcuts({
             open ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'
           "
           :class="[
-            'rounded-xl px-4 text-sm font-semibold',
+            'rounded-md px-4 text-sm font-semibold',
             'text-highlighted hover:bg-elevated hover:text-highlighted',
             researchIsActive && 'bg-elevated',
           ]"
@@ -341,7 +341,7 @@ defineShortcuts({
               v-for="item in researchNavigation.filter((entry) => entry.to)"
               :key="item.label"
               :to="item.to"
-              class="group flex min-h-32 flex-col justify-between rounded-2xl border border-default bg-elevated/60 p-5 transition duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-accented focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              class="group flex min-h-32 flex-col justify-between rounded-md border border-default bg-elevated/60 p-5 transition duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-accented focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               @click="close"
             >
               <UIcon
@@ -367,7 +367,7 @@ defineShortcuts({
             <div
               v-for="item in researchNavigation.filter((entry) => !entry.to)"
               :key="item.label"
-              class="flex min-h-32 flex-col justify-between rounded-2xl border border-dashed border-default bg-muted/40 p-5"
+              class="flex min-h-32 flex-col justify-between rounded-md border border-dashed border-default bg-muted/40 p-5"
               aria-disabled="true"
             >
               <div class="flex items-start justify-between gap-3">
@@ -402,7 +402,7 @@ defineShortcuts({
       }"
       :ui="{
         content:
-          'w-full max-w-7xl overflow-hidden rounded-3xl border border-default bg-default p-0 shadow-2xl ring-0',
+          'w-full max-w-7xl overflow-hidden rounded-md border border-default bg-default p-0 shadow-2xl ring-0',
       }"
     >
       <template #default="{ open }">
@@ -414,7 +414,7 @@ defineShortcuts({
             open ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'
           "
           :class="[
-            'rounded-xl px-4 text-sm font-semibold',
+            'rounded-md px-4 text-sm font-semibold',
             'text-highlighted hover:bg-elevated hover:text-highlighted',
             projectIsActive && 'bg-elevated',
           ]"
@@ -438,7 +438,7 @@ defineShortcuts({
               v-for="item in projectNavigation"
               :key="item.label"
               :to="item.to"
-              class="group flex min-h-32 flex-col justify-between rounded-2xl border border-default bg-elevated/60 p-5 transition duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-accented focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              class="group flex min-h-32 flex-col justify-between rounded-md border border-default bg-elevated/60 p-5 transition duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-accented focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               @click="close"
             >
               <UIcon
@@ -470,7 +470,7 @@ defineShortcuts({
       color="neutral"
       variant="ghost"
       :class="[
-        'rounded-xl px-4 text-sm font-semibold',
+        'rounded-md px-4 text-sm font-semibold',
         'text-highlighted hover:bg-elevated hover:text-highlighted',
         isActive('/kontakt') && 'bg-elevated',
       ]"
@@ -481,7 +481,7 @@ defineShortcuts({
         v-model:open="searchOpen"
         :ui="{
           content:
-            'w-full max-w-xl overflow-hidden rounded-2xl p-0',
+            'w-full max-w-xl overflow-hidden rounded-md p-0',
         }"
       >
         <UButton
@@ -491,7 +491,7 @@ defineShortcuts({
           variant="ghost"
           aria-label="Suche öffnen"
           :class="[
-            'rounded-xl',
+            'rounded-md',
             'text-highlighted hover:bg-elevated hover:text-highlighted',
           ]"
         />
@@ -511,7 +511,7 @@ defineShortcuts({
         color="neutral"
         variant="ghost"
         :class="[
-          'rounded-xl',
+          'rounded-md',
           'text-highlighted hover:bg-elevated hover:text-highlighted',
         ]"
       />
@@ -534,7 +534,7 @@ defineShortcuts({
           variant="ghost"
           aria-label="Benutzerkonto öffnen"
           :class="[
-            'max-w-48 rounded-xl',
+            'max-w-48 rounded-md',
             'text-highlighted hover:bg-elevated hover:text-highlighted',
           ]"
         />
@@ -580,7 +580,7 @@ defineShortcuts({
               v-for="item in researchNavigation.filter((entry) => entry.to)"
               :key="item.label"
               :to="item.to"
-              class="block rounded-lg py-1 text-2xl font-medium tracking-tight text-highlighted transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:text-3xl"
+              class="block rounded-md py-1 text-2xl font-medium tracking-tight text-highlighted transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:text-3xl"
               @click="mobileMenuOpen = false"
             >
               {{ item.label }}
@@ -608,14 +608,14 @@ defineShortcuts({
               v-for="item in projectNavigation"
               :key="item.label"
               :to="item.to"
-              class="block rounded-lg py-1 text-2xl font-medium tracking-tight text-highlighted transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:text-3xl"
+              class="block rounded-md py-1 text-2xl font-medium tracking-tight text-highlighted transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:text-3xl"
               @click="mobileMenuOpen = false"
             >
               {{ item.label }}
             </NuxtLink>
             <NuxtLink
               to="/kontakt"
-              class="block rounded-lg py-1 text-2xl font-medium tracking-tight text-highlighted transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:text-3xl"
+              class="block rounded-md py-1 text-2xl font-medium tracking-tight text-highlighted transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:text-3xl"
               @click="mobileMenuOpen = false"
             >
               Kontakt

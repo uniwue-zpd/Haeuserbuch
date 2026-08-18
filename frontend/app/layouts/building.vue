@@ -88,7 +88,7 @@ function handleMapSelect(id: number) {
             <div class="flex gap-1" aria-label="Gebäude wechseln">
             <button
               type="button"
-              class="grid size-11 place-items-center rounded-xl border border-accented text-highlighted transition-colors duration-150 hover:border-amber-500 hover:bg-elevated focus-visible:border-amber-500 focus-visible:bg-elevated focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+              class="grid size-11 place-items-center rounded-md border border-accented text-highlighted transition-colors duration-150 hover:border-amber-500 hover:bg-elevated focus-visible:border-amber-500 focus-visible:bg-elevated focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               :disabled="!previousBuilding"
               aria-label="Vorheriges Gebäude"
               @click="navigateToBuilding(previousBuilding)"
@@ -97,7 +97,7 @@ function handleMapSelect(id: number) {
             </button>
             <button
               type="button"
-              class="grid size-11 place-items-center rounded-xl border border-accented text-highlighted transition-colors duration-150 hover:border-amber-500 hover:bg-elevated focus-visible:border-amber-500 focus-visible:bg-elevated focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+              class="grid size-11 place-items-center rounded-md border border-accented text-highlighted transition-colors duration-150 hover:border-amber-500 hover:bg-elevated focus-visible:border-amber-500 focus-visible:bg-elevated focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               :disabled="!nextBuilding"
               aria-label="Nächstes Gebäude"
               @click="navigateToBuilding(nextBuilding)"
@@ -110,7 +110,7 @@ function handleMapSelect(id: number) {
       </header>
 
       <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(22rem,1fr)] lg:items-start">
-        <section class="flex h-96 min-w-0 flex-col overflow-hidden rounded-2xl border-0 bg-default shadow-md lg:col-span-full lg:h-124">
+        <section class="flex h-96 min-w-0 flex-col overflow-hidden rounded-md border-0 bg-default shadow-md lg:col-span-full lg:h-124">
           <ClientOnly>
             <BuildingsMap
               :features="buildingFeatures"

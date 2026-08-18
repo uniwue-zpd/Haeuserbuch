@@ -33,14 +33,14 @@ useHead(() => ({
         </div>
       </section>
 
-      <section class="rounded-3xl border border-default bg-elevated/50 p-5 shadow-sm sm:p-8" aria-labelledby="formular-title">
+      <section class="rounded-md border border-default bg-elevated/50 p-5 shadow-sm sm:p-8" aria-labelledby="formular-title">
         <div class="mb-7">
           <h2 id="formular-title" class="font-sans text-2xl font-semibold tracking-tight text-highlighted">
             Kontaktformular
           </h2>
         </div>
 
-        <div class="flex items-start gap-3 rounded-2xl bg-primary/10 px-4 py-4 text-sm leading-6 text-muted" role="status">
+        <div class="flex items-start gap-3 rounded-md bg-primary/10 px-4 py-4 text-sm leading-6 text-muted" role="status">
           <UIcon name="i-lucide-info" class="mt-1 size-4 shrink-0 text-primary" />
           <p>
             Das Kontaktformular wird derzeit noch nicht unterstützt. Wir arbeiten

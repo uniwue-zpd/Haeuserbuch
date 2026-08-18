@@ -122,7 +122,7 @@ function clearSearch() {
       />
     </header>
 
-    <section class="rounded-2xl border border-default bg-default p-5 shadow-sm sm:p-6" aria-labelledby="global-search-heading">
+    <section class="rounded-md border border-default bg-default p-5 shadow-sm sm:p-6" aria-labelledby="global-search-heading">
       <div class="flex flex-col gap-4 sm:flex-row sm:items-end">
         <div class="min-w-0 flex-1">
           <label id="global-search-heading" for="global-search" class="mb-2 block text-sm font-semibold text-highlighted">Suchbegriff</label>
@@ -143,7 +143,7 @@ function clearSearch() {
     </section>
 
     <div class="grid gap-6 lg:grid-cols-[18rem_minmax(0,1fr)] lg:items-start">
-      <aside class="space-y-6 rounded-2xl border border-default bg-default p-5 shadow-sm lg:sticky lg:top-28" aria-label="Suchfilter">
+      <aside class="space-y-6 rounded-md border border-default bg-default p-5 shadow-sm lg:sticky lg:top-28" aria-label="Suchfilter">
         <section aria-labelledby="field-filter-heading">
           <h2 id="field-filter-heading" class="font-semibold text-highlighted">Treffer in</h2>
           <div class="mt-3 space-y-3">
@@ -187,7 +187,7 @@ function clearSearch() {
         </section>
       </aside>
 
-      <section class="min-w-0 overflow-hidden rounded-2xl border border-default bg-default shadow-sm" aria-labelledby="search-results-heading" aria-live="polite">
+      <section class="min-w-0 overflow-hidden rounded-md border border-default bg-default shadow-sm" aria-labelledby="search-results-heading" aria-live="polite">
         <div class="flex flex-col gap-2 border-b border-default p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
           <div>
             <h2 id="search-results-heading" class="text-xl font-semibold text-highlighted">Suchergebnisse</h2>
@@ -224,7 +224,7 @@ function clearSearch() {
             class="group block p-5 transition-colors hover:bg-elevated/70 focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-primary sm:p-6"
           >
             <div class="flex items-start gap-4">
-              <div class="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl bg-elevated text-muted group-hover:text-primary">
+              <div class="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-md bg-elevated text-muted group-hover:text-primary">
                 <UIcon :name="searchEntityConfig[result.entityType].icon" class="size-5" />
               </div>
               <div class="min-w-0 flex-1">

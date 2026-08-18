@@ -75,7 +75,7 @@ useHead(() => ({
     <div class="grid grid-cols-1 gap-4 lg:auto-rows-auto lg:grid-cols-12 lg:items-start">
       <div
         v-if="hasProfileContent"
-        class="row-span-2 flex min-w-0 flex-col gap-5 rounded-2xl border border-default bg-default p-5 shadow-md lg:col-span-7"
+        class="row-span-2 flex min-w-0 flex-col gap-5 rounded-md border border-default bg-default p-5 shadow-md lg:col-span-7"
       >
         <h2 class="text-xl font-semibold leading-tight text-highlighted">Über die Person</h2>
         <div
@@ -140,7 +140,7 @@ useHead(() => ({
           <div>
             <NuxtLink
               :to="`/katasterplan/${personItem.associatedBuilding.id}`"
-              class="rounded-lg border-2 border-default p-1.5 font-semibold text-highlighted shadow-sm hover:border-accented hover:shadow-md"
+              class="rounded-md border-2 border-default p-1.5 font-semibold text-highlighted shadow-sm hover:border-accented hover:shadow-md"
             >
               {{ personItem.associatedBuilding.districtPropertyNumber }}
             </NuxtLink>
@@ -184,7 +184,7 @@ useHead(() => ({
       />
       <div
         v-if="personItem.generalNotes"
-        class="flex min-w-0 flex-col gap-5 rounded-2xl border border-default bg-default p-5 shadow-md lg:col-span-5"
+        class="flex min-w-0 flex-col gap-5 rounded-md border border-default bg-default p-5 shadow-md lg:col-span-5"
       >
         <h2 class="text-xl font-semibold leading-tight text-highlighted">Notizen und Anmerkungen</h2>
         <div class="flex flex-col gap-2 border-l-0 border-t border-muted py-3">

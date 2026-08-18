@@ -77,7 +77,7 @@ watch([query, () => searchParams.value.exact], () => {
     </header>
 
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-start">
-      <section class="flex min-w-0 flex-col gap-5 rounded-2xl border border-default bg-default p-5 shadow-md lg:col-span-8">
+      <section class="flex min-w-0 flex-col gap-5 rounded-md border border-default bg-default p-5 shadow-md lg:col-span-8">
         <div class="flex items-start justify-between gap-4">
           <div>
             <h2 class="text-xl font-semibold leading-tight text-highlighted">Im Eintragstext suchen</h2>
@@ -95,7 +95,7 @@ watch([query, () => searchParams.value.exact], () => {
         </label>
       </section>
 
-      <section class="flex min-w-0 flex-col gap-4 rounded-2xl border border-default bg-default p-5 shadow-md lg:col-span-4">
+      <section class="flex min-w-0 flex-col gap-4 rounded-md border border-default bg-default p-5 shadow-md lg:col-span-4">
         <h2 class="text-xl font-semibold leading-tight text-highlighted">Suchsyntax</h2>
         <dl class="flex flex-col">
           <div class="content-table-row !grid-cols-1 !gap-1 sm:!grid-cols-1">
@@ -118,7 +118,7 @@ watch([query, () => searchParams.value.exact], () => {
       </section>
     </div>
 
-    <section class="flex min-w-0 flex-col gap-5 rounded-2xl border border-default bg-default p-5 shadow-md">
+    <section class="flex min-w-0 flex-col gap-5 rounded-md border border-default bg-default p-5 shadow-md">
       <div class="flex flex-col gap-4 border-b border-muted pb-4 sm:flex-row sm:items-center sm:justify-between">
         <div class="flex items-center gap-3">
           <h2 class="text-xl font-semibold leading-tight text-highlighted">Treffer</h2>
@@ -141,7 +141,7 @@ watch([query, () => searchParams.value.exact], () => {
         Suche läuft …
       </div>
       <div v-else-if="data && data.totalElements > 0" class="flex flex-col gap-3">
-        <article v-for="result in data.content" :key="result.id" class="overflow-hidden rounded-2xl border border-default bg-elevated/40">
+        <article v-for="result in data.content" :key="result.id" class="overflow-hidden rounded-md border border-default bg-elevated/40">
           <div class="grid grid-cols-1 gap-x-4 gap-y-1 border-b border-muted px-4 py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]">
             <p class="content-table-label">Eintrag</p>
             <NuxtLink :to="`/buergermatrikel/${result.id}`" class="font-semibold text-highlighted underline decoration-muted underline-offset-4 hover:decoration-current">

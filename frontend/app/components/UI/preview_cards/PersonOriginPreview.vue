@@ -86,7 +86,7 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="person-origin-card flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md"
+    class="person-origin-card flex min-w-0 flex-col gap-5 rounded-md border border-gray-300 bg-default p-5 shadow-md"
   >
     <h2 class="text-xl font-semibold leading-tight text-highlighted">Herkunft</h2>
     <div v-if="personOrigin.originalText" class="flex flex-col gap-2 border-t border-muted py-3">
@@ -106,7 +106,7 @@ onUnmounted(() => {
           v-for="place in personOrigin.places"
           :key="place.id"
           :to="`/orte/${place.id}`"
-          class="p-1.5 border-2 border-gray-300 rounded-lg shadow-sm hover:shadow-md font-semibold"
+          class="p-1.5 border-2 border-gray-300 rounded-md shadow-sm hover:shadow-md font-semibold"
         >
           {{ place.realName }}
         </NuxtLink>
@@ -126,7 +126,7 @@ onUnmounted(() => {
     </div>
     <div
       v-if="hasGeoData"
-      class="h-56 w-full overflow-hidden rounded-xl border-0 shadow-none"
+      class="h-56 w-full overflow-hidden rounded-md border-0 shadow-none"
       :id="`person-${props.personId}_origin_map`"
     />
   </div>

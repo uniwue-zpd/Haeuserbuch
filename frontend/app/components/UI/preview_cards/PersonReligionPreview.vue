@@ -16,7 +16,7 @@ const props = defineProps<{
         <span class="text-sm font-semibold uppercase tracking-wide text-gray-500">Kategorie:</span>
         <NuxtLink
             :to="`/religions/${ props.religion.religionCategory.id }`"
-            class="p-1.5 border-2 border-gray-300 rounded-lg shadow-sm hover:shadow-md font-semibold"
+            class="p-1.5 border-2 border-gray-300 rounded-md shadow-sm hover:shadow-md font-semibold"
         >
           {{ props.religion.religionCategory.name }}
         </NuxtLink>

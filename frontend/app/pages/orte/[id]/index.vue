@@ -100,7 +100,7 @@ onBeforeUnmount(() => {
     </header>
 
     <div v-if="properties" class="grid grid-cols-1 auto-rows-auto gap-4 lg:auto-rows-auto lg:grid-cols-12">
-      <section class="flex min-w-0 flex-col gap-5 overflow-hidden rounded-2xl border-0 bg-default p-0 shadow-md lg:col-span-8">
+      <section class="flex min-w-0 flex-col gap-5 overflow-hidden rounded-md border-0 bg-default p-0 shadow-md lg:col-span-8">
         <div
           v-if="geometry"
           id="map"
@@ -117,7 +117,7 @@ onBeforeUnmount(() => {
         </div>
       </section>
 
-      <section v-if="properties.altNames?.length" class="flex min-w-0 flex-col gap-5 self-start rounded-2xl border border-default bg-default p-5 shadow-md lg:col-span-4">
+      <section v-if="properties.altNames?.length" class="flex min-w-0 flex-col gap-5 self-start rounded-md border border-default bg-default p-5 shadow-md lg:col-span-4">
         <div class="flex items-start justify-between gap-4">
           <h2 class="text-xl font-semibold leading-tight text-highlighted">Namensvarianten</h2>
         </div>
@@ -130,7 +130,7 @@ onBeforeUnmount(() => {
 
       <section
         v-if="properties.generalNotes"
-        class="flex min-w-0 flex-col gap-5 rounded-2xl border border-default bg-default p-5 shadow-md lg:col-span-8"
+        class="flex min-w-0 flex-col gap-5 rounded-md border border-default bg-default p-5 shadow-md lg:col-span-8"
       >
         <div class="flex items-start justify-between gap-4">
           <h2 class="text-xl font-semibold leading-tight text-highlighted">Notizen und Anmerkungen</h2>
@@ -143,7 +143,7 @@ onBeforeUnmount(() => {
         </div>
       </section>
 
-      <section class="flex min-w-0 flex-col gap-5 rounded-2xl border border-default bg-default p-5 shadow-md lg:col-span-7">
+      <section class="flex min-w-0 flex-col gap-5 rounded-md border border-default bg-default p-5 shadow-md lg:col-span-7">
          <div class="flex items-start justify-between gap-4">
            <h2 class="text-xl font-semibold leading-tight text-highlighted">Beziehungen zu anderen Entitäten</h2>
         </div>
@@ -155,7 +155,7 @@ onBeforeUnmount(() => {
                 v-for="person in associatedPeople"
                 :key="person.id ?? person.fullName ?? 'person'"
                 :to="`/personen/${person.id}`"
-                 class="inline-flex max-w-full rounded-lg border border-accented px-2 py-2 text-sm font-semibold leading-tight text-highlighted transition-colors duration-150 hover:border-accented hover:bg-elevated"
+                 class="inline-flex max-w-full rounded-md border border-accented px-2 py-2 text-sm font-semibold leading-tight text-highlighted transition-colors duration-150 hover:border-accented hover:bg-elevated"
               >
                 {{ person.fullName || `Person mit ID ${person.id}` }}
               </NuxtLink>

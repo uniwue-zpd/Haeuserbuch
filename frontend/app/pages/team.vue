@@ -9,7 +9,7 @@
       <div>
         <h2 class="text-xl font-semibold tracking-tight text-highlighted">Projektleitung</h2>
       </div>
-      <article class="flex flex-col gap-6 rounded-xl border border-default bg-default p-6 shadow-sm">
+      <article class="flex flex-col gap-6 rounded-md border border-default bg-default p-6 shadow-sm">
         <header>
           <h3 class="text-2xl font-semibold tracking-tight text-highlighted">
             Dr. Christian Naser
@@ -62,7 +62,7 @@
         <h2 class="text-xl font-semibold tracking-tight text-highlighted">Mitarbeitende</h2>
       </div>
       <div class="grid gap-6 md:grid-cols-2">
-      <article class="flex flex-col gap-6 rounded-xl border border-default bg-default p-6 shadow-sm">
+      <article class="flex flex-col gap-6 rounded-md border border-default bg-default p-6 shadow-sm">
         <header>
           <h3 class="text-2xl font-semibold tracking-tight text-highlighted">Dr. Alexander Wolz</h3>
         </header>
@@ -98,7 +98,7 @@
           </div>
         </footer>
       </article>
-      <article class="flex flex-col gap-6 rounded-xl border border-default bg-default p-6 shadow-sm">
+      <article class="flex flex-col gap-6 rounded-md border border-default bg-default p-6 shadow-sm">
         <header>
           <h3 class="text-2xl font-semibold tracking-tight text-highlighted">Hans-Wolfgang Bergerhausen</h3>
         </header>
@@ -123,7 +123,7 @@
           </p>
         </div>
       </article>
-      <article class="flex flex-col gap-6 rounded-xl border border-default bg-default p-6 shadow-sm">
+      <article class="flex flex-col gap-6 rounded-md border border-default bg-default p-6 shadow-sm">
         <header>
           <h3 class="text-2xl font-semibold tracking-tight text-highlighted">Julia Merz, M.A.</h3>
           <p class="mt-1 text-sm text-dimmed">Verarbeitung geospatialer Daten</p>
@@ -173,7 +173,7 @@
           </div>
         </footer>
       </article>
-      <article class="flex flex-col gap-6 rounded-xl border border-default bg-default p-6 shadow-sm">
+      <article class="flex flex-col gap-6 rounded-md border border-default bg-default p-6 shadow-sm">
         <header>
           <h3 class="text-2xl font-semibold tracking-tight text-highlighted">Dr. Renate Schindler</h3>
         </header>
@@ -199,7 +199,7 @@
           </div>
         </footer>
       </article>
-      <article class="flex flex-col gap-6 rounded-xl border border-default bg-default p-6 shadow-sm">
+      <article class="flex flex-col gap-6 rounded-md border border-default bg-default p-6 shadow-sm">
         <header>
           <h3 class="text-2xl font-semibold tracking-tight text-highlighted">Dr. Stephan Moser</h3>
         </header>
@@ -222,7 +222,7 @@
         <h2 class="text-xl font-semibold tracking-tight text-highlighted">Technische Umsetzung</h2>
       </div>
       <div class="grid gap-6 md:grid-cols-2">
-      <article class="flex flex-col gap-6 rounded-xl border border-default bg-default p-6 shadow-sm">
+      <article class="flex flex-col gap-6 rounded-md border border-default bg-default p-6 shadow-sm">
         <header>
           <h3 class="text-2xl font-semibold tracking-tight text-highlighted">Tomash Shtohryn, M.A.</h3>
           <p class="mt-1 text-sm text-dimmed">Full-Stack-Entwicklung</p>
@@ -263,7 +263,7 @@
           </div>
         </footer>
       </article>
-      <article class="flex flex-col gap-6 rounded-xl border border-default bg-default p-6 shadow-sm">
+      <article class="flex flex-col gap-6 rounded-md border border-default bg-default p-6 shadow-sm">
         <header>
           <h3 class="text-2xl font-semibold tracking-tight text-highlighted">Florian Langhanki, M.A.</h3>
         </header>
@@ -280,7 +280,7 @@
           </div>
         </footer>
       </article>
-      <article class="flex flex-col gap-6 rounded-xl border border-default bg-default p-6 shadow-sm">
+      <article class="flex flex-col gap-6 rounded-md border border-default bg-default p-6 shadow-sm">
         <header>
           <h3 class="text-2xl font-semibold tracking-tight text-highlighted">Natália Ratulovská, B.A.</h3>
           <p class="mt-1 text-sm text-dimmed">Datentransformation und -verarbeitung</p>

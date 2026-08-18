@@ -63,7 +63,7 @@ body {
 @layer components {
   .overview-filter-panel,
   .overview-table-panel {
-    @apply min-w-0 overflow-hidden rounded-2xl border border-default bg-default shadow-sm;
+    @apply min-w-0 overflow-hidden rounded-md border border-default bg-default;
   }
 
   .p-card,

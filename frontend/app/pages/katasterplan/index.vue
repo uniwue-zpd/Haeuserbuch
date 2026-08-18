@@ -399,7 +399,7 @@ onBeforeUnmount(() => {
   >
     <div
       v-if="notice"
-      class="absolute left-1/2 top-4 z-40 flex max-w-full -translate-x-1/2 items-center gap-2 rounded-xl bg-slate-800 px-4 py-3 text-sm font-semibold text-white shadow-xl"
+      class="absolute left-1/2 top-4 z-40 flex max-w-full -translate-x-1/2 items-center gap-2 rounded-md bg-slate-800 px-4 py-3 text-sm font-semibold text-white shadow-xl"
       role="status"
     >
       <Icon
@@ -422,7 +422,7 @@ onBeforeUnmount(() => {
       class="flex h-full items-center justify-center bg-default p-6"
     >
       <div
-        class="max-w-md rounded-2xl border border-error/30 bg-default p-7 text-center shadow-xl"
+        class="max-w-md rounded-md border border-error/30 bg-default p-7 text-center shadow-xl"
       >
         <Icon
           name="material-symbols-error-outline-rounded"
@@ -436,7 +436,7 @@ onBeforeUnmount(() => {
         </p>
         <button
           type="button"
-          class="mt-5 rounded-lg bg-inverted px-4 py-2 font-bold text-inverted"
+          class="mt-5 rounded-md bg-inverted px-4 py-2 font-bold text-inverted"
           @click="refreshBuildings()"
         >
           Erneut versuchen

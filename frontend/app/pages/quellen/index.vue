@@ -52,7 +52,7 @@ useHead(() => ({
     </header>
 
     <section
-      class="overflow-hidden rounded-2xl border border-default bg-default shadow-sm"
+      class="overflow-hidden rounded-md border border-default bg-default shadow-sm"
       aria-labelledby="source-list-heading"
     >
       <div
@@ -87,7 +87,7 @@ useHead(() => ({
           :key="index"
           class="flex items-center gap-4 px-5 py-5 sm:px-6"
         >
-          <div class="size-10 animate-pulse rounded-xl bg-elevated" />
+          <div class="size-10 animate-pulse rounded-md bg-elevated" />
           <div class="flex-1 space-y-2">
             <div class="h-5 w-2/3 animate-pulse rounded bg-elevated" />
             <div class="h-4 w-1/3 animate-pulse rounded bg-elevated" />
@@ -116,7 +116,7 @@ useHead(() => ({
           class="group grid gap-4 px-5 py-5 transition-colors hover:bg-elevated/50 focus-visible:bg-elevated/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center sm:px-6"
         >
           <span
-            class="flex size-10 items-center justify-center rounded-xl border border-default text-muted transition-colors group-hover:border-primary/40 group-hover:text-primary"
+            class="flex size-10 items-center justify-center rounded-md border border-default text-muted transition-colors group-hover:border-primary/40 group-hover:text-primary"
           >
             <UIcon name="i-lucide-library" class="size-5" />
           </span>

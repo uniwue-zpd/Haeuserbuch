@@ -134,9 +134,9 @@ const formatFileSize = (bytes?: number) => {
         <div
             v-for="file in files"
             :key="file.id"
-            class="flex flex-row items-center gap-4 rounded-lg border border-default bg-default p-3 shadow-md"
+            class="flex flex-row items-center gap-4 rounded-md border border-default bg-default p-3 shadow-md"
         >
-          <div class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-default bg-elevated">
+          <div class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-md border border-default bg-elevated">
             <Image
                 :src="getPreviewUrl(file.id)"
                 :alt="file.originalName ?? 'Datei'"
@@ -185,14 +185,14 @@ const formatFileSize = (bytes?: number) => {
         <button
             @click="changePage(0)"
             :disabled="data.first"
-            class="flex h-9 cursor-pointer items-center justify-center rounded-lg border border-default px-2 text-sm shadow-sm transition-all hover:border-accented hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
+            class="flex h-9 cursor-pointer items-center justify-center rounded-md border border-default px-2 text-sm shadow-sm transition-all hover:border-accented hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
         >
           <i class="pi pi-angle-double-left"/>
         </button>
         <button
             @click="changePage(data.number - 1)"
             :disabled="data.first"
-            class="flex h-9 cursor-pointer items-center justify-center rounded-lg border border-default px-2 text-sm shadow-sm transition-all hover:border-accented hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
+            class="flex h-9 cursor-pointer items-center justify-center rounded-md border border-default px-2 text-sm shadow-sm transition-all hover:border-accented hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
         >
           <i class="pi pi-angle-left"/>
         </button>
@@ -210,14 +210,14 @@ const formatFileSize = (bytes?: number) => {
         <button
             @click="changePage(data.number + 1)"
             :disabled="data.last"
-            class="flex h-9 cursor-pointer items-center justify-center rounded-lg border border-default px-2 text-sm shadow-sm transition-all hover:border-accented hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
+            class="flex h-9 cursor-pointer items-center justify-center rounded-md border border-default px-2 text-sm shadow-sm transition-all hover:border-accented hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
         >
           <i class="pi pi-angle-right"/>
         </button>
         <button
             @click="changePage(data.totalPages - 1)"
             :disabled="data.last"
-            class="flex h-9 cursor-pointer items-center justify-center rounded-lg border border-default px-2 text-sm shadow-sm transition-all hover:border-accented hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
+            class="flex h-9 cursor-pointer items-center justify-center rounded-md border border-default px-2 text-sm shadow-sm transition-all hover:border-accented hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
         >
           <i class="pi pi-angle-double-right"/>
         </button>
