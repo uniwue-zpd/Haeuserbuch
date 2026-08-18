@@ -4,6 +4,7 @@ export interface ResearchNavigationItem {
   icon: string
   to?: string
   descriptionTo?: string
+  descriptionToLabel?: string
 }
 
 export const researchNavigation: readonly ResearchNavigationItem[] = [
@@ -18,6 +19,8 @@ export const researchNavigation: readonly ResearchNavigationItem[] = [
     description: 'Gebäudezuordnung und Beschreibung auf der Grundlage des Urkatasterplans von 1832.',
     icon: 'i-lucide-map',
     to: '/katasterplan',
+    descriptionTo: '/katasterplan/beschreibung',
+    descriptionToLabel: 'Methodik'
   },
   {
     label: 'Herkunftsorte',
@@ -36,7 +39,8 @@ export const researchNavigation: readonly ResearchNavigationItem[] = [
     description: 'Verzeichnis der von 1405 bis 1613 aufgenommenen Würzburger Bürger.',
     icon: 'i-lucide-id-card',
     to: '/buergermatrikel',
-    descriptionTo: '/buergermatrikel/description'
+    descriptionTo: '/buergermatrikel/beschreibung',
+    descriptionToLabel: 'Methodik & Editionsrichtlininen'
   },
   {
     label: 'Eigentumsverhältnisse',

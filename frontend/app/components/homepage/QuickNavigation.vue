@@ -42,7 +42,7 @@ import { researchNavigation } from "~/utils/researchNavigation";
               title="Projektbeschreibung und Editionsrichtlinien"
               class="inline-flex items-center gap-1 text-sm font-medium text-muted underline decoration-default underline-offset-3 transition-colors hover:text-highlighted"
           >
-            Methodik & Editionsrichtlinien
+            {{ item.descriptionToLabel }}
             <UIcon
                 name="i-lucide-arrow-up-right"
                 class="size-3.5 shrink-0"
