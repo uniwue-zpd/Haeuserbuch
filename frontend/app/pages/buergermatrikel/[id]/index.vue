@@ -42,7 +42,7 @@ useHead(() => ({
     </header>
 
     <div class="grid grid-cols-1 gap-4 lg:auto-rows-auto lg:grid-cols-12 lg:items-start">
-      <section class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-7">
+      <section class="flex min-w-0 flex-col gap-5 rounded-2xl border border-default bg-default p-5 shadow-md lg:col-span-7">
         <h2 class="text-xl font-semibold leading-tight text-highlighted">Angaben zum Eintrag</h2>
         <div class="flex flex-col">
           <div v-if="citizenshipItem.signature" class="content-table-row">
@@ -78,7 +78,7 @@ useHead(() => ({
         </div>
       </section>
 
-      <section class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-5">
+      <section class="flex min-w-0 flex-col gap-5 rounded-2xl border border-default bg-default p-5 shadow-md lg:col-span-5">
         <h2 class="text-xl font-semibold leading-tight text-highlighted">Quellen</h2>
         <div class="flex flex-col gap-3">
           <div v-if="citizenshipItem.primarySource" class="content-table-row !grid-cols-1 !gap-2 sm:!grid-cols-1">
@@ -94,7 +94,7 @@ useHead(() => ({
 
       <section
         v-if="citizenshipItem.entryText || citizenshipItem.addendum"
-        class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-12"
+        class="flex min-w-0 flex-col gap-5 rounded-2xl border border-default bg-default p-5 shadow-md lg:col-span-12"
       >
         <h2 class="text-xl font-semibold leading-tight text-highlighted">Text des Eintrags</h2>
         <div class="flex flex-col">

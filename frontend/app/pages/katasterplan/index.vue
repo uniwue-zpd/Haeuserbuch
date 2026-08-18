@@ -395,7 +395,7 @@ onBeforeUnmount(() => {
 
 <template>
   <section
-    class="relative h-[calc(100svh-79px)] min-h-140 w-full overflow-hidden bg-gray-200"
+    class="relative h-[calc(100svh-79px)] min-h-140 w-full overflow-hidden bg-elevated"
   >
     <div
       v-if="notice"
@@ -419,24 +419,24 @@ onBeforeUnmount(() => {
 
     <div
       v-if="buildingsError"
-      class="flex h-full items-center justify-center bg-slate-100 p-6"
+      class="flex h-full items-center justify-center bg-default p-6"
     >
       <div
-        class="max-w-md rounded-2xl border border-red-200 bg-white p-7 text-center shadow-xl"
+        class="max-w-md rounded-2xl border border-error/30 bg-default p-7 text-center shadow-xl"
       >
         <Icon
           name="material-symbols-error-outline-rounded"
-          class="text-5xl text-red-700"
+          class="text-5xl text-error"
         />
-        <h1 class="mt-3 text-2xl font-bold text-slate-800">
+        <h1 class="mt-3 text-2xl font-bold text-highlighted">
           Gebäude konnten nicht geladen werden
         </h1>
-        <p class="mt-2 text-sm text-slate-600">
+        <p class="mt-2 text-sm text-muted">
           Bitte versuchen Sie es erneut.
         </p>
         <button
           type="button"
-          class="mt-5 rounded-lg bg-slate-700 px-4 py-2 font-bold text-white"
+          class="mt-5 rounded-lg bg-inverted px-4 py-2 font-bold text-inverted"
           @click="refreshBuildings()"
         >
           Erneut versuchen
@@ -464,13 +464,13 @@ onBeforeUnmount(() => {
       </div>
 
       <div
-         class="absolute inset-x-0 bottom-0 z-30 h-[var(--sheet-height)] min-h-18 overflow-anchor-none overflow-hidden rounded-t-2xl border-t border-default bg-white shadow-xl transition-all duration-300 ease-out lg:static lg:inset-auto lg:z-auto lg:h-full lg:rounded-none lg:border-l lg:border-t lg:shadow-lg"
+         class="absolute inset-x-0 bottom-0 z-30 h-[var(--sheet-height)] min-h-18 overflow-anchor-none overflow-hidden rounded-t-2xl border-t border-default bg-default shadow-xl transition-all duration-300 ease-out lg:static lg:inset-auto lg:z-auto lg:h-full lg:rounded-none lg:border-l lg:border-t lg:shadow-lg"
         :class="draggedSheetHeight !== null ? '!duration-0' : ''"
         :style="{ '--sheet-height': `${sheetHeight}px` }"
       >
         <button
           type="button"
-          class="flex h-7 w-full touch-none cursor-ns-resize items-center justify-center bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-amber-500 lg:hidden"
+          class="flex h-7 w-full touch-none cursor-ns-resize items-center justify-center bg-default focus-visible:outline focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-amber-500 lg:hidden"
           :aria-label="`Gebäudebereich ${sheetState === 'collapsed' ? 'öffnen' : sheetState === 'half' ? 'vergrößern' : 'einklappen'}`"
           @pointerdown="startSheetDrag"
           @click="cycleSheet"

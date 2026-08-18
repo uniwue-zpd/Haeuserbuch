@@ -42,22 +42,16 @@ useHead(() => ({
 
         <NuxtLink
           to="/katasterplan"
-          class="group grid grid-cols-[minmax(0,1fr)_7rem] overflow-hidden rounded-2xl bg-white text-slate-800 shadow-2xl transition-transform duration-300 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:grid-cols-[minmax(0,1fr)_9rem] lg:absolute lg:bottom-14 lg:right-14 lg:w-104 lg:grid-cols-[minmax(0,1fr)_10rem] xl:bottom-20 xl:right-20"
+          class="group grid grid-cols-[minmax(0,1fr)_7rem] overflow-hidden rounded-2xl border border-default bg-default text-highlighted shadow-2xl transition-transform duration-300 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:grid-cols-[minmax(0,1fr)_9rem] lg:absolute lg:bottom-14 lg:right-14 lg:w-104 lg:grid-cols-[minmax(0,1fr)_10rem] xl:bottom-20 xl:right-20"
         >
           <div class="flex min-h-32 flex-col p-4 sm:min-h-44 sm:p-5">
-            <div
-              class="flex items-center justify-between gap-3 text-xs font-semibold uppercase tracking-wider text-slate-500"
-            >
-              <span>Historische Karte</span>
-              <UIcon name="i-lucide-map" class="size-4" />
-            </div>
             <h2
               class="mt-auto font-sans text-lg font-semibold leading-tight sm:text-2xl"
             >
-              Katasterplan interaktiv erkunden
+              Katasterplan von 1832 interaktiv erkunden
             </h2>
             <div
-              class="mt-2 flex items-center gap-2 text-xs font-semibold text-emerald-800 sm:mt-3 sm:text-sm"
+              class="mt-2 flex items-center gap-2 text-xs font-semibold text-primary sm:mt-3 sm:text-sm"
             >
               <span>Karte öffnen</span>
               <UIcon
@@ -74,7 +68,7 @@ useHead(() => ({
         </NuxtLink>
 
         <a
-          href="#features"
+          href="#recherche"
           class="group mx-auto flex size-14 shrink-0 items-center justify-center rounded-full border border-white/70 text-white transition-colors hover:bg-white hover:text-slate-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:size-16 lg:absolute lg:bottom-14 lg:left-1/2 lg:-translate-x-1/2 xl:bottom-20"
           aria-label="Zu den Recherchebereichen scrollen"
         >
@@ -87,7 +81,7 @@ useHead(() => ({
     </section>
 
     <section
-      id="features"
+      id="recherche"
       class="mx-auto w-full max-w-360 scroll-mt-28 px-2 sm:px-3 lg:px-4"
     >
       <div class="mb-9 sm:mb-12">

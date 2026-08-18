@@ -336,27 +336,27 @@ useHead(() => ({
             :class="row.original.isCitizen ? 'text-green-500' : 'text-red-500'"
             :aria-label="row.original.isCitizen ? 'Bürger' : 'Kein Bürger'"
           />
-          <span v-else class="italic text-gray-500">unbekannt</span>
+          <span v-else class="italic text-muted">unbekannt</span>
         </template>
         <template #sex-cell="{ row }">
           <span v-if="row.original.sex">{{ row.original.sex }}</span>
-          <span v-else class="italic text-gray-500">unbekannt</span>
+          <span v-else class="italic text-muted">unbekannt</span>
         </template>
         <template #job-cell="{ row }">
           <span v-if="row.original.jobText">{{ row.original.jobText }}</span>
-          <span v-else class="italic text-gray-500">unbekannt</span>
+          <span v-else class="italic text-muted">unbekannt</span>
         </template>
         <template #weapons-cell="{ row }">
           <span v-if="row.original.weaponText">{{ row.original.weaponText }}</span>
-          <span v-else class="italic text-gray-500">unbekannt</span>
+          <span v-else class="italic text-muted">unbekannt</span>
         </template>
         <template #religion-cell="{ row }">
           <span v-if="row.original.religionText">{{ row.original.religionText }}</span>
-          <span v-else class="italic text-gray-500">unbekannt</span>
+          <span v-else class="italic text-muted">unbekannt</span>
         </template>
         <template #origin-cell="{ row }">
           <span v-if="row.original.originText">{{ row.original.originText }}</span>
-          <span v-else class="italic text-gray-500">unbekannt</span>
+          <span v-else class="italic text-muted">unbekannt</span>
         </template>
           </UTable>
 

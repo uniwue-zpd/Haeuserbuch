@@ -1,6 +1,6 @@
 <template>
-  <article class="citizenship-description flex flex-col gap-4 text-base leading-7 text-highlighted sm:text-lg sm:leading-8">
-    <header class="flex flex-col gap-3 rounded-2xl border border-gray-300 bg-default p-6 text-center shadow-md sm:p-8">
+  <article class="citizenship-description space-y-7 text-base leading-7 text-highlighted sm:text-lg sm:leading-8">
+    <header class="space-y-3 text-center">
       <p class="text-sm font-semibold uppercase tracking-[0.18em] text-muted">Quellenbeschreibung</p>
       <h1 class="font-bold text-2xl tracking-tight sm:text-3xl">
           Die Bürgermatrikel der Jahre 1405 bis 1613 des Würzburger Stadtarchivs
@@ -11,9 +11,9 @@
       <p class="text-sm text-dimmed">Stand: 15.6.2026 / RS / CN</p>
     </header>
 
-    <div class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-start">
-      <section class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-7">
-        <h2 class="text-xl font-semibold leading-tight text-highlighted">Bestand und Erschließung</h2>
+    <div class="space-y-7">
+      <section class="space-y-5">
+        <h2 class="mb-3 text-center text-xl font-semibold leading-tight text-highlighted sm:text-2xl">Bestand und Erschließung</h2>
         <div class="space-y-5 text-justify">
         <p>
           Die vorliegende Datenbank basiert auf sieben Amtsbüchern, die im
@@ -115,9 +115,9 @@
         </div>
       </section>
 
-      <section id="persons" class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-5">
+      <section id="persons" class="space-y-5">
         <div class="flex items-center gap-3">
-          <h2 class="text-xl font-semibold leading-tight text-highlighted">1. Personennamen</h2>
+          <h2 class="mb-3 flex-1 text-center text-xl font-semibold leading-tight text-highlighted sm:text-2xl">1. Personennamen</h2>
           <NuxtLink to="#persons" aria-label="Zu Personennamen verlinken" class="text-muted hover:text-highlighted">
             <Icon name="material-symbols-link-2" />
           </NuxtLink>
@@ -138,9 +138,9 @@
         </div>
       </section>
 
-      <section id="places" class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-7">
+      <section id="places" class="space-y-5">
         <div class="flex items-center gap-3">
-          <h2 class="text-xl font-semibold leading-tight text-highlighted">2. Orte</h2>
+          <h2 class="mb-3 flex-1 text-center text-xl font-semibold leading-tight text-highlighted sm:text-2xl">2. Orte</h2>
           <NuxtLink to="#places" aria-label="Zu Orte verlinken" class="text-muted hover:text-highlighted">
             <Icon name="material-symbols-link-2" />
           </NuxtLink>
@@ -194,9 +194,9 @@
         </div>
       </section>
 
-      <section id="occupations" class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-5">
+      <section id="occupations" class="space-y-5">
         <div class="flex items-center gap-3">
-          <h2 class="text-xl font-semibold leading-tight text-highlighted">3. Berufe</h2>
+          <h2 class="mb-3 flex-1 text-center text-xl font-semibold leading-tight text-highlighted sm:text-2xl">3. Berufe</h2>
           <NuxtLink to="#occupations" aria-label="Zu Berufen verlinken" class="text-muted hover:text-highlighted">
             <Icon name="material-symbols-link-2" />
           </NuxtLink>
@@ -216,9 +216,9 @@
         </div>
       </section>
 
-      <section id="weapons" class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-5">
+      <section id="weapons" class="space-y-5">
         <div class="flex items-center gap-3">
-          <h2 class="text-xl font-semibold leading-tight text-highlighted">4. Bewaffnung</h2>
+          <h2 class="mb-3 flex-1 text-center text-xl font-semibold leading-tight text-highlighted sm:text-2xl">4. Bewaffnung</h2>
           <NuxtLink to="#weapons" aria-label="Zu Bewaffnung verlinken" class="text-muted hover:text-highlighted">
             <Icon name="material-symbols-link-2" />
           </NuxtLink>
@@ -232,9 +232,9 @@
         </div>
       </section>
 
-      <section id="bibliography" class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-7">
+      <section id="bibliography" class="space-y-5">
         <div class="flex items-center gap-3">
-          <h2 class="text-xl font-semibold leading-tight text-highlighted">Literatur</h2>
+          <h2 class="mb-3 flex-1 text-center text-xl font-semibold leading-tight text-highlighted sm:text-2xl">Literatur</h2>
           <NuxtLink to="#bibliography" aria-label="Zu Literatur verlinken" class="text-muted hover:text-highlighted">
             <Icon name="material-symbols-link-2" />
           </NuxtLink>

@@ -38,7 +38,7 @@ useHead(() => ({
     <Card>
       <template #title>
         <div class="flex flex-row justify-between">
-          <h1 class="text-3xl font-bold text-black">{{ streetItem?.name }}</h1>
+          <h1 class="text-3xl font-bold text-highlighted">{{ streetItem?.name }}</h1>
           <TaskBar :id="streetId" entity_type="streets" />
         </div>
       </template>
@@ -62,7 +62,7 @@ useHead(() => ({
           </div>
           <Divider />
           <div v-show="relatedBuildings.length > 0" class="flex flex-col gap-2">
-            <h2 class="text-lg font-bold text-black">Zugeordnete Gebäude</h2>
+            <h2 class="text-lg font-bold text-highlighted">Zugeordnete Gebäude</h2>
             <DataTable
               :value="relatedBuildings"
               paginator
@@ -78,7 +78,7 @@ useHead(() => ({
                 <template #body="{ data }">
                   <NuxtLink
                     :to="`/katasterplan/${data.id}`"
-                    class="font-bold text-black"
+                    class="font-bold text-highlighted"
                   >
                     {{ data.districtPropertyNumber }}
                   </NuxtLink>
@@ -92,9 +92,9 @@ useHead(() => ({
       <template #footer>
         <Panel header="Notizen" toggleable v-show="streetItem?.generalNotes">
           <template #header>
-            <p class="text-sm text-black font-bold">Notizen</p>
+            <p class="text-sm font-bold text-highlighted">Notizen</p>
           </template>
-          <p class="text-sm text-black">{{ streetItem?.generalNotes }}</p>
+          <p class="text-sm text-highlighted">{{ streetItem?.generalNotes }}</p>
         </Panel>
       </template>
     </Card>

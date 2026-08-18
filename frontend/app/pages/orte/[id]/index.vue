@@ -117,7 +117,7 @@ onBeforeUnmount(() => {
         </div>
       </section>
 
-      <section v-if="properties.altNames?.length" class="flex min-w-0 flex-col gap-5 self-start rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-4">
+      <section v-if="properties.altNames?.length" class="flex min-w-0 flex-col gap-5 self-start rounded-2xl border border-default bg-default p-5 shadow-md lg:col-span-4">
         <div class="flex items-start justify-between gap-4">
           <h2 class="text-xl font-semibold leading-tight text-highlighted">Namensvarianten</h2>
         </div>
@@ -130,7 +130,7 @@ onBeforeUnmount(() => {
 
       <section
         v-if="properties.generalNotes"
-        class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-8"
+        class="flex min-w-0 flex-col gap-5 rounded-2xl border border-default bg-default p-5 shadow-md lg:col-span-8"
       >
         <div class="flex items-start justify-between gap-4">
           <h2 class="text-xl font-semibold leading-tight text-highlighted">Notizen und Anmerkungen</h2>
@@ -143,7 +143,7 @@ onBeforeUnmount(() => {
         </div>
       </section>
 
-       <section class="flex min-w-0 flex-col gap-5 rounded-2xl border border-gray-300 bg-default p-5 shadow-md lg:col-span-7">
+      <section class="flex min-w-0 flex-col gap-5 rounded-2xl border border-default bg-default p-5 shadow-md lg:col-span-7">
          <div class="flex items-start justify-between gap-4">
            <h2 class="text-xl font-semibold leading-tight text-highlighted">Beziehungen zu anderen Entitäten</h2>
         </div>

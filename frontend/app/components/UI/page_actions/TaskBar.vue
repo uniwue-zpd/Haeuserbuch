@@ -153,12 +153,12 @@ const actions = {
     >
       <div v-if="show_toolbar" class="absolute right-full top-0 mr-2 z-50">
         <div
-          class="flex flex-col gap-1 p-1 border border-gray-300 rounded-md shadow-md bg-white whitespace-nowrap"
+          class="flex flex-col gap-1 whitespace-nowrap rounded-md border border-default bg-default p-1 shadow-md"
         >
           <NuxtLink
             v-if="loggedIn"
             :to="edit_path"
-            class="flex flex-row items-center space-x-2 whitespace-nowrap rounded-md p-1 text-gray-600 hover:bg-slate-100 hover:text-black"
+            class="flex flex-row items-center space-x-2 whitespace-nowrap rounded-md p-1 text-muted hover:bg-elevated hover:text-highlighted"
             @click="actions.edit_page()"
           >
             <Icon
@@ -169,7 +169,7 @@ const actions = {
           </NuxtLink>
           <NuxtLink
             :to="api_path"
-            class="flex flex-row items-center space-x-2 whitespace-nowrap rounded-md p-1 text-gray-600 hover:bg-slate-100 hover:text-black"
+            class="flex flex-row items-center space-x-2 whitespace-nowrap rounded-md p-1 text-muted hover:bg-elevated hover:text-highlighted"
             @click="actions.api_view()"
             target="_blank"
           >
@@ -178,7 +178,7 @@ const actions = {
           </NuxtLink>
           <button
             @click="actions.copy_url()"
-            class="flex flex-row items-center space-x-2 whitespace-nowrap rounded-md p-1 text-gray-600 hover:bg-slate-100 hover:text-black"
+            class="flex flex-row items-center space-x-2 whitespace-nowrap rounded-md p-1 text-muted hover:bg-elevated hover:text-highlighted"
           >
             <Icon name="material-symbols-share-outline" class="text-xl" />
             <span class="text-sm leading-none">Teilen</span>
@@ -187,7 +187,7 @@ const actions = {
           <button
             v-if="loggedIn"
             @click="actions.delete_page()"
-            class="flex flex-row items-center space-x-2 whitespace-nowrap rounded-md p-1 text-red-600 hover:bg-slate-100 hover:text-red-700"
+            class="flex flex-row items-center space-x-2 whitespace-nowrap rounded-md p-1 text-error hover:bg-elevated hover:text-error"
           >
             <Icon name="material-symbols-delete-outline" class="text-xl" />
             <span class="text-sm leading-none">Eintrag löschen</span>
@@ -197,7 +197,7 @@ const actions = {
     </Transition>
     <button
       @click="show_toolbar = !show_toolbar"
-      class="p-2 leading-none rounded-md hover:bg-gray-300 cursor-pointer"
+      class="cursor-pointer rounded-md p-2 leading-none hover:bg-elevated"
       title="Mehr Optionen"
     >
       <Icon name="material-symbols-more-vert" class="text-xl" />

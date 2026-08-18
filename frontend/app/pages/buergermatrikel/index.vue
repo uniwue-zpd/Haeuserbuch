@@ -170,7 +170,7 @@ useHead(() => ({
       <header class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div class="flex flex-col gap-2">
           <h1 class="text-4xl font-bold leading-none tracking-tighter text-highlighted sm:text-6xl">Bürgermatrikel</h1>
-          <h1 class="text-xl sm:text-2xl">Verzeichnis der von 1405 bis 1613 aufgenommenen Würzburger Bürger (Bürgermatrikel)</h1>
+          <h1 class="text-xl sm:text-2xl">Verzeichnis der von 1405 bis 1613 aufgenommenen Würzburger Bürger</h1>
         </div>
       </header>
       <div
@@ -299,7 +299,7 @@ useHead(() => ({
           >
             {{ row.original.personName }}
           </NuxtLink>
-          <span v-else class="italic text-gray-500">unbekannt</span>
+          <span v-else class="italic text-muted">unbekannt</span>
         </template>
         <template #primarySource-cell="{ row }">
           <NuxtLink
@@ -309,7 +309,7 @@ useHead(() => ({
           >
             {{ title_shortener(row.original.primarySourceTitle ?? "") }}
           </NuxtLink>
-          <span v-else class="italic text-gray-500">unbekannt</span>
+          <span v-else class="italic text-muted">unbekannt</span>
         </template>
         <template #secondarySource-cell="{ row }">
           <NuxtLink
@@ -319,7 +319,7 @@ useHead(() => ({
           >
             {{ title_shortener(row.original.secondarySourceTitle ?? "") }}
           </NuxtLink>
-          <span v-else class="italic text-gray-500">unbekannt</span>
+          <span v-else class="italic text-muted">unbekannt</span>
         </template>
           </UTable>
 

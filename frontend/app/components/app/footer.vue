@@ -31,33 +31,45 @@ const partners = [
   {
     href: "https://www.dfg.de/de",
     title: "Deutsche Forschungsgemeinschaft",
-    image: "/dfg.png",
+    image: "/funding/dfg.webp",
     alt: "DFG-Logo",
     monochrome: true,
   },
   {
     href: "https://www.uni-wuerzburg.de/",
     title: "Universität Würzburg",
-    image: "/uniwue.jpg",
+    image: "/funding/uniwue.webp",
     alt: "Logo der Universität Würzburg",
   },
   {
     href: "https://www.gda.bayern.de/de/archives/staatsarchiv-kitzingen/",
     title: "Staatsarchiv Kitzingen",
-    image: "/sta.jpg",
+    image: "/funding/sta.webp",
     alt: "Logo des Staatsarchivs Kitzingen",
   },
   {
     href: "https://www.blfd.bayern.de/",
     title: "Bayerisches Landesamt für Denkmalpflege",
-    image: "/blfd.jpg",
+    image: "/funding/blfd.webp",
     alt: "Logo des Bayerischen Landesamts für Denkmalpflege",
   },
   {
     href: "https://www.ldbv.bayern.de/",
     title: "Landesamt für Digitalisierung, Breitband und Vermessung",
-    image: "/ldbv.svg",
+    image: "/funding/ldbv.webp",
     alt: "Logo des Landesamts für Digitalisierung, Breitband und Vermessung",
+  },
+  {
+    href: "https://www.wuerzburg.de/themen/kultur-bildung-kulturangebot/stadtarchiv",
+    title: "Stadtarchiv Würzburg",
+    image: "/funding/stadtarchiv.webp",
+    alt: "Logo des Stadtarchiv Würzburg",
+  },
+  {
+    href: "https://www.wuerzburg.de/",
+    title: "Stadt Würzburg",
+    image: "/funding/stadt_wue.webp",
+    alt: "Logo der Stadt Würzburg",
   },
 ];
 </script>
@@ -100,7 +112,7 @@ const partners = [
           Gefördert und unterstützt von
         </p>
         <div
-          class="mt-5 grid grid-cols-2 items-center justify-items-center gap-x-8 gap-y-8 sm:grid-cols-3 lg:grid-cols-5 lg:gap-x-12"
+          class="mt-5 flex flex-wrap items-center justify-start gap-x-6 gap-y-8 sm:gap-x-10"
         >
           <a
             v-for="partner in partners"
@@ -109,13 +121,13 @@ const partners = [
             target="_blank"
             rel="noopener noreferrer"
             :title="partner.title"
-            class="flex h-20 w-full items-center justify-center transition"
+            class="flex h-20 w-fit max-w-full shrink-0 items-center justify-start transition"
           >
             <img
               :src="partner.image"
               :alt="partner.alt"
               :class="[
-                'max-h-18 max-w-72 object-contain',
+                'max-h-18 max-w-[calc(100vw-2.5rem)] object-contain sm:max-w-72',
                 partner.monochrome && 'brightness-0 dark:invert',
               ]"
             />
