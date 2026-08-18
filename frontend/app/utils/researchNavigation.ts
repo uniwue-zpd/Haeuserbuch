@@ -27,6 +27,8 @@ export const researchNavigation: readonly ResearchNavigationItem[] = [
     description: 'Verzeichnis und Visualisierung der Herkunftsorte der von 1405 bis 1613 aufgenommenen Würzburger Bürger.',
     icon: 'i-lucide-map-pin',
     to: '/orte',
+    descriptionTo: '/orte/beschreibung',
+    descriptionToLabel: 'Hinweise zur Erfassung und Geokodierung'
   },
   {
     label: 'Bürger',

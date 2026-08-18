@@ -39,7 +39,6 @@ import { researchNavigation } from "~/utils/researchNavigation";
         >
           <NuxtLink
               :to="item.descriptionTo"
-              title="Projektbeschreibung und Editionsrichtlinien"
               class="inline-flex items-center gap-1 text-sm font-medium text-muted underline decoration-default underline-offset-3 transition-colors hover:text-highlighted"
           >
             {{ item.descriptionToLabel }}
