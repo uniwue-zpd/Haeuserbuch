@@ -1,6 +1,7 @@
 package de.uniwue.dachs.haeuserbuch_backend;
 
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.MigrationVersion;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -14,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class FlywayMigrationIntegrationTests {
     private static final String EMPTY_DATABASE = "flyway_empty_path";
     private static final String LEGACY_DATABASE = "flyway_legacy_path";
+    private static final MigrationVersion BASELINE_VERSION = MigrationVersion.fromVersion("1");
 
     @Container
     static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>(
@@ -36,10 +39,11 @@ class FlywayMigrationIntegrationTests {
         enablePostgis(LEGACY_DATABASE);
 
         Flyway emptyFlyway = flyway(EMPTY_DATABASE, false, null);
+        List<String> expectedEmptyHistory = expectedMigrationHistory(emptyFlyway, false);
         emptyFlyway.migrate();
 
         assertThat(migrationHistory(EMPTY_DATABASE))
-                .containsExactly("1:SQL", "2:SQL", "3:SQL");
+                .containsExactlyElementsOf(expectedEmptyHistory);
         assertCurrentSchema(EMPTY_DATABASE);
 
         Flyway legacySeed = flyway(LEGACY_DATABASE, false, MigrationVersion.fromVersion("1"));
@@ -47,10 +51,11 @@ class FlywayMigrationIntegrationTests {
         execute(LEGACY_DATABASE, "DROP TABLE public.flyway_schema_history");
 
         Flyway legacyFlyway = flyway(LEGACY_DATABASE, true, null);
+        List<String> expectedLegacyHistory = expectedMigrationHistory(legacyFlyway, true);
         legacyFlyway.migrate();
 
         assertThat(migrationHistory(LEGACY_DATABASE))
-                .containsExactly("1:BASELINE", "2:SQL", "3:SQL");
+                .containsExactlyElementsOf(expectedLegacyHistory);
         assertCurrentSchema(LEGACY_DATABASE);
     }
 
@@ -61,7 +66,7 @@ class FlywayMigrationIntegrationTests {
                 .defaultSchema("public")
                 .schemas("public")
                 .baselineOnMigrate(baselineOnMigrate)
-                .baselineVersion(MigrationVersion.fromVersion("1"))
+                .baselineVersion(BASELINE_VERSION)
                 .cleanDisabled(true)
                 .validateMigrationNaming(true)
                 .validateOnMigrate(true);
@@ -69,6 +74,30 @@ class FlywayMigrationIntegrationTests {
             configuration.target(target);
         }
         return configuration.load();
+    }
+
+    private static List<String> expectedMigrationHistory(Flyway flyway, boolean includesBaseline) {
+        List<String> expected = new ArrayList<>();
+        if (includesBaseline) {
+            expected.add(BASELINE_VERSION + ":BASELINE");
+        }
+
+        Arrays.stream(flyway.info().all())
+                .filter(migration -> !migration.getType().isUndo())
+                .filter(migration -> !includesBaseline || isAfterBaseline(migration))
+                .sorted()
+                .map(FlywayMigrationIntegrationTests::historyEntry)
+                .forEach(expected::add);
+        return expected;
+    }
+
+    private static boolean isAfterBaseline(MigrationInfo migration) {
+        return !migration.isVersioned() || migration.getVersion().compareTo(BASELINE_VERSION) > 0;
+    }
+
+    private static String historyEntry(MigrationInfo migration) {
+        String version = migration.getVersion() == null ? "null" : migration.getVersion().toString();
+        return version + ":" + migration.getType().name();
     }
 
     private static void createDatabase(String database) throws SQLException {
