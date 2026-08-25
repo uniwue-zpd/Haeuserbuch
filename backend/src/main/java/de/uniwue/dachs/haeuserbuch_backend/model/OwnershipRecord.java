@@ -6,9 +6,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "ownerhsip_record")
+@Table(name = "ownership_record")
 @Getter
 @Setter
 public class OwnershipRecord extends BaseEntity {
-
+    private String signature;
 }
