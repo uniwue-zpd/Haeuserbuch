@@ -1,16 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-    <xs:simpleType name="nonEmptyString">
-        <xs:restriction base="xs:string">
-            <xs:minLength value="1"/>
-        </xs:restriction>
-    </xs:simpleType>
+  <xs:simpleType name="nonEmptyString">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:attributeGroup name="baseEntityAttributes">
+    <xs:attribute name="id" type="xs:long" use="optional"/>
+    <xs:attribute name="createdDate" type="xs:dateTime" use="optional"/>
+    <xs:attribute name="createdBy" type="xs:string" use="optional"/>
+    <xs:attribute name="lastModifiedDate" type="xs:dateTime" use="optional"/>
+    <xs:attribute name="lastModifiedBy" type="xs:string" use="optional"/>
+  </xs:attributeGroup>
 
-    <xs:element name="eintrag">
-        <xs:complexType mixed="true">
-            <xs:sequence>
-                <xs:element name="signatur" type="nonEmptyString" minOccurs="0"/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
+  <xs:element name="eintrag">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element
+          name="signatur"
+          type="nonEmptyString"
+          minOccurs="0"
+          maxOccurs="1"
+        >
+          <xs:annotation>
+            <xs:documentation>Archivalische Signatur inklusive Folio-Angabe</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="baseEntityAttributes"/>
+    </xs:complexType>
+  </xs:element>
 </xs:schema>
