@@ -6,11 +6,11 @@
     </xs:restriction>
   </xs:simpleType>
   <xs:attributeGroup name="baseEntityAttributes">
-    <xs:attribute name="id" type="xs:long" use="optional"/>
-    <xs:attribute name="createdDate" type="xs:dateTime" use="optional"/>
-    <xs:attribute name="createdBy" type="xs:string" use="optional"/>
-    <xs:attribute name="lastModifiedDate" type="xs:dateTime" use="optional"/>
-    <xs:attribute name="lastModifiedBy" type="xs:string" use="optional"/>
+    <xs:attribute name="id" type="xs:long"/>
+    <xs:attribute name="createdDate" type="xs:dateTime"/>
+    <xs:attribute name="createdBy" type="xs:string"/>
+    <xs:attribute name="lastModifiedDate" type="xs:dateTime"/>
+    <xs:attribute name="lastModifiedBy" type="xs:string"/>
   </xs:attributeGroup>
 
   <xs:element name="eintrag">
@@ -20,7 +20,6 @@
           name="signatur"
           type="nonEmptyString"
           minOccurs="0"
-          maxOccurs="1"
         >
           <xs:annotation>
             <xs:documentation>Archivalische Signatur inklusive Folio-Angabe</xs:documentation>
