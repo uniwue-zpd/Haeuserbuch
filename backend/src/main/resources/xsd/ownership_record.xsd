@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <!-- Define a simple type for non-empty strings -->
   <xs:simpleType name="nonEmptyString">
     <xs:restriction base="xs:string">
       <xs:minLength value="1"/>
     </xs:restriction>
   </xs:simpleType>
+
+  <!-- Define an attribute group for the BaseEntity attributes -->
   <xs:attributeGroup name="baseEntityAttributes">
     <xs:attribute name="id" type="xs:long"/>
     <xs:attribute name="createdDate" type="xs:dateTime"/>
@@ -13,6 +16,38 @@
     <xs:attribute name="lastModifiedBy" type="xs:string"/>
   </xs:attributeGroup>
 
+  <!-- The complex type for the "gebaeude" (=building) element -->
+  <xs:complexType name="gebaeudeTyp">
+    <!-- The element may occur only once -->
+    <xs:sequence>
+      <xs:element
+        name="katasternummer"
+        type="nonEmptyString"
+      >
+        <xs:annotation>
+          <xs:documentation>Katasternummer des Gebäudes</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element
+        name="summe"
+        type="nonEmptyString"
+      >
+        <xs:annotation>
+          <xs:documentation>Die Angabe der Summe</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element
+        name="name"
+        type="nonEmptyString"
+      >
+        <xs:annotation>
+          <xs:documentation>Name des Gebäudes</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The root element of the schema (=entry) -->
   <xs:element name="eintrag">
     <xs:complexType mixed="true">
       <xs:sequence>
@@ -25,6 +60,11 @@
             <xs:documentation>Archivalische Signatur inklusive Folio-Angabe</xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element
+          name="gebaeude"
+          type="gebaeudeTyp"
+          minOccurs="0"
+        />
       </xs:sequence>
       <xs:attributeGroup ref="baseEntityAttributes"/>
     </xs:complexType>
