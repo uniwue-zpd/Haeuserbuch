@@ -42,6 +42,13 @@ public class FileService {
         this.buildingRepository = buildingRepository;
     }
 
+    private final Set<String> ALLOWED_CONTENT_TYPES = Set.of(
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "application/pdf"
+    );
+
     /**
      * Returns metadata for all stored files.
      * @return list of stored files as {@link FileDTO} objects
@@ -107,7 +114,7 @@ public class FileService {
             if (file == null || file.isEmpty()) continue;
 
             String contentType = file.getContentType();
-            if (contentType == null || !contentType.startsWith("image/")) continue;
+            if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType)) continue;
 
             String originalFileName = file.getOriginalFilename();
             String filename = UUID.randomUUID() + "-" + originalFileName;
