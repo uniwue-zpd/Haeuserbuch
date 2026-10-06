@@ -36,6 +36,15 @@ const streetStore = useStreetStore();
 const weaponStore = useWeaponStore();
 const fileApi = useFiles();
 
+const isImageFile = (file: { type?: string }) => {
+  return !!file.type?.startsWith("image/");
+};
+
+const getFileIcon = (file: { type?: string }) => {
+  if (file.type === "application/pdf") return "i-lucide-file-text";
+  return "i-lucide-file";
+};
+
 const debouncedSearch = debounce(async (query: string) => {
   loading.value = true;
   switch (entityType) {
@@ -73,7 +82,8 @@ const debouncedSearch = debounce(async (query: string) => {
       const files = await fileApi.searchFiles(query);
       suggestions.value = files.map(file => ({
         id: file.id,
-        originalName: file.originalName
+        originalName: file.originalName,
+        type: file.type,
       }));
       break;
   }
@@ -110,10 +120,20 @@ const value = computed({
             class="flex items-center gap-3"
         >
           <img
+              v-if="isImageFile(option)"
               :src="fileApi.getFileContentUrl(option.id)"
-              class="w-10 h-10 rounded-md object-cover border shrink-0"
+              class="h-10 w-10 shrink-0 rounded-md border object-cover"
               alt="Preview"
           />
+          <div
+              v-else
+              class="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border bg-elevated"
+          >
+            <UIcon
+                :name="getFileIcon(option)"
+                class="size-5 text-muted"
+            />
+          </div>
           <span class="truncate">{{ option.originalName }}</span>
         </div>
         <span v-else>{{ option[optionLabel] }}</span>
