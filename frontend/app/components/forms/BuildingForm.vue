@@ -24,6 +24,11 @@ const props = defineProps<{
 
 const toast = useNuxtToast();
 const buildingStore = useBuildingStore();
+const fileApi = useFiles();
+
+const uploadInputRef = ref<HTMLInputElement | null>(null);
+const uploadPending = ref(false);
+const uploadFeedback = ref<{ ok: boolean; message: string } | null>(null);
 
 const tile_store = useTileStore();
 const sources = computed(() => tile_store.sources);
@@ -123,6 +128,60 @@ const submit = async (formData: Partial<Feature>) => {
         duration: 3000,
       });
     }
+  }
+};
+
+const triggerFileUpload = () => {
+  uploadInputRef.value?.click();
+};
+
+const onUploadFilesSelected = async (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const selectedFiles = input.files ? Array.from(input.files) : [];
+
+  if (!selectedFiles.length) {
+    uploadFeedback.value = null;
+    return;
+  }
+
+  uploadPending.value = true;
+  uploadFeedback.value = null;
+
+  try {
+    const uploaded = await fileApi.uploadFiles(selectedFiles);
+    const uploadedCount = uploaded.length;
+    const message =
+      uploadedCount === 1
+        ? "1 Datei erfolgreich hochgeladen"
+        : `${uploadedCount} Dateien erfolgreich hochgeladen`;
+
+    uploadFeedback.value = {
+      ok: true,
+      message: `${message}. Die Dateien koennen nun im Auswahlfeld gesucht und hinzugefuegt werden.`,
+    };
+
+    toast.add({
+      color: "success",
+      title: "Upload erfolgreich",
+      description: message,
+      duration: 3500,
+    });
+  } catch (error) {
+    console.error(error);
+    uploadFeedback.value = {
+      ok: false,
+      message: "Datei-Upload fehlgeschlagen. Bitte erneut versuchen.",
+    };
+
+    toast.add({
+      color: "error",
+      title: "Upload fehlgeschlagen",
+      description: "Die Dateien konnten nicht hochgeladen werden.",
+      duration: 4000,
+    });
+  } finally {
+    uploadPending.value = false;
+    if (input) input.value = "";
   }
 };
 
@@ -466,6 +525,48 @@ onBeforeUnmount(() => {
               :isMultiple="true"
               outer-class="max-w-full"
             />
+            <FormKit
+              type="entityAutocomplete"
+              entityType="file"
+              optionLabel="originalName"
+              name="files"
+              label="Dateien (Mehrfachauswahl möglich)"
+              :isMultiple="true"
+              outer-class="max-w-full"
+              help="Dateien für das Gebäude auswählen"
+            />
+            <div class="mt-1 flex flex-col gap-2">
+              <input
+                ref="uploadInputRef"
+                type="file"
+                class="hidden"
+                accept=".png,.jpg,.jpeg,image/png,image/jpeg,application/pdf"
+                multiple
+                @change="onUploadFilesSelected"
+              >
+              <div class="flex items-center gap-2">
+                <UButton
+                  :icon="uploadPending ? 'i-lucide-loader-circle' : 'i-lucide-upload'"
+                  color="neutral"
+                  variant="outline"
+                  :label="uploadPending ? 'Upload laeuft...' : 'Neue Dateien hochladen'"
+                  :loading="uploadPending"
+                  :disabled="uploadPending"
+                  class="w-fit cursor-pointer disabled:cursor-not-allowed"
+                  @click="triggerFileUpload"
+                />
+                <span class="text-xs text-muted">PNG, JPG, JPEG, PDF (max. 20 MB pro Datei)</span>
+              </div>
+              <p
+                v-if="uploadFeedback"
+                :class="[
+                  'text-sm',
+                  uploadFeedback.ok ? 'text-green-700' : 'text-red-700',
+                ]"
+              >
+                {{ uploadFeedback.message }}
+              </p>
+            </div>
             <div class="flex flex-col gap-2">
               <FormKit
                 type="textarea"
