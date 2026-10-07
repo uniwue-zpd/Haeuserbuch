@@ -395,6 +395,7 @@ export interface FileDTO extends Auditable {
 export interface FilePreviewDTO {
     id: number;
     originalName: string;
+    type: string;
 }
 
 /**

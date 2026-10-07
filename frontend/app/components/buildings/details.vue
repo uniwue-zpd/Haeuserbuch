@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useId } from "vue";
 import type { BuildingFeature } from "~/utils/GeoJsonTypes";
-import type { PersonPreviewDTO } from "~/utils/types";
+import type { FilePreviewDTO, PersonPreviewDTO } from "~/utils/types";
 import { title_shortener } from "~/utils/helpers";
 
 const props = withDefaults(
@@ -27,6 +27,9 @@ defineEmits<{
 }>();
 
 const details = computed(() => props.building.properties);
+const fileApi = useFiles();
+const filePreviewOpen = ref(false);
+const previewFile = ref<FilePreviewDTO | null>(null);
 const headingPrefix = useId();
 const addressesCurrent = computed(() =>
   details.value.addresses.filter(
@@ -39,15 +42,38 @@ const addressesOld = computed(() =>
   ),
 );
 
+const isImageFile = (file: FilePreviewDTO) => {
+  return !!file.type?.startsWith("image/");
+};
+
+const getFileIcon = (file: FilePreviewDTO) => {
+  if (file.type === "application/pdf") return "i-lucide-file-text";
+  return "i-lucide-file";
+};
+
+const getFileUrl = (file: FilePreviewDTO) => {
+  return fileApi.getFileContentUrl(file.id);
+};
+
+const getDownloadName = (file: FilePreviewDTO) => {
+  return file.originalName || `datei-${file.id}`;
+};
+
+const openImagePreview = (file: FilePreviewDTO) => {
+  if (!isImageFile(file)) return;
+  previewFile.value = file;
+  filePreviewOpen.value = true;
+};
+
 </script>
 
 <template>
   <div
-    class="flex flex-col gap-4 pt-4 [&_.detail-section]:flex [&_.detail-section]:flex-col [&_.detail-section]:gap-5 [&_.detail-section]:rounded-md [&_.detail-section]:border [&_.detail-section]:border-default [&_.detail-section]:bg-default [&_.detail-section]:p-4 [&_.detail-section]:shadow-md [&_.detail-section_h2]:font-sans [&_.detail-section_h2]:text-xl [&_.detail-section_h2]:font-semibold [&_.detail-section_h2]:text-highlighted [&_.detail-row]:flex [&_.detail-row]:flex-col [&_.detail-row]:gap-2 [&_.detail-row]:py-1.5 [&_.detail-label]:text-sm [&_.detail-label]:font-semibold [&_.detail-label]:text-muted [&_.detail-link]:inline-flex [&_.detail-link]:rounded-md [&_.detail-link]:border [&_.detail-link]:border-default [&_.detail-link]:px-2 [&_.detail-link]:py-1 [&_.detail-link]:text-sm [&_.detail-link]:font-semibold [&_.detail-link]:text-highlighted [&_.detail-link]:transition-colors [&_.detail-link]:duration-150 [&_.detail-link:hover]:border-accented [&_.detail-link:hover]:text-primary [&_.detail-link:hover]:shadow-md [&_.detail-link:focus-visible]:border-accented [&_.detail-link:focus-visible]:text-primary [&_.detail-link:focus-visible]:shadow-md [&_.detail-link:focus-visible]:outline-none"
+    class="flex flex-col gap-4 pt-4 [&_.detail-section]:flex [&_.detail-section]:flex-col [&_.detail-section]:gap-5 [&_.detail-section]:rounded-md [&_.detail-section]:border [&_.detail-section]:border-default [&_.detail-section]:bg-default [&_.detail-section]:p-4 [&_.detail-section]:shadow-md [&_.detail-section_h2]:font-sans [&_.detail-section_h2]:text-xl [&_.detail-section_h2]:font-semibold [&_.detail-section_h2]:text-highlighted [&_.detail-row]:flex [&_.detail-row]:flex-col [&_.detail-row]:gap-2 [&_.detail-row]:py-1.5 [&_.detail-label]:text-sm [&_.detail-label]:font-semibold [&_.detail-label]:text-muted [&_.detail-link]:inline-flex [&_.detail-link]:rounded-md [&_.detail-link]:border [&_.detail-link]:border-default [&_.detail-link]:px-2 [&_.detail-link]:py-1 [&_.detail-link]:text-sm [&_.detail-link]:font-semibold [&_.detail-link]:text-highlighted [&_.detail-link]:transition-colors [&_.detail-link]:duration-150 [&_.detail-link:hover]:border-accented [&_.detail-link:hover]:text-primary [&_.detail-link:hover]:shadow-md [&_.detail-link:focus-visible]:border-accented &[ _.detail-link:focus-visible]:text-primary &[ _..detail-link:focus-visible]:shadow-md &[ _..detail-link:focus-visible]:outline-none"
     :class="{
       'building-details--compact gap-0 [&>div]:gap-0 [&_.detail-row]:grid [&_.detail-row]:grid-cols-[minmax(0,9.5rem)_minmax(0,1fr)] [&_.detail-row]:items-start [&_.detail-row]:gap-3 [&_.detail-row]:py-2.5 [&_.detail-label]:leading-5 [&_.detail-label]:text-muted [&_.detail-label]:wrap-anywhere [&_.detail-link]:rounded-none [&_.detail-link]:border-0 [&_.detail-link]:p-0 [&_.detail-link]:text-highlighted [&_.detail-link]:underline [&_.detail-link]:decoration-muted [&_.detail-link]:underline-offset-4 [&_.detail-link:hover]:shadow-none [&_.detail-link:hover]:decoration-current [&_.detail-link:focus-visible]:shadow-none [&_.detail-link:focus-visible]:decoration-current': compact,
       '[&_.detail-section]:gap-0 [&_.detail-section]:rounded-none [&_.detail-section]:border-0 [&_.detail-section]:border-b [&_.detail-section]:border-muted [&_.detail-section]:bg-transparent [&_.detail-section]:px-4 [&_.detail-section]:py-5 [&_.detail-section]:text-default [&_.detail-section]:shadow-none [&_.detail-section_h2]:mb-2 [&_.detail-section_h2]:text-base [&_.detail-section_h2]:font-bold [&_.detail-section_h2]:text-highlighted [&_.detail-label]:text-sm': compact && !bento,
-      'building-details--bento !block col-span-full columns-1 gap-4 lg:columns-2 [&>div]:contents [&_.detail-section]:mb-4 [&_.detail-section]:break-inside-avoid [&_.detail-section]:gap-5 [&_.detail-section]:rounded-md [&_.detail-section]:border [&_.detail-section]:border-default [&_.detail-section]:bg-default [&_.detail-section]:p-5 [&_.detail-section]:shadow-md [&_.detail-section_h2]:mb-0 [&_.detail-section_h2]:text-xl': bento,
+      'building-details--bento block! col-span-full columns-1 gap-4 lg:columns-2 [&>div]:contents [&_.detail-section]:mb-4 [&_.detail-section]:break-inside-avoid [&_.detail-section]:gap-5 [&_.detail-section]:rounded-md [&_.detail-section]:border [&_.detail-section]:border-default [&_.detail-section]:bg-default [&_.detail-section]:p-5 [&_.detail-section]:shadow-md [&_.detail-section_h2]:mb-0 [&_.detail-section_h2]:text-xl': bento,
     }"
   >
     <div
@@ -62,7 +88,7 @@ const addressesOld = computed(() =>
       <section
         class="flex flex-col gap-5 rounded-md border border-default bg-default p-4 shadow-md"
         :class="bento
-          ? 'mb-4 break-inside-avoid rounded-md bg-default !p-5 shadow-md'
+          ? 'mb-4 break-inside-avoid rounded-md bg-default p-5! shadow-md'
           : compact
             ? 'gap-0 rounded-none border-0 border-b border-muted bg-transparent px-4 py-5 text-default shadow-none'
             : ''"
@@ -302,6 +328,87 @@ const addressesOld = computed(() =>
         </p>
       </div>
     </section>
+
+    <section
+      v-if="details.files.length"
+      class="detail-section"
+      :aria-labelledby="`${headingPrefix}-files`"
+    >
+      <h2 :id="`${headingPrefix}-files`">Dateien</h2>
+      <div class="detail-row">
+        <p class="detail-label">Anhänge</p>
+        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+          <article
+            v-for="file in details.files"
+            :key="file.id ?? file.originalName ?? 'file'"
+            class="flex min-w-0 items-center gap-2 rounded-md border border-default bg-elevated/50 p-2"
+          >
+            <button
+              v-if="isImageFile(file)"
+              type="button"
+              class="h-12 w-12 shrink-0 cursor-zoom-in overflow-hidden rounded-md border border-default bg-default transition hover:opacity-90"
+              @click="openImagePreview(file)"
+            >
+              <img
+                :src="getFileUrl(file)"
+                :alt="file.originalName ?? 'Datei'"
+                class="h-full w-full object-cover"
+                draggable="false"
+              >
+            </button>
+            <div
+              v-else
+              class="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-default bg-default"
+            >
+              <UIcon :name="getFileIcon(file)" class="size-5 text-muted" />
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="truncate text-xs font-semibold text-highlighted">
+                {{ file.originalName || `Datei ${file.id}` }}
+              </p>
+              <p class="truncate text-[11px] text-muted">
+                {{ file.type || "Unbekannter Dateityp" }}
+              </p>
+            </div>
+            <a
+              :href="getFileUrl(file)"
+              :download="getDownloadName(file)"
+              class="inline-flex"
+              target="_blank"
+              rel="noopener noreferrer"
+              :title="`Datei herunterladen: ${getDownloadName(file)}`"
+            >
+              <UButton
+                icon="i-lucide-download"
+                color="neutral"
+                variant="outline"
+                size="xs"
+                aria-label="Datei herunterladen"
+                class="cursor-pointer"
+              />
+            </a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <UModal
+      v-model:open="filePreviewOpen"
+      :title="previewFile?.originalName ?? 'Dateivorschau'"
+      :ui="{ content: 'max-w-5xl' }"
+    >
+      <template #content>
+        <div class="p-4 sm:p-6">
+          <img
+            v-if="previewFile"
+            :src="getFileUrl(previewFile)"
+            :alt="previewFile.originalName ?? 'Dateivorschau'"
+            class="max-h-[80vh] w-full object-contain"
+            draggable="false"
+          >
+        </div>
+      </template>
+    </UModal>
 
   </div>
 </template>
