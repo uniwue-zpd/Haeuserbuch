@@ -89,6 +89,29 @@ public class FileService {
     }
 
     /**
+     * Uploads a single file, stores it on disk, and persists its metadata.
+     * Entry point for uploads that carry additional per-file metadata.
+     * @param file multipart file to upload
+     * @return created {@link FileDTO} object
+     * @throws IllegalArgumentException if no file is provided or its type is not allowed
+     * @throws IOException if the file cannot be stored
+     */
+    @Transactional
+    public FileDTO uploadFile(MultipartFile file) throws IllegalArgumentException, IOException {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("No file provided");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType)) {
+            throw new IllegalArgumentException("File type not allowed: " + contentType);
+        }
+
+        File storedFile = storeFile(file, prepareUploadDir());
+        return fileMapper.toDTO(fileRepository.save(storedFile));
+    }
+
+    /**
      * Uploads multiple image files, stores them on disk, and persists their metadata.
      * @param files array of multipart files to upload
      * @return list of created {@link FileDTO} objects
@@ -102,13 +125,7 @@ public class FileService {
         }
 
         List<File> uploadedFiles = new ArrayList<>();
-        Path uploadDir = Paths.get(uploadDirValue);
-
-        try {
-            Files.createDirectories(uploadDir);
-        } catch (IOException ex) {
-            throw new IOException("Could not create target directory " + uploadDir, ex);
-        }
+        Path uploadDir = prepareUploadDir();
 
         for (MultipartFile file : files) {
             if (file == null || file.isEmpty()) continue;
@@ -116,31 +133,44 @@ public class FileService {
             String contentType = file.getContentType();
             if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType)) continue;
 
-            String originalFileName = file.getOriginalFilename();
-            String filename = UUID.randomUUID() + "-" + originalFileName;
-            Path targetPath = uploadDir.resolve(filename);
-
-            try (InputStream in = file.getInputStream()) {
-
-                Files.copy(
-                        in,
-                        targetPath,
-                        StandardCopyOption.REPLACE_EXISTING
-                );
-
-            } catch (IOException ex) {
-                throw new IOException("Could not store file " + originalFileName, ex);
-            }
-            File savedFile = new File();
-            savedFile.setOriginalName(originalFileName);
-            savedFile.setName(filename);
-            savedFile.setPath(targetPath.toString());
-            savedFile.setType(contentType);
-            savedFile.setSize(file.getSize());
-            uploadedFiles.add(savedFile);
+            uploadedFiles.add(storeFile(file, uploadDir));
         }
         fileRepository.saveAll(uploadedFiles);
         return fileMapper.toDTOs(uploadedFiles);
+    }
+
+    private Path prepareUploadDir() throws IOException {
+        Path uploadDir = Paths.get(uploadDirValue);
+        try {
+            Files.createDirectories(uploadDir);
+        } catch (IOException ex) {
+            throw new IOException("Could not create target directory " + uploadDir, ex);
+        }
+        return uploadDir;
+    }
+
+    private File storeFile(MultipartFile file, Path uploadDir) throws IOException {
+        String originalFileName = file.getOriginalFilename();
+        String filename = UUID.randomUUID() + "-" + originalFileName;
+        Path targetPath = uploadDir.resolve(filename);
+
+        try (InputStream in = file.getInputStream()) {
+            Files.copy(
+                    in,
+                    targetPath,
+                    StandardCopyOption.REPLACE_EXISTING
+            );
+        } catch (IOException ex) {
+            throw new IOException("Could not store file " + originalFileName, ex);
+        }
+
+        File storedFile = new File();
+        storedFile.setOriginalName(originalFileName);
+        storedFile.setName(filename);
+        storedFile.setPath(targetPath.toString());
+        storedFile.setType(file.getContentType());
+        storedFile.setSize(file.getSize());
+        return storedFile;
     }
 
     /**
