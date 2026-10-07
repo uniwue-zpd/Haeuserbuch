@@ -59,6 +59,7 @@ public class FileMapper {
         FilePreviewDTO dto = new FilePreviewDTO();
         dto.setId(file.getId());
         dto.setOriginalName(file.getOriginalName());
+        dto.setType(file.getType());
         return dto;
     }
 
