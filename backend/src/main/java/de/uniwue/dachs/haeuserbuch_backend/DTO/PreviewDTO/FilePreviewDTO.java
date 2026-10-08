@@ -9,4 +9,5 @@ public class FilePreviewDTO {
     private Long id;
     private String originalName;
     private String type;
+    private Boolean downloadAllowed;
 }

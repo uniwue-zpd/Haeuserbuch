@@ -76,6 +76,7 @@ public class FileMapper {
         dto.setId(file.getId());
         dto.setOriginalName(file.getOriginalName());
         dto.setType(file.getType());
+        dto.setDownloadAllowed(file.getDownloadAllowed());
         return dto;
     }
 
