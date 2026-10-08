@@ -1,6 +1,7 @@
 package de.uniwue.dachs.haeuserbuch_backend.controller;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.FileDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.FileMetadata;
 import de.uniwue.dachs.haeuserbuch_backend.service.FileService;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -70,8 +71,10 @@ public class FileController {
      * @return created file metadata with its location
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<FileDTO> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
-        FileDTO uploadedFile = fileService.uploadFile(file);
+    public ResponseEntity<FileDTO> uploadFile(
+            @RequestPart("file") MultipartFile file,
+            @RequestPart(value = "metadata", required = false) FileMetadata metadata) throws IOException {
+        FileDTO uploadedFile = fileService.uploadFile(file, metadata);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -86,11 +89,14 @@ public class FileController {
     /**
      * Uploads multiple image files in one batch.
      * @param files multipart files
+     * @param metadata optional JSON array of per-file metadata, matched to {@code files} by index
      * @return created file metadata
      */
     @PostMapping(value = "/batch", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<List<FileDTO>> uploadFiles(@RequestParam("files") MultipartFile[] files) throws IOException {
-        List<FileDTO> uploadedFiles = fileService.uploadFiles(files);
+    public ResponseEntity<List<FileDTO>> uploadFiles(
+            @RequestPart("files") MultipartFile[] files,
+            @RequestPart(value = "metadata", required = false) List<FileMetadata> metadata) throws IOException {
+        List<FileDTO> uploadedFiles = fileService.uploadFiles(files, metadata);
         return ResponseEntity
                 .status(201)
                 .body(uploadedFiles);

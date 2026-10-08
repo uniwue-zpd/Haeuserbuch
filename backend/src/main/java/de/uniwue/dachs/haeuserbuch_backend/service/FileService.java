@@ -1,6 +1,7 @@
 package de.uniwue.dachs.haeuserbuch_backend.service;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.FileDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.FileMetadata;
 import de.uniwue.dachs.haeuserbuch_backend.model.Building;
 import de.uniwue.dachs.haeuserbuch_backend.model.File;
 import de.uniwue.dachs.haeuserbuch_backend.repository.BuildingRepository;
@@ -92,12 +93,13 @@ public class FileService {
      * Uploads a single file, stores it on disk, and persists its metadata.
      * Entry point for uploads that carry additional per-file metadata.
      * @param file multipart file to upload
+     * @param metadata optional descriptive metadata, may be {@code null}
      * @return created {@link FileDTO} object
      * @throws IllegalArgumentException if no file is provided or its type is not allowed
      * @throws IOException if the file cannot be stored
      */
     @Transactional
-    public FileDTO uploadFile(MultipartFile file) throws IllegalArgumentException, IOException {
+    public FileDTO uploadFile(MultipartFile file, FileMetadata metadata) throws IllegalArgumentException, IOException {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("No file provided");
         }
@@ -107,33 +109,39 @@ public class FileService {
             throw new IllegalArgumentException("File type not allowed: " + contentType);
         }
 
-        File storedFile = storeFile(file, prepareUploadDir());
+        File storedFile = storeFile(file, prepareUploadDir(), metadata);
         return fileMapper.toDTO(fileRepository.save(storedFile));
     }
 
     /**
      * Uploads multiple image files, stores them on disk, and persists their metadata.
      * @param files array of multipart files to upload
+     * @param metadata optional per-file metadata, matched to {@code files} by index; may be {@code null}
      * @return list of created {@link FileDTO} objects
-     * @throws IllegalArgumentException if no files are provided
+     * @throws IllegalArgumentException if no files are provided or the metadata count does not match the file count
      * @throws IOException if files cannot be stored
      */
     @Transactional
-    public List<FileDTO> uploadFiles(MultipartFile[] files) throws IllegalArgumentException, IOException {
+    public List<FileDTO> uploadFiles(MultipartFile[] files, List<FileMetadata> metadata) throws IllegalArgumentException, IOException {
         if (files == null || files.length == 0) {
             throw new IllegalArgumentException("No files provided");
+        }
+        if (metadata != null && metadata.size() != files.length) {
+            throw new IllegalArgumentException(
+                    "Metadata count (" + metadata.size() + ") does not match file count (" + files.length + ")");
         }
 
         List<File> uploadedFiles = new ArrayList<>();
         Path uploadDir = prepareUploadDir();
 
-        for (MultipartFile file : files) {
+        for (int i = 0; i < files.length; i++) {
+            MultipartFile file = files[i];
             if (file == null || file.isEmpty()) continue;
 
             String contentType = file.getContentType();
             if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType)) continue;
 
-            uploadedFiles.add(storeFile(file, uploadDir));
+            uploadedFiles.add(storeFile(file, uploadDir, metadata != null ? metadata.get(i) : null));
         }
         fileRepository.saveAll(uploadedFiles);
         return fileMapper.toDTOs(uploadedFiles);
@@ -149,7 +157,7 @@ public class FileService {
         return uploadDir;
     }
 
-    private File storeFile(MultipartFile file, Path uploadDir) throws IOException {
+    private File storeFile(MultipartFile file, Path uploadDir, FileMetadata metadata) throws IOException {
         String originalFileName = file.getOriginalFilename();
         String filename = UUID.randomUUID() + "-" + originalFileName;
         Path targetPath = uploadDir.resolve(filename);
@@ -170,6 +178,25 @@ public class FileService {
         storedFile.setPath(targetPath.toString());
         storedFile.setType(file.getContentType());
         storedFile.setSize(file.getSize());
+
+        if (metadata != null) {
+            storedFile.setDocumentCategory(metadata.documentCategory());
+            storedFile.setDocumentType(metadata.documentType());
+            storedFile.setDateCaptured(metadata.dateCaptured());
+            storedFile.setDateCapturedPrecision(metadata.dateCapturedPrecision());
+            storedFile.setDateFrom(metadata.dateFrom());
+            storedFile.setDateTo(metadata.dateTo());
+            storedFile.setSource(metadata.source());
+            storedFile.setCollection(metadata.collection());
+            storedFile.setSignature(metadata.signature());
+            storedFile.setCreator(metadata.creator());
+            storedFile.setRightsHolder(metadata.rightsHolder());
+            storedFile.setLicense(metadata.license());
+            storedFile.setDownloadAllowed(metadata.downloadAllowed());
+            storedFile.setDescription(metadata.description());
+            storedFile.setCaption(metadata.caption());
+            storedFile.setSourceUrl(metadata.sourceUrl());
+        }
         return storedFile;
     }
 
