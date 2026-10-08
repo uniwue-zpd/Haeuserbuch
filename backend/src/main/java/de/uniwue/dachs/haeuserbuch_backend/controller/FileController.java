@@ -9,8 +9,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -63,11 +65,30 @@ public class FileController {
 
 
     /**
-     * Uploads multiple image files.
+     * Uploads a single file.
+     * @param file multipart file
+     * @return created file metadata with its location
+     */
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<FileDTO> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
+        FileDTO uploadedFile = fileService.uploadFile(file);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(uploadedFile.getId())
+                .toUri();
+        return ResponseEntity
+                .created(location)
+                .body(uploadedFile);
+    }
+
+
+    /**
+     * Uploads multiple image files in one batch.
      * @param files multipart files
      * @return created file metadata
      */
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/batch", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<List<FileDTO>> uploadFiles(@RequestParam("files") MultipartFile[] files) throws IOException {
         List<FileDTO> uploadedFiles = fileService.uploadFiles(files);
         return ResponseEntity

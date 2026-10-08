@@ -20,10 +20,16 @@ export const useFiles = () => {
         return await $fetch<FileDTO>(`/api/files/${id}`);
     };
 
+    const uploadFile = async (file: File): Promise<FileDTO> => {
+        const formData = new FormData();
+        formData.append("file", file);
+        return await $fetch<FileDTO>("/api/files", { method: "POST", body: formData });
+    };
+
     const uploadFiles = async (files: File[]): Promise<FileDTO[]> => {
         const formData = new FormData();
         files.forEach(file => { formData.append("files", file); });
-        return await $fetch<FileDTO[]>("/api/files", { method: "POST", body: formData });
+        return await $fetch<FileDTO[]>("/api/files/batch", { method: "POST", body: formData });
     };
 
     const deleteFileById = async (id: number): Promise<void> => {
@@ -50,6 +56,7 @@ export const useFiles = () => {
         getAllFiles,
         getFiles,
         getFileById,
+        uploadFile,
         uploadFiles,
         deleteFileById,
         deleteFiles,
