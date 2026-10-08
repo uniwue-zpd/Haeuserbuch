@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, useId } from "vue";
 import type { BuildingFeature } from "~/utils/GeoJsonTypes";
-import type { FilePreviewDTO, PersonPreviewDTO } from "~/utils/types";
+import type { PersonPreviewDTO } from "~/utils/types";
 import { title_shortener } from "~/utils/helpers";
+import FileList from "~/components/files/FileList.vue";
 
 const props = withDefaults(
   defineProps<{
@@ -27,9 +28,6 @@ defineEmits<{
 }>();
 
 const details = computed(() => props.building.properties);
-const fileApi = useFiles();
-const filePreviewOpen = ref(false);
-const previewFile = ref<FilePreviewDTO | null>(null);
 const headingPrefix = useId();
 const addressesCurrent = computed(() =>
   details.value.addresses.filter(
@@ -75,29 +73,6 @@ const ui = computed(() => {
       : "inline-flex rounded-md border border-default px-2 py-1 text-sm font-semibold text-highlighted transition-colors duration-150 hover:border-accented hover:text-primary hover:shadow-md focus-visible:border-accented focus-visible:text-primary focus-visible:shadow-md focus-visible:outline-none",
   };
 });
-
-const isImageFile =(file: FilePreviewDTO) => {
-  return !!file.type?.startsWith("image/");
-};
-
-const getFileIcon = (file: FilePreviewDTO) => {
-  if (file.type === "application/pdf") return "i-lucide-file-text";
-  return "i-lucide-file";
-};
-
-const getFileUrl = (file: FilePreviewDTO) => {
-  return fileApi.getFileContentUrl(file.id);
-};
-
-const getDownloadName = (file: FilePreviewDTO) => {
-  return file.originalName || `datei-${file.id}`;
-};
-
-const openImagePreview = (file: FilePreviewDTO) => {
-  if (!isImageFile(file)) return;
-  previewFile.value = file;
-  filePreviewOpen.value = true;
-};
 
 </script>
 
@@ -349,80 +324,9 @@ const openImagePreview = (file: FilePreviewDTO) => {
       :aria-labelledby="`${headingPrefix}-files`"
     >
       <h2 :id="`${headingPrefix}-files`" :class="ui.heading">Dateien</h2>
-      <div :class="ui.row">
-        <p :class="ui.label">Anhänge</p>
-        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
-          <article
-            v-for="file in details.files"
-            :key="file.id ?? file.originalName ?? 'file'"
-            class="flex min-w-0 items-center gap-2 rounded-md border border-default bg-elevated/50 p-2"
-          >
-            <button
-              v-if="isImageFile(file)"
-              type="button"
-              class="h-12 w-12 shrink-0 cursor-zoom-in overflow-hidden rounded-md border border-default bg-default transition hover:opacity-90"
-              @click="openImagePreview(file)"
-            >
-              <img
-                :src="getFileUrl(file)"
-                :alt="file.originalName ?? 'Datei'"
-                class="h-full w-full object-cover"
-                draggable="false"
-              >
-            </button>
-            <div
-              v-else
-              class="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-default bg-default"
-            >
-              <UIcon :name="getFileIcon(file)" class="size-5 text-muted" />
-            </div>
-            <div class="min-w-0 flex-1">
-              <p class="truncate text-xs font-semibold text-highlighted">
-                {{ file.originalName || `Datei ${file.id}` }}
-              </p>
-              <p class="truncate text-[11px] text-muted">
-                {{ file.type || "Unbekannter Dateityp" }}
-              </p>
-            </div>
-            <a
-              :href="getFileUrl(file)"
-              :download="getDownloadName(file)"
-              class="inline-flex"
-              target="_blank"
-              rel="noopener noreferrer"
-              :title="`Datei herunterladen: ${getDownloadName(file)}`"
-            >
-              <UButton
-                icon="i-lucide-download"
-                color="neutral"
-                variant="outline"
-                size="xs"
-                aria-label="Datei herunterladen"
-                class="cursor-pointer"
-              />
-            </a>
-          </article>
-        </div>
-      </div>
-    </section>
+      <FileList :files="details.files" compact />
 
-    <UModal
-      v-model:open="filePreviewOpen"
-      :title="previewFile?.originalName ?? 'Dateivorschau'"
-      :ui="{ content: 'max-w-5xl' }"
-    >
-      <template #content>
-        <div class="p-4 sm:p-6">
-          <img
-            v-if="previewFile"
-            :src="getFileUrl(previewFile)"
-            :alt="previewFile.originalName ?? 'Dateivorschau'"
-            class="max-h-[80vh] w-full object-contain"
-            draggable="false"
-          >
-        </div>
-      </template>
-    </UModal>
+    </section>
 
   </div>
 </template>

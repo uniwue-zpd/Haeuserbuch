@@ -555,7 +555,7 @@ onBeforeUnmount(() => {
                   class="w-fit cursor-pointer disabled:cursor-not-allowed"
                   @click="triggerFileUpload"
                 />
-                <span class="text-xs text-muted">PNG, JPG, JPEG, PDF (max. 20 MB pro Datei)</span>
+                <span class="text-xs text-muted">PNG, JPG, JPEG, PDF (max. 10 MB pro Datei)</span>
               </div>
               <p
                 v-if="uploadFeedback"
