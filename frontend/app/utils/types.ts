@@ -197,20 +197,6 @@ export interface FilterPerson {
     'weapon-id'?: number;
 }
 
-// OWNERSHIPS
-
-/** Represents an ownership event written in the register. */
-export interface Ownership extends Auditable {
-    type: string | null;
-    date: string | null;
-    price: number | null;
-    owner: PersonPreviewDTO;
-    seller: PersonPreviewDTO;
-    buildings: Feature[] | [];
-    source: Source;
-    entryText: string | null;
-}
-
 // PLACES
 
 /** Represents a place as non-`geoJSON feature` */
