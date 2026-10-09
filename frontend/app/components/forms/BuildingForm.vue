@@ -15,6 +15,8 @@ import type { Position } from "geojson";
 import type { GeoJSONStoreGeometries } from "terra-draw";
 import type { Feature } from "~/utils/GeoJsonTypes";
 import { useToast as useNuxtToast } from "@nuxt/ui/composables";
+import { formatFileSize } from "~/utils/helpers";
+import { MAX_UPLOAD_FILE_SIZE, UPLOAD_ACCEPT } from "~/utils/constant_values";
 
 const props = defineProps<{
   header: string;
@@ -137,10 +139,16 @@ const triggerFileUpload = () => {
 
 const onUploadFilesSelected = async (event: Event) => {
   const input = event.target as HTMLInputElement;
-  const selectedFiles = input.files ? Array.from(input.files) : [];
+  const allFiles = input.files ? Array.from(input.files) : [];
+  const tooLarge = allFiles.filter((file) => file.size > MAX_UPLOAD_FILE_SIZE);
+  const selectedFiles = allFiles.filter((file) => file.size <= MAX_UPLOAD_FILE_SIZE);
+  const tooLargeNote = tooLarge.length
+    ? ` Übersprungen (größer als ${formatFileSize(MAX_UPLOAD_FILE_SIZE)}): ${tooLarge.map((file) => file.name).join(", ")}.`
+    : "";
 
   if (!selectedFiles.length) {
-    uploadFeedback.value = null;
+    uploadFeedback.value = tooLarge.length ? { ok: false, message: tooLargeNote.trim() } : null;
+    input.value = "";
     return;
   }
 
@@ -156,8 +164,8 @@ const onUploadFilesSelected = async (event: Event) => {
         : `${uploadedCount} Dateien erfolgreich hochgeladen`;
 
     uploadFeedback.value = {
-      ok: true,
-      message: `${message}. Die Dateien koennen nun im Auswahlfeld gesucht und hinzugefuegt werden.`,
+      ok: !tooLarge.length,
+      message: `${message}. Die Dateien koennen nun im Auswahlfeld gesucht und hinzugefuegt werden.${tooLargeNote}`,
     };
 
     toast.add({
@@ -540,7 +548,7 @@ onBeforeUnmount(() => {
                 ref="uploadInputRef"
                 type="file"
                 class="hidden"
-                accept=".png,.jpg,.jpeg,image/png,image/jpeg,application/pdf"
+                :accept="UPLOAD_ACCEPT"
                 multiple
                 @change="onUploadFilesSelected"
               >
@@ -555,7 +563,7 @@ onBeforeUnmount(() => {
                   class="w-fit cursor-pointer disabled:cursor-not-allowed"
                   @click="triggerFileUpload"
                 />
-                <span class="text-xs text-muted">PNG, JPG, JPEG, PDF (max. 10 MB pro Datei)</span>
+                <span class="text-xs text-muted">PNG, JPG, JPEG, PDF (max. 30 MB pro Datei)</span>
               </div>
               <p
                 v-if="uploadFeedback"

@@ -2,6 +2,7 @@
 import { useToast as useNuxtToast } from "@nuxt/ui/composables";
 import type { FileDTO, FileMetadata } from "~/utils/types";
 import { DOCUMENT_TYPES } from "~/utils/types";
+import { UPLOAD_ACCEPT } from "~/utils/constant_values";
 
 const emit = defineEmits<{
   uploaded: [file: FileDTO];
@@ -66,8 +67,8 @@ const submit = async (formData: FileFormValue) => {
             type="file"
             name="file"
             label="Datei"
-            accept=".png,.jpg,.jpeg,image/png,image/jpeg,application/pdf"
-            help="PNG, JPG, JPEG, PDF (max. 10 MB)"
+            :accept="UPLOAD_ACCEPT"
+            help="PNG, JPG, JPEG, PDF (max. 30 MB)"
             validation="required"
             :validation-messages="{ required: 'Bitte eine Datei auswählen' }"
             outer-class="max-w-full"
