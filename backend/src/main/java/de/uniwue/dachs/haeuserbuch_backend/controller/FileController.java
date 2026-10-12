@@ -1,16 +1,23 @@
 package de.uniwue.dachs.haeuserbuch_backend.controller;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.FileDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.FileMetadata;
 import de.uniwue.dachs.haeuserbuch_backend.service.FileService;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -63,13 +70,37 @@ public class FileController {
 
 
     /**
-     * Uploads multiple image files.
-     * @param files multipart files
-     * @return created file metadata
+     * Uploads a single file.
+     * @param file multipart file
+     * @return created file metadata with its location
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<List<FileDTO>> uploadFiles(@RequestParam("files") MultipartFile[] files) throws IOException {
-        List<FileDTO> uploadedFiles = fileService.uploadFiles(files);
+    public ResponseEntity<FileDTO> uploadFile(
+            @RequestPart("file") MultipartFile file,
+            @RequestPart(value = "metadata", required = false) FileMetadata metadata) throws IOException {
+        FileDTO uploadedFile = fileService.uploadFile(file, metadata);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(uploadedFile.getId())
+                .toUri();
+        return ResponseEntity
+                .created(location)
+                .body(uploadedFile);
+    }
+
+
+    /**
+     * Uploads multiple image files in one batch.
+     * @param files multipart files
+     * @param metadata optional JSON array of per-file metadata, matched to {@code files} by index
+     * @return created file metadata
+     */
+    @PostMapping(value = "/batch", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<List<FileDTO>> uploadFiles(
+            @RequestPart("files") MultipartFile[] files,
+            @RequestPart(value = "metadata", required = false) List<FileMetadata> metadata) throws IOException {
+        List<FileDTO> uploadedFiles = fileService.uploadFiles(files, metadata);
         return ResponseEntity
                 .status(201)
                 .body(uploadedFiles);
@@ -102,16 +133,31 @@ public class FileController {
 
     /**
      * Returns binary file content.
+     * By default the content is served inline (for previews). With {@code download=true}
+     * it is served as an attachment, which is refused if the file does not allow downloads.
      * @param id file ID
-     * @return file resource
+     * @param download whether the file should be served as a download
+     * @return file resource, 404 if not found, or 403 if download is not allowed
      */
     @GetMapping("/{id}/content")
-    public ResponseEntity<Resource> getFileContentById(@PathVariable Long id) {
+    public ResponseEntity<Resource> getFileContentById(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "false") boolean download) {
         FileDTO file = fileService.getFileById(id).orElse(null);
         if (file == null) return ResponseEntity.notFound().build();
+        if (download && Boolean.FALSE.equals(file.getDownloadAllowed())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        String filename = file.getOriginalName() != null ? file.getOriginalName() : "datei-" + id;
+        ContentDisposition disposition = (download ? ContentDisposition.attachment() : ContentDisposition.inline())
+                .filename(filename, StandardCharsets.UTF_8)
+                .build();
+
         Resource resource = fileService.getFileContent(id);
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(file.getType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, disposition.toString())
                 .body(resource);
     }
 

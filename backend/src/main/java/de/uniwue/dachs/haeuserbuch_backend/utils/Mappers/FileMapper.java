@@ -44,6 +44,22 @@ public class FileMapper {
         fileDTO.setCreatedBy(file.getCreatedBy());
         fileDTO.setLastModifiedDate(file.getLastModifiedDate());
         fileDTO.setLastModifiedBy(file.getLastModifiedBy());
+        fileDTO.setDocumentCategory(file.getDocumentCategory());
+        fileDTO.setDocumentType(file.getDocumentType());
+        fileDTO.setDateCaptured(file.getDateCaptured());
+        fileDTO.setDateCapturedPrecision(file.getDateCapturedPrecision());
+        fileDTO.setDateFrom(file.getDateFrom());
+        fileDTO.setDateTo(file.getDateTo());
+        fileDTO.setSource(file.getSource());
+        fileDTO.setCollection(file.getCollection());
+        fileDTO.setSignature(file.getSignature());
+        fileDTO.setCreator(file.getCreator());
+        fileDTO.setRightsHolder(file.getRightsHolder());
+        fileDTO.setLicense(file.getLicense());
+        fileDTO.setDownloadAllowed(file.getDownloadAllowed());
+        fileDTO.setDescription(file.getDescription());
+        fileDTO.setCaption(file.getCaption());
+        fileDTO.setSourceUrl(file.getSourceUrl());
         return fileDTO;
     }
 
@@ -59,6 +75,8 @@ public class FileMapper {
         FilePreviewDTO dto = new FilePreviewDTO();
         dto.setId(file.getId());
         dto.setOriginalName(file.getOriginalName());
+        dto.setType(file.getType());
+        dto.setDownloadAllowed(file.getDownloadAllowed());
         return dto;
     }
 

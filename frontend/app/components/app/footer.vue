@@ -156,6 +156,12 @@ const partners = [
             class="transition-colors hover:text-slate-800 dark:hover:text-white"
             >Login</a
           >
+          <NuxtLink
+            v-else
+            to="/dateien"
+            class="transition-colors hover:text-slate-800 dark:hover:text-white"
+            >Dateien</NuxtLink
+          >
         </div>
       </div>
     </div>

@@ -15,6 +15,8 @@ import type { Position } from "geojson";
 import type { GeoJSONStoreGeometries } from "terra-draw";
 import type { Feature } from "~/utils/GeoJsonTypes";
 import { useToast as useNuxtToast } from "@nuxt/ui/composables";
+import { formatFileSize } from "~/utils/helpers";
+import { MAX_UPLOAD_FILE_SIZE, UPLOAD_ACCEPT } from "~/utils/constant_values";
 
 const props = defineProps<{
   header: string;
@@ -24,6 +26,11 @@ const props = defineProps<{
 
 const toast = useNuxtToast();
 const buildingStore = useBuildingStore();
+const fileApi = useFiles();
+
+const uploadInputRef = ref<HTMLInputElement | null>(null);
+const uploadPending = ref(false);
+const uploadFeedback = ref<{ ok: boolean; message: string } | null>(null);
 
 const tile_store = useTileStore();
 const sources = computed(() => tile_store.sources);
@@ -123,6 +130,66 @@ const submit = async (formData: Partial<Feature>) => {
         duration: 3000,
       });
     }
+  }
+};
+
+const triggerFileUpload = () => {
+  uploadInputRef.value?.click();
+};
+
+const onUploadFilesSelected = async (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const allFiles = input.files ? Array.from(input.files) : [];
+  const tooLarge = allFiles.filter((file) => file.size > MAX_UPLOAD_FILE_SIZE);
+  const selectedFiles = allFiles.filter((file) => file.size <= MAX_UPLOAD_FILE_SIZE);
+  const tooLargeNote = tooLarge.length
+    ? ` Übersprungen (größer als ${formatFileSize(MAX_UPLOAD_FILE_SIZE)}): ${tooLarge.map((file) => file.name).join(", ")}.`
+    : "";
+
+  if (!selectedFiles.length) {
+    uploadFeedback.value = tooLarge.length ? { ok: false, message: tooLargeNote.trim() } : null;
+    input.value = "";
+    return;
+  }
+
+  uploadPending.value = true;
+  uploadFeedback.value = null;
+
+  try {
+    const uploaded = await fileApi.uploadFiles(selectedFiles);
+    const uploadedCount = uploaded.length;
+    const message =
+      uploadedCount === 1
+        ? "1 Datei erfolgreich hochgeladen"
+        : `${uploadedCount} Dateien erfolgreich hochgeladen`;
+
+    uploadFeedback.value = {
+      ok: !tooLarge.length,
+      message: `${message}. Die Dateien koennen nun im Auswahlfeld gesucht und hinzugefuegt werden.${tooLargeNote}`,
+    };
+
+    toast.add({
+      color: "success",
+      title: "Upload erfolgreich",
+      description: message,
+      duration: 3500,
+    });
+  } catch (error) {
+    console.error(error);
+    uploadFeedback.value = {
+      ok: false,
+      message: "Datei-Upload fehlgeschlagen. Bitte erneut versuchen.",
+    };
+
+    toast.add({
+      color: "error",
+      title: "Upload fehlgeschlagen",
+      description: "Die Dateien konnten nicht hochgeladen werden.",
+      duration: 4000,
+    });
+  } finally {
+    uploadPending.value = false;
+    if (input) input.value = "";
   }
 };
 
@@ -466,6 +533,48 @@ onBeforeUnmount(() => {
               :isMultiple="true"
               outer-class="max-w-full"
             />
+            <FormKit
+              type="entityAutocomplete"
+              entityType="file"
+              optionLabel="originalName"
+              name="files"
+              label="Dateien (Mehrfachauswahl möglich)"
+              :isMultiple="true"
+              outer-class="max-w-full"
+              help="Dateien für das Gebäude auswählen"
+            />
+            <div class="mt-1 flex flex-col gap-2">
+              <input
+                ref="uploadInputRef"
+                type="file"
+                class="hidden"
+                :accept="UPLOAD_ACCEPT"
+                multiple
+                @change="onUploadFilesSelected"
+              >
+              <div class="flex items-center gap-2">
+                <UButton
+                  :icon="uploadPending ? 'i-lucide-loader-circle' : 'i-lucide-upload'"
+                  color="neutral"
+                  variant="outline"
+                  :label="uploadPending ? 'Upload laeuft...' : 'Neue Dateien hochladen'"
+                  :loading="uploadPending"
+                  :disabled="uploadPending"
+                  class="w-fit cursor-pointer disabled:cursor-not-allowed"
+                  @click="triggerFileUpload"
+                />
+                <span class="text-xs text-muted">PNG, JPG, JPEG, PDF (max. 30 MB pro Datei)</span>
+              </div>
+              <p
+                v-if="uploadFeedback"
+                :class="[
+                  'text-sm',
+                  uploadFeedback.ok ? 'text-green-700' : 'text-red-700',
+                ]"
+              >
+                {{ uploadFeedback.message }}
+              </p>
+            </div>
             <div class="flex flex-col gap-2">
               <FormKit
                 type="textarea"
