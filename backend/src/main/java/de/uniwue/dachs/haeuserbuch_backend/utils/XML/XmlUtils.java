@@ -4,7 +4,7 @@ import de.uniwue.dachs.haeuserbuch_backend.model.BaseEntity;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -16,6 +16,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class XmlUtils {
@@ -48,16 +50,52 @@ public class XmlUtils {
     }
 
     /**
-     * Retrieves the text content of a specific tag from an XML element.
+     * Retrieves the direct child elements of an XML element with a specific tag name.
      * @param parent the parent XML element
-     * @param tagName the name of the tag to retrieve
-     * @return the text content of the tag, or null if the tag does not exist
+     * @param tagName the name of the child elements to retrieve
+     * @return the matching direct child elements in document order
+     */
+    public List<Element> getChildElements(Element parent, String tagName) {
+        List<Element> children = new ArrayList<>();
+        for (Node child = parent.getFirstChild(); child != null; child = child.getNextSibling()) {
+            if (child instanceof Element element && tagName.equals(element.getTagName())) {
+                children.add(element);
+            }
+        }
+        return children;
+    }
+
+    /**
+     * Retrieves the first direct child element of an XML element with a specific tag name.
+     * @param parent the parent XML element
+     * @param tagName the name of the child element to retrieve
+     * @return the first matching direct child element, or null if it does not exist
+     */
+    public Element getChildElement(Element parent, String tagName) {
+        List<Element> children = getChildElements(parent, tagName);
+        return children.isEmpty() ? null : children.getFirst();
+    }
+
+    /**
+     * Retrieves the trimmed text content of a direct child element.
+     * @param parent the parent XML element
+     * @param tagName the name of the child element
+     * @return the trimmed text content, or null if the element does not exist
      */
     public String getText(Element parent, String tagName) {
-        NodeList nodes = parent.getElementsByTagName(tagName);
-        return nodes.getLength() > 0
-                ? nodes.item(0).getTextContent()
-                : null;
+        Element element = getChildElement(parent, tagName);
+        return element == null ? null : extractText(element);
+    }
+
+    /**
+     * Retrieves the value of a direct child element as a Long.
+     * @param parent the parent XML element
+     * @param tagName the name of the child element
+     * @return the value, or null if the element does not exist
+     */
+    public Long getLong(Element parent, String tagName) {
+        String text = getText(parent, tagName);
+        return text == null ? null : Long.valueOf(text);
     }
 
     /**

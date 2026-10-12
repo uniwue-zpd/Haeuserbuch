@@ -21,11 +21,19 @@ public class OwnershipRecordController {
 
     @PostMapping(
             consumes = MediaType.APPLICATION_XML_VALUE,
-            produces = MediaType.APPLICATION_XML_VALUE
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
     )
-    public ResponseEntity<String> create(@RequestBody String xml) {
+    public ResponseEntity<?> create(@RequestBody String xml) {
+        List<String> errors = ownershipRecordService.validate(xml);
+        if (!errors.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of("valid", false, "errors", errors));
+        }
         OwnershipRecord record = ownershipRecordService.create(xml);
-        return ResponseEntity.ok(record.getEntryXml());
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_XML)
+                .body(record.getEntryXml());
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_XML_VALUE)

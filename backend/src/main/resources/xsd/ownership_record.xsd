@@ -7,41 +7,108 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <!-- Define a simple type for non-negative values fitting into a Long -->
+  <xs:simpleType name="nonNegativeLong">
+    <xs:restriction base="xs:long">
+      <xs:minInclusive value="0"/>
+    </xs:restriction>
+  </xs:simpleType>
+
   <!-- Define an attribute group for the BaseEntity attributes -->
+  <!-- Dates are written by the backend as epoch milliseconds -->
   <xs:attributeGroup name="baseEntityAttributes">
     <xs:attribute name="id" type="xs:long"/>
-    <xs:attribute name="createdDate" type="xs:dateTime"/>
+    <xs:attribute name="createdDate" type="xs:long"/>
     <xs:attribute name="createdBy" type="xs:string"/>
-    <xs:attribute name="lastModifiedDate" type="xs:dateTime"/>
+    <xs:attribute name="lastModifiedDate" type="xs:long"/>
     <xs:attribute name="lastModifiedBy" type="xs:string"/>
   </xs:attributeGroup>
 
-  <!-- The complex type for the "gebaeude" (=building) element -->
-  <xs:complexType name="gebaeudeTyp">
-    <!-- The element may occur only once -->
+  <!-- The complex type for a single "distriktBesitzNummer" (=district property number) element -->
+  <xs:complexType name="distriktBesitzNummerTyp">
+    <xs:simpleContent>
+      <xs:extension base="nonEmptyString">
+        <xs:attribute name="gebaeudeId" type="xs:long" use="optional">
+          <xs:annotation>
+            <xs:documentation>ID des zugeordneten Gebäudes, wird beim Speichern vom Backend gesetzt</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- The complex type for the "distriktBesitzNummern" wrapper element -->
+  <xs:complexType name="distriktBesitzNummernTyp">
+    <!-- The element may occur one or more times -->
     <xs:sequence>
       <xs:element
-        name="katasternummer"
-        type="nonEmptyString"
+        name="distriktBesitzNummer"
+        type="distriktBesitzNummerTyp"
+        maxOccurs="unbounded"
       >
         <xs:annotation>
-          <xs:documentation>Katasternummer des Gebäudes</xs:documentation>
+          <xs:documentation>Distriktbesitznummer des Gebäudes, z.B. II/434</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The complex type for a single "name" (=building name) element -->
+  <xs:complexType name="nameTyp">
+    <xs:simpleContent>
+      <xs:extension base="nonEmptyString">
+        <xs:attribute name="quelleId" type="xs:long" use="optional">
+          <xs:annotation>
+            <xs:documentation>ID der Quelle des Gebäudenamens</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- The complex type for the "namen" wrapper element -->
+  <xs:complexType name="namenTyp">
+    <!-- The element may occur one or more times -->
+    <xs:sequence>
+      <xs:element
+        name="name"
+        type="nameTyp"
+        maxOccurs="unbounded"
+      >
+        <xs:annotation>
+          <xs:documentation>Name des Gebäudes</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- The complex type for the "haus" (=building) element -->
+  <xs:complexType name="hausTyp">
+    <xs:sequence>
+      <xs:element
+        name="distriktBesitzNummern"
+        type="distriktBesitzNummernTyp"
+      >
+        <xs:annotation>
+          <xs:documentation>Distriktbesitznummern der zugehörigen Gebäude</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element
+        name="namen"
+        type="namenTyp"
+        minOccurs="0"
+      >
+        <xs:annotation>
+          <xs:documentation>Namen des Gebäudes</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element
         name="summe"
-        type="nonEmptyString"
+        type="nonNegativeLong"
+        minOccurs="0"
       >
         <xs:annotation>
           <xs:documentation>Die Angabe der Summe</xs:documentation>
-        </xs:annotation>
-      </xs:element>
-      <xs:element
-        name="name"
-        type="nonEmptyString"
-      >
-        <xs:annotation>
-          <xs:documentation>Name des Gebäudes</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
@@ -61,8 +128,8 @@
           </xs:annotation>
         </xs:element>
         <xs:element
-          name="gebaeude"
-          type="gebaeudeTyp"
+          name="haus"
+          type="hausTyp"
           minOccurs="0"
         />
       </xs:sequence>
