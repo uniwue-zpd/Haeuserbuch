@@ -13,4 +13,5 @@ public class OwnershipRecordDTO extends BaseEntity {
     private String entryText;
     private Long sum;
     private Set<BuildingDTO> buildings;
+    private SourceDTO source;
 }

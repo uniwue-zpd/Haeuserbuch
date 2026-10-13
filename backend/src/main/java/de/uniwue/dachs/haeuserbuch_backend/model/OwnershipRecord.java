@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,4 +39,9 @@ public class OwnershipRecord extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "building_id")
     )
     private Set<Building> buildings = new HashSet<>();
+
+    // Source referenced by the <quelle> element, e.g. the Viertelbuch of the entry.
+    @ManyToOne
+    @JoinColumn(name = "source_id")
+    private Source source;
 }

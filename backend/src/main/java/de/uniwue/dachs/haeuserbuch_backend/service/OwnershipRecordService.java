@@ -89,6 +89,14 @@ public class OwnershipRecordService {
             if (!exists) errors.add("No building found with district property number '" + number + "'");
         }
 
+        // Not existing or ambiguous source title
+        String sourceTitle = ownershipRecordMapper.extractSourceTitle(xml);
+        if (sourceTitle != null) {
+            int matches = ownershipRecordMapper.findSourcesByTitle(sourceTitle).size();
+            if (matches == 0) errors.add("No source found with title '" + sourceTitle + "'");
+            if (matches > 1) errors.add("Several sources found with title '" + sourceTitle + "'");
+        }
+
         // Not existing source IDs
         ownershipRecordMapper.extractBuildingNames(xml).stream()
                 .map(BuildingNameInput::sourceId)
