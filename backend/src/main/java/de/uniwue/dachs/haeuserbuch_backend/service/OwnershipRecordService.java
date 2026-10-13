@@ -1,5 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.service;
 
+import de.uniwue.dachs.haeuserbuch_backend.DTO.OwnershipRecordDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Building;
 import de.uniwue.dachs.haeuserbuch_backend.model.BuildingName;
 import de.uniwue.dachs.haeuserbuch_backend.model.OwnershipRecord;
@@ -65,6 +66,11 @@ public class OwnershipRecordService {
     public Optional<String> getXmlById(Long id) {
         return ownershipRecordRepository.findById(id)
                 .map(OwnershipRecord::getEntryXml);
+    }
+
+    public Optional<OwnershipRecordDTO> getById(Long id) {
+        return ownershipRecordRepository.findById(id)
+                .map(ownershipRecordMapper::toDTO);
     }
 
     /**

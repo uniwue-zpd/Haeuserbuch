@@ -24,6 +24,27 @@
     <xs:attribute name="lastModifiedBy" type="xs:string"/>
   </xs:attributeGroup>
 
+  <xs:complexType name="baseEntityElements" mixed="true">
+    <xs:sequence>
+      <xs:element
+        name="notizenIntern"
+        type="nonEmptyString"
+      >
+        <xs:annotation>
+          <xs:documentation>Interne Notizen</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element
+        name="notizenAllgemein"
+        type="nonEmptyString"
+      >
+        <xs:annotation>
+          <xs:documentation>Allgemeine Notizen</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
   <!-- The complex type for a single "distriktBesitzNummer" (=district property number) element -->
   <xs:complexType name="distriktBesitzNummerTyp">
     <xs:simpleContent>
@@ -121,6 +142,10 @@
   <xs:element name="eintrag">
     <xs:complexType mixed="true">
       <xs:sequence>
+        <xs:element
+          name="notizen"
+          type="baseEntityElements"
+        />
         <xs:element
           name="signatur"
           type="nonEmptyString"

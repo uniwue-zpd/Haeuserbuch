@@ -1,5 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.utils.Mappers;
 
+import de.uniwue.dachs.haeuserbuch_backend.DTO.OwnershipRecordDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.OwnershipRecord;
 import de.uniwue.dachs.haeuserbuch_backend.repository.BuildingRepository;
 import de.uniwue.dachs.haeuserbuch_backend.utils.XML.XmlUtils;
@@ -8,6 +9,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Maps ownership record XML to entities. The XML is expected to be valid against
@@ -25,10 +27,30 @@ public class OwnershipRecordMapper {
 
     private final XmlUtils xmlUtils;
     private final BuildingRepository buildingRepository;
+    private final BuildingMapper buildingMapper;
 
-    public OwnershipRecordMapper(XmlUtils xmlUtils, BuildingRepository buildingRepository) {
+    public OwnershipRecordMapper(XmlUtils xmlUtils, BuildingRepository buildingRepository, BuildingMapper buildingMapper) {
         this.xmlUtils = xmlUtils;
         this.buildingRepository = buildingRepository;
+        this.buildingMapper = buildingMapper;
+    }
+
+    public OwnershipRecordDTO toDTO(OwnershipRecord record) {
+        OwnershipRecordDTO dto = new OwnershipRecordDTO();
+        dto.setId(record.getId());
+        dto.setCreatedDate(record.getCreatedDate());
+        dto.setCreatedBy(record.getCreatedBy());
+        dto.setLastModifiedDate(record.getLastModifiedDate());
+        dto.setLastModifiedBy(record.getLastModifiedBy());
+        dto.setInternalNotes(record.getInternalNotes());
+        dto.setGeneralNotes(record.getGeneralNotes());
+        dto.setSignature(record.getSignature());
+        dto.setEntryText(record.getEntryText());
+        dto.setSum(record.getSum());
+        dto.setBuildings(record.getBuildings().stream()
+                .map(buildingMapper::buildingToDTO)
+                .collect(Collectors.toSet()));
+        return dto;
     }
 
     public OwnershipRecord toEntity(String xml) {
@@ -36,12 +58,15 @@ public class OwnershipRecordMapper {
         Element recordElement = document.getDocumentElement();
 
         OwnershipRecord record = new OwnershipRecord();
+        Element notes = xmlUtils.getChildElement(recordElement, "notizen");
+        if (notes != null) {
+            record.setInternalNotes(xmlUtils.getText(notes, "notizenIntern"));
+            record.setGeneralNotes(xmlUtils.getText(notes, "notizenAllgemein"));
+        }
         record.setSignature(xmlUtils.getText(recordElement, "signatur"));
         record.setEntryText(xmlUtils.extractText(recordElement));
-
         Element haus = xmlUtils.getChildElement(recordElement, "haus");
         if (haus != null) record.setSum(xmlUtils.getLong(haus, "summe"));
-
         for (Element element : districtPropertyNumberElements(recordElement)) {
             String number = xmlUtils.extractText(element);
             // searchBuildings matches substrings, so only the exact district property number is kept
