@@ -28,7 +28,7 @@
   <xs:complexType name="distriktBesitzNummerTyp">
     <xs:simpleContent>
       <xs:extension base="nonEmptyString">
-        <xs:attribute name="gebaeudeId" type="xs:long" use="optional">
+        <xs:attribute name="gebaeudeId" type="xs:long">
           <xs:annotation>
             <xs:documentation>ID des zugeordneten Gebäudes, wird beim Speichern vom Backend gesetzt</xs:documentation>
           </xs:annotation>
@@ -38,7 +38,8 @@
   </xs:complexType>
 
   <!-- The complex type for the "distriktBesitzNummern" wrapper element -->
-  <xs:complexType name="distriktBesitzNummernTyp">
+  <!-- Free text between the numbers is allowed, e.g. "nun" -->
+  <xs:complexType name="distriktBesitzNummernTyp" mixed="true">
     <!-- The element may occur one or more times -->
     <xs:sequence>
       <xs:element
@@ -57,7 +58,7 @@
   <xs:complexType name="nameTyp">
     <xs:simpleContent>
       <xs:extension base="nonEmptyString">
-        <xs:attribute name="quelleId" type="xs:long" use="optional">
+        <xs:attribute name="quelleId" type="xs:long">
           <xs:annotation>
             <xs:documentation>ID der Quelle des Gebäudenamens</xs:documentation>
           </xs:annotation>
@@ -67,7 +68,8 @@
   </xs:complexType>
 
   <!-- The complex type for the "namen" wrapper element -->
-  <xs:complexType name="namenTyp">
+  <!-- Free text between the names is allowed -->
+  <xs:complexType name="namenTyp" mixed="true">
     <!-- The element may occur one or more times -->
     <xs:sequence>
       <xs:element
@@ -83,7 +85,8 @@
   </xs:complexType>
 
   <!-- The complex type for the "haus" (=building) element -->
-  <xs:complexType name="hausTyp">
+  <!-- Free text between the elements is allowed -->
+  <xs:complexType name="hausTyp" mixed="true">
     <xs:sequence>
       <xs:element
         name="distriktBesitzNummern"
