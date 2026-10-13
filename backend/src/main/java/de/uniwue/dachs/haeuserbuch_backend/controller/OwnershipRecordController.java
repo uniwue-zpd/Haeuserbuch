@@ -1,5 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.controller;
 
+import de.uniwue.dachs.haeuserbuch_backend.DTO.OwnershipRecordDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.OwnershipRecord;
 import de.uniwue.dachs.haeuserbuch_backend.service.OwnershipRecordService;
 import org.springframework.http.MediaType;
@@ -36,8 +37,15 @@ public class OwnershipRecordController {
                 .body(record.getEntryXml());
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_XML_VALUE)
-    public ResponseEntity<String> getById(@PathVariable Long id) {
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<OwnershipRecordDTO> getById(@PathVariable Long id) {
+        return ownershipRecordService.getById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(ResponseEntity.notFound()::build);
+    }
+
+    @GetMapping(value = "/{id}/xml", produces = MediaType.APPLICATION_XML_VALUE)
+    public ResponseEntity<String> getXmlById(@PathVariable Long id) {
         return ownershipRecordService.getXmlById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(ResponseEntity.notFound()::build);
