@@ -45,6 +45,19 @@
     </xs:sequence>
   </xs:complexType>
 
+  <!-- The complex type for the "quelle" (=source) element -->
+  <xs:complexType name="quelleTyp">
+    <xs:simpleContent>
+      <xs:extension base="nonEmptyString">
+        <xs:attribute name="quelleId" type="xs:long">
+          <xs:annotation>
+            <xs:documentation>ID der zugeordneten Quelle, wird beim Speichern vom Backend gesetzt</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
   <!-- The complex type for a single "distriktBesitzNummer" (=district property number) element -->
   <xs:complexType name="distriktBesitzNummerTyp">
     <xs:simpleContent>
@@ -146,6 +159,15 @@
           name="notizen"
           type="baseEntityElements"
         />
+        <xs:element
+          name="quelle"
+          type="quelleTyp"
+          minOccurs="0"
+        >
+          <xs:annotation>
+            <xs:documentation>Titel der Quelle, z.B. Viertelbuch 13</xs:documentation>
+          </xs:annotation>
+        </xs:element>
         <xs:element
           name="signatur"
           type="nonEmptyString"

@@ -2,7 +2,9 @@ package de.uniwue.dachs.haeuserbuch_backend.utils.Mappers;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.OwnershipRecordDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.OwnershipRecord;
+import de.uniwue.dachs.haeuserbuch_backend.model.Source;
 import de.uniwue.dachs.haeuserbuch_backend.repository.BuildingRepository;
+import de.uniwue.dachs.haeuserbuch_backend.repository.SourceRepository;
 import de.uniwue.dachs.haeuserbuch_backend.utils.XML.XmlUtils;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -28,11 +30,21 @@ public class OwnershipRecordMapper {
     private final XmlUtils xmlUtils;
     private final BuildingRepository buildingRepository;
     private final BuildingMapper buildingMapper;
+    private final SourceRepository sourceRepository;
+    private final SourceMapper sourceMapper;
 
-    public OwnershipRecordMapper(XmlUtils xmlUtils, BuildingRepository buildingRepository, BuildingMapper buildingMapper) {
+    public OwnershipRecordMapper(
+            XmlUtils xmlUtils,
+            BuildingRepository buildingRepository,
+            BuildingMapper buildingMapper,
+            SourceRepository sourceRepository,
+            SourceMapper sourceMapper
+    ) {
         this.xmlUtils = xmlUtils;
         this.buildingRepository = buildingRepository;
         this.buildingMapper = buildingMapper;
+        this.sourceRepository = sourceRepository;
+        this.sourceMapper = sourceMapper;
     }
 
     public OwnershipRecordDTO toDTO(OwnershipRecord record) {
@@ -50,6 +62,7 @@ public class OwnershipRecordMapper {
         dto.setBuildings(record.getBuildings().stream()
                 .map(buildingMapper::buildingToDTO)
                 .collect(Collectors.toSet()));
+        dto.setSource(sourceMapper.SourceToDTO(record.getSource()));
         return dto;
     }
 
@@ -63,6 +76,8 @@ public class OwnershipRecordMapper {
             record.setInternalNotes(xmlUtils.getText(notes, "notizenIntern"));
             record.setGeneralNotes(xmlUtils.getText(notes, "notizenAllgemein"));
         }
+        String sourceTitle = xmlUtils.getText(recordElement, "quelle");
+        if (sourceTitle != null) record.setSource(findSourcesByTitle(sourceTitle).getFirst());
         record.setSignature(xmlUtils.getText(recordElement, "signatur"));
         record.setEntryText(xmlUtils.extractText(recordElement));
         Element haus = xmlUtils.getChildElement(recordElement, "haus");
@@ -88,6 +103,27 @@ public class OwnershipRecordMapper {
     public List<String> extractDistrictPropertyNumbers(String xml) {
         return districtPropertyNumberElements(xmlUtils.parse(xml).getDocumentElement()).stream()
                 .map(xmlUtils::extractText)
+                .toList();
+    }
+
+    /**
+     * Extracts the source title of the {@code <quelle>} element.
+     * @param xml the ownership record XML
+     * @return the source title, or null if no source was given
+     */
+    public String extractSourceTitle(String xml) {
+        return xmlUtils.getText(xmlUtils.parse(xml).getDocumentElement(), "quelle");
+    }
+
+    /**
+     * Finds the sources whose title equals the given title (case-insensitive).
+     * @param title the source title
+     * @return the matching sources
+     */
+    public List<Source> findSourcesByTitle(String title) {
+        // searchSources matches substrings and other fields, so only the exact title is kept
+        return sourceRepository.searchSources(title).stream()
+                .filter(source -> title.equalsIgnoreCase(source.getTitle()))
                 .toList();
     }
 
@@ -122,6 +158,12 @@ public class OwnershipRecordMapper {
         Document document = xmlUtils.parse(xml);
         Element recordElement = document.getDocumentElement();
         xmlUtils.enrichElement(recordElement, record);
+
+        // Set the ID of the referenced source
+        Element source = xmlUtils.getChildElement(recordElement, "quelle");
+        if (source != null && record.getSource() != null) {
+            xmlUtils.setAttribute(source, "quelleId", record.getSource().getId());
+        }
 
         // Set the IDs of the referenced buildings
         for (Element number : districtPropertyNumberElements(recordElement)) {
