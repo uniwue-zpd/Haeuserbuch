@@ -75,7 +75,9 @@ useHead(() => ({
     </Card>
     <UIContentMetadata
       :created-date="quarterItem?.createdDate"
+      :created-by="quarterItem?.createdBy"
       :last-modified-date="quarterItem?.lastModifiedDate"
+      :last-modified-by="quarterItem?.lastModifiedBy"
     />
   </div>
 </template>

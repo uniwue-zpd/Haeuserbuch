@@ -202,7 +202,9 @@ useHead(() => ({
     </div>
     <UIContentMetadata
       :created-date="personItem.createdDate"
+      :created-by="personItem.createdBy"
       :last-modified-date="personItem.lastModifiedDate"
+      :last-modified-by="personItem.lastModifiedBy"
     />
   </div>
 </template>

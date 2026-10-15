@@ -130,7 +130,9 @@ function handleMapSelect(id: number) {
       <UIContentMetadata
         v-if="selectedBuilding"
         :created-date="selectedBuilding.properties.createdDate"
+        :created-by="selectedBuilding.properties.createdBy"
         :last-modified-date="selectedBuilding.properties.lastModifiedDate"
+        :last-modified-by="selectedBuilding.properties.lastModifiedBy"
       />
     </div>
   </AppShell>

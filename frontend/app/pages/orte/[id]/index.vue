@@ -168,7 +168,9 @@ onBeforeUnmount(() => {
     </div>
     <UIContentMetadata
       :created-date="properties?.createdDate"
+      :created-by="properties?.createdBy"
       :last-modified-date="properties?.lastModifiedDate"
+      :last-modified-by="properties?.lastModifiedBy"
     />
   </div>
 </template>

@@ -110,7 +110,9 @@ useHead(() => ({
     </div>
     <UIContentMetadata
       :created-date="citizenshipItem.createdDate"
+      :created-by="citizenshipItem.createdBy"
       :last-modified-date="citizenshipItem.lastModifiedDate"
+      :last-modified-by="citizenshipItem.lastModifiedBy"
     />
   </div>
 </template>
