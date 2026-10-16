@@ -3,6 +3,7 @@ package de.uniwue.dachs.haeuserbuch_backend.controller;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.FileDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.FileMetadata;
 import de.uniwue.dachs.haeuserbuch_backend.service.FileService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -87,6 +88,28 @@ public class FileController {
         return ResponseEntity
                 .created(location)
                 .body(uploadedFile);
+    }
+
+
+    /**
+     * Updates the metadata of a file and optionally replaces its content.
+     * @param id file ID
+     * @param file optional new content; if omitted, the current content is kept
+     * @param metadata new metadata (full replacement)
+     * @return updated file metadata, 404 if not found, or 400 if the file type is not allowed
+     */
+    @PutMapping(value = "/{id}/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<FileDTO> updateFile(
+            @PathVariable Long id,
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @RequestPart(value = "metadata", required = false) FileMetadata metadata) throws IOException {
+        try {
+            return ResponseEntity.ok(fileService.updateFile(id, file, metadata));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 

@@ -2,6 +2,7 @@
 import type { FileDTO, FilePreviewDTO, Pageable } from "~/utils/types";
 import { DOCUMENT_TYPES } from "~/utils/types";
 import { formatFileSize } from "~/utils/helpers";
+import FileForm from "~/components/forms/FileForm.vue";
 
 type ListFile = FileDTO | FilePreviewDTO;
 
@@ -22,6 +23,7 @@ const props = withDefaults(
 );
 
 const fileApi = useFiles();
+const { loggedIn } = useUserSession();
 
 // Paged loading, only used when no static files are given
 const isPaged = computed(() => props.files == null);
@@ -124,6 +126,31 @@ watch(detailsOpen, (open) => {
     selectedFile.value = null;
     details.value = null;
   }
+});
+
+// Edit popup
+const editOpen = ref(false);
+const editFile = ref<FileDTO | null>(null);
+const editSaving = ref(false);
+
+const openEdit = async (file: ListFile) => {
+  try {
+    editFile.value = isFullFile(file) ? file : await fileApi.getFileById(file.id);
+    editOpen.value = true;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const onSaved = async () => {
+  editOpen.value = false;
+  if (isPaged.value) await refresh();
+  else await refreshNuxtData();
+};
+
+// Closing the popup discards the form state, so nothing chosen in it is kept or sent
+watch(editOpen, (open) => {
+  if (!open) editFile.value = null;
 });
 
 const metadataGroups = computed(() => {
@@ -301,6 +328,16 @@ onBeforeUnmount(() => {
           class="cursor-pointer"
         />
         <UButton
+          v-if="loggedIn"
+          icon="i-lucide-pencil"
+          color="neutral"
+          :variant="props.compact ? 'outline' : 'ghost'"
+          :size="props.compact ? 'xs' : 'md'"
+          aria-label="Datei bearbeiten"
+          class="cursor-pointer"
+          @click="openEdit(file)"
+        />
+        <UButton
           v-if="isPaged"
           icon="i-lucide-trash-2"
           color="error"
@@ -444,6 +481,25 @@ onBeforeUnmount(() => {
             </div>
           </template>
         </div>
+      </template>
+    </UModal>
+
+    <UModal
+      v-model:open="editOpen"
+      title="Datei bearbeiten"
+      :dismissible="!editSaving"
+      :close="!editSaving"
+      :ui="{ content: 'max-w-3xl' }"
+    >
+      <template #body>
+        <FileForm
+          v-if="editFile"
+          v-model:saving="editSaving"
+          action="edit"
+          :file="editFile"
+          @saved="onSaved"
+          @cancel="editOpen = false"
+        />
       </template>
     </UModal>
   </div>

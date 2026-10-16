@@ -45,6 +45,20 @@ export const useFiles = () => {
         return await $fetch<FileDTO[]>("/api/files/batch", { method: "POST", body: formData });
     };
 
+    /**
+     * Updates the metadata of a file. If a new file is given, it replaces the stored content.
+     */
+    const updateFile = async (
+        id: number,
+        file: File | undefined,
+        metadata: Partial<FileMetadata>
+    ): Promise<FileDTO> => {
+        const formData = new FormData();
+        if (file) formData.append("file", file);
+        formData.append("metadata", jsonPart(metadata));
+        return await $fetch<FileDTO>(`/api/files/${id}/edit`, { method: "PUT", body: formData });
+    };
+
     const deleteFileById = async (id: number): Promise<void> => {
         await $fetch(`/api/files/${id}`, { method: "DELETE" });
     };
@@ -78,6 +92,7 @@ export const useFiles = () => {
         getFileById,
         uploadFile,
         uploadFiles,
+        updateFile,
         deleteFileById,
         deleteFiles,
         getFileContentUrl,

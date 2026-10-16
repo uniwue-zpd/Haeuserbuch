@@ -4,9 +4,25 @@ import type { FileDTO, FileMetadata } from "~/utils/types";
 import { DOCUMENT_TYPES } from "~/utils/types";
 import { UPLOAD_ACCEPT } from "~/utils/constant_values";
 
+const props = withDefaults(
+  defineProps<{
+    action?: "create" | "edit";
+    file?: FileDTO;
+  }>(),
+  {
+    action: "create",
+    file: undefined,
+  },
+);
+
 const emit = defineEmits<{
-  uploaded: [file: FileDTO];
+  saved: [file: FileDTO];
+  cancel: [];
 }>();
+
+const isEdit = computed(() => props.action === "edit" && !!props.file);
+// Exposed so a surrounding modal can stay open while the request is running
+const saving = defineModel<boolean>("saving", { default: false });
 
 const toast = useNuxtToast();
 const fileApi = useFiles();
@@ -23,53 +39,72 @@ type FileFormValue = Partial<FileMetadata> & {
 const submit = async (formData: FileFormValue) => {
   const { file: fileList, ...metadata } = formData;
   const file = fileList?.[0]?.file;
-  if (!file) return;
+  if (!isEdit.value && !file) return;
 
+  saving.value = true;
   try {
-    const uploaded = await fileApi.uploadFile(file, metadata);
-    toast.add({
-      color: "success",
-      title: "Erfolg",
-      description: "Datei erfolgreich hochgeladen",
-      duration: 3000,
-    });
-    getNode("file_create")?.reset();
-    emit("uploaded", uploaded);
+    if (isEdit.value && props.file) {
+      const updated = await fileApi.updateFile(props.file.id, file, metadata);
+      toast.add({
+        color: "success",
+        title: "Erfolg",
+        description: "Datei erfolgreich gespeichert",
+        duration: 3000,
+      });
+      emit("saved", updated);
+    } else if (file) {
+      const uploaded = await fileApi.uploadFile(file, metadata);
+      toast.add({
+        color: "success",
+        title: "Erfolg",
+        description: "Datei erfolgreich hochgeladen",
+        duration: 3000,
+      });
+      getNode("file_form")?.reset();
+      emit("saved", uploaded);
+    }
   } catch (error) {
     console.error(error);
     toast.add({
       color: "error",
       title: "Fehler",
-      description: "Fehler beim Hochladen der Datei",
+      description: isEdit.value ? "Fehler beim Speichern der Datei" : "Fehler beim Hochladen der Datei",
       duration: 3000,
     });
+  } finally {
+    saving.value = false;
   }
 };
 </script>
 
 <template>
   <div class="flex flex-col gap-2">
-    <p class="text-sm roboto-plain">
+    <p v-if="!isEdit" class="text-sm roboto-plain">
       Wählen Sie bitte eine Datei aus und füllen Sie die untenstehenden Felder aus,
       um die Datei mit Metadaten hochzuladen.
     </p>
     <div class="rounded-md bg-gray-100 p-3 shadow-md">
       <FormKit
         type="form"
-        id="file_create"
-        submit-label="Hochladen"
+        id="file_form"
         @submit="submit"
         :actions="false"
+        :value="props.file ?? {}"
+        :key="props.file?.id ?? 'create'"
         #default="{ value }"
       >
         <div class="flex flex-col gap-2">
           <FormKit
             type="file"
             name="file"
-            label="Datei"
+            :label="isEdit ? 'Datei ersetzen' : 'Datei'"
             :accept="UPLOAD_ACCEPT"
-            help="PNG, JPG, JPEG, PDF (max. 30 MB)"
-            validation="required"
+            :help="
+              isEdit
+                ? `Aktuelle Datei: ${props.file?.originalName ?? '–'}. Leer lassen, um sie zu behalten. PNG, JPG, JPEG, PDF (max. 30 MB)`
+                : 'PNG, JPG, JPEG, PDF (max. 30 MB)'
+            "
+            :validation="isEdit ? '' : 'required'"
             :validation-messages="{ required: 'Bitte eine Datei auswählen' }"
             outer-class="max-w-full"
           />
@@ -203,12 +238,27 @@ const submit = async (formData: FileFormValue) => {
             outer-class="max-w-full"
           />
 
-          <div class="mb-2 rounded-md border-2 border-solid bg-gray-100 p-5">
+          <div v-if="!isEdit" class="mb-2 rounded-md border-2 border-solid bg-gray-100 p-5">
             <div class="font-mono">JSON-Preview</div>
             <hr />
             <pre wrap class="text-sm">{{ value }}</pre>
           </div>
-          <FormKit type="submit" label="Hochladen" />
+          <div class="flex flex-row items-center gap-2">
+            <FormKit
+              type="submit"
+              :label="isEdit ? 'Speichern' : 'Hochladen'"
+              :disabled="saving"
+            />
+            <UButton
+              v-if="isEdit"
+              label="Abbrechen"
+              color="neutral"
+              variant="outline"
+              class="cursor-pointer"
+              :disabled="saving"
+              @click="emit('cancel')"
+            />
+          </div>
         </div>
       </FormKit>
     </div>

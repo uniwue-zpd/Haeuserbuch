@@ -16,6 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -158,6 +160,13 @@ public class FileService {
     }
 
     private File storeFile(MultipartFile file, Path uploadDir, FileMetadata metadata) throws IOException {
+        File storedFile = new File();
+        writeContent(storedFile, file, uploadDir);
+        if (metadata != null) applyMetadata(storedFile, metadata);
+        return storedFile;
+    }
+
+    private void writeContent(File target, MultipartFile file, Path uploadDir) throws IOException {
         String originalFileName = file.getOriginalFilename();
         String filename = UUID.randomUUID() + "-" + originalFileName;
         Path targetPath = uploadDir.resolve(filename);
@@ -172,32 +181,77 @@ public class FileService {
             throw new IOException("Could not store file " + originalFileName, ex);
         }
 
-        File storedFile = new File();
-        storedFile.setOriginalName(originalFileName);
-        storedFile.setName(filename);
-        storedFile.setPath(targetPath.toString());
-        storedFile.setType(file.getContentType());
-        storedFile.setSize(file.getSize());
+        target.setOriginalName(originalFileName);
+        target.setName(filename);
+        target.setPath(targetPath.toString());
+        target.setType(file.getContentType());
+        target.setSize(file.getSize());
+    }
 
-        if (metadata != null) {
-            storedFile.setDocumentCategory(metadata.documentCategory());
-            storedFile.setDocumentType(metadata.documentType());
-            storedFile.setDateCaptured(metadata.dateCaptured());
-            storedFile.setDateCapturedPrecision(metadata.dateCapturedPrecision());
-            storedFile.setDateFrom(metadata.dateFrom());
-            storedFile.setDateTo(metadata.dateTo());
-            storedFile.setSource(metadata.source());
-            storedFile.setCollection(metadata.collection());
-            storedFile.setSignature(metadata.signature());
-            storedFile.setCreator(metadata.creator());
-            storedFile.setRightsHolder(metadata.rightsHolder());
-            storedFile.setLicense(metadata.license());
-            storedFile.setDownloadAllowed(metadata.downloadAllowed());
-            storedFile.setDescription(metadata.description());
-            storedFile.setCaption(metadata.caption());
-            storedFile.setSourceUrl(metadata.sourceUrl());
+    private void applyMetadata(File target, FileMetadata metadata) {
+        target.setDocumentCategory(metadata.documentCategory());
+        target.setDocumentType(metadata.documentType());
+        target.setDateCaptured(metadata.dateCaptured());
+        target.setDateCapturedPrecision(metadata.dateCapturedPrecision());
+        target.setDateFrom(metadata.dateFrom());
+        target.setDateTo(metadata.dateTo());
+        target.setSource(metadata.source());
+        target.setCollection(metadata.collection());
+        target.setSignature(metadata.signature());
+        target.setCreator(metadata.creator());
+        target.setRightsHolder(metadata.rightsHolder());
+        target.setLicense(metadata.license());
+        target.setDownloadAllowed(metadata.downloadAllowed());
+        target.setDescription(metadata.description());
+        target.setCaption(metadata.caption());
+        target.setSourceUrl(metadata.sourceUrl());
+    }
+
+    /**
+     * Updates the metadata of a stored file and optionally replaces its content.
+     * The file keeps its ID, so building attachments stay linked. When the content is replaced,
+     * the old file is deleted from disk only after the transaction has committed.
+     * @param id file ID
+     * @param file optional new content, may be {@code null} or empty to keep the current content
+     * @param metadata new metadata (full replacement), may be {@code null} to keep the current metadata
+     * @return updated {@link FileDTO} object
+     * @throws EntityNotFoundException if the file does not exist
+     * @throws IllegalArgumentException if the new file type is not allowed
+     * @throws IOException if the new file cannot be stored
+     */
+    @Transactional
+    @CacheEvict(value = "buildings", allEntries = true)
+    public FileDTO updateFile(Long id, MultipartFile file, FileMetadata metadata) throws IOException {
+        File entity = getFileEntityById(id);
+        String oldPath = null;
+        if (file != null && !file.isEmpty()) {
+            String contentType = file.getContentType();
+            if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType)) {
+                throw new IllegalArgumentException("File type not allowed: " + contentType);
+            }
+            oldPath = entity.getPath();
+            writeContent(entity, file, prepareUploadDir());
         }
-        return storedFile;
+        if (metadata != null) applyMetadata(entity, metadata);
+        File saved = fileRepository.save(entity);
+        if (oldPath != null) deleteAfterCompletion(oldPath, entity.getPath());
+        return fileMapper.toDTO(saved);
+    }
+
+    // Removes the old file once the DB change is committed; on rollback the new file is removed instead,
+    // so the DB never points at a missing file.
+    private void deleteAfterCompletion(String oldPath, String newPath) {
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCompletion(int status) {
+                String obsolete = status == STATUS_COMMITTED ? oldPath : newPath;
+                try {
+                    Files.deleteIfExists(Paths.get(obsolete));
+                } catch (IOException ignored) {
+                    // A leftover file on disk is harmless, the DB stays consistent
+                }
+            }
+        });
     }
 
     /**

@@ -37,7 +37,7 @@ const onUploaded = () => navigateTo("/dateien");
       </template>
       <template #single>
         <div class="pt-4">
-          <FileForm @uploaded="onUploaded" />
+          <FileForm @saved="onUploaded" />
         </div>
       </template>
     </UTabs>
