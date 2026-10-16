@@ -1,4 +1,5 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+</script>
 
 <template>
   <div class="mx-auto w-full max-w-6xl space-y-10">
@@ -297,6 +298,54 @@
           </p>
         </div>
       </article>
+      </div>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <h2 class="text-xl font-semibold tracking-tight text-highlighted">Unterstützung und Beratung</h2>
+      </div>
+      <div class="grid gap-6 md:grid-cols-2">
+        <article class="flex flex-col gap-6 rounded-md border border-default bg-default p-6 shadow-sm">
+          <header>
+            <h3 class="text-2xl font-semibold tracking-tight text-highlighted">Dr. Michael Bergrab</h3>
+            <p class="mt-1 text-sm text-dimmed">Datenanalyse und -visualisierung</p>
+          </header>
+          <div class="space-y-3 text-justify leading-7 text-default">
+            <h4 class="text-sm font-semibold uppercase tracking-wide text-dimmed">Vita</h4>
+            <p>
+              Michael Bergrab ist promovierter Sozialwissenschaftler und derzeit am Leibniz-Institut
+              für Bildungsverläufe (LIfBi) in Bamberg tätig. Mit seinem Fokus auf Survey-Statistik
+              verbindet er gängige Data-Science-Verfahren wie Machine Learning und Imputation mit
+              Fragestellungen der kommunalen und regionalen Forschung. Neben der Analyse latenter
+              Strukturen liegt sein Schwerpunkt auf der Datenaufbereitung und -visualisierung.
+              Seine ehrenamtliche Geschichtsforschung in der Gemeinde Lisberg, die er gemeinsam mit
+              Dr. Horn betreibt, ergänzt seine wissenschaftliche Arbeit um eine lokalhistorische
+              Perspektive. Im Projekt unterstützt er an der Schnittstelle der Datentransformation
+              und analysiert die Wanderströme nach Würzburg.
+            </p>
+          </div>
+          <footer class="space-y-2 border-t border-default pt-4 text-sm">
+            <h4 class="font-semibold text-highlighted">Kontakt</h4>
+            <div class="flex flex-wrap gap-x-3 gap-y-1">
+              <p class="font-medium text-highlighted">E-Mail:</p>
+              <NuxtLink
+                  to="mailto:michael.bergrab@lifbi.de"
+                  target="_blank"
+                  class="text-primary hover:underline"
+              >michael.bergrab@lifbi.de</NuxtLink
+              >
+            </div>
+            <div class="flex flex-wrap gap-x-3 gap-y-1">
+              <p class="font-medium text-highlighted">ORCID:</p>
+              <NuxtLink
+                  to="https://orcid.org/0000-0001-9729-2836"
+                  target="_blank"
+                  class="text-primary hover:underline"
+              >0000-0001-9729-2836</NuxtLink
+              >
+            </div>
+          </footer>
+        </article>
       </div>
     </div>
   </div>
