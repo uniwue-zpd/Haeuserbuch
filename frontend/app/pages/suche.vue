@@ -229,13 +229,27 @@ function clearSearch() {
               </div>
               <div class="min-w-0 flex-1">
                 <div class="flex flex-wrap items-center gap-2">
-                  <h3 class="font-semibold text-highlighted underline decoration-transparent underline-offset-4 group-hover:decoration-current">{{ result.title }}</h3>
+                  <h3 class="font-semibold text-highlighted underline decoration-transparent underline-offset-4 group-hover:decoration-current">
+                    <SearchHighlight :text="result.title" :query="routeQuery" :enabled="result.matchedFields.includes('TITLE')" />
+                  </h3>
                   <span class="rounded-full bg-elevated px-2 py-0.5 text-xs font-medium text-muted">{{ searchEntityConfig[result.entityType].label }}</span>
                 </div>
-                <p v-if="result.subtitle" class="mt-1 text-sm text-muted">{{ result.subtitle }}</p>
+                <p v-if="result.subtitle" class="mt-1 text-sm text-muted">
+                  <SearchHighlight :text="result.subtitle" :query="routeQuery" :enabled="result.matchedFields.includes('METADATA')" />
+                </p>
                 <div class="mt-3 flex flex-wrap gap-2">
                   <span v-for="field in result.matchedFields" :key="field" class="rounded-full border border-default px-2 py-0.5 text-xs text-muted">{{ searchFieldConfig[field].label }}</span>
                 </div>
+                <dl v-if="result.matches?.length" class="mt-3 space-y-1 text-sm">
+                  <div
+                    v-for="match in result.matches.filter((match) => match.value !== result.title || match.field !== 'TITLE')"
+                    :key="`${match.field}-${match.label}`"
+                    class="break-words"
+                  >
+                    <dt class="inline font-medium text-muted">{{ match.label }}: </dt>
+                    <dd class="inline text-highlighted"><SearchHighlight :text="match.value" :query="routeQuery" /></dd>
+                  </div>
+                </dl>
                 <p v-if="result.excerpt" class="search-match-excerpt mt-4 line-clamp-4 text-sm leading-6 text-highlighted" v-html="result.excerpt" />
               </div>
               <UIcon name="i-lucide-arrow-up-right" class="mt-1 size-4 shrink-0 text-dimmed transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />

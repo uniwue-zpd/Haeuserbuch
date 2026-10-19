@@ -13,6 +13,12 @@ export const SEARCH_ENTITY_TYPES = [
 ] as const;
 export type SearchEntityType = (typeof SEARCH_ENTITY_TYPES)[number];
 
+export interface SearchMatch {
+  field: "TITLE" | "METADATA";
+  label: string;
+  value: string;
+}
+
 export interface GlobalSearchResult {
   entityType: SearchEntityType;
   entityId: number;
@@ -20,6 +26,7 @@ export interface GlobalSearchResult {
   subtitle: string | null;
   matchedFields: SearchField[];
   excerpt: string | null;
+  matches: SearchMatch[];
 }
 
 export interface SearchFacets {

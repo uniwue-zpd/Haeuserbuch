@@ -1,5 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.DTO.Search;
 
+import java.util.List;
 import java.util.Set;
 
 public record GlobalSearchResultDTO(
@@ -8,5 +9,6 @@ public record GlobalSearchResultDTO(
         String title,
         String subtitle,
         Set<SearchField> matchedFields,
-        String excerpt
+        String excerpt,
+        List<SearchMatchDTO> matches
 ) {}

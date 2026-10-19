@@ -3,11 +3,13 @@ package de.uniwue.dachs.haeuserbuch_backend.repository;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.Search.GlobalSearchResultDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.Search.SearchEntityType;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.Search.SearchField;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.Search.SearchMatchDTO;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -84,6 +86,7 @@ public class GlobalSearchRepository {
         String sql = CANDIDATES_CTE + """
                 SELECT entity_type, entity_id, title, subtitle,
                        title_match, metadata_match, full_text_match,
+                       matches.match_fields, matches.match_labels, matches.match_values,
                        CASE WHEN full_text_match THEN
                            ts_headline(
                                'german',
@@ -98,6 +101,21 @@ public class GlobalSearchRepository {
                            )
                        END AS excerpt
                   FROM ranked
+                  LEFT JOIN LATERAL (
+                      SELECT array_agg(field ORDER BY field, key) AS match_fields,
+                             array_agg(key ORDER BY field, key) AS match_labels,
+                             array_agg(value ORDER BY field, key) AS match_values
+                        FROM (
+                            SELECT 'TITLE' AS field, key, value
+                              FROM jsonb_each_text(title_details)
+                             WHERE :titleEnabled
+                            UNION ALL
+                            SELECT 'METADATA', key, value
+                              FROM jsonb_each_text(metadata_details)
+                             WHERE :metadataEnabled
+                        ) details
+                       WHERE LOWER(value) LIKE '%' || LOWER(:likeQuery) || '%' ESCAPE '\\'
+                  ) matches ON TRUE
                  WHERE entity_type IN (:types)
                    AND """ + ENABLED_MATCH + """
                  ORDER BY rank_tier DESC, full_text_rank DESC, LOWER(title), entity_id, entity_type
@@ -113,13 +131,23 @@ public class GlobalSearchRepository {
             if (fields.contains(SearchField.TITLE) && resultSet.getBoolean("title_match")) matchedFields.add(SearchField.TITLE);
             if (fields.contains(SearchField.METADATA) && resultSet.getBoolean("metadata_match")) matchedFields.add(SearchField.METADATA);
             if (fields.contains(SearchField.FULL_TEXT) && resultSet.getBoolean("full_text_match")) matchedFields.add(SearchField.FULL_TEXT);
+            List<SearchMatchDTO> matches = new ArrayList<>();
+            if (resultSet.getArray("match_fields") != null) {
+                String[] matchFields = (String[]) resultSet.getArray("match_fields").getArray();
+                String[] matchLabels = (String[]) resultSet.getArray("match_labels").getArray();
+                String[] matchValues = (String[]) resultSet.getArray("match_values").getArray();
+                for (int i = 0; i < matchFields.length; i++) {
+                    matches.add(new SearchMatchDTO(SearchField.valueOf(matchFields[i]), matchLabels[i], matchValues[i]));
+                }
+            }
             return new GlobalSearchResultDTO(
                     SearchEntityType.valueOf(resultSet.getString("entity_type")),
                     resultSet.getLong("entity_id"),
                     resultSet.getString("title"),
                     resultSet.getString("subtitle"),
                     matchedFields,
-                    resultSet.getString("excerpt")
+                    resultSet.getString("excerpt"),
+                    matches
             );
         });
     }

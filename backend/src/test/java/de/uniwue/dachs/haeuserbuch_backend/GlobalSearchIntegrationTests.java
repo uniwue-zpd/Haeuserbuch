@@ -118,9 +118,9 @@ class GlobalSearchIntegrationTests {
         Integer successfulMigration = jdbcTemplate.queryForObject("""
                 SELECT COUNT(*)
                   FROM flyway_schema_history
-                 WHERE version IN ('1', '2', '3') AND type = 'SQL' AND success
+                 WHERE version IN ('1', '2', '3', '6') AND type = 'SQL' AND success
                 """, Integer.class);
-        assertThat(successfulMigration).isEqualTo(3);
+        assertThat(successfulMigration).isEqualTo(4);
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM global_search_document", Long.class)).isEqualTo(9);
     }
 
@@ -177,6 +177,29 @@ class GlobalSearchIntegrationTests {
     }
 
     @Test
+    void exposesSpecificTitleAndMetadataValuesForHighlighting() {
+        var title = search("alternatives", EnumSet.of(SearchField.TITLE), EnumSet.of(SearchEntityType.BUILDING), false)
+                .content().getFirst();
+        assertThat(title.matches()).anySatisfy(match -> {
+            assertThat(match.field()).isEqualTo(SearchField.TITLE);
+            assertThat(match.label()).isEqualTo("Alternativnamen");
+            assertThat(match.value()).isEqualTo("Alternatives Suchgebäude");
+        });
+        var metadata = search("Testberuf", EnumSet.of(SearchField.METADATA), EnumSet.of(SearchEntityType.PERSON), false)
+                .content().getFirst();
+        assertThat(metadata.matches()).singleElement().satisfies(match -> {
+            assertThat(match.field()).isEqualTo(SearchField.METADATA);
+            assertThat(match.label()).isEqualTo("Beruf");
+            assertThat(match.value()).isEqualTo("Testberuf");
+        });
+        var combined = search("Gemeinsam", null, EnumSet.of(SearchEntityType.PERSON), false).content().getFirst();
+        assertThat(combined.matches()).extracting(match -> match.field()).contains(SearchField.TITLE, SearchField.METADATA);
+        var titleOnly = search("Gemeinsam", EnumSet.of(SearchField.TITLE), EnumSet.of(SearchEntityType.PERSON), false)
+                .content().getFirst();
+        assertThat(titleOnly.matches()).allSatisfy(match -> assertThat(match.field()).isEqualTo(SearchField.TITLE));
+    }
+
+    @Test
     void supportsSafeFullTextExcerptsAndExactPhrases() {
         GlobalSearchResponseDTO response = search(
                 "seltene Wortfolge",
@@ -205,6 +228,8 @@ class GlobalSearchIntegrationTests {
                         title_values text[],
                         title_text text,
                         metadata_text text,
+                        title_details jsonb DEFAULT '{}',
+                        metadata_details jsonb DEFAULT '{}',
                         full_text text,
                         full_text_vector tsvector
                     )
