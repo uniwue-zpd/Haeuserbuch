@@ -172,7 +172,7 @@ function clearSearch() {
         </section>
 
         <section class="border-t border-default pt-5" aria-labelledby="type-filter-heading">
-          <h2 id="type-filter-heading" class="font-semibold text-highlighted">Datentypen</h2>
+          <h2 id="type-filter-heading" class="font-semibold text-highlighted">Kategorien</h2>
           <div class="mt-3 space-y-3">
             <UCheckbox
               v-for="type in SEARCH_ENTITY_TYPES"
