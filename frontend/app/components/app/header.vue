@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SearchCommandResultDescription from "~/components/search/CommandResultDescription.vue";
 import { researchNavigation } from "~/utils/researchNavigation";
 import { searchEntityConfig, type GlobalSearchResult } from "~/utils/globalSearch";
 import type { RouteLocationRaw } from "vue-router";
@@ -15,13 +16,6 @@ const isScrolled = ref(false);
 const globalSearchStore = useGlobalSearchStore();
 let commandSearchTimer: ReturnType<typeof setTimeout> | undefined;
 let commandSearchController: AbortController | undefined;
-const htmlEntities: Record<string, string> = {
-  "&": "&amp;",
-  "<": "&lt;",
-  ">": "&gt;",
-  '"': "&quot;",
-  "'": "&#039;",
-};
 const projectNavigation = [
   {
     label: "Das Projekt",
@@ -83,28 +77,6 @@ const staticCommandGroups = computed(() => [
   },
 ]);
 
-function escapeHtml(value: string) {
-  return value.replace(/[&<>"']/g, (character) => htmlEntities[character] ?? character);
-}
-
-function researchResultDescription(result: GlobalSearchResult) {
-  const description = [searchEntityConfig[result.entityType].label, result.subtitle]
-    .filter(Boolean)
-    .join(" · ");
-  if (!result.excerpt || !result.matchedFields.includes("FULL_TEXT")) {
-    return { description };
-  }
-
-  return {
-    description,
-    descriptionHtml: `${escapeHtml(description)}<span class="command-search-excerpt search-match-excerpt">${result.excerpt}</span>`,
-    ui: {
-      item: "py-2",
-      itemDescription: "overflow-visible whitespace-normal",
-    },
-  };
-}
-
 const commandGroups = computed(() => {
   const query = commandSearchTerm.value.trim();
   const dynamicGroups = query.length >= 2
@@ -129,7 +101,13 @@ const commandGroups = computed(() => {
                 }]
               : commandResults.value.map((result) => ({
                 label: result.title,
-                ...researchResultDescription(result),
+                description: [searchEntityConfig[result.entityType].label, result.subtitle].filter(Boolean).join(" · "),
+                slot: "research-result" as const,
+                result,
+                ui: {
+                  item: "py-2",
+                  itemDescription: "overflow-visible whitespace-normal",
+                },
                 icon: searchEntityConfig[result.entityType].icon,
                 to: searchEntityConfig[result.entityType].to(result.entityId),
                 onSelect: () => selectCommandRoute(searchEntityConfig[result.entityType].to(result.entityId)),
@@ -502,7 +480,18 @@ defineShortcuts({
             :groups="commandGroups"
             :loading="commandSearchPending"
             placeholder="Seiten und Forschungsdaten durchsuchen..."
-          />
+          >
+            <template #research-result-label="{ item }">
+              <SearchHighlight
+                :text="item.result.title"
+                :query="commandSearchTerm"
+                :enabled="item.result.matchedFields.includes('TITLE')"
+              />
+            </template>
+            <template #research-result-description="{ item }">
+              <SearchCommandResultDescription :result="item.result" :query="commandSearchTerm" />
+            </template>
+          </UCommandPalette>
         </template>
       </UModal>
 
