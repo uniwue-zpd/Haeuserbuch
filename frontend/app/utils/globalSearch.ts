@@ -17,6 +17,7 @@ export interface SearchMatch {
   field: "TITLE" | "METADATA";
   label: string;
   value: string;
+  highlightedValue?: string;
 }
 
 export interface GlobalSearchResult {
@@ -47,6 +48,7 @@ export interface GlobalSearchParams {
   query: string;
   fields?: SearchField[];
   types?: SearchEntityType[];
+  fuzzy?: boolean;
   exactFullText?: boolean;
   page?: number;
   size?: number;
@@ -87,4 +89,12 @@ export function parseSearchEntityTypes(value: unknown): SearchEntityType[] {
     .map((part) => part.trim().toUpperCase())
     .filter((part): part is SearchEntityType => SEARCH_ENTITY_TYPES.includes(part as SearchEntityType));
   return parts.length ? [...new Set(parts)] : [...SEARCH_ENTITY_TYPES];
+}
+
+/** Explicit mode wins over bookmarked links using the old exact flag. */
+export function parseSearchFuzzy(fuzzy: unknown, exact: unknown): boolean {
+  const value = Array.isArray(fuzzy) ? fuzzy[0] : fuzzy;
+  if (value === "true" || value === true) return true;
+  if (value === "false" || value === false) return false;
+  return (Array.isArray(exact) ? exact[0] : exact) !== "true";
 }

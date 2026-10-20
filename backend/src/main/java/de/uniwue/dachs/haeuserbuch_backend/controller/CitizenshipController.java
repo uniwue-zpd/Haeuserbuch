@@ -4,6 +4,7 @@ import de.uniwue.dachs.haeuserbuch_backend.DTO.CitizenshipDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.FullTextSearch.CitizenshipFullTextSearchResult;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.CitizenshipPreviewDTO;
 import de.uniwue.dachs.haeuserbuch_backend.service.CitizenshipService;
+import de.uniwue.dachs.haeuserbuch_backend.search.SearchMatching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -102,11 +103,12 @@ public class CitizenshipController {
     @GetMapping("/fulltextsearch")
     public ResponseEntity<Page<CitizenshipFullTextSearchResult>> searchCitizenshipFulltext(
             @RequestParam String query,
+            @RequestParam(required = false) Boolean fuzzy,
             @RequestParam(defaultValue = "false") boolean exact,
             @PageableDefault(sort = "id", direction = Sort.Direction.ASC)
             Pageable pageable
     ) {
-        Page<CitizenshipFullTextSearchResult> results = citizenshipService.searchCitizenshipFullText(query, exact, pageable);
+        Page<CitizenshipFullTextSearchResult> results = citizenshipService.searchCitizenshipFullText(query, SearchMatching.resolveFuzzy(fuzzy, exact), pageable);
         return ResponseEntity.ok(results);
     }
 }

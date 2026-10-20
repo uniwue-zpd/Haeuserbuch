@@ -4,6 +4,7 @@ import {
   SEARCH_FIELDS,
   parseSearchEntityTypes,
   parseSearchFields,
+  parseSearchFuzzy,
   searchEntityConfig,
   searchFieldConfig,
   type SearchEntityType,
@@ -18,7 +19,7 @@ const routeQuery = computed(() => String(Array.isArray(route.query.q) ? route.qu
 const inputQuery = ref(routeQuery.value);
 const selectedFields = computed(() => parseSearchFields(route.query.fields));
 const selectedTypes = computed(() => parseSearchEntityTypes(route.query.types));
-const exactFullText = computed(() => route.query.exact === "true" && selectedFields.value.includes("FULL_TEXT"));
+const fuzzy = computed(() => parseSearchFuzzy(route.query.fuzzy, route.query.exact));
 const currentPage = computed(() => {
   const parsed = Number.parseInt(String(route.query.page ?? "1"), 10);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
@@ -33,7 +34,7 @@ const { data, pending, error } = await useAsyncData(
       query: routeQuery.value.trim(),
       fields: selectedFields.value,
       types: selectedTypes.value,
-      exactFullText: exactFullText.value,
+      fuzzy: fuzzy.value,
       page: currentPage.value - 1,
       size: 20,
       includeFacets: true,
@@ -74,7 +75,6 @@ function toggleField(field: SearchField, checked: boolean | "indeterminate") {
   if (!next.length) return;
   replaceSearchQuery({
     fields: serializedSelection(next, SEARCH_FIELDS),
-    exact: next.includes("FULL_TEXT") && exactFullText.value ? "true" : undefined,
     page: undefined,
   });
 }
@@ -88,9 +88,9 @@ function toggleType(type: SearchEntityType, checked: boolean | "indeterminate") 
   replaceSearchQuery({ types: serializedSelection(next, SEARCH_ENTITY_TYPES), page: undefined });
 }
 
-function setExact(value: boolean | "indeterminate") {
+function setFuzzy(value: boolean | "indeterminate") {
   if (value === "indeterminate") return;
-  replaceSearchQuery({ exact: value ? "true" : undefined, page: undefined });
+  replaceSearchQuery({ fuzzy: value ? undefined : "false", exact: undefined, page: undefined });
 }
 
 function setPage(page: number) {
@@ -157,16 +157,16 @@ function clearSearch() {
               @update:model-value="toggleField(field, $event)"
             />
           </div>
-          <div v-if="selectedFields.includes('FULL_TEXT')" class="mt-4 border-t border-default pt-4">
+          <div class="mt-4 border-t border-default pt-4">
             <UCheckbox
-              :model-value="exactFullText"
-              label="Exakte Volltextsuche"
-              description="Sucht die eingegebene Wortfolge exakt im Bürgerartikel."
-              @update:model-value="setExact"
+              :model-value="fuzzy"
+              label="Unscharfe Suche"
+              description="Findet auch gebeugte Wortformen, etwa goldene und goldenen. Ohne diese Option wird die wörtliche Wortfolge gesucht."
+              @update:model-value="setFuzzy"
             />
-            <details class="mt-3 text-sm text-muted">
-              <summary class="cursor-pointer font-medium text-highlighted">Volltext-Suchsyntax</summary>
-              <p class="mt-2 leading-6">AND verknüpft Begriffe, OR sucht Alternativen, ein vorangestelltes Minus schließt Begriffe aus und Anführungszeichen suchen Wortgruppen.</p>
+            <details v-if="fuzzy" class="mt-3 text-sm text-muted">
+              <summary class="cursor-pointer font-medium text-highlighted">Suchsyntax</summary>
+              <p class="mt-2 leading-6">Leerzeichen verknüpfen Begriffe, OR sucht Alternativen, ein vorangestelltes Minus schließt Begriffe aus und Anführungszeichen suchen Wortgruppen.</p>
             </details>
           </div>
         </section>
@@ -242,12 +242,12 @@ function clearSearch() {
                 </div>
                 <dl v-if="result.matches?.length" class="mt-3 space-y-1 text-sm">
                   <div
-                    v-for="match in result.matches.filter((match) => match.value !== result.title || match.field !== 'TITLE')"
+                    v-for="match in result.matches.filter((match) => fuzzy || match.value !== result.title || match.field !== 'TITLE')"
                     :key="`${match.field}-${match.label}`"
                     class="break-words"
                   >
                     <dt class="inline font-medium text-muted">{{ match.label }}: </dt>
-                    <dd class="inline text-highlighted"><SearchHighlight :text="match.value" :query="routeQuery" /></dd>
+                    <dd class="inline text-highlighted search-match-excerpt"><span v-if="match.highlightedValue" v-html="match.highlightedValue" /><SearchHighlight v-else :text="match.value" :query="routeQuery" /></dd>
                   </div>
                 </dl>
                 <p v-if="result.excerpt" class="search-match-excerpt mt-4 line-clamp-4 text-sm leading-6 text-highlighted" v-html="result.excerpt" />

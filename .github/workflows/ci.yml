@@ -67,7 +67,7 @@ jobs:
         run: mvn --batch-mode verify
 
   frontend:
-    name: Frontend build
+    name: Frontend build and test
     runs-on: ubuntu-latest
 
     steps:
@@ -89,6 +89,10 @@ jobs:
       - name: Install dependencies
         working-directory: frontend
         run: pnpm install --frozen-lockfile
+
+      - name: Test frontend search behavior
+        working-directory: frontend
+        run: pnpm test
 
       - name: Build frontend
         working-directory: frontend

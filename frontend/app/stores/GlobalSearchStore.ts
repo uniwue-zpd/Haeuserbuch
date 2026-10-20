@@ -8,7 +8,7 @@ export const useGlobalSearchStore = defineStore("global-search", () => {
         query: params.query,
         fields: params.fields?.join(","),
         types: params.types?.join(","),
-        exactFullText: params.exactFullText ?? false,
+        fuzzy: params.fuzzy ?? !(params.exactFullText ?? false),
         page: params.page ?? 0,
         size: params.size ?? 20,
         includeFacets: params.includeFacets ?? true,

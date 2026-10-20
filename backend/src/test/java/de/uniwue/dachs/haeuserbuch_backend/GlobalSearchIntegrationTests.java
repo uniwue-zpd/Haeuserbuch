@@ -118,9 +118,9 @@ class GlobalSearchIntegrationTests {
         Integer successfulMigration = jdbcTemplate.queryForObject("""
                 SELECT COUNT(*)
                   FROM flyway_schema_history
-                 WHERE version IN ('1', '2', '3', '6') AND type = 'SQL' AND success
+                 WHERE version IN ('1', '2', '3', '6', '7') AND type = 'SQL' AND success
                 """, Integer.class);
-        assertThat(successfulMigration).isEqualTo(4);
+        assertThat(successfulMigration).isEqualTo(5);
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM global_search_document", Long.class)).isEqualTo(9);
     }
 
@@ -138,7 +138,7 @@ class GlobalSearchIntegrationTests {
         );
 
         cases.forEach((query, expectedType) -> {
-            GlobalSearchResponseDTO response = search(query, EnumSet.of(SearchField.TITLE), null, false);
+            GlobalSearchResponseDTO response = search(query, EnumSet.of(SearchField.TITLE), null, true);
             assertThat(response.content()).extracting(GlobalSearchResultDTO::entityType).contains(expectedType);
         });
     }
@@ -149,13 +149,13 @@ class GlobalSearchIntegrationTests {
                 "Alternatives Suchgebäude",
                 EnumSet.of(SearchField.TITLE),
                 EnumSet.of(SearchEntityType.BUILDING),
-                false
+                true
         );
         GlobalSearchResponseDTO historicalName = search(
                 "Historisches Suchhaus",
                 EnumSet.of(SearchField.TITLE),
                 EnumSet.of(SearchEntityType.BUILDING),
-                false
+                true
         );
 
         assertThat(alternativeName.totalElements()).isEqualTo(1);
@@ -164,37 +164,37 @@ class GlobalSearchIntegrationTests {
 
     @Test
     void searchesCuratedLinkedMetadataButNeverInternalNotes() {
-        assertThat(search("Teststraße", EnumSet.of(SearchField.METADATA), EnumSet.of(SearchEntityType.BUILDING), false).totalElements()).isEqualTo(1);
-        assertThat(search("Testberuf", EnumSet.of(SearchField.METADATA), EnumSet.of(SearchEntityType.PERSON), false).totalElements()).isEqualTo(1);
-        assertThat(search("Erwähnte Testperson", EnumSet.of(SearchField.METADATA), EnumSet.of(SearchEntityType.CITIZENSHIP), false).totalElements()).isEqualTo(1);
-        assertThat(search("buildingpublic", EnumSet.of(SearchField.METADATA), EnumSet.of(SearchEntityType.BUILDING), false).totalElements()).isEqualTo(1);
-        assertThat(search("buildingsecret", null, null, false).totalElements()).isZero();
-        assertThat(search("citizenshipsecret", null, null, false).totalElements()).isZero();
-        assertThat(search("auditsecret", null, null, false).totalElements()).isZero();
-        assertThat(search("49.123456", null, null, false).totalElements()).isZero();
-        assertThat(search("filesecret", null, null, false).totalElements()).isZero();
-        assertThat(search("Gemeinsam Testperson", null, EnumSet.of(SearchEntityType.BUILDING), false).totalElements()).isZero();
+        assertThat(search("Teststraße", EnumSet.of(SearchField.METADATA), EnumSet.of(SearchEntityType.BUILDING), true).totalElements()).isEqualTo(1);
+        assertThat(search("Testberuf", EnumSet.of(SearchField.METADATA), EnumSet.of(SearchEntityType.PERSON), true).totalElements()).isEqualTo(1);
+        assertThat(search("Erwähnte Testperson", EnumSet.of(SearchField.METADATA), EnumSet.of(SearchEntityType.CITIZENSHIP), true).totalElements()).isEqualTo(1);
+        assertThat(search("buildingpublic", EnumSet.of(SearchField.METADATA), EnumSet.of(SearchEntityType.BUILDING), true).totalElements()).isEqualTo(1);
+        assertThat(search("buildingsecret", null, null, true).totalElements()).isZero();
+        assertThat(search("citizenshipsecret", null, null, true).totalElements()).isZero();
+        assertThat(search("auditsecret", null, null, true).totalElements()).isZero();
+        assertThat(search("49.123456", null, null, true).totalElements()).isZero();
+        assertThat(search("filesecret", null, null, true).totalElements()).isZero();
+        assertThat(search("Gemeinsam Testperson", null, EnumSet.of(SearchEntityType.BUILDING), true).totalElements()).isZero();
     }
 
     @Test
     void exposesSpecificTitleAndMetadataValuesForHighlighting() {
-        var title = search("alternatives", EnumSet.of(SearchField.TITLE), EnumSet.of(SearchEntityType.BUILDING), false)
+        var title = search("alternatives", EnumSet.of(SearchField.TITLE), EnumSet.of(SearchEntityType.BUILDING), true)
                 .content().getFirst();
         assertThat(title.matches()).anySatisfy(match -> {
             assertThat(match.field()).isEqualTo(SearchField.TITLE);
             assertThat(match.label()).isEqualTo("Alternativnamen");
             assertThat(match.value()).isEqualTo("Alternatives Suchgebäude");
         });
-        var metadata = search("Testberuf", EnumSet.of(SearchField.METADATA), EnumSet.of(SearchEntityType.PERSON), false)
+        var metadata = search("Testberuf", EnumSet.of(SearchField.METADATA), EnumSet.of(SearchEntityType.PERSON), true)
                 .content().getFirst();
         assertThat(metadata.matches()).singleElement().satisfies(match -> {
             assertThat(match.field()).isEqualTo(SearchField.METADATA);
             assertThat(match.label()).isEqualTo("Beruf");
             assertThat(match.value()).isEqualTo("Testberuf");
         });
-        var combined = search("Gemeinsam", null, EnumSet.of(SearchEntityType.PERSON), false).content().getFirst();
+        var combined = search("Gemeinsam", null, EnumSet.of(SearchEntityType.PERSON), true).content().getFirst();
         assertThat(combined.matches()).extracting(match -> match.field()).contains(SearchField.TITLE, SearchField.METADATA);
-        var titleOnly = search("Gemeinsam", EnumSet.of(SearchField.TITLE), EnumSet.of(SearchEntityType.PERSON), false)
+        var titleOnly = search("Gemeinsam", EnumSet.of(SearchField.TITLE), EnumSet.of(SearchEntityType.PERSON), true)
                 .content().getFirst();
         assertThat(titleOnly.matches()).allSatisfy(match -> assertThat(match.field()).isEqualTo(SearchField.TITLE));
     }
@@ -205,14 +205,14 @@ class GlobalSearchIntegrationTests {
                 "seltene Wortfolge",
                 EnumSet.of(SearchField.FULL_TEXT),
                 EnumSet.of(SearchEntityType.CITIZENSHIP),
-                true
+                false
         );
 
         assertThat(response.totalElements()).isEqualTo(1);
         assertThat(response.content().getFirst().excerpt())
-                .contains("<mark>seltene</mark>", "<mark>Wortfolge</mark>")
+                .contains("<mark>seltene Wortfolge</mark>")
                 .doesNotContain("<script>", "</script>");
-        assertThat(search("seltene andere", EnumSet.of(SearchField.FULL_TEXT), EnumSet.of(SearchEntityType.CITIZENSHIP), true).totalElements()).isZero();
+        assertThat(search("seltene andere", EnumSet.of(SearchField.FULL_TEXT), EnumSet.of(SearchEntityType.CITIZENSHIP), false).totalElements()).isZero();
     }
 
     @Test
@@ -229,6 +229,8 @@ class GlobalSearchIntegrationTests {
                         title_text text,
                         metadata_text text,
                         title_details jsonb DEFAULT '{}',
+                        title_vector tsvector,
+                        metadata_vector tsvector,
                         metadata_details jsonb DEFAULT '{}',
                         full_text text,
                         full_text_vector tsvector
@@ -249,7 +251,7 @@ class GlobalSearchIntegrationTests {
                     "generischer",
                     EnumSet.of(SearchField.FULL_TEXT),
                     EnumSet.of(SearchEntityType.PERSON),
-                    false
+                    true
             );
             status.setRollbackOnly();
             return result;
@@ -263,9 +265,9 @@ class GlobalSearchIntegrationTests {
 
     @Test
     void supportsBooleanPhraseAndExclusionFullTextSyntax() {
-        assertThat(search("\"seltene Wortfolge\"", EnumSet.of(SearchField.FULL_TEXT), EnumSet.of(SearchEntityType.CITIZENSHIP), false).totalElements()).isEqualTo(1);
-        assertThat(search("seltene OR unbekannt", EnumSet.of(SearchField.FULL_TEXT), EnumSet.of(SearchEntityType.CITIZENSHIP), false).totalElements()).isEqualTo(1);
-        assertThat(search("seltene -Gemeinsam", EnumSet.of(SearchField.FULL_TEXT), EnumSet.of(SearchEntityType.CITIZENSHIP), false).totalElements()).isZero();
+        assertThat(search("\"seltene Wortfolge\"", EnumSet.of(SearchField.FULL_TEXT), EnumSet.of(SearchEntityType.CITIZENSHIP), true).totalElements()).isEqualTo(1);
+        assertThat(search("seltene OR unbekannt", EnumSet.of(SearchField.FULL_TEXT), EnumSet.of(SearchEntityType.CITIZENSHIP), true).totalElements()).isEqualTo(1);
+        assertThat(search("seltene -Gemeinsam", EnumSet.of(SearchField.FULL_TEXT), EnumSet.of(SearchEntityType.CITIZENSHIP), true).totalElements()).isZero();
     }
 
     @Test
@@ -274,7 +276,7 @@ class GlobalSearchIntegrationTests {
                 "Gemeinsam",
                 EnumSet.allOf(SearchField.class),
                 EnumSet.of(SearchEntityType.PERSON, SearchEntityType.CITIZENSHIP),
-                false
+                true
         );
 
         assertThat(response.totalElements()).isEqualTo(2);
@@ -291,10 +293,10 @@ class GlobalSearchIntegrationTests {
     @Test
     void paginatesWithDeterministicTotals() {
         GlobalSearchResponseDTO firstPage = searchService.search(
-                "Test",
+                "Testperson OR Testquelle",
                 EnumSet.of(SearchField.TITLE),
                 EnumSet.allOf(SearchEntityType.class),
-                false,
+                true,
                 0,
                 1,
                 false
@@ -353,12 +355,150 @@ class GlobalSearchIntegrationTests {
         verify(refreshCoordinator).requestRefresh();
     }
 
+    @Test
+    void findsInflectedFormsAcrossAllFieldsAndExplainsMetadataHits() {
+        jdbcTemplate.update("UPDATE building SET object = 'goldenen Gans', general_notes = 'goldenen Gans' WHERE id = 1");
+        jdbcTemplate.update("UPDATE citizenship SET entry_text = '<b>goldenen Gans</b>' WHERE id = 1");
+        searchRepository.refreshSearchDocuments();
+
+        for (SearchField field : SearchField.values()) {
+            var types = EnumSet.of(field == SearchField.FULL_TEXT ? SearchEntityType.CITIZENSHIP : SearchEntityType.BUILDING);
+            var fuzzy = search("goldene Gans", EnumSet.of(field), types, true);
+            assertThat(fuzzy.totalElements()).as(field.name()).isEqualTo(1);
+            assertThat(fuzzy.facets().fields().get(field)).isEqualTo(1);
+            assertThat(fuzzy.content().getFirst().matchedFields()).containsExactly(field);
+            if (field != SearchField.FULL_TEXT) {
+                assertThat(fuzzy.content().getFirst().matches()).anySatisfy(match -> {
+                    assertThat(match.value()).isEqualTo("goldenen Gans");
+                    assertThat(match.highlightedValue()).contains("<mark>goldenen</mark>", "<mark>Gans</mark>");
+                });
+            }
+            assertThat(search("goldene Gans", EnumSet.of(field), types, false).totalElements()).isZero();
+            assertThat(search("GOLDENEN GANS", EnumSet.of(field), types, false).totalElements()).isEqualTo(1);
+        }
+    }
+
+    @Test
+    void matchesEachMetadataValueIndependentlyAndSupportsWordSearchSyntax() {
+        jdbcTemplate.update("UPDATE source SET description = 'goldenen Gans', general_notes = 'Silber' WHERE id = 1");
+        searchRepository.refreshSearchDocuments();
+        var fields = EnumSet.of(SearchField.METADATA);
+        var types = EnumSet.of(SearchEntityType.SOURCE);
+        for (String query : new String[]{"goldene Gans", "Gans goldene", "goldene OR Ente", "goldene -Ente", "goldene -Silber", "-Silber", "goldene OR -Silber", "\"goldene Gans\""}) {
+            var response = search(query, fields, types, true);
+            assertThat(response.totalElements()).as(query).isEqualTo(1);
+            assertThat(response.content().getFirst().matches()).allSatisfy(match -> assertThat(match.value()).isNotBlank());
+        }
+        for (String query : new String[]{"goldene -Gans", "goldene Silber", "\"Gans goldene\"", "gol", "der und"}) {
+            assertThat(search(query, fields, types, true).totalElements()).as(query).isZero();
+        }
+        assertThat(search("goldenen Gans Silber", fields, types, false).totalElements()).isZero();
+        assertThat(search("gold", fields, types, false).totalElements()).isZero();
+        jdbcTemplate.update("UPDATE building SET object = 'goldene', property_number = 'Gans' WHERE id = 1");
+        searchRepository.refreshSearchDocuments();
+        assertThat(search("goldene Gans", EnumSet.of(SearchField.TITLE), EnumSet.of(SearchEntityType.BUILDING), true).totalElements()).isZero();
+    }
+
+    @Test
+    void treatsPunctuationLiterallyAndEscapesHighlightsInBothModes() {
+        jdbcTemplate.update("UPDATE source SET description = 'Haus (A+B). & Gans <img src=x onerror=alert(1)>', general_notes = 'der und' WHERE id = 1");
+        searchRepository.refreshSearchDocuments();
+        var fields = EnumSet.of(SearchField.METADATA);
+        var types = EnumSet.of(SearchEntityType.SOURCE);
+        for (String query : new String[]{"Haus (A+B).", "(A+B).", "& Gans", "der und"}) {
+            assertThat(search(query, fields, types, false).totalElements()).as(query).isEqualTo(1);
+        }
+        assertThat(search("Haus (A.B).", fields, types, false).totalElements()).isZero();
+        for (boolean fuzzy : new boolean[]{true, false}) {
+            var result = search("Gans", fields, types, fuzzy).content().getFirst();
+            assertThat(result.matches().getFirst().highlightedValue()).contains("<mark>Gans</mark>", "&lt;").doesNotContain("<img");
+        }
+        var ampersand = search("& Gans", fields, types, false).content().getFirst();
+        assertThat(ampersand.matches().getFirst().highlightedValue()).contains("<mark>&amp; Gans</mark>");
+    }
+
+    @Test
+    void ranksLiteralTitlesBeforeStemmedTitlesAndMetadata() {
+        jdbcTemplate.update("UPDATE source SET title = 'goldene Gans' WHERE id = 1");
+        jdbcTemplate.update("UPDATE place SET real_name = 'goldenen Gans' WHERE id = 1");
+        jdbcTemplate.update("UPDATE building SET general_notes = 'goldenen Gans' WHERE id = 1");
+        searchRepository.refreshSearchDocuments();
+        var response = search("goldene Gans", null,
+                EnumSet.of(SearchEntityType.SOURCE, SearchEntityType.PLACE, SearchEntityType.BUILDING), true);
+        assertThat(response.content()).extracting(GlobalSearchResultDTO::entityType)
+                .containsExactly(SearchEntityType.SOURCE, SearchEntityType.PLACE, SearchEntityType.BUILDING);
+    }
+
+    @Test
+    void resolvesFuzzyDefaultsAndLegacyAliasesForBothEndpoints() throws Exception {
+        jdbcTemplate.update("UPDATE source SET description = 'goldenen Gans' WHERE id = 1");
+        jdbcTemplate.update("UPDATE citizenship SET entry_text = '<b>goldenen Gans</b>' WHERE id = 1");
+        searchRepository.refreshSearchDocuments();
+        for (String endpoint : new String[]{"/search", "/citizenships/fulltextsearch"}) {
+            String legacy = endpoint.equals("/search") ? "exactFullText" : "exact";
+            mockMvc.perform(get(endpoint).param("query", "goldene Gans"))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$.totalElements").value(endpoint.equals("/search") ? 2 : 1));
+            mockMvc.perform(get(endpoint).param("query", "goldene Gans").param(legacy, "true"))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$.totalElements").value(0));
+            mockMvc.perform(get(endpoint).param("query", "goldene Gans").param("fuzzy", "true").param(legacy, "true"))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$.totalElements").value(endpoint.equals("/search") ? 2 : 1));
+            mockMvc.perform(get(endpoint).param("query", "goldene Gans").param("fuzzy", "false").param(legacy, "false"))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$.totalElements").value(0));
+            mockMvc.perform(get(endpoint).param("query", "GOLDENEN GANS").param("fuzzy", "false"))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$.totalElements").value(endpoint.equals("/search") ? 2 : 1));
+        }
+    }
+
+    @Test
+    void dedicatedFullTextSearchUsesLiteralPunctuationAndSafeHtml() throws Exception {
+        jdbcTemplate.update("UPDATE citizenship SET entry_text = '<b>Haus (A+B).</b> & Gans <script>alert(1)</script>' WHERE id = 1");
+        mockMvc.perform(get("/citizenships/fulltextsearch").param("query", "Haus (A+B).").param("fuzzy", "false"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.content[0].queryResult").value(org.hamcrest.Matchers.containsString("<mark>Haus (A+B).</mark>")))
+                .andExpect(jsonPath("$.content[0].queryResult").value(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("<script>"))));
+        mockMvc.perform(get("/citizenships/fulltextsearch").param("query", "Haus (A.B).").param("fuzzy", "false"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalElements").value(0));
+    }
+
+    @Test
+    void strictFullTextMatchesRenderedPhrasesAcrossInlineAndBlockMarkup() throws Exception {
+        for (String text : new String[]{
+                "<p>goldene <b>Gans</b></p>",
+                "<p>gol<b>dene</b> Gans</p>",
+                "<p>goldene</p><p>Gans</p>",
+                "<p>goldene<br>Gans</p>"
+        }) {
+            jdbcTemplate.update("UPDATE citizenship SET entry_text = ? WHERE id = 1", text);
+            searchRepository.refreshSearchDocuments();
+            var response = search("goldene Gans", EnumSet.of(SearchField.FULL_TEXT),
+                    EnumSet.of(SearchEntityType.CITIZENSHIP), false);
+            assertThat(response.totalElements()).as(text).isEqualTo(1);
+            assertThat(response.content().getFirst().excerpt()).contains("<mark>goldene Gans</mark>");
+            assertThat(search("goldeneGans", EnumSet.of(SearchField.FULL_TEXT),
+                    EnumSet.of(SearchEntityType.CITIZENSHIP), false).totalElements()).isZero();
+            mockMvc.perform(get("/citizenships/fulltextsearch").param("query", "goldene Gans").param("fuzzy", "false"))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$.totalElements").value(1))
+                    .andExpect(jsonPath("$.content[0].queryResult").value(org.hamcrest.Matchers.containsString("<mark>goldene Gans</mark>")));
+        }
+    }
+
+    @Test
+    void strictExcerptsIncludeLateMatchesRegardlessOfCase() {
+        jdbcTemplate.update("UPDATE citizenship SET entry_text = ? WHERE id = 1",
+                "padding ".repeat(100) + "GOLDENE GANS");
+        searchRepository.refreshSearchDocuments();
+        var response = search("goldene Gans", EnumSet.of(SearchField.FULL_TEXT),
+                EnumSet.of(SearchEntityType.CITIZENSHIP), false);
+        assertThat(response.totalElements()).isEqualTo(1);
+        assertThat(response.content().getFirst().excerpt()).contains("<mark>GOLDENE GANS</mark>").hasSizeLessThan(600);
+    }
+
     private GlobalSearchResponseDTO search(
             String query,
             EnumSet<SearchField> fields,
             EnumSet<SearchEntityType> types,
-            boolean exact
+            boolean fuzzy
     ) {
-        return searchService.search(query, fields, types, exact, 0, 20, true);
+        return searchService.search(query, fields, types, fuzzy, 0, 20, true);
     }
 }

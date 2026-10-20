@@ -6,6 +6,7 @@ import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.CitizenshipPreviewDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.*;
 import de.uniwue.dachs.haeuserbuch_backend.repository.CitizenshipRepository;
 import de.uniwue.dachs.haeuserbuch_backend.search.SearchIndexAffecting;
+import de.uniwue.dachs.haeuserbuch_backend.search.SearchMatching;
 import de.uniwue.dachs.haeuserbuch_backend.specification.CitizenshipSpecification;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.CitizenshipMapper;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PersonMapper;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.regex.Pattern;
 
 @Service
 public class CitizenshipService {
@@ -28,9 +28,6 @@ public class CitizenshipService {
     private final CitizenshipMapper citizenshipMapper;
     private final SourceMapper sourceMapper;
     private final PersonMapper personMapper;
-
-    private static final Pattern HTML_TAG_PATTERN = Pattern.compile("<[^>]*>");
-    private static final Pattern SPECIAL_CHAR_PATTERN = Pattern.compile("[^\\p{L}\\p{N}\\s\"'-]");
 
     public CitizenshipService(CitizenshipRepository citizenshipRepository, CitizenshipMapper citizenshipMapper, SourceMapper sourceMapper, PersonMapper personMapper) {
         this.citizenshipRepository = citizenshipRepository;
@@ -177,24 +174,11 @@ public class CitizenshipService {
         citizenshipRepository.deleteById(id);
     }
 
-    /**
-     * Searches citizenship entries using a full-text search query.
-     * <p>The search can be performed either as a standard full-text search or as an
-     * exact search depending on the provided parameters. Results are returned as a
-     * paginated collection of matching citizenship entries.</p>
-     * @param query the search query entered by the user
-     * @param exact whether the search should match exact terms only
-     * @param pageable pagination information including page number, page size, and sorting
-     * @return a {@link Page} of {@link CitizenshipFullTextSearchResult} objects containing
-     * metadata and highlighted text fragments of matching citizenship entries
-     */
-    public Page<CitizenshipFullTextSearchResult> searchCitizenshipFullText(String query, boolean exact, Pageable pageable) {
+    /** Searches register text using the same linguistic/literal modes as global search. */
+    public Page<CitizenshipFullTextSearchResult> searchCitizenshipFullText(String query, boolean fuzzy, Pageable pageable) {
         if (query == null || query.isBlank()) return Page.empty(pageable);
-        String sanitizedQuery = query
-                .replaceAll(HTML_TAG_PATTERN.pattern(), "")
-                .replaceAll(SPECIAL_CHAR_PATTERN.pattern(), "")
-                .trim();
-        if (exact) return citizenshipRepository.searchFullTextExact(sanitizedQuery, pageable);
-        return citizenshipRepository.searchFullText(sanitizedQuery, pageable);
+        String normalizedQuery = query.trim();
+        return citizenshipRepository.searchFullText(normalizedQuery, fuzzy,
+                SearchMatching.literalPattern(normalizedQuery), SearchMatching.highlightPattern(normalizedQuery), pageable);
     }
 }

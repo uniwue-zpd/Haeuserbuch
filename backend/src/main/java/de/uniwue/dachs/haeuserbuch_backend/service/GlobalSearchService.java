@@ -13,15 +13,11 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Service
 public class GlobalSearchService {
-    private static final Pattern HTML_TAG_PATTERN = Pattern.compile("<[^>]*>");
-    private static final Pattern SPECIAL_CHAR_PATTERN = Pattern.compile("[^\\p{L}\\p{N}\\s\"'-]");
-
     private final GlobalSearchRepository searchRepository;
     private final GlobalSearchRefreshCoordinator refreshCoordinator;
 
@@ -37,7 +33,7 @@ public class GlobalSearchService {
             String query,
             Set<SearchField> requestedFields,
             Set<SearchEntityType> requestedTypes,
-            boolean exactFullText,
+            boolean fuzzy,
             int page,
             int size,
             boolean includeFacets
@@ -55,31 +51,26 @@ public class GlobalSearchService {
         Set<SearchEntityType> types = requestedTypes == null || requestedTypes.isEmpty()
                 ? EnumSet.allOf(SearchEntityType.class)
                 : EnumSet.copyOf(requestedTypes);
-        String fullTextQuery = sanitizeFullTextQuery(normalizedQuery);
 
         List<GlobalSearchResultDTO> content = searchRepository.search(
                 normalizedQuery,
-                escapeLikePattern(normalizedQuery),
-                fullTextQuery,
                 fields,
                 types,
-                exactFullText,
+                fuzzy,
                 page,
                 size
         );
         long totalElements = searchRepository.count(
                 normalizedQuery,
-                escapeLikePattern(normalizedQuery),
-                fullTextQuery,
                 fields,
                 types,
-                exactFullText
+                fuzzy
         );
         int totalPages = totalElements == 0 ? 0 : (int) Math.ceil((double) totalElements / size);
         SearchFacetsDTO facets = includeFacets
                 ? new SearchFacetsDTO(
-                        searchRepository.countByEntityType(normalizedQuery, escapeLikePattern(normalizedQuery), fullTextQuery, fields, types, exactFullText),
-                        searchRepository.countByField(normalizedQuery, escapeLikePattern(normalizedQuery), fullTextQuery, fields, types, exactFullText)
+                        searchRepository.countByEntityType(normalizedQuery, fields, types, fuzzy),
+                        searchRepository.countByField(normalizedQuery, fields, types, fuzzy)
                 )
                 : null;
 
@@ -88,16 +79,5 @@ public class GlobalSearchService {
 
     public void requestRefresh() {
         refreshCoordinator.requestRefresh();
-    }
-
-    private String sanitizeFullTextQuery(String query) {
-        return query
-                .replaceAll(HTML_TAG_PATTERN.pattern(), "")
-                .replaceAll(SPECIAL_CHAR_PATTERN.pattern(), "")
-                .trim();
-    }
-
-    private String escapeLikePattern(String query) {
-        return query.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
     }
 }

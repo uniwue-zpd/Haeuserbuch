@@ -70,6 +70,12 @@ Development Compose enables the legacy-baseline switch by default because it mou
 
 For every future schema change, add a new versioned migration. Never edit or rename a migration that has already been applied to a shared database. Check `flyway_schema_history` when diagnosing migration state.
 
+### Search matching
+
+Both search pages use “Unscharfe Suche” by default: German word stemming matches inflected forms, so `goldene Gans` also finds `goldenen Gans`. This is word matching, not typo tolerance or arbitrary substring matching. Whitespace joins terms; `OR`, a leading minus, and quoted word groups provide alternatives, exclusions, and phrases. Each title or metadata detail value is searched independently.
+
+With fuzzy matching disabled, search uses a case-insensitive literal whole-word phrase, preserving punctuation. Both `GET /search` and `GET /citizenships/fulltextsearch` accept `fuzzy=true|false` (default `true`). An explicit `fuzzy` overrides the legacy inverse aliases `exactFullText` and `exact`, respectively. Global-search bookmarks use `fuzzy=false` for strict mode and continue to recognize old `exact=true` links.
+
 ### Global search maintenance
 
 The normalized `global_search_document` is refreshed asynchronously after a successful transaction whose service method is marked with `@SearchIndexAffecting`. Mark every new mutation that changes a searchable title, metadata value, relationship, or full-text value explicitly; refresh behavior does not depend on method naming.

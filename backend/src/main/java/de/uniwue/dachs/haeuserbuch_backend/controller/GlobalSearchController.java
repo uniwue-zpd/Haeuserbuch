@@ -4,6 +4,7 @@ import de.uniwue.dachs.haeuserbuch_backend.DTO.Search.GlobalSearchResponseDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.Search.SearchEntityType;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.Search.SearchField;
 import de.uniwue.dachs.haeuserbuch_backend.service.GlobalSearchService;
+import de.uniwue.dachs.haeuserbuch_backend.search.SearchMatching;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,6 +33,7 @@ public class GlobalSearchController {
             @RequestParam String query,
             @RequestParam(required = false) String fields,
             @RequestParam(required = false) String types,
+            @RequestParam(required = false) Boolean fuzzy,
             @RequestParam(defaultValue = "false") boolean exactFullText,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
@@ -41,7 +43,7 @@ public class GlobalSearchController {
                 query,
                 parseEnums(fields, SearchField.class, "fields"),
                 parseEnums(types, SearchEntityType.class, "types"),
-                exactFullText,
+                SearchMatching.resolveFuzzy(fuzzy, exactFullText),
                 page,
                 size,
                 includeFacets

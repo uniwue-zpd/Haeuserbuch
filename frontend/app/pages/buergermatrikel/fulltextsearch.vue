@@ -14,7 +14,7 @@ const searchParams = ref<SearchCitizenshipFullText>({
   query: "",
   page: 0,
   size: 10,
-  exact: false,
+  fuzzy: true,
 });
 
 const { data, refresh, pending, error } = await useAsyncData<
@@ -46,12 +46,12 @@ const debouncedSearch = debounce(() => {
     query: trimmedQuery,
     page: 0,
     size: 10,
-    exact: searchParams.value.exact,
+    fuzzy: searchParams.value.fuzzy,
   };
   refresh();
 }, 1000);
 
-watch([query, () => searchParams.value.exact], () => {
+watch([query, () => searchParams.value.fuzzy], () => {
   debouncedSearch();
 });
 </script>
@@ -89,17 +89,18 @@ watch([query, () => searchParams.value.exact], () => {
           <label for="search" class="text-sm font-semibold text-muted">Suchbegriff</label>
           <UInput id="search" v-model="query" placeholder="z. B. Müller OR Schneider" icon="i-lucide-search" size="lg" />
         </div>
-        <label class="flex items-center gap-3 text-sm font-medium text-highlighted">
-          <UCheckbox v-model="searchParams.exact" />
-          Exakte Suche
-        </label>
+        <UCheckbox
+          v-model="searchParams.fuzzy"
+          label="Unscharfe Suche"
+          description="Findet auch gebeugte Wortformen, etwa goldene und goldenen. Ohne diese Option wird die wörtliche Wortfolge gesucht."
+        />
       </section>
 
-      <section class="flex min-w-0 flex-col gap-4 rounded-md border border-default bg-default p-5 shadow-md lg:col-span-4">
+      <section v-if="searchParams.fuzzy" class="flex min-w-0 flex-col gap-4 rounded-md border border-default bg-default p-5 shadow-md lg:col-span-4">
         <h2 class="text-xl font-semibold leading-tight text-highlighted">Suchsyntax</h2>
         <dl class="flex flex-col">
           <div class="content-table-row !grid-cols-1 !gap-1 sm:!grid-cols-1">
-            <dt class="content-table-label">AND</dt>
+            <dt class="content-table-label">Leerzeichen</dt>
             <dd class="text-sm text-highlighted">Mehrere Begriffe werden gemeinsam gesucht.</dd>
           </div>
           <div class="content-table-row !grid-cols-1 !gap-1 sm:!grid-cols-1">
@@ -150,7 +151,7 @@ watch([query, () => searchParams.value.exact], () => {
             <p class="content-table-label">Referenz Meyer-Erlach</p>
             <p class="text-sm text-highlighted">{{ result.refNumber || "unbekannt" }}</p>
           </div>
-          <div class="px-4 py-4 leading-7 text-highlighted" v-html="result.queryResult" />
+          <div class="search-match-excerpt px-4 py-4 leading-7 text-highlighted" v-html="result.queryResult" />
         </article>
       </div>
       <p v-else-if="data && data.totalElements === 0" class="py-4 text-sm text-muted">Keine Ergebnisse gefunden.</p>
