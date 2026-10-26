@@ -38,7 +38,7 @@ services:
     logging: *default-logging
 
   tileserver:
-    image: ${TILESERVER_IMAGE:-maptiler/tileserver-gl:v5.4.0}
+    image: ${TILESERVER_IMAGE:-maptiler/tileserver-gl:v5.7.0}
     command: ["--config", "/config/config.json", "--public_url", "/tiles/"]
     volumes:
       - ${TILES_DIR:-./tiles}:/data:ro

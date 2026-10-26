@@ -1,4 +1,4 @@
-FROM node:22-alpine
+FROM node:22.23.4-alpine
 
 LABEL description="Development image for the Haeuserbuch Nuxt frontend"
 
