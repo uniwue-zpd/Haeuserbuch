@@ -232,7 +232,7 @@ watch(
         </div>
       </div>
 
-      <div class="min-h-0 flex-1 overflow-y-auto bg-default px-4">
+      <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-default px-4 pb-6">
         <UAlert
           v-if="!selectedBuilding.geometry"
           color="warning"

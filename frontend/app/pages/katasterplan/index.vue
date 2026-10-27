@@ -156,12 +156,7 @@ function parseBuildingId(value: typeof route.query.building) {
   return Number.isSafeInteger(id) ? id : null;
 }
 
-const initialBuildingId = parseBuildingId(route.query.building);
-const selectedId = ref<number | null>(
-  initialBuildingId && buildingById.value.has(initialBuildingId)
-    ? initialBuildingId
-    : null,
-);
+const selectedId = ref<number | null>(parseBuildingId(route.query.building));
 const selectedBuilding = computed(() =>
   selectedId.value ? (buildingById.value.get(selectedId.value) ?? null) : null,
 );
@@ -446,7 +441,7 @@ onBeforeUnmount(() => {
 
     <div
       v-else
-      class="grid h-full min-h-0 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_560px]"
+      class="grid h-full min-h-0 grid-cols-1 grid-rows-[minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_560px]"
     >
       <div class="relative min-h-0 overflow-hidden">
         <ClientOnly>
@@ -464,7 +459,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div
-         class="absolute inset-x-0 bottom-0 z-30 h-[var(--sheet-height)] min-h-18 overflow-anchor-none overflow-hidden rounded-t-2xl border-t border-default bg-default shadow-xl transition-all duration-300 ease-out lg:static lg:inset-auto lg:z-auto lg:h-full lg:rounded-none lg:border-l lg:border-t lg:shadow-lg"
+         class="absolute inset-x-0 bottom-0 z-30 flex h-[var(--sheet-height)] min-h-18 flex-col overflow-anchor-none overflow-hidden lg:min-h-0 rounded-t-2xl border-t border-default bg-default shadow-xl transition-all duration-300 ease-out lg:static lg:inset-auto lg:z-auto lg:h-full lg:rounded-none lg:border-l lg:border-t lg:shadow-lg"
         :class="draggedSheetHeight !== null ? '!duration-0' : ''"
         :style="{ '--sheet-height': `${sheetHeight}px` }"
       >
@@ -480,7 +475,7 @@ onBeforeUnmount(() => {
             aria-hidden="true"
           />
         </button>
-        <div class="h-full min-h-0 lg:h-full">
+        <div class="min-h-0 flex-1">
           <BuildingsSidebar
             :buildings="filteredBuildings"
             :buildings-pending="buildingsPending"
