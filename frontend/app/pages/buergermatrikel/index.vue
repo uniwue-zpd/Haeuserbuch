@@ -26,6 +26,7 @@ const filterValues = reactive({
   refNumber: "",
   signature: "",
   personName: "",
+  guarantorName: "",
   primarySourceTitle: "",
   secondarySourceTitle: "",
 });
@@ -83,6 +84,11 @@ const columns: TableColumn<CitizenshipTableRow>[] = [
     enableSorting: false,
   },
   {
+    id: "guarantors",
+    header: "Bürgen",
+    enableSorting: false,
+  },
+  {
     id: "primarySource",
     accessorFn: (row) => row.primarySourceTitle,
     header: sortableHeader("Quellen"),
@@ -108,6 +114,7 @@ const loadData = async () => {
       refnumber: filterValues.refNumber || undefined,
       signature: filterValues.signature || undefined,
       naturalizedperson: filterValues.personName || undefined,
+      guarantor: filterValues.guarantorName || undefined,
       primarysource: filterValues.primarySourceTitle || undefined,
       secondarysource: filterValues.secondarySourceTitle || undefined,
     });
@@ -259,6 +266,15 @@ useHead(() => ({
           <details open class="border-b border-default p-4">
             <summary class="cursor-pointer list-none text-base font-semibold">
               <span class="flex items-center justify-between">
+                Bürgen
+                <UIcon name="i-lucide-chevron-down" class="size-4" />
+              </span>
+            </summary>
+            <UInput v-model="filterValues.guarantorName" class="mt-3 w-full" placeholder="Suchen..." />
+          </details>
+          <details open class="border-b border-default p-4">
+            <summary class="cursor-pointer list-none text-base font-semibold">
+              <span class="flex items-center justify-between">
                 Quellen
                 <UIcon name="i-lucide-chevron-down" class="size-4" />
               </span>
@@ -300,6 +316,14 @@ useHead(() => ({
             {{ row.original.personName }}
           </NuxtLink>
           <span v-else class="italic text-muted">unbekannt</span>
+        </template>
+        <template #guarantors-cell="{ row }">
+          <span v-if="row.original.guarantors?.length">
+            <template v-for="(guarantor, guarantorIndex) in row.original.guarantors" :key="guarantor.id">
+              <NuxtLink :to="`/personen/${guarantor.id}`" class="whitespace-nowrap">{{ guarantor.fullName }}</NuxtLink><span v-if="guarantorIndex < row.original.guarantors.length - 1">, </span>
+            </template>
+          </span>
+          <span v-else class="italic text-muted">keine</span>
         </template>
         <template #primarySource-cell="{ row }">
           <NuxtLink

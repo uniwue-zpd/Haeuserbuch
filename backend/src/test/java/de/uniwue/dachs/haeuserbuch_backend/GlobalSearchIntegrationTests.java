@@ -103,12 +103,14 @@ class GlobalSearchIntegrationTests {
         jdbcTemplate.update("INSERT INTO weapon (id, name) VALUES (1, 'Testwaffe')");
         jdbcTemplate.update("INSERT INTO person (id, first_name, last_name, full_name, sex, origin_original_text, job_original_text, religion_original_text, building_id, job_category_id, religion_category_id, general_notes, internal_notes) VALUES (1, 'Gemeinsam', 'Person', 'Gemeinsam Testperson', 'männlich', 'aus dem Testland', 'Handwerk', 'Bekenntnis', 1, 1, 1, 'Gemeinsam personpublic', 'personsecret')");
         jdbcTemplate.update("INSERT INTO person (id, full_name) VALUES (2, 'Erwähnte Testperson')");
+        jdbcTemplate.update("INSERT INTO person (id, full_name) VALUES (3, 'Bürgender Garant')");
         jdbcTemplate.update("INSERT INTO person_alt_names (person_id, alt_names) VALUES (1, 'Alternativer Testname')");
         jdbcTemplate.update("INSERT INTO origin_places (person_id, place_id) VALUES (1, 1)");
         jdbcTemplate.update("INSERT INTO weaponry (id, original_text, weapon_id, person_id) VALUES (1, 'bewaffnet', 1, 1)");
 
         jdbcTemplate.update("INSERT INTO citizenship (id, signature, ref_number, date_naturalization, date_misc, entry_text, addendum, person_id, primary_source_id, general_notes, internal_notes) VALUES (1, 'SIG-SEARCH', 'REF-SEARCH', '1501', 'Frühjahr', '<b>seltene Wortfolge</b> Gemeinsam <script>alert</script>', 'Nachtrag Suchbar', 1, 1, 'citizenshippublic', 'citizenshipsecret')");
         jdbcTemplate.update("INSERT INTO citizenship_mentioned_person (citizenship_id, person_id) VALUES (1, 2)");
+        jdbcTemplate.update("INSERT INTO citizenship_guarantor (citizenship_id, person_id) VALUES (1, 3)");
 
         searchRepository.refreshSearchDocuments();
     }
@@ -118,10 +120,10 @@ class GlobalSearchIntegrationTests {
         Integer successfulMigration = jdbcTemplate.queryForObject("""
                 SELECT COUNT(*)
                   FROM flyway_schema_history
-                 WHERE version IN ('1', '2', '3', '6', '7') AND type = 'SQL' AND success
+                 WHERE version IN ('1', '2', '3', '6', '7', '8') AND type = 'SQL' AND success
                 """, Integer.class);
-        assertThat(successfulMigration).isEqualTo(5);
-        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM global_search_document", Long.class)).isEqualTo(9);
+        assertThat(successfulMigration).isEqualTo(6);
+        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM global_search_document", Long.class)).isEqualTo(10);
     }
 
     @Test
@@ -167,6 +169,7 @@ class GlobalSearchIntegrationTests {
         assertThat(search("Teststraße", EnumSet.of(SearchField.METADATA), EnumSet.of(SearchEntityType.BUILDING), true).totalElements()).isEqualTo(1);
         assertThat(search("Testberuf", EnumSet.of(SearchField.METADATA), EnumSet.of(SearchEntityType.PERSON), true).totalElements()).isEqualTo(1);
         assertThat(search("Erwähnte Testperson", EnumSet.of(SearchField.METADATA), EnumSet.of(SearchEntityType.CITIZENSHIP), true).totalElements()).isEqualTo(1);
+        assertThat(search("Bürgender Garant", EnumSet.of(SearchField.METADATA), EnumSet.of(SearchEntityType.CITIZENSHIP), true).totalElements()).isEqualTo(1);
         assertThat(search("buildingpublic", EnumSet.of(SearchField.METADATA), EnumSet.of(SearchEntityType.BUILDING), true).totalElements()).isEqualTo(1);
         assertThat(search("buildingsecret", null, null, true).totalElements()).isZero();
         assertThat(search("citizenshipsecret", null, null, true).totalElements()).isZero();
@@ -447,6 +450,20 @@ class GlobalSearchIntegrationTests {
             mockMvc.perform(get(endpoint).param("query", "GOLDENEN GANS").param("fuzzy", "false"))
                     .andExpect(status().isOk()).andExpect(jsonPath("$.totalElements").value(endpoint.equals("/search") ? 2 : 1));
         }
+    }
+
+    @Test
+    void filtersCitizenshipsByGuarantorSeparatelyFromMentionedPersons() throws Exception {
+        mockMvc.perform(get("/citizenships").param("guarantor", "bürgender"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.content[0].guarantors[0].fullName").value("Bürgender Garant"))
+                .andExpect(jsonPath("$.content[0].mentionedPersons[0].fullName").value("Erwähnte Testperson"));
+        mockMvc.perform(get("/citizenships").param("guarantor", "Erwähnte"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalElements").value(0));
+        mockMvc.perform(get("/citizenships/filter").param("guarantor-id", "3"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(1));
+        mockMvc.perform(get("/citizenships/filter").param("guarantor-id", "2"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(0));
     }
 
     @Test

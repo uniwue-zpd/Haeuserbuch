@@ -121,6 +121,15 @@ const submit = async (formData: Partial<CitizenshipInput>) => {
             entityType="person"
             optionLabel="fullName"
             :isMultiple="true"
+            label="Bürgen (Mehrfachauswahl)"
+            name="guarantors"
+            outer-class="max-w-full"
+          />
+          <FormKit
+            type="entityAutocomplete"
+            entityType="person"
+            optionLabel="fullName"
+            :isMultiple="true"
             label="Erwähnte Personen (Mehrfachauswahl)"
             name="mentionedPersons"
             outer-class="max-w-full"

@@ -65,6 +65,16 @@ useHead(() => ({
             <p class="content-table-label">Eingebürgerte Person</p>
             <PersonPreview :person="citizenshipItem.person" />
           </div>
+          <div v-if="citizenshipItem.guarantors?.length" class="content-table-row">
+            <p class="content-table-label">Bürgen</p>
+            <div class="flex flex-wrap gap-2">
+              <PersonPreview
+                v-for="(person, personIndex) in citizenshipItem.guarantors"
+                :key="person.id ?? person.fullName ?? `guarantor-${personIndex}`"
+                :person="person"
+              />
+            </div>
+          </div>
           <div v-if="citizenshipItem.mentionedPersons.length > 0" class="content-table-row">
             <p class="content-table-label">Weitere erwähnte Personen</p>
             <div class="flex flex-wrap gap-2">

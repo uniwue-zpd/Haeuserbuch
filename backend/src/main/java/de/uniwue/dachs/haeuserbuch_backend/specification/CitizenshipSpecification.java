@@ -32,6 +32,25 @@ public class CitizenshipSpecification {
         };
     }
 
+    public static Specification<Citizenship> hasGuarantor(String guarantor) {
+        return (root, query, criteriaBuilder) -> {
+            assert query != null;
+            query.distinct(true);
+            Join<Citizenship, Person> guarantorJoin = root.joinSet("guarantors", JoinType.LEFT);
+            String pattern = "%" + guarantor.strip().toLowerCase() + "%";
+            return criteriaBuilder.like(criteriaBuilder.lower(guarantorJoin.get("fullName")), pattern);
+        };
+    }
+
+    public static Specification<Citizenship> hasGuarantorId(Long guarantorId) {
+        return (root, query, criteriaBuilder) -> {
+            assert query != null;
+            query.distinct(true);
+            Join<Citizenship, Person> guarantorJoin = root.joinSet("guarantors", JoinType.LEFT);
+            return criteriaBuilder.equal(guarantorJoin.get("id"), guarantorId);
+        };
+    }
+
     public static Specification<Citizenship> hasDateNaturalization(String dateNaturalization) {
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.like(criteriaBuilder.lower(root.get("dateNaturalization")), "%" + dateNaturalization.toLowerCase() + "%");

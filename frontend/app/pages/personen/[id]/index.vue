@@ -33,6 +33,10 @@ const { data: naturalizationEntry } = await useAsyncData(
   () =>
     citizenshipStore.filterCitizenships({ "naturalizedperson-id": personId }),
 );
+const { data: guarantorEntries } = await useAsyncData(
+  `person-${personId}-guarantor`,
+  () => citizenshipStore.filterCitizenships({ "guarantor-id": personId }),
+);
 
 const hasProfileContent = computed(() => {
   const person = personItem.value;
@@ -44,6 +48,7 @@ const hasProfileContent = computed(() => {
         person.altNames.length ||
         person.isCitizen ||
         naturalizationEntry.value?.length ||
+        guarantorEntries.value?.length ||
         person.associatedBuilding ||
         hasJobContent.value ||
         person.religion?.originalText ||
@@ -129,6 +134,19 @@ useHead(() => ({
           <div>
             <CitizenshipPreview
               :citizenship="naturalizationEntry[0] as CitizenshipPreviewDTO"
+            />
+          </div>
+        </div>
+        <div
+          v-if="guarantorEntries && guarantorEntries.length > 0"
+          class="grid grid-cols-1 items-start gap-x-4 gap-y-1 border-t border-muted py-3 sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]"
+        >
+          <p class="text-base font-medium text-muted">Bürge bei</p>
+          <div class="flex flex-wrap gap-2">
+            <CitizenshipPreview
+              v-for="entry in guarantorEntries"
+              :key="entry.id"
+              :citizenship="entry"
             />
           </div>
         </div>

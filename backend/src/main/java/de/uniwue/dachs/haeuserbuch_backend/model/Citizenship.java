@@ -31,6 +31,14 @@ public class Citizenship extends BaseEntity {
     )
     private Set<Person> mentionedPersons = new HashSet<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "citizenship_guarantor",
+            joinColumns = @JoinColumn(name = "citizenship_id"),
+            inverseJoinColumns = @JoinColumn(name = "person_id")
+    )
+    private Set<Person> guarantors = new HashSet<>();
+
     @ManyToOne
     @JoinColumn(name = "primary_source_id")
     private Source primarySource;

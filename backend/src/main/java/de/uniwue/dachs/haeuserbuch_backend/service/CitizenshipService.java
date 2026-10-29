@@ -55,6 +55,8 @@ public class CitizenshipService {
      * @param signature {@link String} filter by signature
      * @param naturalizedPerson {@link String} filter by naturalized person's name
      * @param naturalizedPersonId {@link Long} filter by naturalized person's id
+     * @param guarantor {@link String} filter by a guarantor's name
+     * @param guarantorId {@link Long} filter by a guarantor's id
      * @param dateNaturalization {@link String} filter by date of naturalization
      * @param primarySource {@link String} filter by primary source title
      * @param secondarySource {@link String} filter by secondary source title
@@ -66,6 +68,8 @@ public class CitizenshipService {
             String signature,
             String naturalizedPerson,
             Long naturalizedPersonId,
+            String guarantor,
+            Long guarantorId,
             String dateNaturalization,
             String primarySource,
             String secondarySource
@@ -75,6 +79,8 @@ public class CitizenshipService {
         if (signature != null && !signature.isBlank()) spec = spec.and(CitizenshipSpecification.hasSignature(signature));
         if (naturalizedPerson != null && !naturalizedPerson.isBlank()) spec = spec.and(CitizenshipSpecification.hasNaturalizedPerson(naturalizedPerson));
         if (naturalizedPersonId != null) spec = spec.and(CitizenshipSpecification.hasNaturalizedPersonId(naturalizedPersonId));
+        if (guarantor != null && !guarantor.isBlank()) spec = spec.and(CitizenshipSpecification.hasGuarantor(guarantor));
+        if (guarantorId != null) spec = spec.and(CitizenshipSpecification.hasGuarantorId(guarantorId));
         if (dateNaturalization != null && !dateNaturalization.isBlank()) spec = spec.and(CitizenshipSpecification.hasDateNaturalization(dateNaturalization));
         if (primarySource != null && !primarySource.isBlank()) spec = spec.and(CitizenshipSpecification.hasPrimarySource(primarySource));
         if (secondarySource != null && !secondarySource.isBlank()) spec = spec.and(CitizenshipSpecification.hasSecondarySource(secondarySource));
@@ -87,6 +93,8 @@ public class CitizenshipService {
             String signature,
             String naturalizedPerson,
             Long naturalizedPersonId,
+            String guarantor,
+            Long guarantorId,
             String dateNaturalization,
             String primarySource,
             String secondarySource
@@ -96,6 +104,8 @@ public class CitizenshipService {
         if (signature != null && !signature.isBlank()) spec = spec.and(CitizenshipSpecification.hasSignature(signature));
         if (naturalizedPerson != null && !naturalizedPerson.isBlank()) spec = spec.and(CitizenshipSpecification.hasNaturalizedPerson(naturalizedPerson));
         if (naturalizedPersonId != null) spec = spec.and(CitizenshipSpecification.hasNaturalizedPersonId(naturalizedPersonId));
+        if (guarantor != null && !guarantor.isBlank()) spec = spec.and(CitizenshipSpecification.hasGuarantor(guarantor));
+        if (guarantorId != null) spec = spec.and(CitizenshipSpecification.hasGuarantorId(guarantorId));
         if (dateNaturalization != null && !dateNaturalization.isBlank()) spec = spec.and(CitizenshipSpecification.hasDateNaturalization(dateNaturalization));
         if (primarySource != null && !primarySource.isBlank()) spec = spec.and(CitizenshipSpecification.hasPrimarySource(primarySource));
         if (secondarySource != null && !secondarySource.isBlank()) spec = spec.and(CitizenshipSpecification.hasSecondarySource(secondarySource));
@@ -145,6 +155,7 @@ public class CitizenshipService {
                     existingCitizenship.setSignature(updatedCitizenshipDTO.getSignature());
                     existingCitizenship.setPerson(personMapper.PreviewDTOToPerson(updatedCitizenshipDTO.getPerson()));
                     existingCitizenship.setMentionedPersons(personMapper.PreviewDTOsToPersons(updatedCitizenshipDTO.getMentionedPersons()));
+                    existingCitizenship.setGuarantors(personMapper.PreviewDTOsToPersons(updatedCitizenshipDTO.getGuarantors()));
                     existingCitizenship.setPrimarySource(sourceMapper.SourceDTOToSource(updatedCitizenshipDTO.getPrimarySource()));
                     existingCitizenship.setSecondarySource(sourceMapper.SourceDTOToSource(updatedCitizenshipDTO.getSecondarySource()));
                     existingCitizenship.setRefNumber(updatedCitizenshipDTO.getRefNumber());
