@@ -31,8 +31,8 @@ export const researchNavigation: readonly ResearchNavigationItem[] = [
     descriptionToLabel: 'Hinweise zur Erfassung und Geokodierung'
   },
   {
-    label: 'Bürger',
-    description: 'Die aufgenommenen Würzburger Bürger in alphabetischer Anordnung.',
+    label: 'Personen',
+    description: 'Die aufgenommenen Würzburger Bürger und andere Personen in alphabetischer Anordnung.',
     icon: 'i-lucide-users',
     to: '/personen',
   },

@@ -198,7 +198,7 @@ onMounted(() => {
 });
 
 useHead(() => ({
-  title: "Bürger",
+  title: "Personen",
 }));
 </script>
 
@@ -206,8 +206,8 @@ useHead(() => ({
   <div class="flex flex-col gap-4">
     <header class="flex items-start justify-between gap-4">
       <div class="flex flex-col gap-2">
-        <h1 class="text-4xl font-bold leading-none tracking-tighter text-highlighted sm:text-6xl">Bürger</h1>
-        <h1 class="text-xl sm:text-2xl">Die aufgenommenen Würzburger Bürger in alphabetischer Anordnung</h1>
+        <h1 class="text-4xl font-bold leading-none tracking-tighter text-highlighted sm:text-6xl">Personen</h1>
+        <h1 class="text-xl sm:text-2xl">Die aufgenommenen Würzburger Bürger und andere Personen in alphabetischer Anordnung</h1>
       </div>
       <UPopover
         mode="click"
