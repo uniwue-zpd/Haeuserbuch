@@ -45,13 +45,15 @@ public class PersonController {
             @RequestParam(required = false, value = "place-of-origin") String placeOfOrigin,
             @RequestParam(required = false, value = "place-of-origin-id") Long placeOfOriginId,
             @RequestParam(required = false, value = "origin-certainty") PlaceCertainty originCertainty,
+            @RequestParam(required = false, value = "place-of-emigration") String placeOfEmigration,
+            @RequestParam(required = false, value = "place-of-emigration-id") Long placeOfEmigrationId,
             @RequestParam(required = false) String religion,
             @RequestParam(required = false, value = "religion-id") Long religionId,
             @RequestParam(required = false) String weapon,
             @RequestParam(required = false, value = "weapon-id") Long weaponId
     ) {
         Page<PersonDTO> people = personService.getPagedPeople(
-                pageable, name, sex, job, jobId, associatedBuilding, associatedBuildingId, isCitizen, placeOfOrigin, placeOfOriginId, originCertainty, religion, religionId, weapon, weaponId
+                pageable, name, sex, job, jobId, associatedBuilding, associatedBuildingId, isCitizen, placeOfOrigin, placeOfOriginId, originCertainty, placeOfEmigration, placeOfEmigrationId, religion, religionId, weapon, weaponId
         );
         return ResponseEntity.ok(people);
     }
@@ -75,17 +77,19 @@ public class PersonController {
             @RequestParam(required = false, value = "place-of-origin") String placeOfOrigin,
             @RequestParam(required = false, value = "place-of-origin-id") Long placeOfOriginId,
             @RequestParam(required = false, value = "origin-certainty") PlaceCertainty originCertainty,
+            @RequestParam(required = false, value = "place-of-emigration") String placeOfEmigration,
+            @RequestParam(required = false, value = "place-of-emigration-id") Long placeOfEmigrationId,
             @RequestParam(required = false) String religion,
             @RequestParam(required = false, value = "religion-id") Long religionId,
             @RequestParam(required = false) String weapon,
             @RequestParam(required = false, value = "weapon-id") Long weaponId
     ) {
         List<Object> paramsCount = Stream.<Object>of(
-                name, sex, job, jobId, associatedBuilding, associatedBuildingId, isCitizen, placeOfOrigin, placeOfOriginId, originCertainty, religion, religionId, weapon, weaponId
+                name, sex, job, jobId, associatedBuilding, associatedBuildingId, isCitizen, placeOfOrigin, placeOfOriginId, originCertainty, placeOfEmigration, placeOfEmigrationId, religion, religionId, weapon, weaponId
                 ).filter(Objects::nonNull).toList();
         if (paramsCount.isEmpty()) return ResponseEntity.badRequest().build();
         return ResponseEntity.ok(personService.filterPersons(
-                name, sex, job, jobId, associatedBuilding, associatedBuildingId, isCitizen, placeOfOrigin, placeOfOriginId, originCertainty, religion, religionId, weapon, weaponId
+                name, sex, job, jobId, associatedBuilding, associatedBuildingId, isCitizen, placeOfOrigin, placeOfOriginId, originCertainty, placeOfEmigration, placeOfEmigrationId, religion, religionId, weapon, weaponId
                 )
         );
     }

@@ -1,5 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.model;
 
+import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonEmigration;
 import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonJob;
 import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonOrigin;
 import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonReligion;
@@ -44,6 +45,12 @@ public class Person extends BaseEntity{
             @AttributeOverride(name = "certainty", column = @Column(name = "origin_certainty"))
     })
     private PersonOrigin origin;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "originalText", column = @Column(name = "emigration_original_text"))
+    })
+    private PersonEmigration emigration;
 
     @Embedded
     @AttributeOverrides({

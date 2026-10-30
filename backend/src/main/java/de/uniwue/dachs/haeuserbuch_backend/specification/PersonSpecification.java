@@ -1,5 +1,6 @@
 package de.uniwue.dachs.haeuserbuch_backend.specification;
 
+import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonEmigration;
 import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonJob;
 import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonOrigin;
 import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonReligion;
@@ -91,6 +92,25 @@ public class PersonSpecification {
         return (root, query, criteriaBuilder) -> {
             Join<Person, PersonOrigin> originJoin = root.join("origin", JoinType.LEFT);
             return criteriaBuilder.equal(originJoin.get("certainty"), certainty);
+        };
+    }
+
+    public static Specification<Person> hasPlaceOfEmigration(String placeOfEmigration) {
+        return (root, query, criteriaBuilder) -> {
+            Join<Person, PersonEmigration> personEmigrationJoin = root.join("emigration", JoinType.LEFT);
+            Join<Person, Place> placeJoin = personEmigrationJoin.join("place", JoinType.LEFT);
+            String pattern = "%" + placeOfEmigration.strip().toLowerCase() + "%";
+            return criteriaBuilder.or(
+                    criteriaBuilder.like(criteriaBuilder.lower(personEmigrationJoin.get("originalText")), pattern),
+                    criteriaBuilder.like(criteriaBuilder.lower(placeJoin.get("realName")), pattern)
+            );
+        };
+    }
+
+    public static Specification<Person> hasPlaceOfEmigrationId(Long placeId) {
+        return (root, query, criteriaBuilder) -> {
+            Join<Person, PersonEmigration> emigrationJoin = root.join("emigration", JoinType.LEFT);
+            return criteriaBuilder.equal(emigrationJoin.join("place").get("id"), placeId);
         };
     }
 

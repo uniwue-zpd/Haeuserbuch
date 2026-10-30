@@ -120,9 +120,9 @@ class GlobalSearchIntegrationTests {
         Integer successfulMigration = jdbcTemplate.queryForObject("""
                 SELECT COUNT(*)
                   FROM flyway_schema_history
-                 WHERE version IN ('1', '2', '3', '6', '7', '8') AND type = 'SQL' AND success
+                 WHERE version IN ('1', '2', '3', '6', '7', '8', '9') AND type = 'SQL' AND success
                 """, Integer.class);
-        assertThat(successfulMigration).isEqualTo(6);
+        assertThat(successfulMigration).isEqualTo(7);
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM global_search_document", Long.class)).isEqualTo(10);
     }
 
@@ -379,6 +379,20 @@ class GlobalSearchIntegrationTests {
             assertThat(search("goldene Gans", EnumSet.of(field), types, false).totalElements()).isZero();
             assertThat(search("GOLDENEN GANS", EnumSet.of(field), types, false).totalElements()).isEqualTo(1);
         }
+    }
+
+    @Test
+    void searchesPersonEmigrationTextAndPlaceAsMetadata() {
+        jdbcTemplate.update("UPDATE person SET emigration_original_text = 'nach Wegzugshausen', emigration_place_id = 1 WHERE id = 1");
+        searchRepository.refreshSearchDocuments();
+        var fields = EnumSet.of(SearchField.METADATA);
+        var types = EnumSet.of(SearchEntityType.PERSON);
+        var emigrationText = search("Wegzugshausen", fields, types, true);
+        assertThat(emigrationText.totalElements()).isEqualTo(1);
+        assertThat(emigrationText.content().getFirst().matches())
+                .anySatisfy(match -> assertThat(match.label()).isEqualTo("Wegzugsort (Originaltext)"));
+        assertThat(search("Testort", fields, types, true).content().getFirst().matches())
+                .anySatisfy(match -> assertThat(match.label()).isEqualTo("Wegzugsort"));
     }
 
     @Test

@@ -26,15 +26,17 @@ public class PersonService {
     private final PersonMapper personMapper;
     private final BuildingMapper buildingMapper;
     private final PersonOriginMapper personOriginMapper;
+    private final PersonEmigrationMapper personEmigrationMapper;
     private final PersonJobMapper personJobMapper;
     private final PersonReligionMapper personReligionMapper;
     private final WeaponryMapper weaponryMapper;
 
-    public PersonService(PersonRepository personRepository, PersonMapper personMapper, BuildingMapper buildingMapper, PersonOriginMapper personOriginMapper, PersonJobMapper personJobMapper, PersonReligionMapper personReligionMapper, WeaponryMapper weaponryMapper) {
+    public PersonService(PersonRepository personRepository, PersonMapper personMapper, BuildingMapper buildingMapper, PersonOriginMapper personOriginMapper, PersonEmigrationMapper personEmigrationMapper, PersonJobMapper personJobMapper, PersonReligionMapper personReligionMapper, WeaponryMapper weaponryMapper) {
         this.personRepository = personRepository;
         this.personMapper = personMapper;
         this.buildingMapper = buildingMapper;
         this.personOriginMapper = personOriginMapper;
+        this.personEmigrationMapper = personEmigrationMapper;
         this.personJobMapper = personJobMapper;
         this.personReligionMapper = personReligionMapper;
         this.weaponryMapper = weaponryMapper;
@@ -62,6 +64,8 @@ public class PersonService {
      * @param placeOfOrigin Place of origin of the person (can be searched by original text).
      * @param placeOfOriginId ID of the place of origin.
      * @param originCertainty Certainty of the place of origin information.
+     * @param placeOfEmigration Place of emigration of the person (can be searched by original text or place name).
+     * @param placeOfEmigrationId ID of the place of emigration.
      * @param religion Religion of the person (can be searched by original text or category name).
      * @param religionId ID of the religion category.
      * @param weapon Weapon associated with the person (can be searched by original text or category name).
@@ -80,6 +84,8 @@ public class PersonService {
             String placeOfOrigin,
             Long placeOfOriginId,
             PlaceCertainty originCertainty,
+            String placeOfEmigration,
+            Long placeOfEmigrationId,
             String religion,
             Long religionId,
             String weapon,
@@ -96,6 +102,8 @@ public class PersonService {
         if (placeOfOrigin != null && !placeOfOrigin.isBlank()) spec = spec.and(PersonSpecification.hasPlaceOfOrigin(placeOfOrigin));
         if (placeOfOriginId != null) spec = spec.and(PersonSpecification.hasPlaceOfOriginId(placeOfOriginId));
         if (originCertainty != null) spec  = spec.and(PersonSpecification.hasOriginCertainty(originCertainty));
+        if (placeOfEmigration != null && !placeOfEmigration.isBlank()) spec = spec.and(PersonSpecification.hasPlaceOfEmigration(placeOfEmigration));
+        if (placeOfEmigrationId != null) spec = spec.and(PersonSpecification.hasPlaceOfEmigrationId(placeOfEmigrationId));
         if (religion != null && !religion.isBlank()) spec = spec.and(PersonSpecification.hasReligion(religion));
         if (religionId != null) spec = spec.and(PersonSpecification.hasReligionId(religionId));
         if (weapon != null && !weapon.isBlank()) spec = spec.and(PersonSpecification.hasWeapon(weapon));
@@ -127,6 +135,8 @@ public class PersonService {
      * @param placeOfOrigin Place of origin of the person (can be searched by original text).
      * @param placeOfOriginId ID of the place of origin.
      * @param originCertainty Certainty of the place of origin information.
+     * @param placeOfEmigration Place of emigration of the person (can be searched by original text or place name).
+     * @param placeOfEmigrationId ID of the place of emigration.
      * @param religion Religion of the person (can be searched by original text or category name).
      * @param religionId ID of the religion category.
      * @param weapon Weapon associated with the person (can be searched by original text or category name).
@@ -144,6 +154,8 @@ public class PersonService {
             String placeOfOrigin,
             Long placeOfOriginId,
             PlaceCertainty originCertainty,
+            String placeOfEmigration,
+            Long placeOfEmigrationId,
             String religion,
             Long religionId,
             String weapon,
@@ -160,6 +172,8 @@ public class PersonService {
         if (placeOfOrigin != null && !placeOfOrigin.isBlank()) spec = spec.and(PersonSpecification.hasPlaceOfOrigin(placeOfOrigin));
         if (placeOfOriginId != null) spec = spec.and(PersonSpecification.hasPlaceOfOriginId(placeOfOriginId));
         if (originCertainty != null) spec = spec.and(PersonSpecification.hasOriginCertainty(originCertainty));
+        if (placeOfEmigration != null && !placeOfEmigration.isBlank()) spec = spec.and(PersonSpecification.hasPlaceOfEmigration(placeOfEmigration));
+        if (placeOfEmigrationId != null) spec = spec.and(PersonSpecification.hasPlaceOfEmigrationId(placeOfEmigrationId));
         if (religion != null && !religion.isBlank()) spec = spec.and(PersonSpecification.hasReligion(religion));
         if (religionId != null) spec = spec.and(PersonSpecification.hasReligionId(religionId));
         if (weapon != null && !weapon.isBlank()) spec = spec.and(PersonSpecification.hasWeapon(weapon));
@@ -202,6 +216,7 @@ public class PersonService {
                     existingPerson.setAssociatedBuilding(buildingMapper.DTOToBuilding(updatedPerson.getAssociatedBuilding()));
                     existingPerson.setIsCitizen(updatedPerson.getIsCitizen());
                     existingPerson.setOrigin(personOriginMapper.DTOToPersonOrigin(updatedPerson.getOrigin()));
+                    existingPerson.setEmigration(personEmigrationMapper.DTOToPersonEmigration(updatedPerson.getEmigration()));
                     existingPerson.setJob(personJobMapper.DTOToPersonJob(updatedPerson.getJob()));
                     existingPerson.setReligion(personReligionMapper.DTOToPersonReligion(updatedPerson.getReligion()));
                     Set<Weaponry> newWeaponry = weaponryMapper.DTOsToWeaponries(updatedPerson.getWeapons());
