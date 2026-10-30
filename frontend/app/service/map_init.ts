@@ -30,6 +30,7 @@ function getHistoricalBounds(sources: Record<string, maplibregl.SourceSpecificat
     * @param zoom - The initial zoom level of the map (default is 12).
     * @param sources - An object containing the map sources, where keys are source IDs and values are source specifications.
     * @param layers - An array of layer specifications to be added to the map.
+    * @param mapOptions - Additional map options. Set `constrainToRasterBounds` to false to allow panning beyond the raster sources.
 */
 export function initMap(
     containerId: string,
@@ -44,12 +45,13 @@ export function initMap(
         | 'maxTileCacheZoomLevels'
         | 'refreshExpiredTiles'
         | 'fadeDuration'
-    > = {},
+    > & { constrainToRasterBounds?: boolean } = {},
 ) {
-    const historicalBounds = getHistoricalBounds(sources);
+    const { constrainToRasterBounds = true, ...options } = mapOptions;
+    const historicalBounds = constrainToRasterBounds ? getHistoricalBounds(sources) : undefined;
     const map = new maplibregl.Map({
         container: containerId,
-        ...mapOptions,
+        ...options,
         zoom: zoom,
         pitch: 0,
         pitchWithRotate: false,
