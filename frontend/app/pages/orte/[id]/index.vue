@@ -42,6 +42,10 @@ const { data: associatedPeople } = await useAsyncData(
   `place-${placeId}-associated_people`,
   () => person_store.filterPersons({ "place-of-origin-id": placeId }),
 );
+const { data: emigratedPeople } = await useAsyncData(
+  `place-${placeId}-emigrated_people`,
+  () => person_store.filterPersons({ "place-of-emigration-id": placeId }),
+);
 
 useHead(() => ({
   title: placeItem.value
@@ -153,6 +157,20 @@ onBeforeUnmount(() => {
             <div v-if="associatedPeople?.length" class="flex flex-wrap gap-2">
               <NuxtLink
                 v-for="person in associatedPeople"
+                :key="person.id ?? person.fullName ?? 'person'"
+                :to="`/personen/${person.id}`"
+                 class="inline-flex max-w-full rounded-md border border-accented px-2 py-2 text-sm font-semibold leading-tight text-highlighted transition-colors duration-150 hover:border-accented hover:bg-elevated"
+              >
+                {{ person.fullName || `Person mit ID ${person.id}` }}
+              </NuxtLink>
+            </div>
+            <p v-else class="text-sm text-muted">Bisher keine Relationen gefunden</p>
+          </div>
+           <div class="flex flex-col gap-2 border-t border-muted py-3 first:border-t-0 first:pt-0 last:pb-0">
+              <p class="text-sm font-semibold text-muted">Wegzugsort von</p>
+            <div v-if="emigratedPeople?.length" class="flex flex-wrap gap-2">
+              <NuxtLink
+                v-for="person in emigratedPeople"
                 :key="person.id ?? person.fullName ?? 'person'"
                 :to="`/personen/${person.id}`"
                  class="inline-flex max-w-full rounded-md border border-accented px-2 py-2 text-sm font-semibold leading-tight text-highlighted transition-colors duration-150 hover:border-accented hover:bg-elevated"

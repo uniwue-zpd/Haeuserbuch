@@ -133,6 +133,7 @@ export interface PersonDTO extends Auditable {
     associatedBuilding: BuildingDTO | null;
     isCitizen: boolean | null;
     origin: PersonOrigin;
+    emigration: PersonEmigration;
     job: PersonJob;
     religion: PersonReligion;
     weapons: WeaponryDTO[] | [];
@@ -159,6 +160,12 @@ export enum OriginCertainty {
     IDENTIFIED = "IDENTIFIED",
     AMBIGUOUS = "AMBIGUOUS",
     UNKNOWN = "UNKNOWN"
+}
+
+/** Represents an object describing the place a person emigrated to. */
+export interface PersonEmigration {
+    originalText: string | null;
+    place: PlaceDTO | null;
 }
 
 /** Represents an object describing the occupation of a person. */
@@ -195,6 +202,8 @@ export interface FilterPerson {
     'place-of-origin'?: string;
     'place-of-origin-id'?: number;
     'origin-certainty'?: OriginCertainty;
+    'place-of-emigration'?: string;
+    'place-of-emigration-id'?: number;
     religion?: string;
     'religion-id'?: number;
     weapon?: string;

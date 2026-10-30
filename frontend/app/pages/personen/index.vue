@@ -37,6 +37,7 @@ const filterValues = reactive({
   weapon: "",
   religion: "",
   origin: "",
+  emigration: "",
 });
 
 const sortableHeader = (label: string) =>
@@ -138,6 +139,7 @@ const loadData = async () => {
       weapon: filterValues.weapon || undefined,
       religion: filterValues.religion || undefined,
       "place-of-origin": filterValues.origin || undefined,
+      "place-of-emigration": filterValues.emigration || undefined,
     });
     rows.value = res.content.map((person: PersonDTO) => ({
       ...person,
@@ -303,7 +305,7 @@ useHead(() => ({
             </summary>
             <UInput v-model="filterValues.religion" class="mt-3 w-full" placeholder="Suchen..." />
           </details>
-          <details open class="p-4">
+          <details open class="border-b border-default p-4">
             <summary class="cursor-pointer list-none text-base font-semibold">
               <span class="flex items-center justify-between">
                 Herkunft
@@ -311,6 +313,15 @@ useHead(() => ({
               </span>
             </summary>
             <UInput v-model="filterValues.origin" class="mt-3 w-full" placeholder="Suchen..." />
+          </details>
+          <details open class="p-4">
+            <summary class="cursor-pointer list-none text-base font-semibold">
+              <span class="flex items-center justify-between">
+                Wegzugsort
+                <UIcon name="i-lucide-chevron-down" class="size-4" />
+              </span>
+            </summary>
+            <UInput v-model="filterValues.emigration" class="mt-3 w-full" placeholder="Suchen..." />
           </details>
         </div>
       </aside>

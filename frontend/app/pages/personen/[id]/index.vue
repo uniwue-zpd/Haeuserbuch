@@ -4,7 +4,7 @@ import CitizenshipPreview from "~/components/UI/preview_cards/CitizenshipPreview
 import PersonJobPreview from "~/components/UI/preview_cards/PersonJobPreview.vue";
 import PersonReligionPreview from "~/components/UI/preview_cards/PersonReligionPreview.vue";
 import PersonWeaponsPreview from "~/components/UI/preview_cards/PersonWeaponsPreview.vue";
-import PersonOriginPreview from "~/components/UI/preview_cards/PersonOriginPreview.vue";
+import PersonOriginEmigrationPreview from "~/components/UI/preview_cards/PersonOriginEmigrationPreview.vue";
 import PersonSkeleton from "~/components/UI/skeletons/PersonSkeleton.vue";
 import FetchError from "~/components/UI/FetchError.vue";
 
@@ -13,7 +13,6 @@ const citizenshipStore = useCitizenshipStore();
 
 const route = useRoute();
 const personId = Number(route.params.id);
-const personOrigin = computed(() => personItem.value?.origin);
 const personJob = computed(() => personItem.value?.job);
 const hasJobContent = computed(() =>
   Boolean(personJob.value?.originalText || personJob.value?.jobCategory),
@@ -58,6 +57,10 @@ const hasProfileContent = computed(() => {
 const hasOriginContent = computed(() => {
   const origin = personItem.value?.origin;
   return Boolean(origin && (origin.originalText || origin.places.length || origin.certainty));
+});
+const hasEmigrationContent = computed(() => {
+  const emigration = personItem.value?.emigration;
+  return Boolean(emigration && (emigration.originalText || emigration.place));
 });
 useHead(() => ({
   title: personItem.value
@@ -194,10 +197,11 @@ useHead(() => ({
           </div>
         </div>
       </div>
-      <PersonOriginPreview
-        v-if="hasOriginContent && personItem?.origin"
+      <PersonOriginEmigrationPreview
+        v-if="hasOriginContent || hasEmigrationContent"
         :personId="personId"
-        :personOrigin="personItem.origin"
+        :personOrigin="hasOriginContent ? personItem.origin : null"
+        :personEmigration="hasEmigrationContent ? personItem.emigration : null"
         class="lg:col-span-5"
       />
       <div

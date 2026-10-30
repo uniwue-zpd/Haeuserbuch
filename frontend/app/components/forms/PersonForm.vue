@@ -165,6 +165,28 @@ const submit = async (formData: Partial<PersonInput>) => {
             />
           </div>
         </FormKit>
+        <div class="text-center font-bold text-2xl">Wegzugsort</div>
+        <FormKit type="group" name="emigration">
+          <div
+            class="flex flex-col gap-2 p-4 bg-gray-200 border border-gray-300 rounded-md shadow-sm"
+          >
+            <FormKit
+              type="text"
+              name="originalText"
+              label="Eingetragener Wegzugsort"
+              prefix-icon="text"
+              outer-class="max-w-full"
+            />
+            <FormKit
+              type="entityAutocomplete"
+              entityType="place"
+              optionLabel="realName"
+              name="place"
+              label="Wegzugsort"
+              outer-class="max-w-full"
+            />
+          </div>
+        </FormKit>
         <div class="text-center font-bold text-2xl">Bezug zum Gebäude</div>
         <FormKit
           type="entityAutocomplete"
