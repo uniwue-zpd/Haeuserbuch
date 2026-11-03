@@ -26,7 +26,7 @@ const YEAR_MIN = 1405;
 const YEAR_MAX = 1613;
 
 const filterValues = reactive({
-  yearnaturalization: "",
+  yearnaturalization: undefined as number | undefined,
   yearRange: [YEAR_MIN, YEAR_MAX] as [number, number],
   refnumber: "",
   signature: "",
@@ -38,7 +38,7 @@ const filterValues = reactive({
 
 const resetFilters = () => {
   Object.assign(filterValues, {
-    yearnaturalization: "",
+    yearnaturalization: undefined,
     yearRange: [YEAR_MIN, YEAR_MAX],
     refnumber: "",
     signature: "",
@@ -122,9 +122,7 @@ const loadData = async () => {
       page: page.value,
       size: rowsPerPage.value,
       sort,
-      yearnaturalization: /^\d{4}$/.test(filterValues.yearnaturalization.trim())
-        ? Number(filterValues.yearnaturalization.trim())
-        : undefined,
+      yearnaturalization: filterValues.yearnaturalization || undefined,
       "year-from": filterValues.yearRange[0] > YEAR_MIN ? filterValues.yearRange[0] : undefined,
       "year-to": filterValues.yearRange[1] < YEAR_MAX ? filterValues.yearRange[1] : undefined,
       refnumber: filterValues.refnumber || undefined,
@@ -261,11 +259,10 @@ useHead(() => ({
               </span>
             </summary>
             <UInput
-              v-model="filterValues.yearnaturalization"
+              v-model.number="filterValues.yearnaturalization"
+              type="number"
               class="mt-3 w-full"
               placeholder="Suchen..."
-              inputmode="numeric"
-              maxlength="4"
             />
             <USlider
               v-model="filterValues.yearRange"
