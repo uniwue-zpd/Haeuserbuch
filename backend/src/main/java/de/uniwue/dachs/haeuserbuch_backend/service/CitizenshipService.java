@@ -57,7 +57,9 @@ public class CitizenshipService {
      * @param naturalizedPersonId {@link Long} filter by naturalized person's id
      * @param guarantor {@link String} filter by a guarantor's name
      * @param guarantorId {@link Long} filter by a guarantor's id
-     * @param dateNaturalization {@link String} filter by date of naturalization
+     * @param yearNaturalization {@link Integer} filter by exact year of naturalization
+     * @param yearFrom {@link Integer} lower bound (inclusive) of the year of naturalization
+     * @param yearTo {@link Integer} upper bound (inclusive) of the year of naturalization
      * @param primarySource {@link String} filter by primary source title
      * @param secondarySource {@link String} filter by secondary source title
      * @return {@link Page} of {@link CitizenshipDTO} objects matching the filters
@@ -70,7 +72,9 @@ public class CitizenshipService {
             Long naturalizedPersonId,
             String guarantor,
             Long guarantorId,
-            String dateNaturalization,
+            Integer yearNaturalization,
+            Integer yearFrom,
+            Integer yearTo,
             String primarySource,
             String secondarySource
     ) {
@@ -81,7 +85,9 @@ public class CitizenshipService {
         if (naturalizedPersonId != null) spec = spec.and(CitizenshipSpecification.hasNaturalizedPersonId(naturalizedPersonId));
         if (guarantor != null && !guarantor.isBlank()) spec = spec.and(CitizenshipSpecification.hasGuarantor(guarantor));
         if (guarantorId != null) spec = spec.and(CitizenshipSpecification.hasGuarantorId(guarantorId));
-        if (dateNaturalization != null && !dateNaturalization.isBlank()) spec = spec.and(CitizenshipSpecification.hasDateNaturalization(dateNaturalization));
+        if (yearNaturalization != null) spec = spec.and(CitizenshipSpecification.hasYearNaturalization(yearNaturalization));
+        if (yearFrom != null) spec = spec.and(CitizenshipSpecification.hasYearFrom(yearFrom));
+        if (yearTo != null) spec = spec.and(CitizenshipSpecification.hasYearTo(yearTo));
         if (primarySource != null && !primarySource.isBlank()) spec = spec.and(CitizenshipSpecification.hasPrimarySource(primarySource));
         if (secondarySource != null && !secondarySource.isBlank()) spec = spec.and(CitizenshipSpecification.hasSecondarySource(secondarySource));
         Page<Citizenship> citizenships = citizenshipRepository.findAll(spec, pageable);
@@ -95,7 +101,9 @@ public class CitizenshipService {
             Long naturalizedPersonId,
             String guarantor,
             Long guarantorId,
-            String dateNaturalization,
+            Integer yearNaturalization,
+            Integer yearFrom,
+            Integer yearTo,
             String primarySource,
             String secondarySource
     ) {
@@ -106,7 +114,9 @@ public class CitizenshipService {
         if (naturalizedPersonId != null) spec = spec.and(CitizenshipSpecification.hasNaturalizedPersonId(naturalizedPersonId));
         if (guarantor != null && !guarantor.isBlank()) spec = spec.and(CitizenshipSpecification.hasGuarantor(guarantor));
         if (guarantorId != null) spec = spec.and(CitizenshipSpecification.hasGuarantorId(guarantorId));
-        if (dateNaturalization != null && !dateNaturalization.isBlank()) spec = spec.and(CitizenshipSpecification.hasDateNaturalization(dateNaturalization));
+        if (yearNaturalization != null) spec = spec.and(CitizenshipSpecification.hasYearNaturalization(yearNaturalization));
+        if (yearFrom != null) spec = spec.and(CitizenshipSpecification.hasYearFrom(yearFrom));
+        if (yearTo != null) spec = spec.and(CitizenshipSpecification.hasYearTo(yearTo));
         if (primarySource != null && !primarySource.isBlank()) spec = spec.and(CitizenshipSpecification.hasPrimarySource(primarySource));
         if (secondarySource != null && !secondarySource.isBlank()) spec = spec.and(CitizenshipSpecification.hasSecondarySource(secondarySource));
         List<Citizenship> citizenships = citizenshipRepository.findAll(spec);

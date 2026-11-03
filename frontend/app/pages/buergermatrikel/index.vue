@@ -22,14 +22,32 @@ const rowsPerPageOptions = [5, 10, 25, 50, 100];
 const totalRecords = ref(0);
 const sorting = ref<{ id: string; desc: boolean }[]>([]);
 
+const YEAR_MIN = 1405;
+const YEAR_MAX = 1613;
+
 const filterValues = reactive({
-  refNumber: "",
+  yearnaturalization: undefined as number | undefined,
+  yearRange: [YEAR_MIN, YEAR_MAX] as [number, number],
+  refnumber: "",
   signature: "",
   personName: "",
   guarantorName: "",
   primarySourceTitle: "",
   secondarySourceTitle: "",
 });
+
+const resetFilters = () => {
+  Object.assign(filterValues, {
+    yearnaturalization: undefined,
+    yearRange: [YEAR_MIN, YEAR_MAX],
+    refnumber: "",
+    signature: "",
+    personName: "",
+    guarantorName: "",
+    primarySourceTitle: "",
+    secondarySourceTitle: "",
+  });
+};
 
 const sortableHeader = (label: string) =>
   ({ column }: { column: Column<CitizenshipTableRow, unknown> }) =>
@@ -69,19 +87,13 @@ const columns: TableColumn<CitizenshipTableRow>[] = [
       }),
   },
   {
-    accessorKey: "refNumber",
-    header: sortableHeader("Meyer-Erlach-Referenz"),
-  },
-  {
-    accessorKey: "signature",
-    header: sortableHeader("Signatur"),
-    meta: { class: { td: "whitespace-nowrap" } },
+    accessorKey: "yearNaturalization",
+    header: sortableHeader("Jahr")
   },
   {
     id: "person",
     accessorFn: (row) => row.personName,
-    header: "Eingebürgerte Person",
-    enableSorting: false,
+    header: "Eingebürgerte Person"
   },
   {
     id: "guarantors",
@@ -89,15 +101,14 @@ const columns: TableColumn<CitizenshipTableRow>[] = [
     enableSorting: false,
   },
   {
-    id: "primarySource",
-    accessorFn: (row) => row.primarySourceTitle,
-    header: sortableHeader("Quellen"),
+    accessorKey: "signature",
+    header: sortableHeader("Signatur"),
+    meta: { class: { td: "whitespace-nowrap" } },
   },
   {
-    id: "secondarySource",
-    accessorFn: (row) => row.secondarySourceTitle,
-    header: sortableHeader("Literatur"),
-  },
+    accessorKey: "refNumber",
+    header: sortableHeader("Meyer-Erlach-Referenz"),
+  }
 ];
 
 const loadData = async () => {
@@ -111,7 +122,10 @@ const loadData = async () => {
       page: page.value,
       size: rowsPerPage.value,
       sort,
-      refnumber: filterValues.refNumber || undefined,
+      yearnaturalization: filterValues.yearnaturalization || undefined,
+      "year-from": filterValues.yearRange[0] > YEAR_MIN ? filterValues.yearRange[0] : undefined,
+      "year-to": filterValues.yearRange[1] < YEAR_MAX ? filterValues.yearRange[1] : undefined,
+      refnumber: filterValues.refnumber || undefined,
       signature: filterValues.signature || undefined,
       naturalizedperson: filterValues.personName || undefined,
       guarantor: filterValues.guarantorName || undefined,
@@ -233,26 +247,47 @@ useHead(() => ({
 
       <div class="grid gap-4 lg:grid-cols-[minmax(16rem,18rem)_minmax(0,1fr)]">
         <aside class="overview-filter-panel h-fit">
-          <div class="border-b border-muted p-5">
+          <div class="flex items-center justify-between border-b border-muted p-5">
             <h2 class="text-xl font-semibold text-highlighted">Filter</h2>
+            <UButton color="neutral" variant="ghost" size="sm" icon="i-lucide-rotate-ccw" label="Zurücksetzen" @click="resetFilters" />
           </div>
           <details open class="border-b border-default p-4">
             <summary class="cursor-pointer list-none text-base font-semibold">
               <span class="flex items-center justify-between">
-                Meyer-Erlach-Referenz
+                Jahr
                 <UIcon name="i-lucide-chevron-down" class="size-4" />
               </span>
             </summary>
-            <UInput v-model="filterValues.refNumber" class="mt-3 w-full" placeholder="Suchen..." />
-          </details>
-          <details open class="border-b border-default p-4">
-            <summary class="cursor-pointer list-none text-base font-semibold">
-              <span class="flex items-center justify-between">
-                Signatur
-                <UIcon name="i-lucide-chevron-down" class="size-4" />
-              </span>
-            </summary>
-            <UInput v-model="filterValues.signature" class="mt-3 w-full" placeholder="Suchen..." />
+            <UInput
+              v-model.number="filterValues.yearnaturalization"
+              type="number"
+              class="mt-3 w-full"
+              placeholder="Suchen..."
+            />
+            <USlider
+              v-model="filterValues.yearRange"
+              :min="YEAR_MIN"
+              :max="YEAR_MAX"
+              :step="1"
+              class="mt-5"
+            />
+            <div class="mt-3 flex items-center gap-2">
+              <UInputNumber
+                v-model="filterValues.yearRange[0]"
+                :min="YEAR_MIN"
+                :max="filterValues.yearRange[1]"
+                :format-options="{ useGrouping: false }"
+                class="w-full"
+              />
+              <span class="text-muted">–</span>
+              <UInputNumber
+                v-model="filterValues.yearRange[1]"
+                :min="filterValues.yearRange[0]"
+                :max="YEAR_MAX"
+                :format-options="{ useGrouping: false }"
+                class="w-full"
+              />
+            </div>
           </details>
           <details open class="border-b border-default p-4">
             <summary class="cursor-pointer list-none text-base font-semibold">
@@ -275,20 +310,20 @@ useHead(() => ({
           <details open class="border-b border-default p-4">
             <summary class="cursor-pointer list-none text-base font-semibold">
               <span class="flex items-center justify-between">
-                Quellen
+                Signatur
                 <UIcon name="i-lucide-chevron-down" class="size-4" />
               </span>
             </summary>
-            <UInput v-model="filterValues.primarySourceTitle" class="mt-3 w-full" placeholder="Suchen..." />
+            <UInput v-model="filterValues.signature" class="mt-3 w-full" placeholder="Suchen..." />
           </details>
-          <details open class="p-4">
+          <details open class="border-b border-default p-4">
             <summary class="cursor-pointer list-none text-base font-semibold">
               <span class="flex items-center justify-between">
-                Literatur
+                Meyer-Erlach-Referenz
                 <UIcon name="i-lucide-chevron-down" class="size-4" />
               </span>
             </summary>
-            <UInput v-model="filterValues.secondarySourceTitle" class="mt-3 w-full" placeholder="Suchen..." />
+            <UInput v-model="filterValues.refnumber" class="mt-3 w-full" placeholder="Suchen..." />
           </details>
         </aside>
         <section class="overview-table-panel min-w-0 p-5">
@@ -301,52 +336,30 @@ useHead(() => ({
             :ui="{ td: 'text-default' }"
             class="w-full"
           >
-        <template #refNumber-cell="{ row }">
-          <NuxtLink :to="`/buergermatrikel/${row.original.id}`" prefetch>
-            {{ row.original.refNumber }}
-          </NuxtLink>
-        </template>
-        <template #person-cell="{ row }">
-          <NuxtLink
-            v-if="row.original.person"
-            :to="`/personen/${row.original.person.id}`"
-            class="whitespace-nowrap"
-            prefetch
-          >
-            {{ row.original.personName }}
-          </NuxtLink>
-          <span v-else class="italic text-muted">unbekannt</span>
-        </template>
-        <template #guarantors-cell="{ row }">
-          <span v-if="row.original.guarantors?.length">
-            <template v-for="(guarantor, guarantorIndex) in row.original.guarantors" :key="guarantor.id">
-              <NuxtLink :to="`/personen/${guarantor.id}`" class="whitespace-nowrap">{{ guarantor.fullName }}</NuxtLink><span v-if="guarantorIndex < row.original.guarantors.length - 1">, </span>
+            <template #yearNaturalization-cell="{ row }">
+              <span v-if="row.original.yearNaturalization">{{ row.original.yearNaturalization }}</span>
+              <span v-else class="italic text-muted">unbekannt</span>
             </template>
-          </span>
-          <span v-else class="italic text-muted">keine</span>
-        </template>
-        <template #primarySource-cell="{ row }">
-          <NuxtLink
-            v-if="row.original.primarySource"
-            :to="`/quellen/${row.original.primarySource.id}`"
-            class="whitespace-nowrap"
-          >
-            {{ title_shortener(row.original.primarySourceTitle ?? "") }}
-          </NuxtLink>
-          <span v-else class="italic text-muted">unbekannt</span>
-        </template>
-        <template #secondarySource-cell="{ row }">
-          <NuxtLink
-            v-if="row.original.secondarySource"
-            :to="`/quellen/${row.original.secondarySource.id}`"
-            class="whitespace-nowrap"
-          >
-            {{ title_shortener(row.original.secondarySourceTitle ?? "") }}
-          </NuxtLink>
-          <span v-else class="italic text-muted">unbekannt</span>
-        </template>
+            <template #person-cell="{ row }">
+              <NuxtLink
+                  v-if="row.original.person"
+                  :to="`/personen/${row.original.person.id}`"
+                  class="whitespace-nowrap"
+                  prefetch
+              >
+                {{ row.original.personName }}
+              </NuxtLink>
+              <span v-else class="italic text-muted">unbekannt</span>
+            </template>
+            <template #guarantors-cell="{ row }">
+              <span v-if="row.original.guarantors?.length">
+                <template v-for="(guarantor, guarantorIndex) in row.original.guarantors" :key="guarantor.id">
+                  <NuxtLink :to="`/personen/${guarantor.id}`" class="whitespace-nowrap">{{ guarantor.fullName }}</NuxtLink><span v-if="guarantorIndex < row.original.guarantors.length - 1">, </span>
+                </template>
+              </span>
+              <span v-else class="italic text-muted">keine</span>
+            </template>
           </UTable>
-
           <div
             class="flex flex-col gap-4 border-t border-default pt-4 sm:flex-row sm:items-center sm:justify-between"
           >

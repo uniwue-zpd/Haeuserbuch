@@ -44,6 +44,7 @@ public class CitizenshipMapper {
         citizenshipDTO.setSecondarySource(sourceMapper.SourceToDTO(citizenship.getSecondarySource()));
         citizenshipDTO.setRefNumber(citizenship.getRefNumber());
         citizenshipDTO.setDateNaturalization(citizenship.getDateNaturalization());
+        citizenshipDTO.setYearNaturalization(citizenship.getYearNaturalization());
         citizenshipDTO.setDateMisc(citizenship.getDateMisc());
         citizenshipDTO.setEntryText(citizenship.getEntryText());
         citizenshipDTO.setAddendum(citizenship.getAddendum());

@@ -2,6 +2,7 @@ package de.uniwue.dachs.haeuserbuch_backend.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.Generated;
 import lombok.Setter;
 
 import java.util.HashSet;
@@ -48,6 +49,11 @@ public class Citizenship extends BaseEntity {
     private Source secondarySource;
 
     private String dateNaturalization;
+
+    /** Year derived by the database from {@link #dateNaturalization} (generated column, read-only) */
+    @Column(name = "year_naturalization", insertable = false, updatable = false)
+    @Generated
+    private Integer yearNaturalization;
 
     private String dateMisc;
 

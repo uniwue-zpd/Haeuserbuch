@@ -51,9 +51,19 @@ public class CitizenshipSpecification {
         };
     }
 
-    public static Specification<Citizenship> hasDateNaturalization(String dateNaturalization) {
+    public static Specification<Citizenship> hasYearNaturalization(Integer year) {
         return (root, query, criteriaBuilder) ->
-                criteriaBuilder.like(criteriaBuilder.lower(root.get("dateNaturalization")), "%" + dateNaturalization.toLowerCase() + "%");
+                criteriaBuilder.equal(root.get("yearNaturalization"), year);
+    }
+
+    public static Specification<Citizenship> hasYearFrom(Integer yearFrom) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.greaterThanOrEqualTo(root.get("yearNaturalization"), yearFrom);
+    }
+
+    public static Specification<Citizenship> hasYearTo(Integer yearTo) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.lessThanOrEqualTo(root.get("yearNaturalization"), yearTo);
     }
 
     public static Specification<Citizenship> hasPrimarySource(String primarySource) {
