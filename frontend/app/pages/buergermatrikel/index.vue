@@ -36,6 +36,19 @@ const filterValues = reactive({
   secondarySourceTitle: "",
 });
 
+const resetFilters = () => {
+  Object.assign(filterValues, {
+    yearnaturalization: "",
+    yearRange: [YEAR_MIN, YEAR_MAX],
+    refnumber: "",
+    signature: "",
+    personName: "",
+    guarantorName: "",
+    primarySourceTitle: "",
+    secondarySourceTitle: "",
+  });
+};
+
 const sortableHeader = (label: string) =>
   ({ column }: { column: Column<CitizenshipTableRow, unknown> }) =>
     h(
@@ -236,8 +249,9 @@ useHead(() => ({
 
       <div class="grid gap-4 lg:grid-cols-[minmax(16rem,18rem)_minmax(0,1fr)]">
         <aside class="overview-filter-panel h-fit">
-          <div class="border-b border-muted p-5">
+          <div class="flex items-center justify-between border-b border-muted p-5">
             <h2 class="text-xl font-semibold text-highlighted">Filter</h2>
+            <UButton color="neutral" variant="ghost" size="sm" icon="i-lucide-rotate-ccw" label="Zurücksetzen" @click="resetFilters" />
           </div>
           <details open class="border-b border-default p-4">
             <summary class="cursor-pointer list-none text-base font-semibold">
