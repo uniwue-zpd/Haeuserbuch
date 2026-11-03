@@ -41,12 +41,14 @@ public class CitizenshipController {
             @RequestParam(required = false, value="naturalizedperson-id") Long naturalizedPersonId,
             @RequestParam(required = false) String guarantor,
             @RequestParam(required = false, value="guarantor-id") Long guarantorId,
-            @RequestParam(required = false, value="datenaturalization") String dateNaturalization,
+            @RequestParam(required = false, value="yearnaturalization") Integer yearNaturalization,
+            @RequestParam(required = false, value="year-from") Integer yearFrom,
+            @RequestParam(required = false, value="year-to") Integer yearTo,
             @RequestParam(required = false, value="primarysource") String primarySource,
             @RequestParam(required = false, value="secondarysource") String secondarySource
     ) {
         Page<CitizenshipDTO> citizenships = citizenshipService
-                .getPagedCitizenships(pageable, refNumber, signature, naturalizedPerson, naturalizedPersonId, guarantor, guarantorId, dateNaturalization, primarySource, secondarySource);
+                .getPagedCitizenships(pageable, refNumber, signature, naturalizedPerson, naturalizedPersonId, guarantor, guarantorId, yearNaturalization, yearFrom, yearTo, primarySource, secondarySource);
         return ResponseEntity.ok(citizenships);
     }
 
@@ -58,15 +60,17 @@ public class CitizenshipController {
             @RequestParam(required = false, value="naturalizedperson-id") Long naturalizedPersonId,
             @RequestParam(required = false) String guarantor,
             @RequestParam(required = false, value="guarantor-id") Long guarantorId,
-            @RequestParam(required = false, value="datenaturalization") String dateNaturalization,
+            @RequestParam(required = false, value="yearnaturalization") Integer yearNaturalization,
+            @RequestParam(required = false, value="year-from") Integer yearFrom,
+            @RequestParam(required = false, value="year-to") Integer yearTo,
             @RequestParam(required = false, value="primarysource") String primarySource,
             @RequestParam(required = false, value="secondarysource") String secondarySource
     ) {
-        List<Object> paramsCount = Stream.<Object>of(refNumber, signature, naturalizedPerson, naturalizedPersonId, guarantor, guarantorId, dateNaturalization, primarySource, secondarySource)
+        List<Object> paramsCount = Stream.<Object>of(refNumber, signature, naturalizedPerson, naturalizedPersonId, guarantor, guarantorId, yearNaturalization, yearFrom, yearTo, primarySource, secondarySource)
                 .filter(Objects::nonNull).toList();
         if (paramsCount.isEmpty()) return ResponseEntity.badRequest().build();
         List<CitizenshipPreviewDTO> citizenships = citizenshipService.filterCitizenships(
-                refNumber, signature, naturalizedPerson, naturalizedPersonId, guarantor, guarantorId, dateNaturalization, primarySource, secondarySource
+                refNumber, signature, naturalizedPerson, naturalizedPersonId, guarantor, guarantorId, yearNaturalization, yearFrom, yearTo, primarySource, secondarySource
         );
         return ResponseEntity.ok(citizenships);
     }

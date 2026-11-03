@@ -77,6 +77,7 @@ export interface CitizenshipDTO extends Auditable {
     secondarySource: SourceDTO | null;
     refNumber: string | null;
     dateNaturalization: string | null;
+    yearNaturalization: number | null;
     dateMisc: string | null;
     entryText: string | null;
     addendum: string | null;
@@ -100,7 +101,9 @@ export interface FilterCitizenship {
     'naturalizedperson-id'?: number;
     guarantor?: string;
     'guarantor-id'?: number;
-    datenaturalization?: string;
+    yearnaturalization?: number;
+    'year-from'?: number;
+    'year-to'?: number;
     primarysource?: string;
     secondarysource?: string;
 }

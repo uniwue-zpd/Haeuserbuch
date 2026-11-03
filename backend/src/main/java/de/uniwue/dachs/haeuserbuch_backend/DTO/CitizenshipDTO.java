@@ -21,6 +21,7 @@ public class CitizenshipDTO extends BaseEntity {
     private SourceDTO primarySource;
     private SourceDTO secondarySource;
     private String dateNaturalization;
+    private Integer yearNaturalization;
     private String dateMisc;
     private String entryText;
     private String addendum;
