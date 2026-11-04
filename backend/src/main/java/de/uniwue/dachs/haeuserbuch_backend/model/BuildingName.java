@@ -1,9 +1,12 @@
 package de.uniwue.dachs.haeuserbuch_backend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
+import de.uniwue.dachs.haeuserbuch_backend.embeddable.BuildingNameSource;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -11,10 +14,12 @@ import lombok.Setter;
 public class BuildingName extends BaseEntity {
     private String name;
 
-    @ManyToOne
-    private Source source;
-
     private String fromDate;
 
     private String toDate;
+
+    @ElementCollection
+    @CollectionTable(name = "building_name_source", joinColumns = @JoinColumn(name = "building_name_id"))
+    @OrderColumn(name = "position")
+    private List<BuildingNameSource> sources = new ArrayList<>();
 }
