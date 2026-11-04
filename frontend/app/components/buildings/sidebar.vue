@@ -226,7 +226,7 @@ watch(
             color="neutral"
             variant="link"
             trailing-icon="i-material-symbols-open-in-new-rounded"
-            label="Vollständige Seite"
+            label="Einzelansicht"
             class="ml-auto"
           />
         </div>

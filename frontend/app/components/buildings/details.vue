@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useId } from "vue";
 import type { BuildingFeature } from "~/utils/GeoJsonTypes";
-import type { PersonPreviewDTO } from "~/utils/types";
+import type { BuildingNameDTO, PersonPreviewDTO } from "~/utils/types";
 import { title_shortener } from "~/utils/helpers";
 import FileList from "~/components/files/FileList.vue";
 
@@ -74,6 +74,9 @@ const ui = computed(() => {
   };
 });
 
+/** Formats the period of a building name: "1407–1548", or "1762" if only one date is set. */
+const periodLabel = (name: BuildingNameDTO): string =>
+  [name.fromDate?.trim(), name.toDate?.trim()].filter(Boolean).join("–");
 </script>
 
 <template>
@@ -177,21 +180,46 @@ const ui = computed(() => {
           <ul class="list-inside list-disc">
             <li
               v-for="(name, index) in details.names"
-              :key="`${name.name}-${index}`"
+              :key="name.id ?? `${name.name}-${index}`"
               class="font-semibold"
             >
               {{ name.name }}
-              <NuxtLink
-                v-if="name.source?.id"
-                :to="`/quellen/${name.source.id}`"
-                class="text-primary hover:text-highlighted"
-                title="Quelle öffnen"
+              <span
+                v-if="periodLabel(name)"
+                class="font-normal text-muted"
               >
-                <Icon
-                  name="material-symbols-book-2-outline"
-                  class="text-base opacity-70"
+                ({{ periodLabel(name) }})
+              </span>
+              <UModal
+                v-if="name.sources?.length"
+                :title="name.name ?? ''"
+                :description="periodLabel(name) || 'ohne Datierung'"
+                scrollable
+              >
+                <UButton
+                  icon="i-lucide-info"
+                  color="neutral"
+                  variant="ghost"
+                  size="xs"
+                  class="align-middle"
+                  aria-label="Quellen zum Namen"
                 />
-              </NuxtLink>
+                <template #body>
+                  <div v-for="(entry, i) in name.sources" :key="i" class="mb-4 last:mb-0">
+                    <NuxtLink
+                      v-if="entry.source"
+                      :to="`/quellen/${entry.source.id}`"
+                      class="font-semibold text-blue-600 hover:underline"
+                    >
+                      {{ entry.source.title }}
+                    </NuxtLink>
+                    <p v-else class="font-semibold text-gray-500">Ohne Quellenangabe</p>
+                    <p v-if="entry.excerpt" class="mt-1 text-sm whitespace-pre-line">
+                      {{ entry.excerpt }}
+                    </p>
+                  </div>
+                </template>
+              </UModal>
             </li>
           </ul>
         </div>
