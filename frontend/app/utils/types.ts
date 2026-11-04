@@ -19,20 +19,28 @@ export interface BuildingDTO {
     districtPropertyNumber: string | null;
 }
 
+/** A source attached to a building name, with the relevant excerpt (page reference included in the text). */
+export interface BuildingNameSource {
+    source: SourceDTO | null;
+    excerpt: string | null;
+}
+
 /** Represents an object containing data of available names of a building. */
 export interface BuildingName extends Auditable {
     name: string | null;
-    source: Source | null;
-    dateFrom: string | null;
-    dateTo: string | null;
+    fromDate: string | null;
+    toDate: string | null;
+    sources: BuildingNameSource[];
 }
 
 /** Represents an object with data about a name of the {@link BuildingProperties} */
 export interface BuildingNameDTO {
+    /** `null` = new name; set = the existing name is updated in place */
+    id: number | null;
     name: string | null;
-    source: SourceDTO | null;
-    dateFrom: string | null;
-    dateTo: string | null;
+    fromDate: string | null;
+    toDate: string | null;
+    sources: BuildingNameSource[];
 }
 
 /** Represents an address of a building */

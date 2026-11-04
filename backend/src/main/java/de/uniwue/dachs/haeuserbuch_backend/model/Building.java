@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.locationtech.jts.geom.Geometry;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -25,7 +27,8 @@ public class Building extends BaseEntity {
             orphanRemoval = true
     )
     @JoinColumn(name = "building_id")
-    private Set<BuildingName> names = new HashSet<>();
+    @OrderBy("id")
+    private List<BuildingName> names = new ArrayList<>();
 
     @OneToMany(
             cascade = CascadeType.ALL,

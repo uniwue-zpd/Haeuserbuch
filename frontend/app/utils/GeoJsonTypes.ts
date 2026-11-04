@@ -71,7 +71,7 @@ export interface BuildingProperties {
     year: number | null;
     parcelNumber: number | null;
     parcelNumberCounter: number | null;
-    names: BuildingNameDTO[] | [];
+    names: BuildingNameDTO[];
     addresses: AddressDTO[] | [];
     partType: string | null;
     object: string | null;

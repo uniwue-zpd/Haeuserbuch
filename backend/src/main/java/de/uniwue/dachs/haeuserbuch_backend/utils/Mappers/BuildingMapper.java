@@ -79,7 +79,7 @@ public class BuildingMapper {
                 building.setYear(properties.getYear());
                 building.setParcelNumber(properties.getParcelNumber());
                 building.setParcelNumberCounter(properties.getParcelNumberCounter());
-                building.setNames(buildingNameMapper.BuildingNameDTOsToBuildingNames(properties.getNames()));
+                buildingNameMapper.applyTo(building.getNames(), properties.getNames());
                 building.setPartType(properties.getPartType());
                 building.setObject(properties.getObject());
                 building.setAddresses(addressMapper.AddressDTOsToAddresses(properties.getAddresses()));

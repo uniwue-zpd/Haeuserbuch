@@ -14,6 +14,7 @@ import "@watergis/maplibre-gl-terradraw/dist/maplibre-gl-terradraw.css";
 import type { Position } from "geojson";
 import type { GeoJSONStoreGeometries } from "terra-draw";
 import type { Feature } from "~/utils/GeoJsonTypes";
+import type { BuildingNameDTO, BuildingNameSource } from "~/utils/types";
 import { useToast as useNuxtToast } from "@nuxt/ui/composables";
 import { formatFileSize } from "~/utils/helpers";
 import { MAX_UPLOAD_FILE_SIZE, UPLOAD_ACCEPT } from "~/utils/constant_values";
@@ -73,6 +74,19 @@ const center = computed<[number, number]>(() => {
     default:
       return DEFAULT_MAP_CENTER;
   }
+});
+
+/* Empty entries for the dynamic name/source lists of the form */
+const newBuildingName = (): BuildingNameDTO => ({
+  id: null,
+  name: "",
+  fromDate: null,
+  toDate: null,
+  sources: [],
+});
+const newBuildingNameSource = (): BuildingNameSource => ({
+  source: null,
+  excerpt: "",
 });
 
 /* FormKit-friendly initial value */
@@ -299,20 +313,13 @@ onBeforeUnmount(() => {
                 type="group"
                 v-for="(item, index) in items"
                 :key="item"
-                :index="index"
+                :index="Number(index)"
               >
                 <div
-                  class="flex flex-col gap-1 bg-gray-200 rounded-md p-4 border border-gray-300"
+                  class="flex flex-col gap-2 bg-gray-200 rounded-md p-4 border border-gray-300"
                 >
-                  <div class="grid grid-cols-2 gap-2">
-                    <FormKit
-                      type="entityAutocomplete"
-                      entityType="source"
-                      optionLabel="title"
-                      name="source"
-                      label="Quelle"
-                      outer-class="max-w-full"
-                    />
+                  <FormKit type="hidden" name="id" />
+                  <div class="grid grid-cols-3 gap-2">
                     <FormKit
                       type="text"
                       name="name"
@@ -335,14 +342,79 @@ onBeforeUnmount(() => {
                       outer-class="max-w-full"
                     />
                   </div>
+                  <FormKit
+                    type="list"
+                    :value="[]"
+                    name="sources"
+                    dynamic
+                    #default="{
+                      items: sourceItems,
+                      node: sourceNode,
+                      value: sourceValue,
+                    }"
+                  >
+                    <p class="text-sm font-semibold">Quellen</p>
+                    <FormKit
+                      type="group"
+                      v-for="(sourceItem, sourceIndex) in sourceItems"
+                      :key="sourceItem"
+                      :index="Number(sourceIndex)"
+                    >
+                      <div
+                        class="flex flex-col gap-1 bg-gray-100 rounded-md p-3 border border-gray-300"
+                      >
+                        <FormKit
+                          type="entityAutocomplete"
+                          entityType="source"
+                          optionLabel="title"
+                          name="source"
+                          label="Quelle"
+                          outer-class="max-w-full"
+                        />
+                        <FormKit
+                          type="textarea"
+                          name="excerpt"
+                          label="Auszug"
+                          placeholder="Heffner 75: Nr.160 war vormals das Gasthaus zum Einhorn, später zum goldenen Löwen."
+                          outer-class="max-w-full"
+                        />
+                        <button
+                          type="button"
+                          @click="
+                            () =>
+                              sourceNode.input(
+                                sourceValue?.filter(
+                                  (_: unknown, i: number) => i !== sourceIndex,
+                                ),
+                              )
+                          "
+                          class="text-sm border border-red-600 text-red-600 p-1 rounded-md shadow-sm hover:shadow-md bg-blue-50 font-medium max-w-1/5 mx-auto"
+                        >
+                          Quelle entfernen
+                        </button>
+                      </div>
+                    </FormKit>
+                    <button
+                      type="button"
+                      @click="
+                        () =>
+                          sourceNode.input(
+                            (sourceValue ?? []).concat(newBuildingNameSource()),
+                          )
+                      "
+                      class="text-sm border border-blue-600 text-blue-600 p-1 rounded-md bg-blue-50 font-medium max-w-1/5 mx-auto"
+                    >
+                      Quelle hinzufügen
+                    </button>
+                  </FormKit>
                   <button
                     type="button"
                     @click="
-                      () => node.input(value?.filter((_, i) => i !== index))
+                      () => node.input(value?.filter((_: unknown, i: number) => i !== index))
                     "
                     class="text-sm border border-red-600 text-red-600 p-1 rounded-md shadow-sm hover:shadow-md bg-blue-50 font-medium max-w-1/7 mx-auto"
                   >
-                    Entfernen
+                    Namen entfernen
                   </button>
                 </div>
               </FormKit>
@@ -351,12 +423,7 @@ onBeforeUnmount(() => {
                 @click="
                   () =>
                     node.input(
-                      value?.concat({
-                        source: {},
-                        name: '',
-                        fromDate: '',
-                        toDate: '',
-                      }),
+                      (value ?? []).concat(newBuildingName()),
                     )
                 "
                 class="text-sm border border-blue-600 text-blue-600 p-1 rounded-md bg-blue-50 font-medium max-w-1/6 mx-auto"

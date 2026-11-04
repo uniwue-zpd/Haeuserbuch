@@ -13,7 +13,7 @@ public class BuildingProperties extends Properties {
     private Long year;
     private Long parcelNumber;
     private Long parcelNumberCounter;
-    private Set<BuildingNameDTO> names = new HashSet<>();
+    private List<BuildingNameDTO> names = new ArrayList<>();
     private Set<AddressDTO> addresses = new HashSet<>();
     private String partType;
     private String object;

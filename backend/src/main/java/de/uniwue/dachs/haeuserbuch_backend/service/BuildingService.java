@@ -4,7 +4,6 @@ import de.uniwue.dachs.haeuserbuch_backend.DTO.BuildingDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.*;
 import de.uniwue.dachs.haeuserbuch_backend.model.Address;
 import de.uniwue.dachs.haeuserbuch_backend.model.Building;
-import de.uniwue.dachs.haeuserbuch_backend.model.BuildingName;
 import de.uniwue.dachs.haeuserbuch_backend.repository.BuildingRepository;
 import de.uniwue.dachs.haeuserbuch_backend.search.SearchIndexAffecting;
 import de.uniwue.dachs.haeuserbuch_backend.specification.BuildingSpecifications;
@@ -30,9 +29,10 @@ public class BuildingService {
     private final QuarterMapper quarterMapper;
     private final BuildingNameMapper buildingNameMapper;
     private final AddressMapper addressMapper;
+    private final FileMapper fileMapper;
 
     public BuildingService(BuildingRepository buildingRepository,
-                           BuildingMapper buildingMapper, SourceMapper sourceMapper, DistrictMapper districtMapper, QuarterMapper quarterMapper, BuildingNameMapper buildingNameMapper, AddressMapper addressMapper) {
+                           BuildingMapper buildingMapper, SourceMapper sourceMapper, DistrictMapper districtMapper, QuarterMapper quarterMapper, BuildingNameMapper buildingNameMapper, AddressMapper addressMapper, FileMapper fileMapper) {
         this.buildingRepository = buildingRepository;
         this.buildingMapper = buildingMapper;
         this.sourceMapper = sourceMapper;
@@ -40,6 +40,7 @@ public class BuildingService {
         this.quarterMapper = quarterMapper;
         this.buildingNameMapper = buildingNameMapper;
         this.addressMapper = addressMapper;
+        this.fileMapper = fileMapper;
     }
 
     /**
@@ -141,15 +142,12 @@ public class BuildingService {
     @SearchIndexAffecting
     public Feature updateBuilding(Long id, Feature updatedFeature) {
         return buildingRepository.findById(id).map(entity -> {
-            Building mappedBuilding = buildingMapper.FeatureToBuilding(updatedFeature);
             BuildingProperties properties = (BuildingProperties) updatedFeature.getProperties();
             if (properties != null) {
                 entity.setYear(properties.getYear());
                 entity.setParcelNumber(properties.getParcelNumber());
                 entity.setParcelNumberCounter(properties.getParcelNumberCounter());
-                Set<BuildingName> newNames = buildingNameMapper.BuildingNameDTOsToBuildingNames(properties.getNames());
-                entity.getNames().clear();
-                entity.getNames().addAll(newNames);
+                buildingNameMapper.applyTo(entity.getNames(), properties.getNames());
                 Set<Address> newAddresses = addressMapper.AddressDTOsToAddresses(properties.getAddresses());
                 entity.getAddresses().clear();
                 entity.getAddresses().addAll(newAddresses);
@@ -165,11 +163,13 @@ public class BuildingService {
                 entity.setLiterature(properties.getLiterature() != null
                         ? sourceMapper.SourceDTOsToSources(properties.getLiterature())
                         : new HashSet<>());
-                entity.setFiles(mappedBuilding.getFiles());
+                entity.setFiles(properties.getFiles() != null
+                        ? fileMapper.toFiles(properties.getFiles())
+                        : new HashSet<>());
                 entity.setInternalNotes(properties.getInternalNotes());
                 entity.setGeneralNotes(properties.getGeneralNotes());
             }
-            entity.setCoordinates(mappedBuilding.getCoordinates());
+            entity.setCoordinates(buildingMapper.DTOToGeometry(updatedFeature.getGeometry()));
             Building updatedEntity = buildingRepository.save(entity);
             return buildingMapper.BuildingToFeature(updatedEntity);
         }).orElseThrow(() -> new NoSuchElementException("Building with ID " + id + " does not exist"));
