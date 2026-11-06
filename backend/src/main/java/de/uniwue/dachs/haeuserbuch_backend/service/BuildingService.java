@@ -4,6 +4,7 @@ import de.uniwue.dachs.haeuserbuch_backend.DTO.BuildingDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.*;
 import de.uniwue.dachs.haeuserbuch_backend.model.Address;
 import de.uniwue.dachs.haeuserbuch_backend.model.Building;
+import de.uniwue.dachs.haeuserbuch_backend.model.BuildingName;
 import de.uniwue.dachs.haeuserbuch_backend.repository.BuildingRepository;
 import de.uniwue.dachs.haeuserbuch_backend.search.SearchIndexAffecting;
 import de.uniwue.dachs.haeuserbuch_backend.specification.BuildingSpecifications;
@@ -44,18 +45,6 @@ public class BuildingService {
     }
 
     /**
-     * GET all buildings
-     * @return {@link FeatureCollection} containing all buildings as features or an empty {@link List} if no buildings are found
-     */
-    @Cacheable("buildings")
-    public FeatureCollection getAllBuildings() {
-        FeatureCollection featureCollection = new FeatureCollection();
-        List<Building> buildings = buildingRepository.findAll();
-        featureCollection.setFeatures(buildingMapper.BuildingsToFeatures(buildings));
-        return featureCollection;
-    }
-
-    /**
      * GET building by ID
      * @param id of the building
      * @return {@link Optional} of {@link Feature} representing the building or an empty {@link Optional} if no building with the given ID is found
@@ -66,55 +55,104 @@ public class BuildingService {
     }
 
     /**
-     * GET search buildings by district, quarter, or source
+     * GET buildings as GeoJSON, either all (cached) or filtered.
+     * @param q free-text search term
      * @param districtId ID of the district
-     * @param districtName Name of the district
      * @param quarterId ID of the quarter
-     * @param quarterName Name of the quarter
-     * @param sourceId ID of the source
-     * @param sourceName Name of the source
-     * @param streetId ID of the street
-     * @param streetName Name of the street
-     * @return {@link List} of {@link BuildingDTO} matching the search criteria or an empty {@link List} if no buildings match the criteria
+     * @param streetId ID of a street in the building's addresses
+     * @param sourceId ID of a source or literature entry
+     * @param georeferenced {@code true} only buildings with coordinates, {@code false} only without
+     * @return {@link FeatureCollection} of the matching buildings (unfiltered result is cached)
      */
-    public List<BuildingDTO> searchBuildings(
-            Long districtId,
-            String districtName,
-            Long quarterId,
-            String quarterName,
-            Long sourceId,
-            String sourceName,
-            Long streetId,
-            String streetName
+    @Cacheable(
+            value = "buildings",
+            key = "'all'",
+            condition = "(#q == null || #q.isBlank()) && #districtId == null && #quarterId == null"
+                    + " && #streetId == null && #sourceId == null && #georeferenced == null"
+    )
+    public FeatureCollection getBuildings(
+            String q, Long districtId, Long quarterId, Long streetId, Long sourceId, Boolean georeferenced
     ) {
+        FeatureCollection featureCollection = new FeatureCollection();
+        featureCollection.setFeatures(buildingMapper.BuildingsToFeatures(
+                findBuildings(q, districtId, quarterId, streetId, sourceId, georeferenced)
+        ));
+        return featureCollection;
+    }
+
+    /**
+     * GET buildings as lightweight previews, either all or filtered.
+     * @see #getBuildings(String, Long, Long, Long, Long, Boolean)
+     * @return {@link List} of {@link BuildingDTO} matching the criteria or an empty {@link List}
+     */
+    public List<BuildingDTO> getBuildingPreviews(
+            String q, Long districtId, Long quarterId, Long streetId, Long sourceId, Boolean georeferenced
+    ) {
+        return buildingMapper.buildingsToDTOs(
+                findBuildings(q, districtId, quarterId, streetId, sourceId, georeferenced)
+        );
+    }
+
+    private List<Building> findBuildings(
+            String q, Long districtId, Long quarterId, Long streetId, Long sourceId, Boolean georeferenced
+    ) {
+        boolean unfiltered = (q == null || q.isBlank()) && districtId == null && quarterId == null
+                && streetId == null && sourceId == null && georeferenced == null;
         Specification<Building> spec = Specification.where(null);
 
+        if (q != null && !q.isBlank()) {
+            spec = spec.and(BuildingSpecifications.matchesText(q));
+        }
         if (districtId != null) {
             spec = spec.and(BuildingSpecifications.hasDistrictId(districtId));
-        }
-        if (districtName != null && !districtName.isEmpty()) {
-            spec = spec.and(BuildingSpecifications.hasDistrict(districtName));
         }
         if (quarterId != null) {
             spec = spec.and(BuildingSpecifications.hasQuarterId(quarterId));
         }
-        if (quarterName != null && !quarterName.isEmpty()) {
-            spec = spec.and(BuildingSpecifications.hasQuarter(quarterName));
+        if (streetId != null) {
+            spec = spec.and(BuildingSpecifications.hasStreetId(streetId));
         }
         if (sourceId != null) {
             spec = spec.and(BuildingSpecifications.hasSourceId(sourceId));
         }
-        if (sourceName != null && !sourceName.isEmpty()) {
-            spec = spec.and(BuildingSpecifications.hasSourceName(sourceName));
+        if (georeferenced != null) {
+            spec = spec.and(BuildingSpecifications.isGeoreferenced(georeferenced));
         }
-        if (streetId != null) {
-            spec = spec.and(BuildingSpecifications.hasStreetId(streetId));
+        List<Building> buildings = new ArrayList<>(buildingRepository.findAll(spec));
+        // Unfiltered: by ID. Filtered: by number/designation for readable result lists.
+        buildings.sort(unfiltered ? Comparator.comparing(Building::getId) : BUILDING_ORDER);
+        return buildings;
+    }
+
+    /** Buildings with a district property number first, then by designation (numbers compared numerically), then by ID. */
+    private static final Comparator<Building> BUILDING_ORDER = Comparator
+            .comparing((Building b) -> b.getDistrictPropertyNumber() == null || b.getDistrictPropertyNumber().isBlank())
+            .thenComparing(BuildingService::designation, BuildingService::compareNatural)
+            .thenComparing(Building::getId);
+
+    private static String designation(Building building) {
+        if (building.getDistrictPropertyNumber() != null && !building.getDistrictPropertyNumber().isBlank()) {
+            return building.getDistrictPropertyNumber();
         }
-        if (streetName != null && !streetName.isEmpty()) {
-            spec = spec.and(BuildingSpecifications.hasAddressStreetName(streetName));
+        return building.getNames().stream()
+                .map(BuildingName::getName)
+                .filter(name -> name != null && !name.isBlank())
+                .findFirst()
+                .orElse(building.getObject() != null ? building.getObject() : "Gebäude " + building.getId());
+    }
+
+    /** Compares strings case-insensitively, treating runs of digits as numbers ("I 2" before "I 10"). */
+    private static int compareNatural(String a, String b) {
+        String[] partsA = a.toLowerCase().split("(?<=\\d)(?=\\D)|(?<=\\D)(?=\\d)");
+        String[] partsB = b.toLowerCase().split("(?<=\\d)(?=\\D)|(?<=\\D)(?=\\d)");
+        for (int i = 0; i < Math.min(partsA.length, partsB.length); i++) {
+            String pa = partsA[i], pb = partsB[i];
+            int result = pa.matches("\\d+") && pb.matches("\\d+")
+                    ? new java.math.BigInteger(pa).compareTo(new java.math.BigInteger(pb))
+                    : pa.compareTo(pb);
+            if (result != 0) return result;
         }
-        List<Building> response = buildingRepository.findAll(spec);
-        return buildingMapper.buildingsToDTOs(response);
+        return Integer.compare(partsA.length, partsB.length);
     }
 
     /**

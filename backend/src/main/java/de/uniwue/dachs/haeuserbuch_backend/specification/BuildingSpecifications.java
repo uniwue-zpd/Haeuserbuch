@@ -14,28 +14,13 @@ public class BuildingSpecifications {
                 cb.equal(root.get("district").get("id"), districtId);
     }
 
-    public static Specification<Building> hasDistrict(String districtName) {
-        return (root, query, cb) ->
-                cb.like(
-                        cb.lower(root.get("district").get("name")), "%" + districtName.toLowerCase() + "%"
-                );
-    }
-
     public static Specification<Building> hasQuarterId(Long quarterId) {
         return (root, query, cb) ->
                 cb.equal(root.get("quarter").get("id"), quarterId);
     }
 
-    public static Specification<Building> hasQuarter(String quarterName) {
-        return (root, query, cb) ->
-                cb.like(
-                        cb.lower(root.get("quarter").get("name")), "%" + quarterName.toLowerCase() + "%"
-                );
-    }
-
     public static Specification<Building> hasStreetId(Long streetId) {
         return (root, query, cb) -> {
-            if (streetId == null) return null;
             assert query != null;
             query.distinct(true);
             Join<Object, Object> addressJoin = root.joinSet("addresses", JoinType.LEFT);
@@ -43,34 +28,49 @@ public class BuildingSpecifications {
         };
     }
 
-    public static Specification<Building> hasAddressStreetName(String streetName) {
-        return (root, query, cb) -> {
-            if (streetName == null || streetName.isBlank()) return null;
-            assert query != null;
-            query.distinct(true);
-            Join<Object, Object> addressJoin = root.joinSet("addresses", JoinType.LEFT);
-            return cb.like(cb.lower(addressJoin.get("street").get("name")), "%" + streetName.toLowerCase() + "%");
-        };
-    }
-
     public static Specification<Building> hasSourceId(Long sourceId) {
         return (root, query, cb) -> {
-            Join<Object, Object> primarySourcesJoin = root.joinSet("primarySources", JoinType.LEFT);
-            Join<Object, Object> secondarySourcesJoin = root.joinSet("secondarySources", JoinType.LEFT);
+            assert query != null;
+            query.distinct(true);
+            Join<Object, Object> sourcesJoin = root.joinSet("sources", JoinType.LEFT);
+            Join<Object, Object> literatureJoin = root.joinSet("literature", JoinType.LEFT);
             return cb.or(
-                    cb.equal(primarySourcesJoin.get("id"), sourceId),
-                    cb.equal(secondarySourcesJoin.get("id"), sourceId)
+                    cb.equal(sourcesJoin.get("id"), sourceId),
+                    cb.equal(literatureJoin.get("id"), sourceId)
             );
         };
     }
 
-    public static Specification<Building> hasSourceName(String sourceName) {
+    public static Specification<Building> isGeoreferenced(boolean georeferenced) {
+        return (root, query, cb) -> georeferenced
+                ? cb.isNotNull(root.get("coordinates"))
+                : cb.isNull(root.get("coordinates"));
+    }
+
+    /**
+     * Case-insensitive substring search over numbers, names, object, part type, district, quarter and addresses.
+     */
+    public static Specification<Building> matchesText(String text) {
         return (root, query, cb) -> {
-            Join<Object, Object> primarySourcesJoin = root.joinSet("primarySources", JoinType.LEFT);
-            Join<Object, Object> secondarySourcesJoin = root.joinSet("secondarySources", JoinType.LEFT);
+            assert query != null;
+            query.distinct(true);
+            String pattern = "%" + text.trim().toLowerCase() + "%";
+            Join<Object, Object> districtJoin = root.join("district", JoinType.LEFT);
+            Join<Object, Object> quarterJoin = root.join("quarter", JoinType.LEFT);
+            Join<Object, Object> namesJoin = root.joinList("names", JoinType.LEFT);
+            Join<Object, Object> addressJoin = root.joinSet("addresses", JoinType.LEFT);
+            Join<Object, Object> streetJoin = addressJoin.join("street", JoinType.LEFT);
             return cb.or(
-                    cb.like(cb.lower(primarySourcesJoin.get("name")), "%" + sourceName.toLowerCase() + "%"),
-                    cb.like(cb.lower(secondarySourcesJoin.get("name")), "%" + sourceName.toLowerCase() + "%")
+                    cb.like(cb.lower(root.get("districtPropertyNumber")), pattern),
+                    cb.like(cb.lower(root.get("propertyNumber")), pattern),
+                    cb.like(cb.lower(root.get("object")), pattern),
+                    cb.like(cb.lower(root.get("partType")), pattern),
+                    cb.like(cb.lower(namesJoin.get("name")), pattern),
+                    cb.like(cb.lower(districtJoin.get("name")), pattern),
+                    cb.like(cb.lower(quarterJoin.get("name")), pattern),
+                    cb.like(cb.lower(streetJoin.get("name")), pattern),
+                    cb.like(cb.lower(addressJoin.get("houseNumber")), pattern),
+                    cb.like(cb.lower(cb.concat(cb.concat(streetJoin.get("name"), " "), addressJoin.get("houseNumber"))), pattern)
             );
         };
     }

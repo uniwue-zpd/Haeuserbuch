@@ -1,6 +1,7 @@
 package de.uniwue.dachs.haeuserbuch_backend.repository;
 
 import de.uniwue.dachs.haeuserbuch_backend.model.Building;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -18,6 +19,11 @@ public interface BuildingRepository extends JpaRepository<Building, Long>, JpaSp
     @NonNull
     @EntityGraph(attributePaths = {"sources", "files"})
     List<Building> findAll();
+
+    @Override
+    @NonNull
+    @EntityGraph(attributePaths = {"sources", "files"})
+    List<Building> findAll(Specification<Building> spec);
 
     @Override
     @EntityGraph(attributePaths = {"sources", "files"})
