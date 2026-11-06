@@ -26,7 +26,7 @@ const props = defineProps<{
 }>();
 
 const toast = useNuxtToast();
-const buildingStore = useBuildingStore();
+const buildingApi = useBuildings();
 const fileApi = useFiles();
 
 const uploadInputRef = ref<HTMLInputElement | null>(null);
@@ -106,7 +106,7 @@ const initialValue = computed(() => {
 const submit = async (formData: Partial<Feature>) => {
   if (props.action === "create") {
     try {
-      await buildingStore.createBuilding(formData);
+      await buildingApi.createBuilding(formData);
       const form = getNode(`${props.action}_building`);
       form?.reset();
       toast.add({
@@ -127,7 +127,7 @@ const submit = async (formData: Partial<Feature>) => {
   } else if (props.action === "edit" && props.building?.id) {
     try {
       const id = props.building.id;
-      await buildingStore.updateBuilding(id, formData);
+      await buildingApi.updateBuilding(id, formData);
       toast.add({
         color: "success",
         title: "Erfolg",

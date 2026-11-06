@@ -12,11 +12,9 @@ const props = withDefaults(
     search: string;
     district: string;
     quarter: string;
-    objectType: string;
     georeferenced: string;
-    districtOptions: string[];
-    quarterOptions: string[];
-    objectTypeOptions: string[];
+    districtOptions: { label: string; value: string }[];
+    quarterOptions: { label: string; value: string }[];
     associatedPeople?: PersonPreviewDTO[] | null;
     associatedPeoplePending?: boolean;
     associatedPeopleError?: boolean;
@@ -38,7 +36,6 @@ const emit = defineEmits<{
   "update:search": [value: string];
   "update:district": [value: string];
   "update:quarter": [value: string];
-  "update:objectType": [value: string];
   "update:georeferenced": [value: string];
   select: [id: number];
   deselect: [];
@@ -65,11 +62,6 @@ const quarterModel = computed({
   get: () => props.quarter || allOptionValue,
   set: (value) => emit("update:quarter", value === allOptionValue ? "" : value),
 });
-const objectTypeModel = computed({
-  get: () => props.objectType || allOptionValue,
-  set: (value) =>
-    emit("update:objectType", value === allOptionValue ? "" : value),
-});
 const georeferencedModel = computed({
   get: () => props.georeferenced || allOptionValue,
   set: (value) =>
@@ -77,20 +69,16 @@ const georeferencedModel = computed({
 });
 const districtSelectItems = computed(() => [
   { label: "Alle Distrikte", value: allOptionValue },
-  ...props.districtOptions.map((value) => ({ label: value, value })),
+  ...props.districtOptions,
 ]);
 const quarterSelectItems = computed(() => [
   { label: "Alle Viertel", value: allOptionValue },
-  ...props.quarterOptions.map((value) => ({ label: value, value })),
-]);
-const objectTypeSelectItems = computed(() => [
-  { label: "Alle Objekttypen", value: allOptionValue },
-  ...props.objectTypeOptions.map((value) => ({ label: value, value })),
+  ...props.quarterOptions,
 ]);
 const georeferencedSelectItems = [
   { label: "Alle Gebäude", value: allOptionValue },
-  { label: "Kartiert", value: "yes" },
-  { label: "Ohne Geodaten", value: "no" },
+  { label: "Kartiert", value: "true" },
+  { label: "Ohne Geodaten", value: "false" },
 ];
 
 const buildingVirtualizerOptions = computed(() => ({
@@ -106,7 +94,6 @@ const activeFilters = computed(() =>
     props.search ||
       props.district ||
       props.quarter ||
-      props.objectType ||
       props.georeferenced,
   ),
 );
@@ -283,10 +270,39 @@ watch(
           icon="i-material-symbols-search-rounded"
           size="lg"
           variant="outline"
-          placeholder="Nummer, Name, Adresse …"
+          placeholder="Nummer, Name, Straße, Objekt …"
           aria-label="Gebäude durchsuchen"
           class="mt-4 w-full"
-        />
+          :ui="{ trailing: 'pe-1' }"
+        >
+          <template #trailing>
+            <UPopover :content="{ align: 'end' }">
+              <UButton
+                color="neutral"
+                variant="ghost"
+                size="sm"
+                icon="i-lucide-info"
+                aria-label="Suchhilfe"
+                title="Suchhilfe"
+              />
+              <template #content>
+                <div class="max-w-72 p-3 text-sm">
+                  <p class="font-semibold text-highlighted">Durchsucht werden:</p>
+                  <ul class="mt-1.5 list-disc space-y-0.5 pl-5 text-default">
+                    <li>Distrikts- und Hausnummer (z. B. „I/123“)</li>
+                    <li>Gebäudenamen</li>
+                    <li>Straße, Hausnummer oder vollständige Adresse (z. B. „Bibrastraße 6“)</li>
+                    <li>Objekt und Gebäudeteil</li>
+                    <li>Distrikt und Viertel</li>
+                  </ul>
+                  <p class="mt-2 text-xs text-muted">
+                    Suche ab 2 Zeichen. Groß- und Kleinschreibung spielt keine Rolle, Teilwörter genügen.
+                  </p>
+                </div>
+              </template>
+            </UPopover>
+          </template>
+        </UInput>
 
         <div class="mt-3 grid grid-cols-3 gap-2">
           <UFormField
@@ -307,17 +323,6 @@ watch(
             <USelect
               v-model="quarterModel"
               :items="quarterSelectItems"
-              size="sm"
-              class="w-full"
-            />
-          </UFormField>
-          <UFormField
-            label="Objekttyp"
-            :ui="{ label: 'text-xs font-semibold text-muted' }"
-          >
-            <USelect
-              v-model="objectTypeModel"
-              :items="objectTypeSelectItems"
               size="sm"
               class="w-full"
             />
@@ -347,10 +352,18 @@ watch(
       </div>
 
       <div
+        v-if="!activeFilters"
         class="border-b border-muted bg-default px-4 py-2.5 text-sm font-semibold text-muted"
         aria-live="polite"
       >
         Gebäude ({{ buildings.length }})
+      </div>
+      <div
+        v-else
+        class="border-b border-muted bg-default px-4 py-2.5 text-sm font-semibold text-muted"
+        aria-live="polite"
+      >
+        Treffer ({{ buildings.length }})
       </div>
 
       <div

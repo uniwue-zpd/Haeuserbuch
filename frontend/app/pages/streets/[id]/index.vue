@@ -4,7 +4,7 @@ import StreetSkeleton from "~/components/UI/skeletons/StreetSkeleton.vue";
 
 const route = useRoute();
 const street_store = useStreetStore();
-const building_store = useBuildingStore();
+const buildingApi = useBuildings();
 const streetId = Number(route.params.id);
 
 const { data: streetItem, pending: streetPending } = useAsyncData(
@@ -15,7 +15,7 @@ const { data: streetItem, pending: streetPending } = useAsyncData(
 const { data: relatedBuildings, pending: relatedBuildingsPending } =
   useAsyncData(
     `street-${streetId}-related-buildings`,
-    () => building_store.filterBuildings({ streetId: streetId }),
+    () => buildingApi.filterBuildings({ "street-id": streetId }),
     { default: () => [] },
   );
 

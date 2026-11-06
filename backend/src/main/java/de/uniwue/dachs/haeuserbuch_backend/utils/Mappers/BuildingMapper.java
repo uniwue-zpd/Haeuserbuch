@@ -8,7 +8,6 @@ import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.stereotype.Component;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -66,7 +65,6 @@ public class BuildingMapper {
 
     public List<Feature> BuildingsToFeatures(List<Building> buildings) {
         return buildings.stream()
-                .sorted(Comparator.comparing(Building::getId))
                 .map(this::BuildingToFeature)
                 .filter(Objects::nonNull)
                 .toList();
@@ -119,7 +117,6 @@ public class BuildingMapper {
     public List<BuildingDTO> buildingsToDTOs(List<Building> buildings) {
         return buildings.stream()
                 .map(this::buildingToDTO)
-                .sorted(Comparator.comparing(BuildingDTO::getId))
                 .toList();
     }
 

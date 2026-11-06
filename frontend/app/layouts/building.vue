@@ -8,12 +8,13 @@ import {
 } from "~/utils/GeoJsonTypes";
 
 const route = useRoute();
-const buildingStore = useBuildingStore();
+const buildingApi = useBuildings();
 
 const { data: buildings } = await useAsyncData(
-  "building-route-map-features",
-  () => buildingStore.getBuildings(),
+  "buildings",
+  () => buildingApi.getBuildings(),
   {
+    getCachedData: (key, nuxtApp) => nuxtApp.payload.data[key],
     default: (): FeatureCollection => ({
       type: "FeatureCollection",
       features: [],
@@ -110,7 +111,18 @@ function handleMapSelect(id: number) {
       </header>
 
       <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(22rem,1fr)] lg:items-start">
-        <section class="flex h-96 min-w-0 flex-col overflow-hidden rounded-md border-0 bg-default shadow-md lg:col-span-full lg:h-124">
+        <UAlert
+          v-if="selectedBuilding && !selectedBuilding.geometry"
+          color="warning"
+          variant="subtle"
+          icon="i-material-symbols-location-off-outline"
+          description="Für dieses Gebäude sind bisher keine Geodaten hinterlegt."
+          class="lg:col-span-full"
+        />
+        <section
+          v-else
+          class="flex h-96 min-w-0 flex-col overflow-hidden rounded-md border-0 bg-default shadow-md lg:col-span-full lg:h-124"
+        >
           <ClientOnly>
             <BuildingsMap
               :features="buildingFeatures"

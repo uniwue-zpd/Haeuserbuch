@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 
 @RestController
@@ -22,32 +20,37 @@ public class BuildingController {
         this.buildingService = buildingService;
     }
 
+    /**
+     * GET buildings as GeoJSON ({@code view=geojson} or no view), all or filtered.
+     */
     @GetMapping
-    public ResponseEntity<FeatureCollection> getBuildings() {
-        return ResponseEntity.ok(buildingService.getAllBuildings());
+    public ResponseEntity<FeatureCollection> getBuildings(
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false, value = "district-id") Long districtId,
+            @RequestParam(required = false, value = "quarter-id") Long quarterId,
+            @RequestParam(required = false, value = "street-id") Long streetId,
+            @RequestParam(required = false, value = "source-id") Long sourceId,
+            @RequestParam(required = false) Boolean georeferenced
+    ) {
+        return ResponseEntity.ok(
+                buildingService.getBuildings(q, districtId, quarterId, streetId, sourceId, georeferenced)
+        );
     }
 
-    @GetMapping("/filter")
-    public ResponseEntity<List<BuildingDTO>> searchBuildings(
-            @RequestParam(required = false) Long districtId,
-            @RequestParam(required = false) String districtName,
-            @RequestParam(required = false) Long quarterId,
-            @RequestParam(required = false) String quarterName,
-            @RequestParam(required = false) Long sourceId,
-            @RequestParam(required = false) String sourceName,
-            @RequestParam(required = false) Long streetId,
-            @RequestParam(required = false) String streetName
+    /**
+     * GET buildings as lightweight previews ({@code view=preview}), all or filtered.
+     */
+    @GetMapping(params = "view=preview")
+    public ResponseEntity<List<BuildingDTO>> getBuildingPreviews(
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false, value = "district-id") Long districtId,
+            @RequestParam(required = false, value = "quarter-id") Long quarterId,
+            @RequestParam(required = false, value = "street-id") Long streetId,
+            @RequestParam(required = false, value = "source-id") Long sourceId,
+            @RequestParam(required = false) Boolean georeferenced
     ) {
-        List<Object> paramsCount = Stream.<Object>of(
-                districtId, districtName, quarterId, quarterName, sourceId, sourceName, streetId, streetName
-                )
-                .filter(Objects::nonNull).toList();
-        if (paramsCount.isEmpty()) return ResponseEntity.badRequest().build();
-
         return ResponseEntity.ok(
-                buildingService.searchBuildings(
-                        districtId, districtName, quarterId, quarterName, sourceId, sourceName, streetId, streetName
-                )
+                buildingService.getBuildingPreviews(q, districtId, quarterId, streetId, sourceId, georeferenced)
         );
     }
 
