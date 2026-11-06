@@ -12,8 +12,8 @@ useHead(() => ({
 
 const route = useRoute();
 const building_id = Number(route.params.id);
-const buildingStore = useBuildingStore();
-const { data: buildingItem, error: hasError } = await useAsyncData(() => buildingStore.getBuilding(building_id));
+const buildingApi = useBuildings();
+const { data: buildingItem, error: hasError } = await useAsyncData(() => buildingApi.getBuilding(building_id));
 </script>
 
 <template>

@@ -8,12 +8,13 @@ import {
 } from "~/utils/GeoJsonTypes";
 
 const route = useRoute();
-const buildingStore = useBuildingStore();
+const buildingApi = useBuildings();
 
 const { data: buildings } = await useAsyncData(
-  "building-route-map-features",
-  () => buildingStore.getBuildings(),
+  "buildings",
+  () => buildingApi.getBuildings(),
   {
+    getCachedData: (key, nuxtApp) => nuxtApp.payload.data[key],
     default: (): FeatureCollection => ({
       type: "FeatureCollection",
       features: [],

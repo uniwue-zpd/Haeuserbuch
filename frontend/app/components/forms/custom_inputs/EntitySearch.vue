@@ -24,7 +24,7 @@ const optionLabel: string = props.context?.optionLabel;
 
 const suggestions = ref<any[]>([]);
 
-const buildingStore = useBuildingStore();
+const buildingApi = useBuildings();
 const districtStore = useDistrictStore();
 const jobStore = useJobStore();
 const personStore = usePersonStore();
@@ -49,7 +49,7 @@ const debouncedSearch = debounce(async (query: string) => {
   loading.value = true;
   switch (entityType) {
     case 'building':
-      suggestions.value = await buildingStore.searchBuildings(query);
+      suggestions.value = await buildingApi.searchBuildings(query);
       break;
     case 'district':
       suggestions.value = await districtStore.searchDistricts(query);

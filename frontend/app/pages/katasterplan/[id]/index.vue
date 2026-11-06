@@ -12,14 +12,14 @@ definePageMeta({
 });
 
 const buildingId = Number(route.params.id);
-const buildingStore = useBuildingStore();
+const buildingApi = useBuildings();
 
 const {
   data: buildingItem,
   error: hasError,
   pending: isLoading,
 } = await useAsyncData(`building-${buildingId}`, () =>
-  buildingStore.getBuilding(buildingId),
+  buildingApi.getBuilding(buildingId),
 );
 const {
   data: associatedPeople,

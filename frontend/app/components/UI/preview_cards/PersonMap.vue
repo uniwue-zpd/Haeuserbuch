@@ -17,7 +17,7 @@ const props = defineProps<{
 }>();
 
 const placeStore = usePlaceStore();
-const buildingStore = useBuildingStore();
+const buildingApi = useBuildings();
 const tile_store = useTileStore();
 
 const sources = computed(() => tile_store.sources);
@@ -61,7 +61,7 @@ const { data: buildingFeature } = await useAsyncData(
   `person-${props.personId}-associated-building`,
   async () => {
     if (!props.associatedBuilding?.id) return null;
-    return buildingStore.getBuilding(props.associatedBuilding.id);
+    return buildingApi.getBuilding(props.associatedBuilding.id);
   },
 );
 

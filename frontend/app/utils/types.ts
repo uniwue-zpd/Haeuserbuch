@@ -60,7 +60,7 @@ export interface AddressDTO {
     toDate: string | null;
 }
 
-/** Available filters for `GET /api/buildings` (used by `getBuildings` and `filterBuildings` in the {@link useBuildingStore}) */
+/** Available filters in {@link useBuildings}) */
 export interface FilterBuilding {
     q?: string;
     'district-id'?: number;

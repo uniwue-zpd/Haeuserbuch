@@ -3,7 +3,7 @@ import QuarterSkeleton from "~/components/UI/skeletons/QuarterSkeleton.vue";
 
 const route = useRoute();
 const quarterStore = useQuarterStore();
-const buildingStore = useBuildingStore();
+const buildingApi = useBuildings();
 
 const quarterId = Number(route.params.id);
 
@@ -14,7 +14,7 @@ const { data: quarterItem, pending: quarterPending } = useAsyncData(
 
 const { data: relatedBuildings, pending: buildingsPending } = useAsyncData(
   `quarter-buildings-${quarterId}`,
-  () => buildingStore.filterBuildings({ "quarter-id": quarterId }),
+  () => buildingApi.filterBuildings({ "quarter-id": quarterId }),
   { default: () => [] },
 );
 

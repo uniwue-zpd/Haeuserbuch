@@ -7,7 +7,7 @@ definePageMeta({ layout: "map" });
 
 const route = useRoute();
 const router = useRouter();
-const buildingStore = useBuildingStore();
+const buildingApi = useBuildings();
 const districtStore = useDistrictStore();
 const quarterStore = useQuarterStore();
 
@@ -17,9 +17,9 @@ const {
   pending: buildingsPending,
   refresh: refreshBuildings,
 } = useAsyncData(
-  "buildings-feature-collection",
-  () => buildingStore.getBuildings(),
-  { lazy: true },
+  "buildings",
+  () => buildingApi.getBuildings(),
+  { lazy: true, getCachedData: (key, nuxtApp) => nuxtApp.payload.data[key] },
 );
 
 const search = ref("");
@@ -82,7 +82,7 @@ const { data: filteredCollection } = useAsyncData(
   "buildings-feature-collection-filtered",
   () =>
     hasActiveFilters.value
-      ? buildingStore.getFilteredBuildings(filterParams.value)
+      ? buildingApi.getFilteredBuildings(filterParams.value)
       : Promise.resolve(null),
   { lazy: true, watch: [filterParams] },
 );

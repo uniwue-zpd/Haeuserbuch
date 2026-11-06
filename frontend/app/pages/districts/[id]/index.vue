@@ -3,7 +3,7 @@ import DistrictSkeleton from "~/components/UI/skeletons/DistrictSkeleton.vue";
 
 const route = useRoute();
 const districtStore = useDistrictStore();
-const buildingStore = useBuildingStore();
+const buildingApi = useBuildings();
 
 const districtId = Number(route.params.id);
 
@@ -14,7 +14,7 @@ const { data: districtItem, pending: districtPending } = useAsyncData(
 
 const { data: relatedBuildings, pending: buildingsPending } = useAsyncData(
   `district-buildings-${districtId}`,
-  () => buildingStore.filterBuildings({ "district-id": districtId }),
+  () => buildingApi.filterBuildings({ "district-id": districtId }),
   { default: () => [] },
 );
 
