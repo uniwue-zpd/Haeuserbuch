@@ -60,17 +60,14 @@ export interface AddressDTO {
     toDate: string | null;
 }
 
-/** Available filters for buildings. Applies only to the `filterBuildings` action in the {@link useBuildingStore} */
+/** Available filters for `GET /api/buildings` (used by `getBuildings` and `filterBuildings` in the {@link useBuildingStore}) */
 export interface FilterBuilding {
-    name?: string;
-    districtId?: number;
-    districtName?: string;
-    streetId?: number;
-    streetName?: string;
-    quarterId?: number;
-    quarterName?: string;
-    sourceId?: number;
-    sourceName?: string;
+    q?: string;
+    'district-id'?: number;
+    'quarter-id'?: number;
+    'street-id'?: number;
+    'source-id'?: number;
+    georeferenced?: boolean;
 }
 
     // CITIZENSHIPS

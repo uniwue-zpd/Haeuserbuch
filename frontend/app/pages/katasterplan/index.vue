@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { isBuildingFeature, type BuildingFeature } from "~/utils/GeoJsonTypes";
-import type { PersonPreviewDTO } from "~/utils/types";
+import type { FilterBuilding, PersonPreviewDTO } from "~/utils/types";
+import { debounce } from "~/utils/debounce";
 
 definePageMeta({ layout: "map" });
 
 const route = useRoute();
 const router = useRouter();
 const buildingStore = useBuildingStore();
+const districtStore = useDistrictStore();
+const quarterStore = useQuarterStore();
 
 const {
   data: buildings,
@@ -23,7 +26,6 @@ const search = ref("");
 const debouncedSearch = ref("");
 const district = ref("");
 const quarter = ref("");
-const objectType = ref("");
 const georeferenced = ref("");
 const notice = ref<string | null>(null);
 const isDesktop = ref(false);
@@ -35,7 +37,6 @@ const collator = new Intl.Collator("de-DE", {
   numeric: true,
   sensitivity: "base",
 });
-let searchTimer: ReturnType<typeof setTimeout> | null = null;
 let desktopMedia: MediaQueryList | null = null;
 let noticeTimer: ReturnType<typeof setTimeout> | null = null;
 let dragStartY = 0;
@@ -48,104 +49,48 @@ const buildingFeatures = computed<BuildingFeature[]>(() =>
 const buildingById = computed(
   () => new Map(buildingFeatures.value.map((feature) => [feature.id, feature])),
 );
-const districtOptions = computed(() =>
-  Array.from(
-    new Set(
-      buildingFeatures.value
-        .map((feature) => feature.properties.district?.name)
-        .filter(Boolean) as string[],
-    ),
-  ).sort(collator.compare),
+const { data: districts } = useAsyncData(
+  "building-explorer-districts",
+  () => districtStore.fetchDistricts(),
+  { default: () => [], lazy: true },
 );
-const quarterOptions = computed(() =>
-  Array.from(
-    new Set(
-      buildingFeatures.value
-        .map((feature) => feature.properties.quarter?.name)
-        .filter(Boolean) as string[],
-    ),
-  ).sort(collator.compare),
+const { data: quarters } = useAsyncData(
+  "building-explorer-quarters",
+  () => quarterStore.fetchQuarters(),
+  { default: () => [], lazy: true },
 );
-const objectTypeOptions = computed(() =>
-  Array.from(
-    new Set(
-      buildingFeatures.value
-        .map((feature) => feature.properties.object)
-        .filter(Boolean) as string[],
-    ),
-  ).sort(collator.compare),
-);
-
-function normalize(value: string | number | null | undefined) {
-  return String(value ?? "")
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLocaleLowerCase("de-DE")
-    .trim();
+function toSelectOptions(items: { id: number; name: string | null }[]) {
+  return items
+    .filter((item) => item.name)
+    .map((item) => ({ label: item.name!, value: String(item.id) }))
+    .sort((left, right) => collator.compare(left.label, right.label));
 }
+const districtOptions = computed(() => toSelectOptions(districts.value));
+const quarterOptions = computed(() => toSelectOptions(quarters.value));
 
-const searchIndex = computed(
+const filterParams = computed<FilterBuilding>(() => ({
+  q: debouncedSearch.value || undefined,
+  "district-id": district.value ? Number(district.value) : undefined,
+  "quarter-id": quarter.value ? Number(quarter.value) : undefined,
+  georeferenced: georeferenced.value ? georeferenced.value === "true" : undefined,
+}));
+const hasActiveFilters = computed(() =>
+  Object.values(filterParams.value).some((value) => value !== undefined),
+);
+
+const { data: filteredCollection } = useAsyncData(
+  "buildings-feature-collection-filtered",
   () =>
-    new Map(
-      buildingFeatures.value.map((feature) => {
-        const properties = feature.properties;
-        const addresses = properties.addresses.flatMap((address) => [
-          address.street?.name,
-          address.houseNumber,
-        ]);
-        const values = [
-          properties.districtPropertyNumber,
-          properties.propertyNumber,
-          ...properties.names.map((name) => name.name),
-          properties.object,
-          properties.partType,
-          properties.district?.name,
-          properties.quarter?.name,
-          ...addresses,
-        ];
-        return [feature.id, normalize(values.filter(Boolean).join(" "))];
-      }),
-    ),
+    hasActiveFilters.value
+      ? buildingStore.getFilteredBuildings(filterParams.value)
+      : Promise.resolve(null),
+  { lazy: true, watch: [filterParams] },
 );
-
-function designation(feature: BuildingFeature) {
-  return (
-    feature.properties.districtPropertyNumber ||
-    feature.properties.names.find((name) => name.name)?.name ||
-    feature.properties.object ||
-    `Gebäude ${feature.id}`
-  );
-}
-
-const filteredBuildings = computed(() => {
-  const query = normalize(debouncedSearch.value);
-  return buildingFeatures.value
-    .filter((feature) => {
-      if (query && !searchIndex.value.get(feature.id)?.includes(query))
-        return false;
-      if (
-        district.value &&
-        feature.properties.district?.name !== district.value
-      )
-        return false;
-      if (quarter.value && feature.properties.quarter?.name !== quarter.value)
-        return false;
-      if (objectType.value && feature.properties.object !== objectType.value)
-        return false;
-      if (georeferenced.value === "yes" && !feature.geometry) return false;
-      if (georeferenced.value === "no" && feature.geometry) return false;
-      return true;
-    })
-    .sort((left, right) => {
-      const leftNamed = Boolean(left.properties.districtPropertyNumber);
-      const rightNamed = Boolean(right.properties.districtPropertyNumber);
-      if (leftNamed !== rightNamed) return leftNamed ? -1 : 1;
-      return (
-        collator.compare(designation(left), designation(right)) ||
-        left.id - right.id
-      );
-    });
-});
+const filteredBuildings = computed<BuildingFeature[]>(() =>
+  hasActiveFilters.value
+    ? (filteredCollection.value?.features ?? []).filter(isBuildingFeature)
+    : buildingFeatures.value,
+);
 const filteredBuildingIds = computed(() =>
   filteredBuildings.value.map((feature) => feature.id),
 );
@@ -254,7 +199,6 @@ function clearFilters() {
   debouncedSearch.value = "";
   district.value = "";
   quarter.value = "";
-  objectType.value = "";
   georeferenced.value = "";
 }
 
@@ -320,11 +264,13 @@ function onKeydown(event: KeyboardEvent) {
   if (event.key === "Escape" && selectedId.value) deselectBuilding();
 }
 
+const updateSearch = debounce((term: string) => {
+  debouncedSearch.value = term;
+}, 400);
+
 watch(search, (value) => {
-  if (searchTimer) clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => {
-    debouncedSearch.value = value;
-  }, 180);
+  const term = value.trim();
+  if (term.length === 0 || term.length >= 2) updateSearch(term);
 });
 
 function validateBuildingQuery(value: typeof route.query.building) {
@@ -377,7 +323,6 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  if (searchTimer) clearTimeout(searchTimer);
   if (noticeTimer) clearTimeout(noticeTimer);
   desktopMedia?.removeEventListener("change", updateViewport);
   window.removeEventListener("resize", updateViewport);
@@ -483,11 +428,9 @@ onBeforeUnmount(() => {
             :search="search"
             :district="district"
             :quarter="quarter"
-            :object-type="objectType"
             :georeferenced="georeferenced"
             :district-options="districtOptions"
             :quarter-options="quarterOptions"
-            :object-type-options="objectTypeOptions"
             :associated-people="associatedPeople"
             :associated-people-pending="associatedPeoplePending"
             :associated-people-error="Boolean(associatedPeopleError)"
@@ -496,7 +439,6 @@ onBeforeUnmount(() => {
             @update:search="search = $event"
             @update:district="district = $event"
             @update:quarter="quarter = $event"
-            @update:object-type="objectType = $event"
             @update:georeferenced="georeferenced = $event"
             @select="selectBuilding"
             @deselect="deselectBuilding"

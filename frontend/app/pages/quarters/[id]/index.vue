@@ -14,7 +14,7 @@ const { data: quarterItem, pending: quarterPending } = useAsyncData(
 
 const { data: relatedBuildings, pending: buildingsPending } = useAsyncData(
   `quarter-buildings-${quarterId}`,
-  () => buildingStore.filterBuildings({ quarterId }),
+  () => buildingStore.filterBuildings({ "quarter-id": quarterId }),
   { default: () => [] },
 );
 

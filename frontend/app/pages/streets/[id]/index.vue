@@ -15,7 +15,7 @@ const { data: streetItem, pending: streetPending } = useAsyncData(
 const { data: relatedBuildings, pending: relatedBuildingsPending } =
   useAsyncData(
     `street-${streetId}-related-buildings`,
-    () => building_store.filterBuildings({ streetId: streetId }),
+    () => building_store.filterBuildings({ "street-id": streetId }),
     { default: () => [] },
   );
 

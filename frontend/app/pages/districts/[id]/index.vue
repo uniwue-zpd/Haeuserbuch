@@ -14,7 +14,7 @@ const { data: districtItem, pending: districtPending } = useAsyncData(
 
 const { data: relatedBuildings, pending: buildingsPending } = useAsyncData(
   `district-buildings-${districtId}`,
-  () => buildingStore.filterBuildings({ districtId }),
+  () => buildingStore.filterBuildings({ "district-id": districtId }),
   { default: () => [] },
 );
 

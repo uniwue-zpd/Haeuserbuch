@@ -12,7 +12,7 @@ export const useBuildingStore = defineStore('building', () => {
      */
     async function getBuildings(force: boolean = false): Promise<FeatureCollection> {
         if (!featureCollection.value || force) {
-            featureCollection.value = await $fetch<FeatureCollection>('/api/buildings');
+            featureCollection.value = await $fetch<FeatureCollection>('/api/buildings', {query: {view: 'geojson'}});
             return featureCollection.value;
         } else {
             return featureCollection.value;
@@ -78,8 +78,20 @@ export const useBuildingStore = defineStore('building', () => {
         return await $fetch('/api/buildings/search', {query: {query: query}});
     }
 
+    /**
+     * `GET` buildings matching the given filters as a `FeatureCollection` (not cached).
+     * @param params Filters, see {@link FilterBuilding}.
+     */
+    async function getFilteredBuildings(params: FilterBuilding): Promise<FeatureCollection> {
+        return await $fetch<FeatureCollection>('/api/buildings', {query: {...params, view: 'geojson'}});
+    }
+
+    /**
+     * `GET` lightweight building previews matching the given filters.
+     * @param params Filters, see {@link FilterBuilding}.
+     */
     async function filterBuildings(params: FilterBuilding): Promise<BuildingDTO[]> {
-        return await $fetch('/api/buildings/filter', {query: params});
+        return await $fetch<BuildingDTO[]>('/api/buildings', {query: {...params, view: 'preview'}});
     }
 
     return {
@@ -89,6 +101,7 @@ export const useBuildingStore = defineStore('building', () => {
         updateBuilding,
         deleteBuilding,
         searchBuildings,
+        getFilteredBuildings,
         filterBuildings
     }
 });
