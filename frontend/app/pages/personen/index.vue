@@ -35,6 +35,7 @@ const filterValues = reactive({
   religion: "",
   origin: "",
   emigration: "",
+  building: "",
 });
 
 const resetFilters = () => {
@@ -46,6 +47,7 @@ const resetFilters = () => {
     religion: "",
     origin: "",
     emigration: "",
+    building: "",
   });
   citizenFilter.value = "all";
 };
@@ -151,6 +153,7 @@ const loadData = async () => {
       religion: filterValues.religion || undefined,
       "place-of-origin": filterValues.origin || undefined,
       "place-of-emigration": filterValues.emigration || undefined,
+      "associated-building": filterValues.building || undefined,
     });
     rows.value = res.content.map((person: PersonDTO) => ({
       ...person,
@@ -324,7 +327,7 @@ useHead(() => ({
             </summary>
             <UInput v-model="filterValues.origin" class="mt-3 w-full" placeholder="Suchen..." />
           </details>
-          <details open class="p-4">
+          <details open class="border-b border-default p-4">
             <summary class="cursor-pointer list-none text-base font-semibold">
               <span class="flex items-center justify-between">
                 Wegzugsort
@@ -332,6 +335,15 @@ useHead(() => ({
               </span>
             </summary>
             <UInput v-model="filterValues.emigration" class="mt-3 w-full" placeholder="Suchen..." />
+          </details>
+          <details open class="p-4">
+            <summary class="cursor-pointer list-none text-base font-semibold">
+              <span class="flex items-center justify-between">
+                Gebäude
+                <UIcon name="i-lucide-chevron-down" class="size-4" />
+              </span>
+            </summary>
+            <UInput v-model="filterValues.building" class="mt-3 w-full" placeholder="Suchen..." />
           </details>
         </div>
       </aside>

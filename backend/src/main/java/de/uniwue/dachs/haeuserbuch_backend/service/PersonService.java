@@ -58,7 +58,7 @@ public class PersonService {
      * @param sex Sex of the person.
      * @param job Job of the person (either the original text or the category name can be used).
      * @param jobId ID of the job category.
-     * @param associatedBuilding Building associated with the person (can be searched by building's ID, e.g. "IV/18").
+     * @param associatedBuilding Building associated with the person (can be searched by building name or district property number, e.g. "IV/18").
      * @param associatedBuildingId ID of the associated building.
      * @param isCitizen Whether the person is a citizen or not.
      * @param placeOfOrigin Place of origin of the person (can be searched by original text).
@@ -129,7 +129,7 @@ public class PersonService {
      * @param sex Sex of the person.
      * @param job Job of the person (either the original text or the category name can be used).
      * @param jobId ID of the job category.
-     * @param associatedBuilding Building associated with the person (can be searched by building's ID, e.g. "IV/18").
+     * @param associatedBuilding Building associated with the person (can be searched by building name or district property number, e.g. "IV/18").
      * @param associatedBuildingId ID of the associated building.
      * @param isCitizen Whether the person is a citizen or not.
      * @param placeOfOrigin Place of origin of the person (can be searched by original text).

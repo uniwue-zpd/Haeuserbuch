@@ -52,9 +52,15 @@ public class PersonSpecification {
 
     public static Specification<Person> hasAssociatedBuilding(String building) {
         return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
             Join<Person, Building> buildingJoin = root.join("associatedBuilding", JoinType.LEFT);
-            String pattern = "%" + building.strip().toLowerCase().replace("/", "%") + "%";
-            return criteriaBuilder.like(criteriaBuilder.lower(buildingJoin.get("districtPropertyNumber")), pattern);
+            Join<Building, BuildingName> buildingNameJoin = buildingJoin.join("names", JoinType.LEFT);
+            String term = building.strip().toLowerCase();
+            return criteriaBuilder.or(
+                    criteriaBuilder.like(criteriaBuilder.lower(buildingNameJoin.get("name")), "%" + term + "%"),
+                    criteriaBuilder.like(criteriaBuilder.lower(buildingJoin.get("object")), "%" + term + "%"),
+                    criteriaBuilder.like(criteriaBuilder.lower(buildingJoin.get("districtPropertyNumber")), "%" + term.replace("/", "%") + "%")
+            );
         };
     }
 
