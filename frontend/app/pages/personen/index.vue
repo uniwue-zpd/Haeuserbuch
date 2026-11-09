@@ -12,6 +12,7 @@ type PersonTableRow = PersonDTO & {
   weaponText: string | null;
   religionText: string | null;
   originText: string | null;
+  matchedAltNames: string[];
 };
 
 type CitizenFilter = "all" | "citizen" | "not-citizen";
@@ -125,6 +126,7 @@ const loadData = async () => {
     const sort = sorting.value[0]
       ? `${sorting.value[0].id},${sorting.value[0].desc ? "desc" : "asc"}`
       : undefined;
+    const nameQuery = filterValues.fullName.trim().toLowerCase();
     const res = await personStore.fetchPersons({
       page: page.value,
       size: rowsPerPage.value,
@@ -156,6 +158,13 @@ const loadData = async () => {
           .join(", ") || null,
       religionText: person.religion?.originalText ?? null,
       originText: person.origin?.originalText ?? null,
+      matchedAltNames: nameQuery
+        ? (person.altNames ?? []).filter(
+            (altName: string) =>
+              altName.toLowerCase().includes(nameQuery) &&
+              altName.trim().toLowerCase() !== person.fullName?.trim().toLowerCase()
+          )
+        : [],
     }));
     totalRecords.value = res.totalElements;
   } finally {
@@ -254,6 +263,7 @@ useHead(() => ({
               </span>
             </summary>
             <UInput v-model="filterValues.fullName" class="mt-3 w-full" placeholder="Suchen..." />
+            <p class="mt-2 text-xs text-muted">Die Suche deckt standardisierte und ursprüngliche Schreibungen ab.</p>
           </details>
           <details open class="border-b border-default p-4">
             <summary class="cursor-pointer list-none text-base font-semibold">
@@ -336,9 +346,17 @@ useHead(() => ({
             class="w-full"
           >
         <template #fullName-cell="{ row }">
-          <NuxtLink :to="`/personen/${row.original.id}`" prefetch>
-            {{ row.original.fullName }}
-          </NuxtLink>
+          <div class="flex flex-col">
+            <NuxtLink :to="`/personen/${row.original.id}`" prefetch>
+              {{ row.original.fullName }}
+            </NuxtLink>
+            <span
+              class="text-xs text-muted"
+              v-if="row.original.matchedAltNames.length > 0"
+            >
+              orig. Schreibweise: {{ row.original.matchedAltNames.join(', ') }}
+            </span>
+          </div>
         </template>
         <template #isCitizen-cell="{ row }">
           <UIcon
