@@ -37,6 +37,19 @@ const filterValues = reactive({
   emigration: "",
 });
 
+const resetFilters = () => {
+  Object.assign(filterValues, {
+    fullName: "",
+    sex: "",
+    job: "",
+    weapon: "",
+    religion: "",
+    origin: "",
+    emigration: "",
+  });
+  citizenFilter.value = "all";
+};
+
 const sortableHeader = (label: string) =>
   ({ column }: { column: Column<PersonTableRow, unknown> }) =>
     h(
@@ -235,7 +248,10 @@ useHead(() => ({
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(16rem,18rem)_minmax(0,1fr)] lg:items-start">
       <aside class="overview-filter-panel">
         <div class="border-b border-muted p-5">
-          <h2 class="text-xl font-semibold text-highlighted">Filter</h2>
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-semibold text-highlighted">Filter</h2>
+            <UButton color="neutral" variant="ghost" size="sm" icon="i-lucide-rotate-ccw" label="Zurücksetzen" @click="resetFilters" />
+          </div>
           <p class="mt-2 text-xs text-muted">
             Die Textfilter durchsuchen sowohl die ursprünglichen als auch die standardisierten Schreibungen.
           </p>
