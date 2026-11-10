@@ -566,11 +566,10 @@ onBeforeUnmount(() => {
             </div>
             <div class="md:grid md:grid-cols-2 gap-2 flex flex-col">
               <FormKit
-                type="number"
-                number
+                type="text"
                 name="propertyNumber"
                 label="Besitznummer"
-                prefix-icon="number"
+                prefix-icon="text"
                 outer-class="max-w-full"
               />
               <FormKit
