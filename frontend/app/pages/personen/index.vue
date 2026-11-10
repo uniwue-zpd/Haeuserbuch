@@ -107,7 +107,8 @@ const columns: TableColumn<PersonTableRow>[] = [
   {
     id: "job",
     accessorFn: (row) => row.job?.originalText,
-    header: sortableHeader("Beruf"),
+    header: "Beruf",
+    enableSorting: false,
     enableGlobalFilter: false,
   },
   {
@@ -120,13 +121,15 @@ const columns: TableColumn<PersonTableRow>[] = [
   {
     id: "religion",
     accessorFn: (row) => row.religion?.originalText,
-    header: sortableHeader("Religion"),
+    header: "Religion",
+    enableSorting: false,
     enableGlobalFilter: false,
   },
   {
     id: "origin",
     accessorFn: (row) => row.origin?.originalText,
-    header: sortableHeader("Herkunft"),
+    header: "Herkunft",
+    enableSorting: false,
     enableGlobalFilter: false,
   },
   {
@@ -376,7 +379,7 @@ useHead(() => ({
                 orig. Schreibweise: {{ row.original.matchedAltNames.join(', ') }}
               </span>
             </div>
-            <span v-else class="italic text-muted">unbekannt</span>
+            <span v-else class="text-dimmed" title="keine Angabe">–</span>
           </template>
           <template #isCitizen-cell="{ row }">
             <UIcon
@@ -385,14 +388,14 @@ useHead(() => ({
               :class="row.original.isCitizen ? 'text-green-500' : 'text-red-500'"
               :aria-label="row.original.isCitizen ? 'Bürger' : 'Kein Bürger'"
             />
-            <span v-else class="italic text-muted">unbekannt</span>
+            <span v-else class="text-dimmed" title="keine Angabe">–</span>
           </template>
           <template #sex-cell="{ row }">
             <span v-if="row.original.sex">{{ row.original.sex }}</span>
-            <span v-else class="italic text-muted">unbekannt</span>
+            <span v-else class="text-dimmed" title="keine Angabe">–</span>
           </template>
           <template #job-cell="{ row }">
-            <div v-if="row.original.job?.jobCategory?.name || row.original.job?.originalText" class="flex flex-col items-start gap-1">
+            <div v-if="row.original.job?.jobCategory?.name || row.original.job?.originalText" class="flex flex-wrap items-baseline gap-x-1.5">
               <span v-if="row.original.job.originalText">{{ row.original.job.originalText }}</span>
               <UBadge
                 v-if="row.original.job.jobCategory?.name && row.original.job.jobCategory.name.trim().toLowerCase() !== row.original.job.originalText?.trim().toLowerCase()"
@@ -403,11 +406,11 @@ useHead(() => ({
                 title="Normalisierte Form"
               />
             </div>
-            <span v-else class="italic text-muted">unbekannt</span>
+            <span v-else class="text-dimmed" title="keine Angabe">–</span>
           </template>
           <template #weapons-cell="{ row }">
-            <div v-if="row.original.weapons?.length" class="flex flex-col gap-2">
-              <div v-for="weaponry in row.original.weapons" :key="weaponry.id ?? undefined" class="flex flex-col items-start gap-1">
+            <div v-if="row.original.weapons?.length" class="flex flex-col gap-1">
+              <div v-for="weaponry in row.original.weapons" :key="weaponry.id ?? undefined" class="flex flex-wrap items-baseline gap-x-1.5">
                 <span v-if="weaponry.originalText">{{ weaponry.originalText }}</span>
                 <UBadge
                   v-if="weaponry.weapon?.name && weaponry.weapon.name.trim().toLowerCase() !== weaponry.originalText?.trim().toLowerCase()"
@@ -419,10 +422,10 @@ useHead(() => ({
                 />
               </div>
             </div>
-            <span v-else class="italic text-muted">unbekannt</span>
+            <span v-else class="text-dimmed" title="keine Angabe">–</span>
           </template>
           <template #religion-cell="{ row }">
-            <div v-if="row.original.religion?.religionCategory?.name || row.original.religion?.originalText" class="flex flex-col items-start gap-1">
+            <div v-if="row.original.religion?.religionCategory?.name || row.original.religion?.originalText" class="flex flex-wrap items-baseline gap-x-1.5">
               <span v-if="row.original.religion.originalText">{{ row.original.religion.originalText }}</span>
               <UBadge
                 v-if="row.original.religion.religionCategory?.name && row.original.religion.religionCategory.name.trim().toLowerCase() !== row.original.religion.originalText?.trim().toLowerCase()"
@@ -433,7 +436,7 @@ useHead(() => ({
                 title="Normalisierte Form"
               />
             </div>
-            <span v-else class="italic text-muted">unbekannt</span>
+            <span v-else class="text-dimmed" title="keine Angabe">–</span>
           </template>
           <template #origin-cell="{ row }">
             <div
@@ -453,25 +456,19 @@ useHead(() => ({
                 />
                 <span v-if="row.original.origin.places.length">
                   <template v-for="(place, index) in row.original.origin.places" :key="place.id">
-                    <UBadge
-                      color="neutral"
-                      variant="soft"
-                      size="sm"
+                    <NuxtLink
+                      :to="`/orte/${place.id}`"
+                      :title="`${place.realName}`"
+                      class="whitespace-nowrap text-highlighted underline decoration-muted underline-offset-4 hover:decoration-current"
                     >
-                      <NuxtLink
-                        :to="`/orte/${place.id}`"
-                        :title="`${place.realName}`"
-                        class="whitespace-nowrap text-highlighted decoration-muted underline-offset-4 hover:decoration-current"
-                      >
-                        {{ place.realName ? place.realName.split(',')[0] : 'Ort' }}
-                      </NuxtLink>
-                    </UBadge>
+                      {{ place.realName ? place.realName.split(',')[0] : 'Ort' }}
+                    </NuxtLink>
                     <span v-if="index < row.original.origin.places.length - 1" class="text-muted">, </span>
                   </template>
                 </span>
               </div>
             </div>
-            <span v-else class="italic text-muted">unbekannt</span>
+            <span v-else class="text-dimmed" title="keine Angabe">–</span>
           </template>
           <template #associatedBuilding-cell="{ row }">
             <NuxtLink
@@ -481,7 +478,7 @@ useHead(() => ({
             >
               {{ row.original.associatedBuilding.districtPropertyNumber ?? "Zum Gebäude" }}
             </NuxtLink>
-            <span v-else class="italic text-muted">unbekannt</span>
+            <span v-else class="text-dimmed" title="keine Angabe">–</span>
           </template>
         </UTable>
         <div class="flex flex-col gap-4 border-t border-default pt-4 sm:flex-row sm:items-center sm:justify-between">
