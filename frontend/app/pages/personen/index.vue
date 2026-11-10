@@ -8,10 +8,7 @@ const personStore = usePersonStore();
 const UButton = resolveComponent("UButton");
 
 type PersonTableRow = PersonDTO & {
-  jobText: string | null;
-  weaponText: string | null;
-  religionText: string | null;
-  originText: string | null;
+  matchedAltNames: string[];
 };
 
 type CitizenFilter = "all" | "citizen" | "not-citizen";
@@ -38,7 +35,22 @@ const filterValues = reactive({
   religion: "",
   origin: "",
   emigration: "",
+  building: "",
 });
+
+const resetFilters = () => {
+  Object.assign(filterValues, {
+    fullName: "",
+    sex: "",
+    job: "",
+    weapon: "",
+    religion: "",
+    origin: "",
+    emigration: "",
+    building: "",
+  });
+  citizenFilter.value = "all";
+};
 
 const sortableHeader = (label: string) =>
   ({ column }: { column: Column<PersonTableRow, unknown> }) =>
@@ -94,27 +106,37 @@ const columns: TableColumn<PersonTableRow>[] = [
   },
   {
     id: "job",
-    accessorFn: (row) => row.jobText,
-    header: sortableHeader("Beruf"),
+    accessorFn: (row) => row.job?.originalText,
+    header: "Beruf",
+    enableSorting: false,
     enableGlobalFilter: false,
   },
   {
     id: "weapons",
-    accessorFn: (row) => row.weaponText,
+    accessorFn: (row) => row.weapons?.map((w) => w.originalText).join(", "),
     header: "Bewaffnung",
     enableSorting: false,
     enableGlobalFilter: false,
   },
   {
     id: "religion",
-    accessorFn: (row) => row.religionText,
-    header: sortableHeader("Religion"),
+    accessorFn: (row) => row.religion?.originalText,
+    header: "Religion",
+    enableSorting: false,
     enableGlobalFilter: false,
   },
   {
     id: "origin",
-    accessorFn: (row) => row.originText,
-    header: sortableHeader("Herkunft"),
+    accessorFn: (row) => row.origin?.originalText,
+    header: "Herkunft",
+    enableSorting: false,
+    enableGlobalFilter: false,
+  },
+  {
+    id: "associatedBuilding",
+    accessorFn: (row) => row.associatedBuilding?.districtPropertyNumber,
+    header: "Gebäude",
+    enableSorting: false,
     enableGlobalFilter: false,
   },
 ];
@@ -125,6 +147,7 @@ const loadData = async () => {
     const sort = sorting.value[0]
       ? `${sorting.value[0].id},${sorting.value[0].desc ? "desc" : "asc"}`
       : undefined;
+    const nameQuery = filterValues.fullName.trim().toLowerCase();
     const res = await personStore.fetchPersons({
       page: page.value,
       size: rowsPerPage.value,
@@ -140,22 +163,17 @@ const loadData = async () => {
       religion: filterValues.religion || undefined,
       "place-of-origin": filterValues.origin || undefined,
       "place-of-emigration": filterValues.emigration || undefined,
+      "associated-building": filterValues.building || undefined,
     });
     rows.value = res.content.map((person: PersonDTO) => ({
       ...person,
-      jobText: person.job?.originalText ?? null,
-      weaponText:
-        person.weapons
-          ?.map((weaponry: WeaponryDTO) =>
-            weaponry.originalText || weaponry.weapon?.name
+      matchedAltNames: nameQuery
+        ? (person.altNames ?? []).filter(
+            (altName: string) =>
+              altName.toLowerCase().includes(nameQuery) &&
+              altName.trim().toLowerCase() !== person.fullName?.trim().toLowerCase()
           )
-          .filter(
-            (weapon: string | null | undefined): weapon is string =>
-              Boolean(weapon),
-          )
-          .join(", ") || null,
-      religionText: person.religion?.originalText ?? null,
-      originText: person.origin?.originalText ?? null,
+        : [],
     }));
     totalRecords.value = res.totalElements;
   } finally {
@@ -221,7 +239,6 @@ useHead(() => ({
           icon="i-lucide-info"
           label="Hinweise"
         />
-
         <template #content>
           <ul class="max-w-sm list-inside list-disc space-y-2 p-4 text-sm">
             <li>
@@ -239,11 +256,16 @@ useHead(() => ({
     <div>
       <p>Einträge insgesamt: {{ totalRecords }}</p>
     </div>
-
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(16rem,18rem)_minmax(0,1fr)] lg:items-start">
       <aside class="overview-filter-panel">
         <div class="border-b border-muted p-5">
-          <h2 class="text-xl font-semibold text-highlighted">Filter</h2>
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-semibold text-highlighted">Filter</h2>
+            <UButton color="neutral" variant="ghost" size="sm" icon="i-lucide-rotate-ccw" label="Zurücksetzen" @click="resetFilters" />
+          </div>
+          <p class="mt-2 text-xs text-muted">
+            Die Textfilter durchsuchen sowohl die ursprünglichen als auch die normalisierten Schreibungen.
+          </p>
         </div>
         <div class="flex flex-col">
           <details open class="border-b border-default p-4">
@@ -314,7 +336,7 @@ useHead(() => ({
             </summary>
             <UInput v-model="filterValues.origin" class="mt-3 w-full" placeholder="Suchen..." />
           </details>
-          <details open class="p-4">
+          <details open class="border-b border-default p-4">
             <summary class="cursor-pointer list-none text-base font-semibold">
               <span class="flex items-center justify-between">
                 Wegzugsort
@@ -323,68 +345,156 @@ useHead(() => ({
             </summary>
             <UInput v-model="filterValues.emigration" class="mt-3 w-full" placeholder="Suchen..." />
           </details>
+          <details open class="p-4">
+            <summary class="cursor-pointer list-none text-base font-semibold">
+              <span class="flex items-center justify-between">
+                Gebäude
+                <UIcon name="i-lucide-chevron-down" class="size-4" />
+              </span>
+            </summary>
+            <UInput v-model="filterValues.building" class="mt-3 w-full" placeholder="Suchen..." />
+          </details>
         </div>
       </aside>
       <section class="overview-table-panel p-5">
-          <UTable
-            :data="rows"
-            :columns="columns"
-            :loading="loading"
-            v-model:sorting="sorting"
-            :sorting-options="{ manualSorting: true }"
-            :ui="{ td: 'text-default' }"
-            class="w-full"
-          >
-        <template #fullName-cell="{ row }">
-          <NuxtLink :to="`/personen/${row.original.id}`" prefetch>
-            {{ row.original.fullName }}
-          </NuxtLink>
-        </template>
-        <template #isCitizen-cell="{ row }">
-          <UIcon
-            v-if="row.original.isCitizen !== null"
-            :name="row.original.isCitizen ? 'i-lucide-check' : 'i-lucide-x'"
-            :class="row.original.isCitizen ? 'text-green-500' : 'text-red-500'"
-            :aria-label="row.original.isCitizen ? 'Bürger' : 'Kein Bürger'"
+        <UTable
+          :data="rows"
+          :columns="columns"
+          :loading="loading"
+          v-model:sorting="sorting"
+          :sorting-options="{ manualSorting: true }"
+          :ui="{ td: 'text-default' }"
+          class="w-full"
+        >
+          <template #fullName-cell="{ row }">
+            <div
+              v-if="row.original.fullName"
+              class="flex flex-col"
+            >
+              <span>{{ row.original.fullName }}</span>
+              <span
+                class="text-xs text-muted"
+                v-if="row.original.matchedAltNames.length > 0"
+              >
+                orig. Schreibweise: {{ row.original.matchedAltNames.join(', ') }}
+              </span>
+            </div>
+            <span v-else class="text-dimmed" title="keine Angabe">–</span>
+          </template>
+          <template #isCitizen-cell="{ row }">
+            <UIcon
+              v-if="row.original.isCitizen !== null"
+              :name="row.original.isCitizen ? 'i-lucide-check' : 'i-lucide-x'"
+              :class="row.original.isCitizen ? 'text-green-500' : 'text-red-500'"
+              :aria-label="row.original.isCitizen ? 'Bürger' : 'Kein Bürger'"
+            />
+            <span v-else class="text-dimmed" title="keine Angabe">–</span>
+          </template>
+          <template #sex-cell="{ row }">
+            <span v-if="row.original.sex">{{ row.original.sex }}</span>
+            <span v-else class="text-dimmed" title="keine Angabe">–</span>
+          </template>
+          <template #job-cell="{ row }">
+            <div v-if="row.original.job?.jobCategory?.name || row.original.job?.originalText" class="flex flex-wrap items-baseline gap-x-1.5">
+              <span v-if="row.original.job.originalText">{{ row.original.job.originalText }}</span>
+              <UBadge
+                v-if="row.original.job.jobCategory?.name && row.original.job.jobCategory.name.trim().toLowerCase() !== row.original.job.originalText?.trim().toLowerCase()"
+                :label="row.original.job.jobCategory.name"
+                color="neutral"
+                variant="soft"
+                size="sm"
+                title="Normalisierte Form"
+              />
+            </div>
+            <span v-else class="text-dimmed" title="keine Angabe">–</span>
+          </template>
+          <template #weapons-cell="{ row }">
+            <div v-if="row.original.weapons?.length" class="flex flex-col gap-1">
+              <div v-for="weaponry in row.original.weapons" :key="weaponry.id ?? undefined" class="flex flex-wrap items-baseline gap-x-1.5">
+                <span v-if="weaponry.originalText">{{ weaponry.originalText }}</span>
+                <UBadge
+                  v-if="weaponry.weapon?.name && weaponry.weapon.name.trim().toLowerCase() !== weaponry.originalText?.trim().toLowerCase()"
+                  :label="weaponry.weapon.name"
+                  color="neutral"
+                  variant="soft"
+                  size="sm"
+                  title="Normalisierte Form"
+                />
+              </div>
+            </div>
+            <span v-else class="text-dimmed" title="keine Angabe">–</span>
+          </template>
+          <template #religion-cell="{ row }">
+            <div v-if="row.original.religion?.religionCategory?.name || row.original.religion?.originalText" class="flex flex-wrap items-baseline gap-x-1.5">
+              <span v-if="row.original.religion.originalText">{{ row.original.religion.originalText }}</span>
+              <UBadge
+                v-if="row.original.religion.religionCategory?.name && row.original.religion.religionCategory.name.trim().toLowerCase() !== row.original.religion.originalText?.trim().toLowerCase()"
+                :label="row.original.religion.religionCategory.name"
+                color="neutral"
+                variant="soft"
+                size="sm"
+                title="Normalisierte Form"
+              />
+            </div>
+            <span v-else class="text-dimmed" title="keine Angabe">–</span>
+          </template>
+          <template #origin-cell="{ row }">
+            <div
+              v-if="row.original.origin?.originalText || row.original.origin?.places?.length || row.original.origin?.certainty"
+              class="flex flex-col"
+            >
+              <span v-if="row.original.origin.originalText">{{ row.original.origin.originalText }}</span>
+              <div
+                v-if="row.original.origin.certainty || row.original.origin.places.length"
+                class="flex flex-wrap items-baseline gap-x-1 text-xs"
+              >
+                <span
+                  v-if="row.original.origin.certainty"
+                  :class="`size-2 shrink-0 self-center rounded-full border border-gray-400 ${ORIGIN_CERTAINTY[row.original.origin.certainty].color}`"
+                  :title="`Lokalisierbarkeit: ${ORIGIN_CERTAINTY[row.original.origin.certainty].label}`"
+                  :aria-label="`Lokalisierbarkeit: ${ORIGIN_CERTAINTY[row.original.origin.certainty].label}`"
+                />
+                <span v-if="row.original.origin.places.length">
+                  <template v-for="(place, index) in row.original.origin.places" :key="place.id">
+                    <NuxtLink
+                      :to="`/orte/${place.id}`"
+                      :title="`${place.realName}`"
+                      class="whitespace-nowrap text-highlighted underline decoration-muted underline-offset-4 hover:decoration-current"
+                    >
+                      {{ place.realName ? place.realName.split(',')[0] : 'Ort' }}
+                    </NuxtLink>
+                    <span v-if="index < row.original.origin.places.length - 1" class="text-muted">, </span>
+                  </template>
+                </span>
+              </div>
+            </div>
+            <span v-else class="text-dimmed" title="keine Angabe">–</span>
+          </template>
+          <template #associatedBuilding-cell="{ row }">
+            <NuxtLink
+              v-if="row.original.associatedBuilding"
+              :to="`/katasterplan/${row.original.associatedBuilding.id}`"
+              class="whitespace-nowrap text-highlighted underline decoration-muted underline-offset-4 hover:decoration-current"
+            >
+              {{ row.original.associatedBuilding.districtPropertyNumber ?? "Zum Gebäude" }}
+            </NuxtLink>
+            <span v-else class="text-dimmed" title="keine Angabe">–</span>
+          </template>
+        </UTable>
+        <div class="flex flex-col gap-4 border-t border-default pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <USelect
+            v-model="rowsPerPage"
+            :items="rowsPerPageOptions"
+            class="w-24"
+            @update:model-value="onRowsPerPageChange"
           />
-          <span v-else class="italic text-muted">unbekannt</span>
-        </template>
-        <template #sex-cell="{ row }">
-          <span v-if="row.original.sex">{{ row.original.sex }}</span>
-          <span v-else class="italic text-muted">unbekannt</span>
-        </template>
-        <template #job-cell="{ row }">
-          <span v-if="row.original.jobText">{{ row.original.jobText }}</span>
-          <span v-else class="italic text-muted">unbekannt</span>
-        </template>
-        <template #weapons-cell="{ row }">
-          <span v-if="row.original.weaponText">{{ row.original.weaponText }}</span>
-          <span v-else class="italic text-muted">unbekannt</span>
-        </template>
-        <template #religion-cell="{ row }">
-          <span v-if="row.original.religionText">{{ row.original.religionText }}</span>
-          <span v-else class="italic text-muted">unbekannt</span>
-        </template>
-        <template #origin-cell="{ row }">
-          <span v-if="row.original.originText">{{ row.original.originText }}</span>
-          <span v-else class="italic text-muted">unbekannt</span>
-        </template>
-          </UTable>
-
-          <div class="flex flex-col gap-4 border-t border-default pt-4 sm:flex-row sm:items-center sm:justify-between">
-            <USelect
-              v-model="rowsPerPage"
-              :items="rowsPerPageOptions"
-              class="w-24"
-              @update:model-value="onRowsPerPageChange"
-            />
-            <UPagination
-              :page="page + 1"
-              :items-per-page="rowsPerPage"
-              :total="totalRecords"
-              @update:page="onPageChange"
-            />
-          </div>
+          <UPagination
+            :page="page + 1"
+            :items-per-page="rowsPerPage"
+            :total="totalRecords"
+            @update:page="onPageChange"
+          />
+        </div>
       </section>
     </div>
   </div>

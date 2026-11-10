@@ -170,6 +170,13 @@ export enum OriginCertainty {
     UNKNOWN = "UNKNOWN"
 }
 
+/** Display label and traffic light color for each {@link OriginCertainty}. */
+export const ORIGIN_CERTAINTY: Record<OriginCertainty, { label: string; color: string }> = {
+    IDENTIFIED: { label: "Identifiziert", color: "bg-green-400" },
+    AMBIGUOUS: { label: "Mehrdeutig", color: "bg-yellow-400" },
+    UNKNOWN: { label: "Unbekannt", color: "bg-red-400" },
+};
+
 /** Represents an object describing the place a person emigrated to. */
 export interface PersonEmigration {
     originalText: string | null;

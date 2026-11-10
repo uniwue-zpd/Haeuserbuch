@@ -2,12 +2,6 @@
 const props = defineProps<{
   origin: PersonOrigin;
 }>();
-
-const originCertainty: Record<string, { label: string; color: string }> = {
-  IDENTIFIED: { label: "Identifiziert", color: "bg-green-400" },
-  AMBIGUOUS: { label: "Mehrdeutig", color: "bg-yellow-400" },
-  UNKNOWN: { label: "Unbekannt", color: "bg-red-400" },
-};
 </script>
 
 <template>
@@ -42,9 +36,9 @@ const originCertainty: Record<string, { label: string; color: string }> = {
       <span class="font-semibold text-muted">Lokalisierbarkeit</span>
       <div>
         <span
-          :class="`border border-gray-400 px-1.5 py-0.5 rounded-md text-xs font-bold uppercase tracking-wide shadow-sm ${originCertainty[props.origin.certainty]?.color}`"
+          :class="`border border-gray-400 px-1.5 py-0.5 rounded-md text-xs font-bold uppercase tracking-wide shadow-sm ${ORIGIN_CERTAINTY[props.origin.certainty]?.color}`"
         >
-          {{ originCertainty[props.origin.certainty]?.label }}
+          {{ ORIGIN_CERTAINTY[props.origin.certainty]?.label }}
         </span>
       </div>
     </div>
