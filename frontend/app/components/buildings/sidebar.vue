@@ -289,7 +289,7 @@ watch(
                 <div class="max-w-72 p-3 text-sm">
                   <p class="font-semibold text-highlighted">Durchsucht werden:</p>
                   <ul class="mt-1.5 list-disc space-y-0.5 pl-5 text-default">
-                    <li>Distrikts- und Hausnummer (z. B. „I/123“)</li>
+                    <li>Distrikt- und Besitznummer (z. B. „I/123“)</li>
                     <li>Gebäudenamen</li>
                     <li>Straße, Hausnummer oder vollständige Adresse (z. B. „Bibrastraße 6“)</li>
                     <li>Objekt und Gebäudeteil</li>
