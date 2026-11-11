@@ -213,7 +213,7 @@ const periodLabel = (name: BuildingNameDTO): string =>
                     >
                       {{ entry.source.title }}
                     </NuxtLink>
-                    <p v-else class="font-semibold text-gray-500">Ohne Quellenangabe</p>
+                    <p v-else class="font-semibold text-gray-500">Sonstige Quellen</p>
                     <p v-if="entry.excerpt" class="mt-1 text-sm whitespace-pre-line">
                       {{ entry.excerpt }}
                     </p>
