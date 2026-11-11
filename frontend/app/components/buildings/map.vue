@@ -532,7 +532,7 @@ onBeforeUnmount(() => {
         ref="mapContainer"
         class="h-full w-full"
     />
-    <div v-if="$slots.controls" ref="controlsContainer" class="maplibregl-ctrl flex flex-wrap gap-2">
+    <div v-if="$slots.controls" ref="controlsContainer" class="pointer-events-auto m-2.5 flex flex-wrap gap-2">
       <slot name="controls" />
     </div>
     <div
