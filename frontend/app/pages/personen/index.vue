@@ -20,16 +20,23 @@ const rowsPerPage = ref(10);
 const totalRecords = ref(0);
 const sorting = ref<{ id: string; desc: boolean }[]>([]);
 const citizenFilter = ref<CitizenFilter>("all");
+const showNormalized = ref(false);
 const rowsPerPageOptions = [5, 10, 25, 50];
 const citizenOptions = [
   { label: "Alle", value: "all" },
   { label: "Bürger", value: "citizen" },
   { label: "Kein Bürger", value: "not-citizen" },
 ];
+const sexOptions = [
+  { label: "Alle", value: "all" },
+  { label: "Männlich", value: "männlich" },
+  { label: "Weiblich", value: "weiblich" },
+  { label: "Unbekannt", value: "unknown" },
+];
 
 const filterValues = reactive({
   fullName: "",
-  sex: "",
+  sex: "all",
   job: "",
   weapon: "",
   religion: "",
@@ -41,7 +48,7 @@ const filterValues = reactive({
 const resetFilters = () => {
   Object.assign(filterValues, {
     fullName: "",
-    sex: "",
+    sex: "all",
     job: "",
     weapon: "",
     religion: "",
@@ -101,7 +108,8 @@ const columns: TableColumn<PersonTableRow>[] = [
   },
   {
     accessorKey: "sex",
-    header: sortableHeader("Geschlecht"),
+    header: "Geschlecht",
+    enableSorting: false,
     enableGlobalFilter: false,
   },
   {
@@ -153,7 +161,7 @@ const loadData = async () => {
       size: rowsPerPage.value,
       sort,
       name: filterValues.fullName || undefined,
-      sex: filterValues.sex || undefined,
+      sex: filterValues.sex === "all" ? undefined : filterValues.sex,
       "is-citizen":
         citizenFilter.value === "all"
           ? undefined
@@ -229,33 +237,7 @@ useHead(() => ({
         <h1 class="text-4xl font-bold leading-none tracking-tighter text-highlighted sm:text-6xl">Personen</h1>
         <h1 class="text-xl sm:text-2xl">Die aufgenommenen Würzburger Bürger und andere Personen in alphabetischer Anordnung</h1>
       </div>
-      <UPopover
-        mode="click"
-        :content="{ align: 'end', side: 'bottom', sideOffset: 8 }"
-      >
-        <UButton
-          color="neutral"
-          variant="outline"
-          icon="i-lucide-info"
-          label="Hinweise"
-        />
-        <template #content>
-          <ul class="max-w-sm list-inside list-disc space-y-2 p-4 text-sm">
-            <li>
-              Beim Klicken auf den Namen der jeweiligen Person öffnet sich
-              die Seite mit zusätzlichen Informationen
-            </li>
-            <li>
-              Über die Sortierknöpfe in den Spaltenüberschriften können die
-              Werte alphabetisch sortiert werden
-            </li>
-          </ul>
-        </template>
-      </UPopover>
     </header>
-    <div>
-      <p>Einträge insgesamt: {{ totalRecords }}</p>
-    </div>
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(16rem,18rem)_minmax(0,1fr)] lg:items-start">
       <aside class="overview-filter-panel">
         <div class="border-b border-muted p-5">
@@ -264,7 +246,7 @@ useHead(() => ({
             <UButton color="neutral" variant="ghost" size="sm" icon="i-lucide-rotate-ccw" label="Zurücksetzen" @click="resetFilters" />
           </div>
           <p class="mt-2 text-xs text-muted">
-            Die Textfilter durchsuchen sowohl die ursprünglichen als auch die normalisierten Schreibungen.
+            Die Textfilter decken sowohl die ursprünglichen als auch die normalisierten Schreibungen ab.
           </p>
         </div>
         <div class="flex flex-col">
@@ -298,7 +280,12 @@ useHead(() => ({
                 <UIcon name="i-lucide-chevron-down" class="size-4" />
               </span>
             </summary>
-            <UInput v-model="filterValues.sex" class="mt-3 w-full" placeholder="Suchen..." />
+            <USelect
+              v-model="filterValues.sex"
+              :items="sexOptions"
+              value-key="value"
+              class="mt-3 w-full"
+            />
           </details>
           <details open class="border-b border-default p-4">
             <summary class="cursor-pointer list-none text-base font-semibold">
@@ -357,6 +344,14 @@ useHead(() => ({
         </div>
       </aside>
       <section class="overview-table-panel p-5">
+        <div class="mb-3 flex flex-wrap items-center justify-between gap-3 border-b border-default pb-3">
+          <p class="text-sm text-muted">Einträge insgesamt: {{ totalRecords }}</p>
+          <USwitch
+            v-model="showNormalized"
+            label="Normalisierte Formen einblenden"
+            description="z. B. Berufskategorie, Bewaffnung"
+          />
+        </div>
         <UTable
           :data="rows"
           :columns="columns"
@@ -395,10 +390,10 @@ useHead(() => ({
             <span v-else class="text-dimmed" title="keine Angabe">–</span>
           </template>
           <template #job-cell="{ row }">
-            <div v-if="row.original.job?.jobCategory?.name || row.original.job?.originalText" class="flex flex-wrap items-baseline gap-x-1.5">
+            <div v-if="row.original.job?.originalText || (showNormalized && row.original.job?.jobCategory?.name)" class="flex flex-wrap items-baseline gap-x-1.5">
               <span v-if="row.original.job.originalText">{{ row.original.job.originalText }}</span>
               <UBadge
-                v-if="row.original.job.jobCategory?.name && row.original.job.jobCategory.name.trim().toLowerCase() !== row.original.job.originalText?.trim().toLowerCase()"
+                v-if="showNormalized && row.original.job.jobCategory?.name && row.original.job.jobCategory.name.trim().toLowerCase() !== row.original.job.originalText?.trim().toLowerCase()"
                 :label="row.original.job.jobCategory.name"
                 color="neutral"
                 variant="soft"
@@ -409,11 +404,11 @@ useHead(() => ({
             <span v-else class="text-dimmed" title="keine Angabe">–</span>
           </template>
           <template #weapons-cell="{ row }">
-            <div v-if="row.original.weapons?.length" class="flex flex-col gap-1">
+            <div v-if="row.original.weapons?.some((w) => w.originalText || (showNormalized && w.weapon?.name))" class="flex flex-col gap-1">
               <div v-for="weaponry in row.original.weapons" :key="weaponry.id ?? undefined" class="flex flex-wrap items-baseline gap-x-1.5">
                 <span v-if="weaponry.originalText">{{ weaponry.originalText }}</span>
                 <UBadge
-                  v-if="weaponry.weapon?.name && weaponry.weapon.name.trim().toLowerCase() !== weaponry.originalText?.trim().toLowerCase()"
+                  v-if="showNormalized && weaponry.weapon?.name && weaponry.weapon.name.trim().toLowerCase() !== weaponry.originalText?.trim().toLowerCase()"
                   :label="weaponry.weapon.name"
                   color="neutral"
                   variant="soft"
@@ -425,10 +420,10 @@ useHead(() => ({
             <span v-else class="text-dimmed" title="keine Angabe">–</span>
           </template>
           <template #religion-cell="{ row }">
-            <div v-if="row.original.religion?.religionCategory?.name || row.original.religion?.originalText" class="flex flex-wrap items-baseline gap-x-1.5">
+            <div v-if="row.original.religion?.originalText || (showNormalized && row.original.religion?.religionCategory?.name)" class="flex flex-wrap items-baseline gap-x-1.5">
               <span v-if="row.original.religion.originalText">{{ row.original.religion.originalText }}</span>
               <UBadge
-                v-if="row.original.religion.religionCategory?.name && row.original.religion.religionCategory.name.trim().toLowerCase() !== row.original.religion.originalText?.trim().toLowerCase()"
+                v-if="showNormalized && row.original.religion.religionCategory?.name && row.original.religion.religionCategory.name.trim().toLowerCase() !== row.original.religion.originalText?.trim().toLowerCase()"
                 :label="row.original.religion.religionCategory.name"
                 color="neutral"
                 variant="soft"
@@ -440,13 +435,13 @@ useHead(() => ({
           </template>
           <template #origin-cell="{ row }">
             <div
-              v-if="row.original.origin?.originalText || row.original.origin?.places?.length || row.original.origin?.certainty"
+              v-if="row.original.origin?.originalText || (showNormalized && (row.original.origin?.places?.length || row.original.origin?.certainty))"
               class="flex flex-col"
             >
               <span v-if="row.original.origin.originalText">{{ row.original.origin.originalText }}</span>
               <div
-                v-if="row.original.origin.certainty || row.original.origin.places.length"
-                class="flex flex-wrap items-baseline gap-x-1 text-xs"
+                v-if="showNormalized && (row.original.origin.certainty || row.original.origin.places.length)"
+                class="flex items-baseline gap-x-1 text-xs"
               >
                 <span
                   v-if="row.original.origin.certainty"
@@ -454,7 +449,7 @@ useHead(() => ({
                   :title="`Lokalisierbarkeit: ${ORIGIN_CERTAINTY[row.original.origin.certainty].label}`"
                   :aria-label="`Lokalisierbarkeit: ${ORIGIN_CERTAINTY[row.original.origin.certainty].label}`"
                 />
-                <span v-if="row.original.origin.places.length">
+                <span v-if="row.original.origin.places.length" class="min-w-0">
                   <template v-for="(place, index) in row.original.origin.places" :key="place.id">
                     <NuxtLink
                       :to="`/orte/${place.id}`"

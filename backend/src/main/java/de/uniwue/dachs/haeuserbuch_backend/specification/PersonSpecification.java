@@ -27,6 +27,12 @@ public class PersonSpecification {
     }
 
     public static Specification<Person> hasSex(String sex) {
+        if (sex.equalsIgnoreCase("unknown")) {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.or(
+                    criteriaBuilder.isNull(root.get("sex")),
+                    criteriaBuilder.equal(criteriaBuilder.trim(root.get("sex")), "")
+            );
+        }
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.like(criteriaBuilder.lower(root.get("sex")), "%" + sex.toLowerCase() + "%");
     }
