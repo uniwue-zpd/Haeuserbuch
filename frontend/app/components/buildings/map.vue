@@ -33,10 +33,12 @@ const props = withDefaults(defineProps<{
   selectedId?: number | null;
   selectionBottomPadding?: number;
   borderless?: boolean;
+  buildingsHidden?: boolean;
 }>(), {
   selectedId: null,
   selectionBottomPadding: 0,
   borderless: false,
+  buildingsHidden: false,
 });
 
 const emit = defineEmits<{
@@ -45,6 +47,8 @@ const emit = defineEmits<{
 
 const tileStore = useTileStore();
 const mapContainer = ref<HTMLElement | null>(null);
+const controlsContainer = ref<HTMLElement | null>(null);
+const slots = defineSlots<{ controls?: () => unknown }>();
 const mapTilesLoaded = ref(false);
 const buildingExtrusionsRendered = ref(false);
 const sources = computed(() => tileStore.historicalSources);
@@ -195,6 +199,7 @@ function handleMapClick(event: MapMouseEvent) {
 
 function createDeckLayers() {
   const revision = baseStyleRevision;
+  const visible = !props.buildingsHidden;
 
   return [
     new PolygonLayer<PolygonDatum>({
@@ -214,6 +219,7 @@ function createDeckLayers() {
         specularColor: [60, 60, 60],
       },
       pickable: true,
+      visible,
       updateTriggers: {
         getElevation: revision,
         getFillColor: revision,
@@ -230,6 +236,7 @@ function createDeckLayers() {
       getElevation: getBuildingElevation,
       getLineColor: getPolygonWireframeColor,
       pickable: false,
+      visible,
       updateTriggers: {
         getElevation: revision,
         getLineColor: revision,
@@ -245,6 +252,7 @@ function createDeckLayers() {
       capRounded: true,
       jointRounded: true,
       pickable: true,
+      visible,
       updateTriggers: {
         getColor: revision,
         getWidth: revision,
@@ -263,6 +271,7 @@ function createDeckLayers() {
       getLineWidth: getPointLineWidth,
       lineWidthUnits: 'pixels',
       pickable: true,
+      visible,
       updateTriggers: {
         getRadius: revision,
         getFillColor: revision,
@@ -287,6 +296,7 @@ function createDeckLayers() {
         specularColor: [60, 60, 60],
       },
       pickable: true,
+      visible,
     }),
     new PolygonLayer<PolygonDatum>({
       id: 'selected-building-polygon-wireframe',
@@ -301,6 +311,7 @@ function createDeckLayers() {
       getLineWidth: 6,
       lineWidthUnits: 'pixels',
       pickable: false,
+      visible,
     }),
     new PolygonLayer<PolygonDatum>({
       id: 'selected-building-polygon-outline',
@@ -315,6 +326,7 @@ function createDeckLayers() {
       getLineWidth: 3,
       lineWidthUnits: 'pixels',
       pickable: false,
+      visible,
     }),
     new PathLayer<LineDatum>({
       id: 'selected-building-line-halo',
@@ -326,6 +338,7 @@ function createDeckLayers() {
       capRounded: true,
       jointRounded: true,
       pickable: false,
+      visible,
     }),
     new PathLayer<LineDatum>({
       id: 'selected-building-line',
@@ -337,6 +350,7 @@ function createDeckLayers() {
       capRounded: true,
       jointRounded: true,
       pickable: true,
+      visible,
     }),
     new ScatterplotLayer<PointDatum>({
       id: 'selected-building-point',
@@ -351,6 +365,7 @@ function createDeckLayers() {
       getLineWidth: 3,
       lineWidthUnits: 'pixels',
       pickable: true,
+      visible,
     }),
   ];
 }
@@ -443,6 +458,9 @@ watch(filteredIdKey, updateBaseLayers);
 
 watch(() => props.features, updateBaseLayers);
 
+// Only toggles visibility; data and attributes stay cached on the layers.
+watch(() => props.buildingsHidden, () => deckOverlay?.setProps({ layers: createDeckLayers() }));
+
 watch(() => props.selectedId, () => {
   if (!mapLoaded || !map) return;
   updateSelectionLayers();
@@ -470,6 +488,11 @@ onMounted(() => {
         maxTileCacheZoomLevels: 8,
       },
   );
+  // Hand the slot content to MapLibre as a native control so it handles positioning.
+  if (slots.controls && controlsContainer.value) {
+    const element = controlsContainer.value;
+    map.addControl({ onAdd: () => element, onRemove: () => element.remove() }, 'top-left');
+  }
   map.on('idle', handleMapIdle);
   map.on('load', () => {
     addBuildingOverlay();
@@ -509,6 +532,9 @@ onBeforeUnmount(() => {
         ref="mapContainer"
         class="h-full w-full"
     />
+    <div v-if="$slots.controls" ref="controlsContainer" class="maplibregl-ctrl flex flex-wrap gap-2">
+      <slot name="controls" />
+    </div>
     <div
         v-if="isMapLoading"
         class="absolute inset-0 z-20 grid place-items-center bg-stone-50 px-6 text-center dark:bg-zinc-950"

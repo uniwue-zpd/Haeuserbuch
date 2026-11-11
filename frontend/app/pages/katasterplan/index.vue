@@ -10,6 +10,7 @@ const router = useRouter();
 const buildingApi = useBuildings();
 const districtStore = useDistrictStore();
 const quarterStore = useQuarterStore();
+const { loggedIn } = useUserSession();
 
 const {
   data: buildings,
@@ -32,6 +33,7 @@ const isDesktop = ref(false);
 const viewportHeight = ref(800);
 const sheetState = ref<"collapsed" | "half" | "full">("half");
 const draggedSheetHeight = ref<number | null>(null);
+const buildingsHidden = ref(false);
 
 const collator = new Intl.Collator("de-DE", {
   numeric: true,
@@ -144,7 +146,7 @@ const sheetHeight = computed(
   () => draggedSheetHeight.value ?? sheetSnapHeights.value[sheetState.value],
 );
 const mapBottomPadding = computed(() =>
-  isDesktop.value ? 0 : sheetHeight.value,
+  isDesktop.value || buildingsHidden.value ? 0 : sheetHeight.value,
 );
 
 useHead(() => ({ title: "Gebäudezuordnung und Beschreibung auf der Grundlage des Urkatasterplans von 1832" }));
@@ -334,9 +336,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section
-    class="relative h-[calc(100svh-79px)] min-h-140 w-full overflow-hidden bg-elevated"
-  >
+  <section class="relative h-[calc(100svh-79px)] min-h-140 w-full overflow-hidden bg-elevated">
     <div
       v-if="notice"
       class="absolute left-1/2 top-4 z-40 flex max-w-full -translate-x-1/2 items-center gap-2 rounded-md bg-slate-800 px-4 py-3 text-sm font-semibold text-white shadow-xl"
@@ -356,14 +356,11 @@ onBeforeUnmount(() => {
         <Icon name="material-symbols-close-rounded" class="text-xl" />
       </button>
     </div>
-
     <div
       v-if="buildingsError"
       class="flex h-full items-center justify-center bg-default p-6"
     >
-      <div
-        class="max-w-md rounded-md border border-error/30 bg-default p-7 text-center shadow-xl"
-      >
+      <div class="max-w-md rounded-md border border-error/30 bg-default p-7 text-center shadow-xl">
         <Icon
           name="material-symbols-error-outline-rounded"
           class="text-5xl text-error"
@@ -383,10 +380,10 @@ onBeforeUnmount(() => {
         </button>
       </div>
     </div>
-
     <div
       v-else
-      class="grid h-full min-h-0 grid-cols-1 grid-rows-[minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_560px]"
+      class="grid h-full min-h-0 grid-cols-1 grid-rows-[minmax(0,1fr)] transition-[grid-template-columns] duration-300 ease-out"
+      :class="buildingsHidden ? 'lg:grid-cols-[minmax(0,1fr)_0px]' : 'lg:grid-cols-[minmax(0,1fr)_560px]'"
     >
       <div class="relative min-h-0 overflow-hidden">
         <ClientOnly>
@@ -395,17 +392,42 @@ onBeforeUnmount(() => {
             :filtered-ids="filteredBuildingIds"
             :selected-id="selectedId"
             :selection-bottom-padding="mapBottomPadding"
+            :buildings-hidden="buildingsHidden"
             @select="selectBuilding"
-          />
+          >
+            <template #controls>
+              <UButton
+                color="neutral"
+                variant="outline"
+                class="bg-default shadow-lg"
+                :icon="buildingsHidden ? 'i-lucide-eye' : 'i-lucide-eye-off'"
+                :label="buildingsHidden ? 'Gebäude einblenden' : 'Gebäude ausblenden'"
+                :aria-pressed="buildingsHidden"
+                @click="buildingsHidden = !buildingsHidden"
+              />
+              <UButton
+                v-if="loggedIn"
+                color="neutral"
+                variant="outline"
+                class="bg-default shadow-lg"
+                to="/katasterplan/create"
+                icon="i-lucide-plus"
+                label="Neues Gebäude anlegen"
+              />
+            </template>
+          </BuildingsMap>
           <template #fallback
             ><div class="h-full w-full animate-pulse bg-slate-300"
           /></template>
         </ClientOnly>
       </div>
-
       <div
-         class="absolute inset-x-0 bottom-0 z-30 flex h-[var(--sheet-height)] min-h-18 flex-col overflow-anchor-none overflow-hidden lg:min-h-0 rounded-t-2xl border-t border-default bg-default shadow-xl transition-all duration-300 ease-out lg:static lg:inset-auto lg:z-auto lg:h-full lg:rounded-none lg:border-l lg:border-t lg:shadow-lg"
-        :class="draggedSheetHeight !== null ? '!duration-0' : ''"
+        class="absolute inset-x-0 bottom-0 z-30 flex h-[var(--sheet-height)] min-h-18 flex-col overflow-anchor-none overflow-hidden lg:min-h-0 rounded-t-2xl border-t border-default bg-default shadow-xl transition-all duration-300 ease-out lg:static lg:inset-auto lg:z-auto lg:h-full lg:rounded-none lg:border-l lg:border-t lg:shadow-lg"
+        :class="[
+          draggedSheetHeight !== null ? '!duration-0' : '',
+          buildingsHidden ? 'pointer-events-none translate-y-full opacity-0 lg:translate-y-0' : '',
+        ]"
+        :inert="buildingsHidden"
         :style="{ '--sheet-height': `${sheetHeight}px` }"
       >
         <button
