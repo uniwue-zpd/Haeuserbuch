@@ -15,6 +15,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -91,23 +92,9 @@ public class PersonService {
             String weapon,
             Long weaponId
     ) {
-        Specification<Person> spec = Specification.where(null);
-        if (name != null) spec = spec.and(PersonSpecification.hasName(name));
-        if (sex != null && !sex.isBlank()) spec = spec.and(PersonSpecification.hasSex(sex));
-        if (job != null && !job.isBlank()) spec = spec.and(PersonSpecification.hasJob(job));
-        if (jobId != null) spec = spec.and(PersonSpecification.hasJobId(jobId));
-        if (associatedBuilding != null && !associatedBuilding.isBlank()) spec = spec.and(PersonSpecification.hasAssociatedBuilding(associatedBuilding));
-        if (associatedBuildingId != null) spec = spec.and(PersonSpecification.hasAssociatedBuildingId(associatedBuildingId));
-        if (isCitizen != null) spec = spec.and(PersonSpecification.isCitizen(isCitizen));
-        if (placeOfOrigin != null && !placeOfOrigin.isBlank()) spec = spec.and(PersonSpecification.hasPlaceOfOrigin(placeOfOrigin));
-        if (placeOfOriginId != null) spec = spec.and(PersonSpecification.hasPlaceOfOriginId(placeOfOriginId));
-        if (originCertainty != null) spec  = spec.and(PersonSpecification.hasOriginCertainty(originCertainty));
-        if (placeOfEmigration != null && !placeOfEmigration.isBlank()) spec = spec.and(PersonSpecification.hasPlaceOfEmigration(placeOfEmigration));
-        if (placeOfEmigrationId != null) spec = spec.and(PersonSpecification.hasPlaceOfEmigrationId(placeOfEmigrationId));
-        if (religion != null && !religion.isBlank()) spec = spec.and(PersonSpecification.hasReligion(religion));
-        if (religionId != null) spec = spec.and(PersonSpecification.hasReligionId(religionId));
-        if (weapon != null && !weapon.isBlank()) spec = spec.and(PersonSpecification.hasWeapon(weapon));
-        if (weaponId != null) spec = spec.and(PersonSpecification.hasWeaponId(weaponId));
+        Specification<Person> spec = buildSpec(
+                name, sex, job, jobId, associatedBuilding, associatedBuildingId, isCitizen, placeOfOrigin, placeOfOriginId, originCertainty, placeOfEmigration, placeOfEmigrationId, religion, religionId, weapon, weaponId
+        );
         Page<Person> persons = personRepository.findAll(spec, pageable);
         return persons.map(personMapper::PersonToDTO);
     }
@@ -124,7 +111,7 @@ public class PersonService {
     }
 
     /**
-     * GET filter persons by various attributes. At least one parameter must be provided, otherwise a bad request response is returned.
+     * GET person previews filtered by various attributes, sorted by full name ascending. Without filters all persons are returned.
      * @param name Name of the person.
      * @param sex Sex of the person.
      * @param job Job of the person (either the original text or the category name can be used).
@@ -141,9 +128,36 @@ public class PersonService {
      * @param religionId ID of the religion category.
      * @param weapon Weapon associated with the person (can be searched by original text or category name).
      * @param weaponId ID of the weapon category.
-     * @return a {@link Set} of {@link PersonPreviewDTO} matching the provided filters.
+     * @return a sorted {@link List} of {@link PersonPreviewDTO} matching the provided filters.
      */
-    public Set<PersonPreviewDTO> filterPersons(
+    public List<PersonPreviewDTO> getPersonPreviews(
+            String name,
+            String sex,
+            String job,
+            Long jobId,
+            String associatedBuilding,
+            Long associatedBuildingId,
+            Boolean isCitizen,
+            String placeOfOrigin,
+            Long placeOfOriginId,
+            PlaceCertainty originCertainty,
+            String placeOfEmigration,
+            Long placeOfEmigrationId,
+            String religion,
+            Long religionId,
+            String weapon,
+            Long weaponId
+    ) {
+        Specification<Person> spec = buildSpec(
+                name, sex, job, jobId, associatedBuilding, associatedBuildingId, isCitizen, placeOfOrigin, placeOfOriginId, originCertainty, placeOfEmigration, placeOfEmigrationId, religion, religionId, weapon, weaponId
+        );
+        return personRepository.findAll(spec, Sort.by(Sort.Direction.ASC, "fullName")).stream()
+                .distinct()
+                .map(personMapper::PersonToPreviewDTO)
+                .toList();
+    }
+
+    private Specification<Person> buildSpec(
             String name,
             String sex,
             String job,
@@ -178,8 +192,7 @@ public class PersonService {
         if (religionId != null) spec = spec.and(PersonSpecification.hasReligionId(religionId));
         if (weapon != null && !weapon.isBlank()) spec = spec.and(PersonSpecification.hasWeapon(weapon));
         if (weaponId != null) spec = spec.and(PersonSpecification.hasWeaponId(weaponId));
-        Set<Person> results = new HashSet<>(personRepository.findAll(spec));
-        return personMapper.PersonsToPreviewDTOs(results);
+        return spec;
     }
 
     /**
@@ -240,17 +253,5 @@ public class PersonService {
     public void deletePerson(Long id) {
         if (!personRepository.existsById(id)) throw new EntityNotFoundException("Person with ID " + id + " does not exist.");
         personRepository.deleteById(id);
-    }
-
-    /**
-     * GET Allows searching for people by their names and alternative spellings of their names
-     * @param query to be used
-     * @return a {@link List} of {@link PersonPreviewDTO} matching the query
-     */
-    public List<PersonPreviewDTO> searchPeople(String query) {
-        return personRepository.searchPeople(query).stream()
-                .map(personMapper::PersonToPreviewDTO)
-                .filter(Objects::nonNull)
-                .toList();
     }
 }
