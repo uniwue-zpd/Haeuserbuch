@@ -12,9 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/persons")
@@ -65,8 +62,11 @@ public class PersonController {
                 .orElse(ResponseEntity.status(404).build());
     }
 
-    @GetMapping("/filter")
-    public ResponseEntity<Set<PersonPreviewDTO>> searchPersons(
+    /**
+     * GET lightweight person previews ({@code view=preview}), all or filtered, sorted by full name ascending.
+     */
+    @GetMapping(params = "view=preview")
+    public ResponseEntity<List<PersonPreviewDTO>> getPersonPreviews(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String sex,
             @RequestParam(required = false) String job,
@@ -84,14 +84,9 @@ public class PersonController {
             @RequestParam(required = false) String weapon,
             @RequestParam(required = false, value = "weapon-id") Long weaponId
     ) {
-        List<Object> paramsCount = Stream.<Object>of(
+        return ResponseEntity.ok(personService.getPersonPreviews(
                 name, sex, job, jobId, associatedBuilding, associatedBuildingId, isCitizen, placeOfOrigin, placeOfOriginId, originCertainty, placeOfEmigration, placeOfEmigrationId, religion, religionId, weapon, weaponId
-                ).filter(Objects::nonNull).toList();
-        if (paramsCount.isEmpty()) return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok(personService.filterPersons(
-                name, sex, job, jobId, associatedBuilding, associatedBuildingId, isCitizen, placeOfOrigin, placeOfOriginId, originCertainty, placeOfEmigration, placeOfEmigrationId, religion, religionId, weapon, weaponId
-                )
-        );
+        ));
     }
 
     @PostMapping
@@ -118,14 +113,5 @@ public class PersonController {
         } catch (Exception e) {
             return ResponseEntity.status(404).build();
         }
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<PersonPreviewDTO>> searchPeople(@RequestParam String query) {
-        if (query == null || query.trim().length() < 3) {
-            return ResponseEntity.ok(List.of());
-        }
-        List<PersonPreviewDTO> personPreviewDTOS = personService.searchPeople(query);
-        return ResponseEntity.ok(personPreviewDTOS);
     }
 }

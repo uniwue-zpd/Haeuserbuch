@@ -297,53 +297,43 @@ const periodLabel = (name: BuildingNameDTO): string =>
     </section>
 
     <section
+      v-if="associatedPeoplePending || associatedPeopleError || (associatedPeople && associatedPeople.length > 0)"
       :class="ui.section"
       :aria-labelledby="`${headingPrefix}-relations`"
     >
       <h2 :id="`${headingPrefix}-relations`" :class="ui.heading">
         Beziehungen zu anderen Entitäten
       </h2>
-      <div :class="ui.row">
-        <p :class="ui.label">Personen</p>
-        <div
-          v-if="associatedPeoplePending"
-          class="flex items-center gap-2 text-sm text-muted"
-          role="status"
-        >
-          <Icon
-            name="material-symbols-progress-activity"
-            class="animate-spin text-lg"
-            aria-hidden="true"
-          />
-          Relationen werden geladen …
-        </div>
-        <div
-          v-else-if="associatedPeopleError"
-          class="rounded-md bg-error/10 p-3 text-sm text-error"
-        >
-          <p>Die verknüpften Personen konnten nicht geladen werden.</p>
-          <button
-            class="mt-2 font-semibold underline"
-            type="button"
-            @click="$emit('retryRelationships')"
+      <PersonsList title="Personen" :persons="associatedPeople ?? []">
+        <template v-if="associatedPeoplePending || associatedPeopleError" #default>
+          <div
+            v-if="associatedPeoplePending"
+            class="flex items-center gap-2 py-2 text-sm text-muted"
+            role="status"
           >
-            Erneut versuchen
-          </button>
-        </div>
-        <div v-else-if="associatedPeople?.length" class="flex flex-wrap gap-2">
-          <NuxtLink
-            v-for="person in associatedPeople"
-            :key="person.id ?? person.fullName ?? 'person'"
-            :to="`/personen/${person.id}`"
-            :class="ui.link"
+            <Icon
+              name="material-symbols-progress-activity"
+              class="animate-spin text-lg"
+              aria-hidden="true"
+            />
+            Relationen werden geladen …
+          </div>
+          <div
+            v-else-if="associatedPeopleError"
+            class="flex flex-col items-start gap-2 rounded-md bg-error/10 p-3 text-sm text-error"
           >
-            {{ person.fullName || `Person mit ID ${person.id}` }}
-          </NuxtLink>
-        </div>
-        <p v-else class="text-sm text-muted">
-          Bisher keine Relationen gefunden
-        </p>
-      </div>
+            <p>Die verknüpften Personen konnten nicht geladen werden.</p>
+            <UButton
+              label="Erneut versuchen"
+              icon="i-lucide-rotate-cw"
+              color="error"
+              variant="soft"
+              size="xs"
+              @click="$emit('retryRelationships')"
+            />
+          </div>
+        </template>
+      </PersonsList>
     </section>
 
     <section

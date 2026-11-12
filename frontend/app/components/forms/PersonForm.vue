@@ -10,7 +10,7 @@ const props = defineProps<{
 const toast = useNuxtToast();
 const submitted = ref(false);
 
-const personStore = usePersonStore();
+const personApi = usePersons();
 
 type PersonInput = Omit<
   PersonDTO,
@@ -20,7 +20,7 @@ type PersonInput = Omit<
 const submit = async (formData: Partial<PersonInput>) => {
   try {
     if (props.action === "create") {
-      await personStore.createPerson(formData);
+      await personApi.createPerson(formData);
       toast.add({
         color: "success",
         title: "Erfolg",
@@ -31,7 +31,7 @@ const submit = async (formData: Partial<PersonInput>) => {
       form?.reset();
     } else if (props.action === "edit" && props.person?.id) {
       const id = props.person.id;
-      await personStore.updatePerson(id, formData);
+      await personApi.updatePerson(id, formData);
       toast.add({
         color: "success",
         title: "Erfolg",

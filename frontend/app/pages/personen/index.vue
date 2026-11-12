@@ -4,7 +4,7 @@ import type { TableColumn } from "@nuxt/ui";
 import type { Column } from "@tanstack/vue-table";
 import { debounce } from "~/utils/debounce";
 
-const personStore = usePersonStore();
+const personApi = usePersons();
 const UButton = resolveComponent("UButton");
 
 type PersonTableRow = PersonDTO & {
@@ -156,7 +156,7 @@ const loadData = async () => {
       ? `${sorting.value[0].id},${sorting.value[0].desc ? "desc" : "asc"}`
       : undefined;
     const nameQuery = filterValues.fullName.trim().toLowerCase();
-    const res = await personStore.fetchPersons({
+    const res = await personApi.getPersons({
       page: page.value,
       size: rowsPerPage.value,
       sort,

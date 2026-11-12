@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { isBuildingFeature, type BuildingFeature } from "~/utils/GeoJsonTypes";
-import type { PersonPreviewDTO } from "~/utils/types";
 import BuildingSkeleton from "~/components/UI/skeletons/BuildingSkeleton.vue";
 import FetchError from "~/components/UI/FetchError.vue";
 
@@ -13,6 +12,7 @@ definePageMeta({
 
 const buildingId = Number(route.params.id);
 const buildingApi = useBuildings();
+const personApi = usePersons();
 
 const {
   data: buildingItem,
@@ -28,10 +28,7 @@ const {
   refresh: refreshAssociatedPeople,
 } = await useAsyncData(
   `associated-people-building-${buildingId}`,
-  () =>
-    $fetch<PersonPreviewDTO[]>("/api/persons/filter", {
-      query: { "associated-building-id": buildingId },
-    }),
+  () => personApi.filterPersons({ "associated-building-id": buildingId }),
   { default: () => [] },
 );
 
