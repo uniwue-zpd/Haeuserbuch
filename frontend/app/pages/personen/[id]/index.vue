@@ -10,7 +10,7 @@ import PersonMap from "~/components/UI/preview_cards/PersonMap.vue";
 import PersonSkeleton from "~/components/UI/skeletons/PersonSkeleton.vue";
 import FetchError from "~/components/UI/FetchError.vue";
 
-const person_store = usePersonStore();
+const personApi = usePersons();
 const citizenshipStore = useCitizenshipStore();
 
 const route = useRoute();
@@ -27,7 +27,7 @@ const {
   pending: isLoading,
   error: hasError,
 } = await useAsyncData(`person-${personId}-details`, () =>
-  person_store.fetchPersonById(personId),
+  personApi.getPerson(personId),
 );
 const { data: naturalizationEntry } = await useAsyncData(
   `person-${personId}-naturalization`,

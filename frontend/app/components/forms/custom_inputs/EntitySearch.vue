@@ -27,7 +27,7 @@ const suggestions = ref<any[]>([]);
 const buildingApi = useBuildings();
 const districtStore = useDistrictStore();
 const jobStore = useJobStore();
-const personStore = usePersonStore();
+const personApi = usePersons();
 const placeStore = usePlaceStore();
 const quarterStore = useQuarterStore();
 const religionStore = useReligionStore();
@@ -58,7 +58,7 @@ const debouncedSearch = debounce(async (query: string) => {
       suggestions.value = await jobStore.searchJobs(query);
       break;
     case 'person':
-      suggestions.value = await personStore.searchPeople(query);
+      suggestions.value = await personApi.searchPersons(query);
       break;
     case 'place':
       suggestions.value = await placeStore.searchPlaces(query);

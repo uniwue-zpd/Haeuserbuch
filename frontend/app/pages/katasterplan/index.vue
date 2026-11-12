@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { isBuildingFeature, type BuildingFeature } from "~/utils/GeoJsonTypes";
-import type { FilterBuilding, PersonPreviewDTO } from "~/utils/types";
+import type { FilterBuilding } from "~/utils/types";
 import { debounce } from "~/utils/debounce";
 
 definePageMeta({ layout: "map" });
@@ -8,6 +8,7 @@ definePageMeta({ layout: "map" });
 const route = useRoute();
 const router = useRouter();
 const buildingApi = useBuildings();
+const personApi = usePersons();
 const districtStore = useDistrictStore();
 const quarterStore = useQuarterStore();
 const { loggedIn } = useUserSession();
@@ -130,9 +131,7 @@ const {
   "building-explorer-associated-people",
   () =>
     selectedId.value
-      ? $fetch<PersonPreviewDTO[]>("/api/persons/filter", {
-          query: { "associated-building-id": selectedId.value },
-        })
+      ? personApi.filterPersons({ "associated-building-id": selectedId.value })
       : Promise.resolve([]),
   { default: () => [], lazy: true, watch: [selectedId] },
 );

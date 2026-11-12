@@ -16,7 +16,7 @@ import FetchError from "~/components/UI/FetchError.vue";
 const router = useRoute();
 const placeId = Number(router.params.id);
 const placeStore = usePlaceStore();
-const person_store = usePersonStore();
+const personApi = usePersons();
 const {
   data: placeItem,
   error: hasError,
@@ -38,13 +38,15 @@ const mapCenter = computed<[number, number]>(() =>
     ? [geometry.value.coordinates[0], geometry.value.coordinates[1]]
     : DEFAULT_MAP_CENTER,
 );
-const { data: associatedPeople } = await useAsyncData(
+const { data: originPeople } = await useAsyncData(
   `place-${placeId}-associated_people`,
-  () => person_store.filterPersons({ "place-of-origin-id": placeId }),
+  () => personApi.filterPersons({ "place-of-origin-id": placeId }),
+  { default: () => [] },
 );
-const { data: emigratedPeople } = await useAsyncData(
+const { data: emigrationPeople } = await useAsyncData(
   `place-${placeId}-emigrated_people`,
-  () => person_store.filterPersons({ "place-of-emigration-id": placeId }),
+  () => personApi.filterPersons({ "place-of-emigration-id": placeId }),
+  { default: () => [] },
 );
 
 useHead(() => ({
@@ -147,39 +149,26 @@ onBeforeUnmount(() => {
         </div>
       </section>
 
-      <section class="flex min-w-0 flex-col gap-5 rounded-md border border-default bg-default p-5 shadow-md lg:col-span-7">
-         <div class="flex items-start justify-between gap-4">
-           <h2 class="text-xl font-semibold leading-tight text-highlighted">Beziehungen zu anderen Entitäten</h2>
-        </div>
-         <div class="flex flex-col">
-           <div class="flex flex-col gap-2 border-t border-muted py-3 first:border-t-0 first:pt-0 last:pb-0">
-              <p class="text-sm font-semibold text-muted">Möglicher Herkunftsort von</p>
-            <div v-if="associatedPeople?.length" class="flex flex-wrap gap-2">
-              <NuxtLink
-                v-for="person in associatedPeople"
-                :key="person.id ?? person.fullName ?? 'person'"
-                :to="`/personen/${person.id}`"
-                 class="inline-flex max-w-full rounded-md border border-accented px-2 py-2 text-sm font-semibold leading-tight text-highlighted transition-colors duration-150 hover:border-accented hover:bg-elevated"
-              >
-                {{ person.fullName || `Person mit ID ${person.id}` }}
-              </NuxtLink>
-            </div>
-            <p v-else class="text-sm text-muted">Bisher keine Relationen gefunden</p>
-          </div>
-           <div class="flex flex-col gap-2 border-t border-muted py-3 first:border-t-0 first:pt-0 last:pb-0">
-              <p class="text-sm font-semibold text-muted">Wegzugsort von</p>
-            <div v-if="emigratedPeople?.length" class="flex flex-wrap gap-2">
-              <NuxtLink
-                v-for="person in emigratedPeople"
-                :key="person.id ?? person.fullName ?? 'person'"
-                :to="`/personen/${person.id}`"
-                 class="inline-flex max-w-full rounded-md border border-accented px-2 py-2 text-sm font-semibold leading-tight text-highlighted transition-colors duration-150 hover:border-accented hover:bg-elevated"
-              >
-                {{ person.fullName || `Person mit ID ${person.id}` }}
-              </NuxtLink>
-            </div>
-            <p v-else class="text-sm text-muted">Bisher keine Relationen gefunden</p>
-          </div>
+      <section
+        v-if="originPeople.length > 0 || emigrationPeople.length > 0"
+        class="flex min-w-0 flex-col gap-5 rounded-md border border-default bg-default p-5 shadow-md"
+        :class="originPeople.length > 0 && emigrationPeople.length > 0 ? 'lg:col-span-8' : 'lg:col-span-4'"
+      >
+        <h2 class="text-xl font-semibold leading-tight text-highlighted">Beziehungen zu anderen Entitäten</h2>
+        <div
+          class="grid grid-cols-1 gap-4"
+          :class="{ 'md:grid-cols-2': originPeople.length > 0 && emigrationPeople.length > 0 }"
+        >
+          <PersonsList
+            v-if="originPeople.length > 0"
+            title="Möglicher Herkunftsort von"
+            :persons="originPeople"
+          />
+          <PersonsList
+            v-if="emigrationPeople.length > 0"
+            title="Wegzugsort von"
+            :persons="emigrationPeople"
+          />
         </div>
       </section>
 
