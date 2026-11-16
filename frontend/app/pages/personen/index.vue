@@ -390,18 +390,9 @@ useHead(() => ({
             <span v-else class="text-dimmed" title="keine Angabe">–</span>
           </template>
           <template #job-cell="{ row }">
-            <div v-if="row.original.job?.originalText || (showNormalized && row.original.job?.jobCategory?.name)" class="flex flex-wrap items-baseline gap-x-1.5">
-              <span v-if="row.original.job.originalText">{{ row.original.job.originalText }}</span>
-              <UBadge
-                v-if="showNormalized && row.original.job.jobCategory?.name && row.original.job.jobCategory.name.trim().toLowerCase() !== row.original.job.originalText?.trim().toLowerCase()"
-                :label="row.original.job.jobCategory.name"
-                color="neutral"
-                variant="soft"
-                size="sm"
-                title="Normalisierte Form"
-              />
-            </div>
-            <span v-else class="text-dimmed" title="keine Angabe">–</span>
+            <PersonsJobValue :job="row.original.job" :show-normalized="showNormalized">
+              <template #empty><span class="text-dimmed" title="keine Angabe">–</span></template>
+            </PersonsJobValue>
           </template>
           <template #weapons-cell="{ row }">
             <div v-if="row.original.weapons?.some((w) => w.originalText || (showNormalized && w.weapon?.name))" class="flex flex-col gap-1">
@@ -434,36 +425,9 @@ useHead(() => ({
             <span v-else class="text-dimmed" title="keine Angabe">–</span>
           </template>
           <template #origin-cell="{ row }">
-            <div
-              v-if="row.original.origin?.originalText || (showNormalized && (row.original.origin?.places?.length || row.original.origin?.certainty))"
-              class="flex flex-col"
-            >
-              <span v-if="row.original.origin.originalText">{{ row.original.origin.originalText }}</span>
-              <div
-                v-if="showNormalized && (row.original.origin.certainty || row.original.origin.places.length)"
-                class="flex items-baseline gap-x-1 text-xs"
-              >
-                <span
-                  v-if="row.original.origin.certainty"
-                  :class="`size-2 shrink-0 self-center rounded-full border border-gray-400 ${ORIGIN_CERTAINTY[row.original.origin.certainty].color}`"
-                  :title="`Lokalisierbarkeit: ${ORIGIN_CERTAINTY[row.original.origin.certainty].label}`"
-                  :aria-label="`Lokalisierbarkeit: ${ORIGIN_CERTAINTY[row.original.origin.certainty].label}`"
-                />
-                <span v-if="row.original.origin.places.length" class="min-w-0">
-                  <template v-for="(place, index) in row.original.origin.places" :key="place.id">
-                    <NuxtLink
-                      :to="`/orte/${place.id}`"
-                      :title="`${place.realName}`"
-                      class="whitespace-nowrap text-highlighted underline decoration-muted underline-offset-4 hover:decoration-current"
-                    >
-                      {{ place.realName ? place.realName.split(',')[0] : 'Ort' }}
-                    </NuxtLink>
-                    <span v-if="index < row.original.origin.places.length - 1" class="text-muted">, </span>
-                  </template>
-                </span>
-              </div>
-            </div>
-            <span v-else class="text-dimmed" title="keine Angabe">–</span>
+            <PersonsOriginValue :origin="row.original.origin" :show-normalized="showNormalized">
+              <template #empty><span class="text-dimmed" title="keine Angabe">–</span></template>
+            </PersonsOriginValue>
           </template>
           <template #associatedBuilding-cell="{ row }">
             <NuxtLink
