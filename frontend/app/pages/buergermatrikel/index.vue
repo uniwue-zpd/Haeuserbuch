@@ -10,8 +10,6 @@ const UButton = resolveComponent("UButton");
 type CitizenshipTableRow = CitizenshipDTO & {
   /** Original spelling (first altName), falls back to the normalized full name */
   personName: string | null;
-  primarySourceTitle: string | null;
-  secondarySourceTitle: string | null;
 };
 
 const showNormalized = ref(false);
@@ -38,8 +36,6 @@ const filterValues = reactive({
   guarantorName: "",
   guarantorJob: "",
   guarantorOrigin: "",
-  primarySourceTitle: "",
-  secondarySourceTitle: "",
 });
 
 const resetFilters = () => {
@@ -54,8 +50,6 @@ const resetFilters = () => {
     guarantorName: "",
     guarantorJob: "",
     guarantorOrigin: "",
-    primarySourceTitle: "",
-    secondarySourceTitle: "",
   });
 };
 
@@ -167,14 +161,10 @@ const loadData = async () => {
       guarantor: filterValues.guarantorName || undefined,
       "guarantor-job": filterValues.guarantorJob || undefined,
       "guarantor-origin": filterValues.guarantorOrigin || undefined,
-      primarysource: filterValues.primarySourceTitle || undefined,
-      secondarysource: filterValues.secondarySourceTitle || undefined,
     });
     rows.value = res.content.map((citizenship: CitizenshipDTO) => ({
       ...citizenship,
       personName: citizenship.person?.altNames?.[0] ?? citizenship.person?.fullName ?? null,
-      primarySourceTitle: citizenship.primarySource?.title ?? null,
-      secondarySourceTitle: citizenship.secondarySource?.title ?? null,
     }));
     totalRecords.value = res.totalElements;
   } finally {
