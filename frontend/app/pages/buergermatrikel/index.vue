@@ -132,12 +132,9 @@ const columns: TableColumn<CitizenshipTableRow>[] = [
   }
 ];
 
-/** Normalized full name, shown only with the toggle on and if it differs from the original spelling */
-const normalizedName = (row: CitizenshipTableRow): string | null => {
-  const fullName = row.person?.fullName;
-  if (!showNormalized.value || !fullName) return null;
-  return fullName.trim().toLowerCase() !== row.personName?.trim().toLowerCase() ? fullName : null;
-};
+/** Normalized full name, shown whenever the toggle is on */
+const normalizedName = (row: CitizenshipTableRow): string | null =>
+  showNormalized.value ? row.person?.fullName ?? null : null;
 
 const loadData = async () => {
   loading.value = true;
