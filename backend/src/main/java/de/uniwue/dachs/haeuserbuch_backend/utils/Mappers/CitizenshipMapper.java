@@ -37,7 +37,7 @@ public class CitizenshipMapper {
         CitizenshipDTO citizenshipDTO = new CitizenshipDTO();
         citizenshipDTO.setId(citizenship.getId());
         citizenshipDTO.setSignature(citizenship.getSignature());
-        citizenshipDTO.setPerson(personMapper.PersonToPreviewDTO(citizenship.getPerson()));
+        citizenshipDTO.setPerson(citizenship.getPerson() == null ? null : personMapper.PersonToDTO(citizenship.getPerson()));
         citizenshipDTO.setMentionedPersons(personMapper.PersonsToPreviewDTOs(citizenship.getMentionedPersons()));
         citizenshipDTO.setGuarantors(personMapper.PersonsToPreviewDTOs(citizenship.getGuarantors()));
         citizenshipDTO.setPrimarySource(sourceMapper.SourceToDTO(citizenship.getPrimarySource()));

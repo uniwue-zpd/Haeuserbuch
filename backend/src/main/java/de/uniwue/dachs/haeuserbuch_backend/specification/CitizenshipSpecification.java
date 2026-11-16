@@ -1,9 +1,15 @@
 package de.uniwue.dachs.haeuserbuch_backend.specification;
 
+import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonJob;
+import de.uniwue.dachs.haeuserbuch_backend.embeddable.PersonOrigin;
 import de.uniwue.dachs.haeuserbuch_backend.model.Citizenship;
+import de.uniwue.dachs.haeuserbuch_backend.model.Job;
 import de.uniwue.dachs.haeuserbuch_backend.model.Person;
+import de.uniwue.dachs.haeuserbuch_backend.model.Place;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 public class CitizenshipSpecification {
@@ -17,11 +23,58 @@ public class CitizenshipSpecification {
                 criteriaBuilder.like(criteriaBuilder.lower(root.get("signature")), "%" + signature.toLowerCase() + "%");
     }
 
+    /** Matches normalized names (full/first/last name) as well as original spellings (altNames) */
+    private static Predicate nameMatches(CriteriaBuilder cb, Join<?, Person> personJoin, String value) {
+        Join<Person, String> altNamesJoin = personJoin.join("altNames", JoinType.LEFT);
+        String pattern = "%" + value.strip().toLowerCase() + "%";
+        return cb.or(
+                cb.like(cb.lower(personJoin.get("fullName")), pattern),
+                cb.like(cb.lower(personJoin.get("firstName")), pattern),
+                cb.like(cb.lower(personJoin.get("lastName")), pattern),
+                cb.like(cb.lower(altNamesJoin), pattern)
+        );
+    }
+
+    /** Matches the original job text as well as the normalized job category */
+    private static Predicate jobMatches(CriteriaBuilder cb, Join<?, Person> personJoin, String value) {
+        Join<Person, PersonJob> jobJoin = personJoin.join("job", JoinType.LEFT);
+        Join<PersonJob, Job> jobCategoryJoin = jobJoin.join("jobCategory", JoinType.LEFT);
+        String pattern = "%" + value.strip().toLowerCase() + "%";
+        return cb.or(
+                cb.like(cb.lower(jobJoin.get("originalText")), pattern),
+                cb.like(cb.lower(jobCategoryJoin.get("name")), pattern)
+        );
+    }
+
+    /** Matches the original origin text as well as the identified places */
+    private static Predicate originMatches(CriteriaBuilder cb, Join<?, Person> personJoin, String value) {
+        Join<Person, PersonOrigin> originJoin = personJoin.join("origin", JoinType.LEFT);
+        Join<PersonOrigin, Place> placeJoin = originJoin.join("places", JoinType.LEFT);
+        String pattern = "%" + value.strip().toLowerCase() + "%";
+        return cb.or(
+                cb.like(cb.lower(originJoin.get("originalText")), pattern),
+                cb.like(cb.lower(placeJoin.get("realName")), pattern)
+        );
+    }
+
     public static Specification<Citizenship> hasNaturalizedPerson(String naturalizedPerson) {
         return (root, query, criteriaBuilder) -> {
-            Join<Citizenship, Person> personJoin = root.join("person", JoinType.LEFT);
-            String pattern = "%" + naturalizedPerson.strip().toLowerCase() + "%";
-            return criteriaBuilder.like(criteriaBuilder.lower(personJoin.get("fullName")), pattern);
+            assert query != null;
+            query.distinct(true);
+            return nameMatches(criteriaBuilder, root.join("person", JoinType.LEFT), naturalizedPerson);
+        };
+    }
+
+    public static Specification<Citizenship> hasNaturalizedPersonJob(String job) {
+        return (root, query, criteriaBuilder) ->
+                jobMatches(criteriaBuilder, root.join("person", JoinType.LEFT), job);
+    }
+
+    public static Specification<Citizenship> hasNaturalizedPersonOrigin(String origin) {
+        return (root, query, criteriaBuilder) -> {
+            assert query != null;
+            query.distinct(true);
+            return originMatches(criteriaBuilder, root.join("person", JoinType.LEFT), origin);
         };
     }
 
@@ -36,9 +89,23 @@ public class CitizenshipSpecification {
         return (root, query, criteriaBuilder) -> {
             assert query != null;
             query.distinct(true);
-            Join<Citizenship, Person> guarantorJoin = root.joinSet("guarantors", JoinType.LEFT);
-            String pattern = "%" + guarantor.strip().toLowerCase() + "%";
-            return criteriaBuilder.like(criteriaBuilder.lower(guarantorJoin.get("fullName")), pattern);
+            return nameMatches(criteriaBuilder, root.joinSet("guarantors", JoinType.LEFT), guarantor);
+        };
+    }
+
+    public static Specification<Citizenship> hasGuarantorJob(String job) {
+        return (root, query, criteriaBuilder) -> {
+            assert query != null;
+            query.distinct(true);
+            return jobMatches(criteriaBuilder, root.joinSet("guarantors", JoinType.LEFT), job);
+        };
+    }
+
+    public static Specification<Citizenship> hasGuarantorOrigin(String origin) {
+        return (root, query, criteriaBuilder) -> {
+            assert query != null;
+            query.distinct(true);
+            return originMatches(criteriaBuilder, root.joinSet("guarantors", JoinType.LEFT), origin);
         };
     }
 

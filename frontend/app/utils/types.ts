@@ -75,7 +75,7 @@ export interface FilterBuilding {
 /** Represents a naturalization event listed in the citizen register */
 export interface CitizenshipDTO extends Auditable {
     signature: string | null;
-    person: PersonPreviewDTO | null;
+    person: PersonDTO | null;
     mentionedPersons: PersonPreviewDTO[] | [];
     guarantors: PersonPreviewDTO[] | [];
     primarySource: SourceDTO;
@@ -111,6 +111,10 @@ export interface FilterCitizenship {
     'year-to'?: number;
     primarysource?: string;
     secondarysource?: string;
+    'naturalizedperson-job'?: string;
+    'naturalizedperson-origin'?: string;
+    'guarantor-job'?: string;
+    'guarantor-origin'?: string;
 }
 
 export interface CitizenshipFullTextResult {

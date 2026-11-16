@@ -92,6 +92,11 @@ public class PersonMapper {
         return personRepository.findById(previewDTO.getId()).orElse(null);
     }
 
+    /** Resolves a referenced (already existing) person by id, ignoring all other DTO fields */
+    public Person PreviewDTOToPerson(PersonDTO personDTO) {
+        if (personDTO == null || personDTO.getId() == null) return null;
+        return personRepository.findById(personDTO.getId()).orElse(null);
+    }
     public Set<Person> PreviewDTOsToPersons(Set<PersonPreviewDTO> previewDTOs) {
         return previewDTOs.stream().map(this::PreviewDTOToPerson).filter(Objects::nonNull).collect(Collectors.toSet());
     }
