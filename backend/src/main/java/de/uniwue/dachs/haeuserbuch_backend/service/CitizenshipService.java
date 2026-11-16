@@ -7,6 +7,7 @@ import de.uniwue.dachs.haeuserbuch_backend.model.*;
 import de.uniwue.dachs.haeuserbuch_backend.repository.CitizenshipRepository;
 import de.uniwue.dachs.haeuserbuch_backend.search.SearchIndexAffecting;
 import de.uniwue.dachs.haeuserbuch_backend.search.SearchMatching;
+import de.uniwue.dachs.haeuserbuch_backend.specification.CitizenshipSearchCriteria;
 import de.uniwue.dachs.haeuserbuch_backend.specification.CitizenshipSpecification;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.CitizenshipMapper;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PersonMapper;
@@ -49,82 +50,56 @@ public class CitizenshipService {
     }
 
     /**
-     * GET a {@link Page} of citizenships with optional filters
+     * GET a {@link Page} of citizenships matching the given criteria
+     * @param criteria {@link CitizenshipSearchCriteria}; {@code null} values and blank strings are ignored
      * @param pageable paging params
-     * @param refNumber {@link String} filter by refNumber
-     * @param signature {@link String} filter by signature
-     * @param naturalizedPerson {@link String} filter by naturalized person's name
-     * @param naturalizedPersonId {@link Long} filter by naturalized person's id
-     * @param guarantor {@link String} filter by a guarantor's name
-     * @param guarantorId {@link Long} filter by a guarantor's id
-     * @param yearNaturalization {@link Integer} filter by exact year of naturalization
-     * @param yearFrom {@link Integer} lower bound (inclusive) of the year of naturalization
-     * @param yearTo {@link Integer} upper bound (inclusive) of the year of naturalization
-     * @param primarySource {@link String} filter by primary source title
-     * @param secondarySource {@link String} filter by secondary source title
-     * @return {@link Page} of {@link CitizenshipDTO} objects matching the filters
+     * @return {@link Page} of {@link CitizenshipDTO} objects matching the criteria
      */
-    public Page<CitizenshipDTO> getPagedCitizenships(
-            Pageable pageable,
-            String refNumber,
-            String signature,
-            String naturalizedPerson,
-            Long naturalizedPersonId,
-            String guarantor,
-            Long guarantorId,
-            Integer yearNaturalization,
-            Integer yearFrom,
-            Integer yearTo,
-            String primarySource,
-            String secondarySource
-    ) {
-        Specification<Citizenship> spec = Specification.where(null);
-        if (refNumber != null && !refNumber.isBlank()) spec = spec.and(CitizenshipSpecification.hasRefNumber(refNumber));
-        if (signature != null && !signature.isBlank()) spec = spec.and(CitizenshipSpecification.hasSignature(signature));
-        if (naturalizedPerson != null && !naturalizedPerson.isBlank()) spec = spec.and(CitizenshipSpecification.hasNaturalizedPerson(naturalizedPerson));
-        if (naturalizedPersonId != null) spec = spec.and(CitizenshipSpecification.hasNaturalizedPersonId(naturalizedPersonId));
-        if (guarantor != null && !guarantor.isBlank()) spec = spec.and(CitizenshipSpecification.hasGuarantor(guarantor));
-        if (guarantorId != null) spec = spec.and(CitizenshipSpecification.hasGuarantorId(guarantorId));
-        if (yearNaturalization != null) spec = spec.and(CitizenshipSpecification.hasYearNaturalization(yearNaturalization));
-        if (yearFrom != null) spec = spec.and(CitizenshipSpecification.hasYearFrom(yearFrom));
-        if (yearTo != null) spec = spec.and(CitizenshipSpecification.hasYearTo(yearTo));
-        if (primarySource != null && !primarySource.isBlank()) spec = spec.and(CitizenshipSpecification.hasPrimarySource(primarySource));
-        if (secondarySource != null && !secondarySource.isBlank()) spec = spec.and(CitizenshipSpecification.hasSecondarySource(secondarySource));
-        Page<Citizenship> citizenships = citizenshipRepository.findAll(spec, pageable);
-        return citizenships.map(citizenshipMapper::CitizenshipToDTO);
+    public Page<CitizenshipDTO> getPagedCitizenships(CitizenshipSearchCriteria criteria, Pageable pageable) {
+        return citizenshipRepository.findAll(buildSpecification(criteria), pageable)
+                .map(citizenshipMapper::CitizenshipToDTO);
     }
 
-    public List<CitizenshipPreviewDTO> filterCitizenships(
-            String refNumber,
-            String signature,
-            String naturalizedPerson,
-            Long naturalizedPersonId,
-            String guarantor,
-            Long guarantorId,
-            Integer yearNaturalization,
-            Integer yearFrom,
-            Integer yearTo,
-            String primarySource,
-            String secondarySource
-    ) {
-        Specification<Citizenship> spec = Specification.where(null);
-        if (refNumber != null && !refNumber.isBlank()) spec = spec.and(CitizenshipSpecification.hasRefNumber(refNumber));
-        if (signature != null && !signature.isBlank()) spec = spec.and(CitizenshipSpecification.hasSignature(signature));
-        if (naturalizedPerson != null && !naturalizedPerson.isBlank()) spec = spec.and(CitizenshipSpecification.hasNaturalizedPerson(naturalizedPerson));
-        if (naturalizedPersonId != null) spec = spec.and(CitizenshipSpecification.hasNaturalizedPersonId(naturalizedPersonId));
-        if (guarantor != null && !guarantor.isBlank()) spec = spec.and(CitizenshipSpecification.hasGuarantor(guarantor));
-        if (guarantorId != null) spec = spec.and(CitizenshipSpecification.hasGuarantorId(guarantorId));
-        if (yearNaturalization != null) spec = spec.and(CitizenshipSpecification.hasYearNaturalization(yearNaturalization));
-        if (yearFrom != null) spec = spec.and(CitizenshipSpecification.hasYearFrom(yearFrom));
-        if (yearTo != null) spec = spec.and(CitizenshipSpecification.hasYearTo(yearTo));
-        if (primarySource != null && !primarySource.isBlank()) spec = spec.and(CitizenshipSpecification.hasPrimarySource(primarySource));
-        if (secondarySource != null && !secondarySource.isBlank()) spec = spec.and(CitizenshipSpecification.hasSecondarySource(secondarySource));
-        List<Citizenship> citizenships = citizenshipRepository.findAll(spec);
-        return citizenships.stream()
+    /**
+     * GET an unpaged list of citizenship previews matching the given criteria
+     * @param criteria {@link CitizenshipSearchCriteria}; {@code null} values and blank strings are ignored
+     * @return {@link List} of {@link CitizenshipPreviewDTO} objects sorted by id
+     */
+    public List<CitizenshipPreviewDTO> filterCitizenships(CitizenshipSearchCriteria criteria) {
+        return citizenshipRepository.findAll(buildSpecification(criteria)).stream()
                 .map(citizenshipMapper::CitizenshipToPreviewDTO)
                 .filter(Objects::nonNull)
                 .sorted(Comparator.comparing(CitizenshipPreviewDTO::getId))
                 .toList();
+    }
+
+    /**
+     * Builds a {@link Specification} that combines all set criteria with AND.
+     * @param c search criteria; {@code null} values and blank strings are ignored
+     */
+    private Specification<Citizenship> buildSpecification(CitizenshipSearchCriteria c) {
+        Specification<Citizenship> spec = Specification.where(null);
+        if (c == null) return spec;
+        if (hasText(c.refNumber())) spec = spec.and(CitizenshipSpecification.hasRefNumber(c.refNumber()));
+        if (hasText(c.signature())) spec = spec.and(CitizenshipSpecification.hasSignature(c.signature()));
+        if (hasText(c.naturalizedPerson())) spec = spec.and(CitizenshipSpecification.hasNaturalizedPerson(c.naturalizedPerson()));
+        if (c.naturalizedPersonId() != null) spec = spec.and(CitizenshipSpecification.hasNaturalizedPersonId(c.naturalizedPersonId()));
+        if (hasText(c.naturalizedPersonJob())) spec = spec.and(CitizenshipSpecification.hasNaturalizedPersonJob(c.naturalizedPersonJob()));
+        if (hasText(c.naturalizedPersonOrigin())) spec = spec.and(CitizenshipSpecification.hasNaturalizedPersonOrigin(c.naturalizedPersonOrigin()));
+        if (hasText(c.guarantor())) spec = spec.and(CitizenshipSpecification.hasGuarantor(c.guarantor()));
+        if (c.guarantorId() != null) spec = spec.and(CitizenshipSpecification.hasGuarantorId(c.guarantorId()));
+        if (hasText(c.guarantorJob())) spec = spec.and(CitizenshipSpecification.hasGuarantorJob(c.guarantorJob()));
+        if (hasText(c.guarantorOrigin())) spec = spec.and(CitizenshipSpecification.hasGuarantorOrigin(c.guarantorOrigin()));
+        if (c.yearNaturalization() != null) spec = spec.and(CitizenshipSpecification.hasYearNaturalization(c.yearNaturalization()));
+        if (c.yearFrom() != null) spec = spec.and(CitizenshipSpecification.hasYearFrom(c.yearFrom()));
+        if (c.yearTo() != null) spec = spec.and(CitizenshipSpecification.hasYearTo(c.yearTo()));
+        if (hasText(c.primarySource())) spec = spec.and(CitizenshipSpecification.hasPrimarySource(c.primarySource()));
+        if (hasText(c.secondarySource())) spec = spec.and(CitizenshipSpecification.hasSecondarySource(c.secondarySource()));
+        return spec;
+    }
+
+    private static boolean hasText(String value) {
+        return value != null && !value.isBlank();
     }
 
     /**

@@ -5,6 +5,7 @@ import de.uniwue.dachs.haeuserbuch_backend.DTO.FullTextSearch.CitizenshipFullTex
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.CitizenshipPreviewDTO;
 import de.uniwue.dachs.haeuserbuch_backend.service.CitizenshipService;
 import de.uniwue.dachs.haeuserbuch_backend.search.SearchMatching;
+import de.uniwue.dachs.haeuserbuch_backend.specification.CitizenshipSearchCriteria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -13,8 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/citizenships")
@@ -31,6 +30,9 @@ public class CitizenshipController {
         return ResponseEntity.ok(citizenships);
     }
 
+    /**
+     * Paginated list of full {@link CitizenshipDTO} objects. All filters are optional.
+     */
     @GetMapping
     public ResponseEntity<Page<CitizenshipDTO>> getPagedCitizenships(
             @PageableDefault(sort = "id", direction = Sort.Direction.ASC)
@@ -39,40 +41,56 @@ public class CitizenshipController {
             @RequestParam(required = false) String signature,
             @RequestParam(required = false, value="naturalizedperson") String naturalizedPerson,
             @RequestParam(required = false, value="naturalizedperson-id") Long naturalizedPersonId,
+            @RequestParam(required = false, value="naturalizedperson-job") String naturalizedPersonJob,
+            @RequestParam(required = false, value="naturalizedperson-origin") String naturalizedPersonOrigin,
             @RequestParam(required = false) String guarantor,
             @RequestParam(required = false, value="guarantor-id") Long guarantorId,
+            @RequestParam(required = false, value="guarantor-job") String guarantorJob,
+            @RequestParam(required = false, value="guarantor-origin") String guarantorOrigin,
             @RequestParam(required = false, value="yearnaturalization") Integer yearNaturalization,
             @RequestParam(required = false, value="year-from") Integer yearFrom,
             @RequestParam(required = false, value="year-to") Integer yearTo,
             @RequestParam(required = false, value="primarysource") String primarySource,
             @RequestParam(required = false, value="secondarysource") String secondarySource
     ) {
-        Page<CitizenshipDTO> citizenships = citizenshipService
-                .getPagedCitizenships(pageable, refNumber, signature, naturalizedPerson, naturalizedPersonId, guarantor, guarantorId, yearNaturalization, yearFrom, yearTo, primarySource, secondarySource);
-        return ResponseEntity.ok(citizenships);
+        CitizenshipSearchCriteria criteria = new CitizenshipSearchCriteria(
+                refNumber, signature,
+                naturalizedPerson, naturalizedPersonId, naturalizedPersonJob, naturalizedPersonOrigin,
+                guarantor, guarantorId, guarantorJob, guarantorOrigin,
+                yearNaturalization, yearFrom, yearTo, primarySource, secondarySource
+        );
+        return ResponseEntity.ok(citizenshipService.getPagedCitizenships(criteria, pageable));
     }
 
+    /**
+     * Unpaginated list of lightweight {@link CitizenshipPreviewDTO} objects. At least one filter is required.
+     */
     @GetMapping("/filter")
     public ResponseEntity<List<CitizenshipPreviewDTO>> getFilteredCitizenships(
             @RequestParam(required = false, value="refnumber") String refNumber,
             @RequestParam(required = false) String signature,
             @RequestParam(required = false, value="naturalizedperson") String naturalizedPerson,
             @RequestParam(required = false, value="naturalizedperson-id") Long naturalizedPersonId,
+            @RequestParam(required = false, value="naturalizedperson-job") String naturalizedPersonJob,
+            @RequestParam(required = false, value="naturalizedperson-origin") String naturalizedPersonOrigin,
             @RequestParam(required = false) String guarantor,
             @RequestParam(required = false, value="guarantor-id") Long guarantorId,
+            @RequestParam(required = false, value="guarantor-job") String guarantorJob,
+            @RequestParam(required = false, value="guarantor-origin") String guarantorOrigin,
             @RequestParam(required = false, value="yearnaturalization") Integer yearNaturalization,
             @RequestParam(required = false, value="year-from") Integer yearFrom,
             @RequestParam(required = false, value="year-to") Integer yearTo,
             @RequestParam(required = false, value="primarysource") String primarySource,
             @RequestParam(required = false, value="secondarysource") String secondarySource
     ) {
-        List<Object> paramsCount = Stream.<Object>of(refNumber, signature, naturalizedPerson, naturalizedPersonId, guarantor, guarantorId, yearNaturalization, yearFrom, yearTo, primarySource, secondarySource)
-                .filter(Objects::nonNull).toList();
-        if (paramsCount.isEmpty()) return ResponseEntity.badRequest().build();
-        List<CitizenshipPreviewDTO> citizenships = citizenshipService.filterCitizenships(
-                refNumber, signature, naturalizedPerson, naturalizedPersonId, guarantor, guarantorId, yearNaturalization, yearFrom, yearTo, primarySource, secondarySource
+        CitizenshipSearchCriteria criteria = new CitizenshipSearchCriteria(
+                refNumber, signature,
+                naturalizedPerson, naturalizedPersonId, naturalizedPersonJob, naturalizedPersonOrigin,
+                guarantor, guarantorId, guarantorJob, guarantorOrigin,
+                yearNaturalization, yearFrom, yearTo, primarySource, secondarySource
         );
-        return ResponseEntity.ok(citizenships);
+        if (criteria.isEmpty()) return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(citizenshipService.filterCitizenships(criteria));
     }
 
     @GetMapping("/{id}")
