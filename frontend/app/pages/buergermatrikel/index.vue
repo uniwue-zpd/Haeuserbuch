@@ -423,7 +423,7 @@ useHead(() => ({
               <span v-else class="italic text-muted">unbekannt</span>
             </template>
             <template #personJob-cell="{ row }">
-              <PersonsJobValue :job="row.original.person?.job" :show-normalized="showNormalized">
+              <PersonsJobValue :job="row.original.person?.job" :show-normalized="showNormalized" :hide-if-equal="false">
                 <template #empty><span class="text-dimmed" title="keine Angabe">–</span></template>
               </PersonsJobValue>
             </template>
