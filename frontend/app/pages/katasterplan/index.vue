@@ -398,7 +398,7 @@ onBeforeUnmount(() => {
               <UButton
                 color="neutral"
                 variant="outline"
-                class="bg-default"
+                class="bg-default z-100"
                 :icon="buildingsHidden ? 'i-lucide-eye' : 'i-lucide-eye-off'"
                 :label="buildingsHidden ? 'Gebäude einblenden' : 'Gebäude ausblenden'"
                 :aria-pressed="buildingsHidden"
@@ -408,7 +408,7 @@ onBeforeUnmount(() => {
                 v-if="loggedIn"
                 color="neutral"
                 variant="outline"
-                class="bg-default"
+                class="bg-default z-100"
                 to="/katasterplan/create"
                 icon="i-lucide-plus"
                 label="Neues Gebäude anlegen"
