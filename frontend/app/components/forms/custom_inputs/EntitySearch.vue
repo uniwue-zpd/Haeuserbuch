@@ -29,7 +29,7 @@ const districtApi = useDistricts();
 const jobApi = useJobs();
 const personApi = usePersons();
 const placeApi = usePlaces();
-const quarterStore = useQuarterStore();
+const quarterApi = useQuarters();
 const religionStore = useReligionStore();
 const sourceStore = useSourceStore();
 const streetStore = useStreetStore();
@@ -65,7 +65,7 @@ const debouncedSearch = debounce(async (query: string) => {
         suggestions.value = await placeApi.searchPlaces(query);
         break;
       case 'quarter':
-        suggestions.value = await quarterStore.searchQuarters(query);
+        suggestions.value = await quarterApi.searchQuarters(query);
         break;
       case 'religion':
         suggestions.value = await religionStore.searchReligions(query);

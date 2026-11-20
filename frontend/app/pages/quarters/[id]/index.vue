@@ -1,19 +1,24 @@
 <script setup lang="ts">
 import QuarterSkeleton from "~/components/UI/skeletons/QuarterSkeleton.vue";
+import FetchError from "~/components/UI/FetchError.vue";
 
 const route = useRoute();
-const quarterStore = useQuarterStore();
+const quarterApi = useQuarters();
 const buildingApi = useBuildings();
 
 const quarterId = Number(route.params.id);
 
-const { data: quarterItem, pending: quarterPending } = useAsyncData(
-  `quarter-${quarterId}`,
-  () => quarterStore.fetchQuarterById(quarterId),
+const {
+  data: quarterItem,
+  pending: quarterPending,
+  error: hasError,
+} = useAsyncData(
+  `quarter-${quarterId}-details`,
+  () => quarterApi.getQuarter(quarterId),
 );
 
 const { data: relatedBuildings, pending: buildingsPending } = useAsyncData(
-  `quarter-buildings-${quarterId}`,
+  `quarter-${quarterId}-buildings`,
   () => buildingApi.filterBuildings({ "quarter-id": quarterId }),
   { default: () => [] },
 );
@@ -31,6 +36,7 @@ useHead(() => ({
 
 <template>
   <QuarterSkeleton v-if="isLoading" />
+  <FetchError v-else-if="hasError" :error="hasError" />
   <div v-else class="flex min-h-full flex-col gap-4">
     <Card>
       <template #title>

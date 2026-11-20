@@ -10,7 +10,7 @@ const router = useRouter();
 const buildingApi = useBuildings();
 const personApi = usePersons();
 const districtApi = useDistricts();
-const quarterStore = useQuarterStore();
+const quarterApi = useQuarters();
 const { loggedIn } = useUserSession();
 
 const {
@@ -59,7 +59,7 @@ const { data: districts } = useAsyncData(
 );
 const { data: quarters } = useAsyncData(
   "building-explorer-quarters",
-  () => quarterStore.fetchQuarters(),
+  () => quarterApi.getQuarters(),
   { default: () => [], lazy: true },
 );
 function toSelectOptions(items: { id: number; name: string | null }[]) {
