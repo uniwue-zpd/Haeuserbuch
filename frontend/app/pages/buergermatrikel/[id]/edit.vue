@@ -13,7 +13,7 @@ const route = useRoute();
 const citizenship_id = Number(route.params.id);
 const citizenshipApi = useCitizenships();
 
-const { data: citizenshipItem, status } = await useAsyncData(`citizenship-${ citizenship_id }`, () => citizenshipApi.getCitizenship(citizenship_id));
+const { data: citizenshipItem, status } = await useAsyncData(`citizenship-${citizenship_id}-details`, () => citizenshipApi.getCitizenship(citizenship_id));
 </script>
 
 <template>

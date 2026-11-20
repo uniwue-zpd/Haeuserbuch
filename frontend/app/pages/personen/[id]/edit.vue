@@ -13,7 +13,7 @@ const route = useRoute();
 const person_id = Number(route.params.id);
 const personApi = usePersons();
 
-const { data: personItem, status } = await useAsyncData(`person-edit-${ person_id }`, () => personApi.getPerson(person_id));
+const { data: personItem, status } = await useAsyncData(`person-${person_id}-details`, () => personApi.getPerson(person_id));
 </script>
 
 <template>

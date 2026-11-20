@@ -13,7 +13,7 @@ useHead(() => ({
 const route = useRoute();
 const building_id = Number(route.params.id);
 const buildingApi = useBuildings();
-const { data: buildingItem, error: hasError } = await useAsyncData(() => buildingApi.getBuilding(building_id));
+const { data: buildingItem, error: hasError } = await useAsyncData(`building-${building_id}-details`, () => buildingApi.getBuilding(building_id));
 </script>
 
 <template>

@@ -38,12 +38,12 @@ const mapCenter = computed<[number, number]>(() =>
     : DEFAULT_MAP_CENTER,
 );
 const { data: originPeople } = await useAsyncData(
-  `place-${placeId}-associated_people`,
+  `place-${placeId}-origin-people`,
   () => personApi.filterPersons({ "place-of-origin-id": placeId }),
   { default: () => [] },
 );
 const { data: emigrationPeople } = await useAsyncData(
-  `place-${placeId}-emigrated_people`,
+  `place-${placeId}-emigration-people`,
   () => personApi.filterPersons({ "place-of-emigration-id": placeId }),
   { default: () => [] },
 );

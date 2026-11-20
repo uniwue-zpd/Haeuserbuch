@@ -13,7 +13,7 @@ useHead(() => ({
 const route = useRoute();
 const placeId = Number(route.params.id);
 const placeApi = usePlaces();
-const { data: placeItem, error: hasError } = useAsyncData(`place-${placeId}`, () => placeApi.getPlace(placeId));
+const { data: placeItem, error: hasError } = useAsyncData(`place-${placeId}-details`, () => placeApi.getPlace(placeId));
 </script>
 
 <template>

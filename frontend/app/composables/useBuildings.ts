@@ -3,6 +3,14 @@ import type { BuildingDTO, FilterBuilding } from "~/utils/types";
 export const useBuildings = () => {
 
     /**
+     * Clears cached `useAsyncData` entries containing building data, so pages refetch after create/update/delete.
+     * Covers "buildings", "building-{id}-…", the katasterplan keys and related keys like "district-{id}-buildings"
+     * or "person-{id}-associated-building".
+     */
+    const clearBuildingData = () =>
+        clearNuxtData((key) => key.startsWith("building") || key.includes("-building"));
+
+    /**
      * `GET` all buildings as a `FeatureCollection`.
      * Use it with the `useAsyncData` key "buildings", which is cleared after create/update/delete.
      */
@@ -16,19 +24,19 @@ export const useBuildings = () => {
 
     const createBuilding = async (payload: Partial<Feature>): Promise<Feature> => {
         const data = await $fetch<Feature>("/api/buildings", { method: "POST", body: payload });
-        clearNuxtData("buildings");
+        clearBuildingData();
         return data;
     };
 
     const updateBuilding = async (id: number, payload: Partial<Feature>): Promise<Feature> => {
         const data = await $fetch<Feature>(`/api/buildings/${id}`, { method: "PUT", body: payload });
-        clearNuxtData("buildings");
+        clearBuildingData();
         return data;
     };
 
     const deleteBuilding = async (id: number): Promise<void> => {
         await $fetch(`/api/buildings/${id}`, { method: "DELETE" });
-        clearNuxtData("buildings");
+        clearBuildingData();
     };
 
     const searchBuildings = async (query: string): Promise<BuildingDTO[]> => {
