@@ -5,7 +5,6 @@ import maplibregl, {
   type RasterSourceSpecification,
 } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { usePlaceStore } from "~/stores/PlaceStore";
 import { DEFAULT_MAP_CENTER } from "~/utils/constant_values";
 import type { Feature } from "~/utils/GeoJsonTypes";
 import { initMap } from "~/service/map_init";
@@ -15,22 +14,20 @@ import FetchError from "~/components/UI/FetchError.vue";
 
 const router = useRoute();
 const placeId = Number(router.params.id);
-const placeStore = usePlaceStore();
+const placeApi = usePlaces();
 const personApi = usePersons();
 const {
   data: placeItem,
   error: hasError,
   pending: isLoading,
 } = await useAsyncData(`place-${placeId}-details`, () =>
-  placeStore.getPlace(placeId),
+  placeApi.getPlace(placeId),
 );
-const tile_store = useTileStore();
 const geometry = computed(() => placeItem.value?.geometry as Point | null);
 const properties = computed(
   () => placeItem.value?.properties as PlaceProperties | null,
 );
-const sources = computed(() => tile_store.baseSources);
-const layers = computed(() => tile_store.baseLayers);
+const { baseSources: sources, baseLayers: layers } = useTiles();
 
 let map: maplibregl.Map | null = null;
 const mapCenter = computed<[number, number]>(() =>
@@ -39,12 +36,12 @@ const mapCenter = computed<[number, number]>(() =>
     : DEFAULT_MAP_CENTER,
 );
 const { data: originPeople } = await useAsyncData(
-  `place-${placeId}-associated_people`,
+  `place-${placeId}-origin-people`,
   () => personApi.filterPersons({ "place-of-origin-id": placeId }),
   { default: () => [] },
 );
 const { data: emigrationPeople } = await useAsyncData(
-  `place-${placeId}-emigrated_people`,
+  `place-${placeId}-emigration-people`,
   () => personApi.filterPersons({ "place-of-emigration-id": placeId }),
   { default: () => [] },
 );

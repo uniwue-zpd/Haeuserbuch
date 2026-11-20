@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import TaskBar from "~/components/UI/page_actions/TaskBar.vue";
 import SourceSkeleton from "~/components/UI/skeletons/SourceSkeleton.vue";
+import FetchError from "~/components/UI/FetchError.vue";
 
 const route = useRoute();
 const sourceId = Number(route.params.id);
-const sourceStore = useSourceStore();
+const sourceApi = useSources();
 
-const { data: sourceItem, pending: sourcePending } = useAsyncData(
-  `source-${sourceId}`,
-  () => sourceStore.fetchSourceById(sourceId),
+const {
+  data: sourceItem,
+  pending: sourcePending,
+  error: hasError,
+} = useAsyncData(
+  `source-${sourceId}-details`,
+  () => sourceApi.getSource(sourceId),
 );
 
 const authors = computed(() =>
@@ -29,6 +34,7 @@ useHead(() => ({
 
 <template>
   <SourceSkeleton v-if="isLoading" />
+  <FetchError v-else-if="hasError" :error="hasError" />
   <div v-else class="flex min-h-full flex-col gap-4">
     <Card>
       <template #title>

@@ -5,7 +5,7 @@ import PersonPreview from "~/components/UI/preview_cards/PersonPreview.vue";
 import SourcePreview from "~/components/UI/preview_cards/SourcePreview.vue";
 import FetchError from "~/components/UI/FetchError.vue";
 
-const citizenship_store = useCitizenshipStore();
+const citizenshipApi = useCitizenships();
 
 const route = useRoute();
 const citizenship_id = Number(route.params.id);
@@ -15,7 +15,7 @@ const {
   pending: isLoading,
   error: hasError,
 } = await useAsyncData(`citizenship-${citizenship_id}-details`, () =>
-  citizenship_store.fetchCitizenshipById(citizenship_id),
+  citizenshipApi.getCitizenship(citizenship_id),
 );
 
 useHead(() => ({

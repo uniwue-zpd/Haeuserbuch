@@ -16,9 +16,8 @@ const props = defineProps<{
   place?: Feature;
 }>();
 
-// Import store
-const tile_store = useTileStore();
-const placeStore = usePlaceStore();
+const { sources: allSources, layers: allLayers, baseSources, baseLayers } = useTiles();
+const placeApi = usePlaces();
 
 // Map-related constants and variables
 const coordinates = ref<[number, number] | null>(null);
@@ -35,12 +34,12 @@ const center = computed(() => {
   return place_geometry.coordinates as [number, number];
 });
 
-// Map sources and layers from the store
+// Map sources and layers: base map only when editing, base and historical tiles when creating
 const sources = computed(() =>
-  props.action === "edit" ? tile_store.baseSources : tile_store.sources,
+  props.action === "edit" ? baseSources.value : allSources.value,
 );
 const layers = computed(() =>
-  props.action === "edit" ? tile_store.baseLayers : tile_store.layers,
+  props.action === "edit" ? baseLayers.value : allLayers.value,
 );
 
 // Handle updates of coordinates
@@ -76,7 +75,7 @@ const toast = useNuxtToast();
 const submit = async (formData: Partial<Feature>) => {
   if (props.action === "create") {
     try {
-      await placeStore.createPlace(formData);
+      await placeApi.createPlace(formData);
       toast.add({
         color: "success",
         title: "Erfolg",
@@ -100,7 +99,7 @@ const submit = async (formData: Partial<Feature>) => {
   } else if (props.action === "edit" && props.place?.id) {
     const id = props.place.id;
     try {
-      await placeStore.updatePlace(id, formData);
+      await placeApi.updatePlace(id, formData);
       toast.add({
         color: "success",
         title: "Erfolg",

@@ -25,15 +25,15 @@ const optionLabel: string = props.context?.optionLabel;
 const suggestions = ref<any[]>([]);
 
 const buildingApi = useBuildings();
-const districtStore = useDistrictStore();
-const jobStore = useJobStore();
+const districtApi = useDistricts();
+const jobApi = useJobs();
 const personApi = usePersons();
-const placeStore = usePlaceStore();
-const quarterStore = useQuarterStore();
-const religionStore = useReligionStore();
-const sourceStore = useSourceStore();
-const streetStore = useStreetStore();
-const weaponStore = useWeaponStore();
+const placeApi = usePlaces();
+const quarterApi = useQuarters();
+const religionApi = useReligions();
+const sourceApi = useSources();
+const streetApi = useStreets();
+const weaponApi = useWeapons();
 const fileApi = useFiles();
 
 const isImageFile = (file: { type?: string }) => {
@@ -47,47 +47,53 @@ const getFileIcon = (file: { type?: string }) => {
 
 const debouncedSearch = debounce(async (query: string) => {
   loading.value = true;
-  switch (entityType) {
-    case 'building':
-      suggestions.value = await buildingApi.searchBuildings(query);
-      break;
-    case 'district':
-      suggestions.value = await districtStore.searchDistricts(query);
-      break;
-    case 'job':
-      suggestions.value = await jobStore.searchJobs(query);
-      break;
-    case 'person':
-      suggestions.value = await personApi.searchPersons(query);
-      break;
-    case 'place':
-      suggestions.value = await placeStore.searchPlaces(query);
-      break;
-    case 'quarter':
-      suggestions.value = await quarterStore.searchQuarters(query);
-      break;
-    case 'religion':
-      suggestions.value = await religionStore.searchReligions(query);
-      break;
-    case 'source':
-      suggestions.value = await sourceStore.searchSources(query);
-      break;
-    case 'street':
-      suggestions.value = await streetStore.searchStreets(query);
-      break;
-    case 'weapon':
-      suggestions.value = await weaponStore.searchWeapons(query);
-      break;
-    case 'file':
-      const files = await fileApi.searchFiles(query);
-      suggestions.value = files.map(file => ({
-        id: file.id,
-        originalName: file.originalName,
-        type: file.type,
-      }));
-      break;
+  try {
+    switch (entityType) {
+      case 'building':
+        suggestions.value = await buildingApi.searchBuildings(query);
+        break;
+      case 'district':
+        suggestions.value = await districtApi.searchDistricts(query);
+        break;
+      case 'job':
+        suggestions.value = await jobApi.searchJobs(query);
+        break;
+      case 'person':
+        suggestions.value = await personApi.searchPersons(query);
+        break;
+      case 'place':
+        suggestions.value = await placeApi.searchPlaces(query);
+        break;
+      case 'quarter':
+        suggestions.value = await quarterApi.searchQuarters(query);
+        break;
+      case 'religion':
+        suggestions.value = await religionApi.searchReligions(query);
+        break;
+      case 'source':
+        suggestions.value = await sourceApi.searchSources(query);
+        break;
+      case 'street':
+        suggestions.value = await streetApi.searchStreets(query);
+        break;
+      case 'weapon':
+        suggestions.value = await weaponApi.searchWeapons(query);
+        break;
+      case 'file':
+        const files = await fileApi.searchFiles(query);
+        suggestions.value = files.map(file => ({
+          id: file.id,
+          originalName: file.originalName,
+          type: file.type,
+        }));
+        break;
+    }
+  } catch (error) {
+    console.error(`Error searching ${entityType}`, error);
+    suggestions.value = [];
+  } finally {
+    loading.value = false;
   }
-  loading.value = false;
 }, 300);
 
 const onComplete = (event: any) => {

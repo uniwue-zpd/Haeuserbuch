@@ -13,7 +13,7 @@ import {
 
 const route = useRoute();
 const router = useRouter();
-const searchStore = useGlobalSearchStore();
+const globalSearchApi = useGlobalSearch();
 
 const routeQuery = computed(() => String(Array.isArray(route.query.q) ? route.query.q[0] ?? "" : route.query.q ?? ""));
 const inputQuery = ref(routeQuery.value);
@@ -30,7 +30,7 @@ const { data, pending, error } = await useAsyncData(
   "global-research-search",
   () => {
     if (!canSearch.value) return Promise.resolve(null);
-    return searchStore.search({
+    return globalSearchApi.search({
       query: routeQuery.value.trim(),
       fields: selectedFields.value,
       types: selectedTypes.value,

@@ -7,9 +7,9 @@ definePageMeta({
 
 const route = useRoute();
 const streetId = Number(route.params.id);
-const street_store = useStreetStore();
+const streetApi = useStreets();
 
-const { data: streetItem } = await useAsyncData(`street-${streetId}`, () => street_store.fetchStreetById(streetId));
+const { data: streetItem } = await useAsyncData(`street-${streetId}-details`, () => streetApi.getStreet(streetId));
 
 useHead(() => ({
   title: `Straße bearbeiten`

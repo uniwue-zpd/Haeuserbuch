@@ -10,7 +10,7 @@ const props = defineProps<{
 const toast = useNuxtToast();
 const submitted = ref(false);
 
-const source_store = useSourceStore();
+const sourceApi = useSources();
 type SourceInput = Omit<
   Source,
   "id" | "createdBy" | "createdDate" | "lastModifiedBy" | "lastModifiedDate"
@@ -19,7 +19,7 @@ type SourceInput = Omit<
 const submit = async (formData: Partial<SourceInput>) => {
   try {
     if (props.action === "create") {
-      await source_store.createSource(formData);
+      await sourceApi.createSource(formData);
       submitted.value = true;
       toast.add({
         color: "success",
@@ -30,7 +30,7 @@ const submit = async (formData: Partial<SourceInput>) => {
       const form = getNode("source_create");
       form?.reset();
     } else if (props.action === "edit" && props.source?.id) {
-      await source_store.updateSource(props.source.id, formData);
+      await sourceApi.updateSource(props.source.id, formData);
       submitted.value = true;
       toast.add({
         color: "success",

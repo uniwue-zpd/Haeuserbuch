@@ -4,7 +4,7 @@ import type { TableColumn } from "@nuxt/ui";
 import type { Column } from "@tanstack/vue-table";
 import { debounce } from "~/utils/debounce";
 
-const citizenship_store = useCitizenshipStore();
+const citizenshipApi = useCitizenships();
 const UButton = resolveComponent("UButton");
 
 type CitizenshipTableRow = CitizenshipDTO & {
@@ -143,7 +143,7 @@ const loadData = async () => {
     const sort = sorting.value[0]
       ? `${sortField},${sorting.value[0].desc ? "desc" : "asc"}`
       : undefined;
-    const res = await citizenship_store.fetchCitizenships({
+    const res = await citizenshipApi.getCitizenships({
       page: page.value,
       size: rowsPerPage.value,
       sort,

@@ -18,14 +18,13 @@ import type {
   Point,
 } from "~/utils/GeoJsonTypes";
 
-const placeStore = usePlaceStore();
-const tile_store = useTileStore();
+const placeApi = usePlaces();
 const UButton = resolveComponent("UButton");
 const {
   data: places,
   pending: loadingData,
   error: hasError,
-} = await useAsyncData("places", () => placeStore.getPlaces());
+} = await useAsyncData("places", () => placeApi.getPlaces());
 
 const globalFilter = ref("");
 
@@ -110,8 +109,7 @@ const pagination = ref({
   pageIndex: 0,
   pageSize: 10,
 });
-const sources = computed(() => tile_store.baseSources);
-const layers = computed(() => tile_store.baseLayers);
+const { baseSources: sources, baseLayers: layers } = useTiles();
 let map: maplibregl.Map | null = null;
 
 function updateMapPlaces() {

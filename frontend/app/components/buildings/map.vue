@@ -45,14 +45,12 @@ const emit = defineEmits<{
   select: [id: number];
 }>();
 
-const tileStore = useTileStore();
 const mapContainer = ref<HTMLElement | null>(null);
 const controlsContainer = ref<HTMLElement | null>(null);
 const slots = defineSlots<{ controls?: () => unknown }>();
 const mapTilesLoaded = ref(false);
 const buildingExtrusionsRendered = ref(false);
-const sources = computed(() => tileStore.historicalSources);
-const layers = computed(() => tileStore.historicalLayers);
+const { historicalSources: sources, historicalLayers: layers } = useTiles();
 const isMapLoading = computed(() => !mapTilesLoaded.value || !buildingExtrusionsRendered.value);
 const georeferencedFeatures = computed(() => props.features.filter(feature => feature.geometry !== null));
 const featureById = computed(() => new Map(props.features.map(feature => [feature.id, feature])));

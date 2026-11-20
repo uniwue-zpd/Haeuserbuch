@@ -10,7 +10,7 @@ const props = defineProps<{
 const toast = useNuxtToast();
 const submitted = ref(false);
 
-const citizenship_store = useCitizenshipStore();
+const citizenshipApi = useCitizenships();
 type CitizenshipInput = Omit<
   CitizenshipDTO,
   "id" | "createdBy" | "createdDate" | "lastModifiedBy" | "lastModifiedDate"
@@ -19,7 +19,7 @@ type CitizenshipInput = Omit<
 const submit = async (formData: Partial<CitizenshipInput>) => {
   try {
     if (props.action === "create") {
-      await citizenship_store.createCitizenship(formData);
+      await citizenshipApi.createCitizenship(formData);
       toast.add({
         color: "success",
         title: "Erfolg",
@@ -30,7 +30,7 @@ const submit = async (formData: Partial<CitizenshipInput>) => {
       form?.reset();
     } else if (props.action === "edit" && props.citizenship?.id) {
       const id = props.citizenship.id;
-      await citizenship_store.updateCitizenship(id, formData);
+      await citizenshipApi.updateCitizenship(id, formData);
       toast.add({
         color: "success",
         title: "Erfolg",

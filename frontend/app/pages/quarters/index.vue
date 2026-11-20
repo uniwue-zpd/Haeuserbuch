@@ -1,8 +1,8 @@
 <script setup lang="ts">
-const quarterStore = useQuarterStore();
+const quarterApi = useQuarters();
 
 const { data: quarters } = useAsyncData("quarters", () =>
-  quarterStore.fetchQuarters(),
+  quarterApi.getQuarters(),
 );
 
 useHead(() => ({

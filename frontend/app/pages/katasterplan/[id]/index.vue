@@ -18,7 +18,7 @@ const {
   data: buildingItem,
   error: hasError,
   pending: isLoading,
-} = await useAsyncData(`building-${buildingId}`, () =>
+} = await useAsyncData(`building-${buildingId}-details`, () =>
   buildingApi.getBuilding(buildingId),
 );
 const {
@@ -27,7 +27,7 @@ const {
   pending: associatedPeoplePending,
   refresh: refreshAssociatedPeople,
 } = await useAsyncData(
-  `associated-people-building-${buildingId}`,
+  `building-${buildingId}-associated-people`,
   () => personApi.filterPersons({ "associated-building-id": buildingId }),
   { default: () => [] },
 );

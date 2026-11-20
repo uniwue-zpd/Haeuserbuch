@@ -16,12 +16,10 @@ const props = defineProps<{
   associatedBuilding: BuildingDTO | null;
 }>();
 
-const placeStore = usePlaceStore();
+const placeApi = usePlaces();
 const buildingApi = useBuildings();
-const tile_store = useTileStore();
 
-const sources = computed(() => tile_store.sources);
-const layers = computed(() => tile_store.layers);
+const { sources, layers } = useTiles();
 
 const markerColors = {
   origin: "#3254a8",
@@ -40,7 +38,7 @@ const { data: places } = await useAsyncData(
       };
     }
     const features = await Promise.all(
-      props.personOrigin.places.map((place) => placeStore.getPlace(place.id)),
+      props.personOrigin.places.map((place) => placeApi.getPlace(place.id)),
     );
     return {
       type: "FeatureCollection",
@@ -53,7 +51,7 @@ const { data: placeFeature } = await useAsyncData(
   `person-${props.personId}-emigration-place`,
   async () => {
     if (!props.personEmigration?.place?.id) return null;
-    return placeStore.getPlace(props.personEmigration.place.id);
+    return placeApi.getPlace(props.personEmigration.place.id);
   },
 );
 

@@ -9,8 +9,8 @@ const route = useRoute();
 const router = useRouter();
 const buildingApi = useBuildings();
 const personApi = usePersons();
-const districtStore = useDistrictStore();
-const quarterStore = useQuarterStore();
+const districtApi = useDistricts();
+const quarterApi = useQuarters();
 const { loggedIn } = useUserSession();
 
 const {
@@ -54,12 +54,12 @@ const buildingById = computed(
 );
 const { data: districts } = useAsyncData(
   "building-explorer-districts",
-  () => districtStore.fetchDistricts(),
+  () => districtApi.getDistricts(),
   { default: () => [], lazy: true },
 );
 const { data: quarters } = useAsyncData(
   "building-explorer-quarters",
-  () => quarterStore.fetchQuarters(),
+  () => quarterApi.getQuarters(),
   { default: () => [], lazy: true },
 );
 function toSelectOptions(items: { id: number; name: string | null }[]) {

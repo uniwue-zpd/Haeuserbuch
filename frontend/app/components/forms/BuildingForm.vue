@@ -33,9 +33,7 @@ const uploadInputRef = ref<HTMLInputElement | null>(null);
 const uploadPending = ref(false);
 const uploadFeedback = ref<{ ok: boolean; message: string } | null>(null);
 
-const tile_store = useTileStore();
-const sources = computed(() => tile_store.sources);
-const layers = computed(() => tile_store.layers);
+const { sources, layers } = useTiles();
 let map: maplibregl.Map | null = null;
 const draw = new MaplibreTerradrawControl({
   modes: [

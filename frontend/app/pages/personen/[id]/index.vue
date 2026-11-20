@@ -11,7 +11,7 @@ import PersonSkeleton from "~/components/UI/skeletons/PersonSkeleton.vue";
 import FetchError from "~/components/UI/FetchError.vue";
 
 const personApi = usePersons();
-const citizenshipStore = useCitizenshipStore();
+const citizenshipApi = useCitizenships();
 
 const route = useRoute();
 const personId = Number(route.params.id);
@@ -32,11 +32,11 @@ const {
 const { data: naturalizationEntry } = await useAsyncData(
   `person-${personId}-naturalization`,
   () =>
-    citizenshipStore.filterCitizenships({ "naturalizedperson-id": personId }),
+    citizenshipApi.filterCitizenships({ "naturalizedperson-id": personId }),
 );
 const { data: guarantorEntries } = await useAsyncData(
   `person-${personId}-guarantor`,
-  () => citizenshipStore.filterCitizenships({ "guarantor-id": personId }),
+  () => citizenshipApi.filterCitizenships({ "guarantor-id": personId }),
 );
 
 const hasOriginContent = computed(() => {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const citizenshipStore = useCitizenshipStore();
+const citizenshipApi = useCitizenships();
 
 const query = ref("");
 
@@ -21,7 +21,7 @@ const { data, refresh, pending, error } = await useAsyncData<
   Page<CitizenshipFullTextResult>
 >(
   "citizenship-fulltext-search",
-  () => citizenshipStore.searchFullText(searchParams.value),
+  () => citizenshipApi.searchCitizenshipsFullText(searchParams.value),
   { immediate: false },
 );
 

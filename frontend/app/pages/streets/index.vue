@@ -4,10 +4,10 @@ import type { TableColumn } from "@nuxt/ui";
 import { getPaginationRowModel } from "@tanstack/vue-table";
 import type { Street } from "~/utils/types";
 
-const street_store = useStreetStore();
+const streetApi = useStreets();
 
 const { data: streets, pending } = useAsyncData("streets", () =>
-  street_store.fetchStreets(),
+  streetApi.getStreets(),
 );
 
 const globalFilter = ref("");

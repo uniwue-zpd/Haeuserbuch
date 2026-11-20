@@ -13,7 +13,7 @@ const commandResults = ref<GlobalSearchResult[]>([]);
 const commandSearchPending = ref(false);
 const commandSearchError = ref(false);
 const isScrolled = ref(false);
-const globalSearchStore = useGlobalSearchStore();
+const globalSearchApi = useGlobalSearch();
 let commandSearchTimer: ReturnType<typeof setTimeout> | undefined;
 let commandSearchController: AbortController | undefined;
 const projectNavigation = [
@@ -185,7 +185,7 @@ watch(commandSearchTerm, (value) => {
     commandSearchController = controller;
     commandSearchPending.value = true;
     try {
-      const response = await globalSearchStore.search({
+      const response = await globalSearchApi.search({
         query,
         page: 0,
         size: 8,

@@ -1,20 +1,25 @@
 <script setup lang="ts">
 import TaskBar from "~/components/UI/page_actions/TaskBar.vue";
 import StreetSkeleton from "~/components/UI/skeletons/StreetSkeleton.vue";
+import FetchError from "~/components/UI/FetchError.vue";
 
 const route = useRoute();
-const street_store = useStreetStore();
+const streetApi = useStreets();
 const buildingApi = useBuildings();
 const streetId = Number(route.params.id);
 
-const { data: streetItem, pending: streetPending } = useAsyncData(
-  `street-${streetId}`,
-  () => street_store.fetchStreetById(streetId),
+const {
+  data: streetItem,
+  pending: streetPending,
+  error: hasError,
+} = useAsyncData(
+  `street-${streetId}-details`,
+  () => streetApi.getStreet(streetId),
 );
 
 const { data: relatedBuildings, pending: relatedBuildingsPending } =
   useAsyncData(
-    `street-${streetId}-related-buildings`,
+    `street-${streetId}-buildings`,
     () => buildingApi.filterBuildings({ "street-id": streetId }),
     { default: () => [] },
   );
@@ -34,6 +39,7 @@ useHead(() => ({
 
 <template>
   <StreetSkeleton v-if="isLoading" />
+  <FetchError v-else-if="hasError" :error="hasError" />
   <div v-else class="flex min-h-full flex-col gap-4">
     <Card>
       <template #title>

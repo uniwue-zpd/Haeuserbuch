@@ -3,14 +3,14 @@ definePageMeta({
   middleware: 'disabled'
 })
 
-const sourceStore = useSourceStore();
+const sourceApi = useSources();
 const query = ref("");
 
 const {
   data: sources,
   pending: loadingSources,
   error: sourcesError,
-} = await useAsyncData("sources", () => sourceStore.fetchSources());
+} = await useAsyncData("sources", () => sourceApi.getSources());
 
 const filteredSources = computed(() => {
   const searchTerm = query.value.trim().toLocaleLowerCase();
