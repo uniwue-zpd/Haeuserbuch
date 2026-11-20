@@ -11,9 +11,9 @@ useHead(() => ({
 
 const route = useRoute();
 const citizenship_id = Number(route.params.id);
-const citizenship_store = useCitizenshipStore();
+const citizenshipApi = useCitizenships();
 
-const { data: citizenshipItem, status } = await useAsyncData(`citizenship-${ citizenship_id }`, () => citizenship_store.fetchCitizenshipById(citizenship_id));
+const { data: citizenshipItem, status } = await useAsyncData(`citizenship-${ citizenship_id }`, () => citizenshipApi.getCitizenship(citizenship_id));
 </script>
 
 <template>
