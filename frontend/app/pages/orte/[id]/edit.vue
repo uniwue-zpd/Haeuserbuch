@@ -12,8 +12,8 @@ useHead(() => ({
 
 const route = useRoute();
 const placeId = Number(route.params.id);
-const placeStore = usePlaceStore();
-const { data: placeItem, error: hasError } = useAsyncData(() => placeStore.getPlace(placeId));
+const placeApi = usePlaces();
+const { data: placeItem, error: hasError } = useAsyncData(`place-${placeId}`, () => placeApi.getPlace(placeId));
 </script>
 
 <template>

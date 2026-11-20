@@ -41,7 +41,7 @@ const api_path = ref(`/api/${props.entity_type}/${props.id}`);
 const buildingApi = useBuildings();
 const personApi = usePersons();
 const citizenshipApi = useCitizenships();
-const place_store = usePlaceStore();
+const placeApi = usePlaces();
 const source_store = useSourceStore();
 const street_store = useStreetStore();
 
@@ -54,7 +54,7 @@ const deleteHandlers: Record<string, (id: number) => Promise<void>> = {
     await personApi.deletePerson(id);
   },
   places: async (id: number) => {
-    await place_store.deletePlace(id);
+    await placeApi.deletePlace(id);
   },
   sources: async (id: number) => {
     await source_store.deleteSource(id);

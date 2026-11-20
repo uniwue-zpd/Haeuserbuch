@@ -18,7 +18,7 @@ const props = defineProps<{
 
 // Import store
 const tile_store = useTileStore();
-const placeStore = usePlaceStore();
+const placeApi = usePlaces();
 
 // Map-related constants and variables
 const coordinates = ref<[number, number] | null>(null);
@@ -76,7 +76,7 @@ const toast = useNuxtToast();
 const submit = async (formData: Partial<Feature>) => {
   if (props.action === "create") {
     try {
-      await placeStore.createPlace(formData);
+      await placeApi.createPlace(formData);
       toast.add({
         color: "success",
         title: "Erfolg",
@@ -100,7 +100,7 @@ const submit = async (formData: Partial<Feature>) => {
   } else if (props.action === "edit" && props.place?.id) {
     const id = props.place.id;
     try {
-      await placeStore.updatePlace(id, formData);
+      await placeApi.updatePlace(id, formData);
       toast.add({
         color: "success",
         title: "Erfolg",

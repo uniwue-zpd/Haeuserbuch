@@ -23,8 +23,8 @@ export const researchNavigation: readonly ResearchNavigationItem[] = [
     descriptionToLabel: 'Methodik'
   },
   {
-    label: 'Herkunftsorte',
-    description: 'Verzeichnis und Visualisierung der Herkunftsorte der von 1405 bis 1613 aufgenommenen Würzburger Bürger.',
+    label: 'Herkunfts- und Wegzugsorte',
+    description: 'Verzeichnis und Visualisierung der Herkunfts- und Wegzugsorte der zwischen 1405 und 1613 aufgenommenen Würzburger Bürger.',
     icon: 'i-lucide-map-pin',
     to: '/orte',
     descriptionTo: '/orte/beschreibung',

@@ -18,14 +18,14 @@ import type {
   Point,
 } from "~/utils/GeoJsonTypes";
 
-const placeStore = usePlaceStore();
+const placeApi = usePlaces();
 const tile_store = useTileStore();
 const UButton = resolveComponent("UButton");
 const {
   data: places,
   pending: loadingData,
   error: hasError,
-} = await useAsyncData("places", () => placeStore.getPlaces());
+} = await useAsyncData("places", () => placeApi.getPlaces());
 
 const globalFilter = ref("");
 
