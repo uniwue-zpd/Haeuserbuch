@@ -1,11 +1,3 @@
-import type {
-    CitizenshipFullTextResult,
-    CitizenshipPreviewDTO,
-    FilterCitizenship,
-    Page,
-    SearchCitizenshipFullText
-} from "~/utils/types";
-
 export const useCitizenships = () => {
 
     /**

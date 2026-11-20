@@ -1,5 +1,3 @@
-import type { GlobalSearchParams, GlobalSearchResponse } from "~/utils/globalSearch";
-
 export const useGlobalSearch = () => {
 
     /**

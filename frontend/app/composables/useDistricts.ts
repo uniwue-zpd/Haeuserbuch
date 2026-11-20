@@ -1,5 +1,3 @@
-import type { District, DistrictDTO } from "~/utils/types";
-
 export const useDistricts = () => {
 
     /**

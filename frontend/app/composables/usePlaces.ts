@@ -1,6 +1,3 @@
-import type { Feature, FeatureCollection } from "~/utils/GeoJsonTypes";
-import type { PlaceDTO } from "~/utils/types";
-
 export const usePlaces = () => {
 
     /**

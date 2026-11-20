@@ -1,5 +1,3 @@
-import type { FilterPerson, Page, PersonDTO, PersonPreviewDTO } from "~/utils/types";
-
 export const usePersons = () => {
 
     /** Clears cached `useAsyncData` entries containing person data, so pages refetch after create/update/delete. */

@@ -1,5 +1,3 @@
-import type { FileDTO, FileMetadata, Page, Pageable } from "~/utils/types";
-
 export const useFiles = () => {
 
     const getAllFiles = async (): Promise<FileDTO[]> => {

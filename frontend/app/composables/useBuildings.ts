@@ -1,5 +1,3 @@
-import type { BuildingDTO, FilterBuilding } from "~/utils/types";
-
 export const useBuildings = () => {
 
     /**
