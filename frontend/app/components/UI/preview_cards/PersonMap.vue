@@ -18,10 +18,8 @@ const props = defineProps<{
 
 const placeApi = usePlaces();
 const buildingApi = useBuildings();
-const tile_store = useTileStore();
 
-const sources = computed(() => tile_store.sources);
-const layers = computed(() => tile_store.layers);
+const { sources, layers } = useTiles();
 
 const markerColors = {
   origin: "#3254a8",

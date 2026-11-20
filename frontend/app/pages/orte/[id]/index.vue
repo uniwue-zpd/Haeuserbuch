@@ -23,13 +23,11 @@ const {
 } = await useAsyncData(`place-${placeId}-details`, () =>
   placeApi.getPlace(placeId),
 );
-const tile_store = useTileStore();
 const geometry = computed(() => placeItem.value?.geometry as Point | null);
 const properties = computed(
   () => placeItem.value?.properties as PlaceProperties | null,
 );
-const sources = computed(() => tile_store.baseSources);
-const layers = computed(() => tile_store.baseLayers);
+const { baseSources: sources, baseLayers: layers } = useTiles();
 
 let map: maplibregl.Map | null = null;
 const mapCenter = computed<[number, number]>(() =>

@@ -53,7 +53,6 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@primevue/nuxt-module',
     '@formkit/nuxt',
-    '@pinia/nuxt',
     '@nuxt/icon',
     '@nuxt/fonts',
     'nuxt-auth-utils',

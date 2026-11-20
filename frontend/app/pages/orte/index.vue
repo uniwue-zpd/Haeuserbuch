@@ -19,7 +19,6 @@ import type {
 } from "~/utils/GeoJsonTypes";
 
 const placeApi = usePlaces();
-const tile_store = useTileStore();
 const UButton = resolveComponent("UButton");
 const {
   data: places,
@@ -110,8 +109,7 @@ const pagination = ref({
   pageIndex: 0,
   pageSize: 10,
 });
-const sources = computed(() => tile_store.baseSources);
-const layers = computed(() => tile_store.baseLayers);
+const { baseSources: sources, baseLayers: layers } = useTiles();
 let map: maplibregl.Map | null = null;
 
 function updateMapPlaces() {

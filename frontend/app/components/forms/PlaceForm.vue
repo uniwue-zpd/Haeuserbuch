@@ -16,8 +16,7 @@ const props = defineProps<{
   place?: Feature;
 }>();
 
-// Import store
-const tile_store = useTileStore();
+const { sources: allSources, layers: allLayers, baseSources, baseLayers } = useTiles();
 const placeApi = usePlaces();
 
 // Map-related constants and variables
@@ -35,12 +34,12 @@ const center = computed(() => {
   return place_geometry.coordinates as [number, number];
 });
 
-// Map sources and layers from the store
+// Map sources and layers: base map only when editing, base and historical tiles when creating
 const sources = computed(() =>
-  props.action === "edit" ? tile_store.baseSources : tile_store.sources,
+  props.action === "edit" ? baseSources.value : allSources.value,
 );
 const layers = computed(() =>
-  props.action === "edit" ? tile_store.baseLayers : tile_store.layers,
+  props.action === "edit" ? baseLayers.value : allLayers.value,
 );
 
 // Handle updates of coordinates
