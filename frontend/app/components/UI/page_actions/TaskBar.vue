@@ -42,7 +42,7 @@ const buildingApi = useBuildings();
 const personApi = usePersons();
 const citizenshipApi = useCitizenships();
 const placeApi = usePlaces();
-const source_store = useSourceStore();
+const sourceApi = useSources();
 const street_store = useStreetStore();
 
 // Delete handlers
@@ -57,7 +57,7 @@ const deleteHandlers: Record<string, (id: number) => Promise<void>> = {
     await placeApi.deletePlace(id);
   },
   sources: async (id: number) => {
-    await source_store.deleteSource(id);
+    await sourceApi.deleteSource(id);
   },
   streets: async (id: number) => {
     await street_store.deleteStreet(id);

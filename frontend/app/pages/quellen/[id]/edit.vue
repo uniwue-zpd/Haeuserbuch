@@ -7,9 +7,9 @@ definePageMeta({
 
 const route = useRoute();
 const sourceId = Number(route.params.id);
-const source_store = useSourceStore();
+const sourceApi = useSources();
 
-const { data: source_item } = await useAsyncData(`source-${ sourceId }`, () => source_store.fetchSourceById(sourceId));
+const { data: source_item } = await useAsyncData(`source-${sourceId}-details`, () => sourceApi.getSource(sourceId));
 
 useHead(() => ({
   title: `Quelle bearbeiten`

@@ -31,7 +31,7 @@ const personApi = usePersons();
 const placeApi = usePlaces();
 const quarterApi = useQuarters();
 const religionApi = useReligions();
-const sourceStore = useSourceStore();
+const sourceApi = useSources();
 const streetStore = useStreetStore();
 const weaponStore = useWeaponStore();
 const fileApi = useFiles();
@@ -71,7 +71,7 @@ const debouncedSearch = debounce(async (query: string) => {
         suggestions.value = await religionApi.searchReligions(query);
         break;
       case 'source':
-        suggestions.value = await sourceStore.searchSources(query);
+        suggestions.value = await sourceApi.searchSources(query);
         break;
       case 'street':
         suggestions.value = await streetStore.searchStreets(query);
