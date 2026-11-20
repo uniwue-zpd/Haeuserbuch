@@ -10,7 +10,7 @@ const props = defineProps<{
 const toast = useNuxtToast();
 const submitted = ref(false);
 
-const street_store = useStreetStore();
+const streetApi = useStreets();
 type StreetInput = Omit<
   Street,
   "id" | "createdBy" | "createdDate" | "lastModifiedBy" | "lastModifiedDate"
@@ -19,7 +19,7 @@ type StreetInput = Omit<
 const submit = async (formData: Partial<StreetInput>) => {
   try {
     if (props.action === "create") {
-      await street_store.createStreet(formData);
+      await streetApi.createStreet(formData);
       submitted.value = true;
       toast.add({
         color: "success",
@@ -30,7 +30,7 @@ const submit = async (formData: Partial<StreetInput>) => {
       const form = getNode("street_creation");
       form?.reset();
     } else if (props.action === "edit" && props.street?.id) {
-      await street_store.updateStreet(props.street.id, formData);
+      await streetApi.updateStreet(props.street.id, formData);
       submitted.value = true;
       toast.add({
         color: "success",
