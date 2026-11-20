@@ -33,7 +33,7 @@ const quarterApi = useQuarters();
 const religionApi = useReligions();
 const sourceApi = useSources();
 const streetApi = useStreets();
-const weaponStore = useWeaponStore();
+const weaponApi = useWeapons();
 const fileApi = useFiles();
 
 const isImageFile = (file: { type?: string }) => {
@@ -77,7 +77,7 @@ const debouncedSearch = debounce(async (query: string) => {
         suggestions.value = await streetApi.searchStreets(query);
         break;
       case 'weapon':
-        suggestions.value = await weaponStore.searchWeapons(query);
+        suggestions.value = await weaponApi.searchWeapons(query);
         break;
       case 'file':
         const files = await fileApi.searchFiles(query);
