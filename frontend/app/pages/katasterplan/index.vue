@@ -9,7 +9,7 @@ const route = useRoute();
 const router = useRouter();
 const buildingApi = useBuildings();
 const personApi = usePersons();
-const districtStore = useDistrictStore();
+const districtApi = useDistricts();
 const quarterStore = useQuarterStore();
 const { loggedIn } = useUserSession();
 
@@ -54,7 +54,7 @@ const buildingById = computed(
 );
 const { data: districts } = useAsyncData(
   "building-explorer-districts",
-  () => districtStore.fetchDistricts(),
+  () => districtApi.getDistricts(),
   { default: () => [], lazy: true },
 );
 const { data: quarters } = useAsyncData(

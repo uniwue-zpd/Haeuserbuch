@@ -1,19 +1,24 @@
 <script setup lang="ts">
 import DistrictSkeleton from "~/components/UI/skeletons/DistrictSkeleton.vue";
+import FetchError from "~/components/UI/FetchError.vue";
 
 const route = useRoute();
-const districtStore = useDistrictStore();
+const districtApi = useDistricts();
 const buildingApi = useBuildings();
 
 const districtId = Number(route.params.id);
 
-const { data: districtItem, pending: districtPending } = useAsyncData(
-  `district-${districtId}`,
-  () => districtStore.fetchDistrictById(districtId),
+const {
+  data: districtItem,
+  pending: districtPending,
+  error: hasError,
+} = useAsyncData(
+  `district-${districtId}-details`,
+  () => districtApi.getDistrict(districtId),
 );
 
 const { data: relatedBuildings, pending: buildingsPending } = useAsyncData(
-  `district-buildings-${districtId}`,
+  `district-${districtId}-buildings`,
   () => buildingApi.filterBuildings({ "district-id": districtId }),
   { default: () => [] },
 );
@@ -31,6 +36,7 @@ useHead(() => ({
 
 <template>
   <DistrictSkeleton v-if="isLoading" />
+  <FetchError v-else-if="hasError" :error="hasError" />
   <div v-else class="flex min-h-full flex-col gap-4">
     <Card>
       <template #title>

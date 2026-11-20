@@ -1,8 +1,8 @@
 <script setup lang="ts">
-const districtStore = useDistrictStore();
+const districtApi = useDistricts();
 
 const { data: districts } = useAsyncData("districts", () =>
-  districtStore.fetchDistricts(),
+  districtApi.getDistricts(),
 );
 
 useHead(() => ({
