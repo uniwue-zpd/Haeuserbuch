@@ -1,6 +1,7 @@
 package de.uniwue.dachs.haeuserbuch_backend.service;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.OwnershipRecordDTO;
+import de.uniwue.dachs.haeuserbuch_backend.embeddable.BuildingNameSource;
 import de.uniwue.dachs.haeuserbuch_backend.model.Building;
 import de.uniwue.dachs.haeuserbuch_backend.model.BuildingName;
 import de.uniwue.dachs.haeuserbuch_backend.model.OwnershipRecord;
@@ -109,7 +110,7 @@ public class OwnershipRecordService {
 
     /**
      * Adds the names to each building unless a name with the same text (trimmed, case-insensitive)
-     * already exists. An existing name without a source gets the source of the new name.
+     * already exists. An existing name gets the source of the new name unless it already lists it.
      */
     private void addBuildingNames(Set<Building> buildings, List<BuildingNameInput> names) {
         for (BuildingNameInput input : names) {
@@ -123,10 +124,12 @@ public class OwnershipRecordService {
                 if (existing.isEmpty()) {
                     BuildingName name = new BuildingName();
                     name.setName(input.name());
-                    name.setSource(source);
+                    if (source != null) name.getSources().add(new BuildingNameSource(source, null));
                     building.getNames().add(name);
-                } else if (existing.get().getSource() == null && source != null) {
-                    existing.get().setSource(source);
+                } else if (source != null && existing.get().getSources().stream()
+                        .noneMatch(entry -> entry.getSource() != null
+                                && Objects.equals(entry.getSource().getId(), source.getId()))) {
+                    existing.get().getSources().add(new BuildingNameSource(source, null));
                 }
             }
         }
