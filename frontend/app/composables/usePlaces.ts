@@ -43,7 +43,19 @@ export const usePlaces = () => {
         return await $fetch<PlaceDTO[]>("/api/places/search", { query: { query } });
     };
 
+    /**
+     * `GET` a page of the place register: places with their related persons or citizenship entries,
+     * sorted by name and optionally filtered by real or alternative place name.
+     * Use it with the `useAsyncData` key "place-register-{type}", which is cleared after create/update/delete.
+     * @param params Register type, name filter and paging.
+     * @returns A page of places with their entries.
+     */
+    const getPlaceRegister = async <T>(params: FilterPlaceRegister): Promise<Page<PlaceRegisterEntry<T>>> => {
+        return await $fetch<Page<PlaceRegisterEntry<T>>>("/api/places/register", { query: params });
+    };
+
     return {
+        getPlaceRegister,
         getPlaces,
         getPlace,
         createPlace,
