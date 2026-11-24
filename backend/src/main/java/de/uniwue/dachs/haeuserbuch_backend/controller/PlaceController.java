@@ -7,7 +7,6 @@ import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.FeatureCollection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -72,7 +71,7 @@ public class PlaceController {
 
     /**
      * Place register: paged places with their related entries, filtered by real or alternative place name.
-     * {@code type} is either "persons" (origin/emigration places of persons) or "citizenships".
+     * {@code type} is either "persons" (origin/emigration places of persons) or "citizenships" (citizenships whose citizen, guarantor or mentioned person has the place as origin/emigration place).
      */
     @GetMapping("/register")
     public ResponseEntity<Page<? extends PlaceRegisterDTO<?>>> getRegister(
@@ -82,7 +81,7 @@ public class PlaceController {
     ) {
         return switch (type) {
             case "persons" -> ResponseEntity.ok(placeService.getPersonRegister(name, pageable));
-            case "citizenships" -> ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+            case "citizenships" -> ResponseEntity.ok(placeService.getCitizenshipRegister(name, pageable));
             default -> ResponseEntity.badRequest().build();
         };
     }
