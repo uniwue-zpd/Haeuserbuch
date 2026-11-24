@@ -66,7 +66,19 @@ export const useJobs = () => {
         return await $fetch<JobDTO[]>("/api/jobs/search", { query: { query } });
     };
 
+    /**
+     * `GET` a page of the occupation register: occupations with their related persons or citizenship entries,
+     * sorted by name and optionally filtered by name or alternative name.
+     * Use it with the `useAsyncData` key "job-register-{type}", which is cleared after create/update/delete.
+     * @param params Register type, name filter and paging.
+     * @returns A page of occupations with their entries.
+     */
+    const getJobRegister = async <T>(params: FilterRegister): Promise<Page<RegisterEntry<T>>> => {
+        return await $fetch<Page<RegisterEntry<T>>>("/api/jobs/register", { query: params });
+    };
+
     return {
+        getJobRegister,
         getJobs,
         getJob,
         createJob,
