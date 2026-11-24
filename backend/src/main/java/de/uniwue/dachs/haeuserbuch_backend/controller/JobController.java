@@ -1,9 +1,12 @@
 package de.uniwue.dachs.haeuserbuch_backend.controller;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.JobDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.Register.RegisterDTO;
 import de.uniwue.dachs.haeuserbuch_backend.model.Job;
 import de.uniwue.dachs.haeuserbuch_backend.service.JobService;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,5 +67,23 @@ public class JobController {
         }
         List<JobDTO> jobDTOs = jobService.searchJobs(query);
         return ResponseEntity.ok(jobDTOs);
+    }
+
+    /**
+     * Occupation register: paged occupations with their related entries, filtered by name or alternative name.
+     * {@code type} is either "persons" (persons with the occupation) or "citizenships" (citizenships whose citizen,
+     * guarantor or mentioned person has the occupation).
+     */
+    @GetMapping("/register")
+    public ResponseEntity<Page<? extends RegisterDTO<?>>> getRegister(
+            @RequestParam(name = "type") String type,
+            @RequestParam(name = "name", required = false) String name,
+            Pageable pageable
+    ) {
+        return switch (type) {
+            case "persons" -> ResponseEntity.ok(jobService.getPersonRegister(name, pageable));
+            case "citizenships" -> ResponseEntity.ok(jobService.getCitizenshipRegister(name, pageable));
+            default -> ResponseEntity.badRequest().build();
+        };
     }
 }

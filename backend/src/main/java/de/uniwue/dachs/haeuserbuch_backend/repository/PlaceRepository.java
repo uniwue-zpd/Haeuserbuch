@@ -1,7 +1,7 @@
 package de.uniwue.dachs.haeuserbuch_backend.repository;
 
-import de.uniwue.dachs.haeuserbuch_backend.DTO.Register.PlaceEntryRow;
-import de.uniwue.dachs.haeuserbuch_backend.DTO.Register.PlaceRegisterRow;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.Register.RegisterEntryRow;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.Register.RegisterRow;
 import de.uniwue.dachs.haeuserbuch_backend.model.Place;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -50,7 +50,7 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     """;
 
     String REGISTER_SELECT = """
-        SELECT new de.uniwue.dachs.haeuserbuch_backend.DTO.Register.PlaceRegisterRow(p.id, p.realName)
+        SELECT new de.uniwue.dachs.haeuserbuch_backend.DTO.Register.RegisterRow(p.id, p.realName)
         FROM Place p
     """;
 
@@ -62,27 +62,27 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
             value = REGISTER_SELECT + NAME_FILTER + HAS_PERSON_FILTER + REGISTER_ORDER,
             countQuery = REGISTER_COUNT + NAME_FILTER + HAS_PERSON_FILTER
     )
-    Page<PlaceRegisterRow> findPersonRegisterPlaces(@Param("name") String name, Pageable pageable);
+    Page<RegisterRow> findPersonRegisterPlaces(@Param("name") String name, Pageable pageable);
 
     @Query(
             value = REGISTER_SELECT + NAME_FILTER + HAS_CITIZENSHIP_FILTER + REGISTER_ORDER,
             countQuery = REGISTER_COUNT + NAME_FILTER + HAS_CITIZENSHIP_FILTER
     )
-    Page<PlaceRegisterRow> findCitizenshipRegisterPlaces(@Param("name") String name, Pageable pageable);
+    Page<RegisterRow> findCitizenshipRegisterPlaces(@Param("name") String name, Pageable pageable);
 
     @Query("""
-        SELECT new de.uniwue.dachs.haeuserbuch_backend.DTO.Register.PlaceEntryRow(place.id, person.id, person.fullName)
+        SELECT new de.uniwue.dachs.haeuserbuch_backend.DTO.Register.RegisterEntryRow(place.id, person.id, person.fullName)
         FROM Person person
         JOIN person.origin.places place
         WHERE place.id IN :placeIds
     """)
-    List<PlaceEntryRow> findOriginPlaceEntries(@Param("placeIds") List<Long> placeIds);
+    List<RegisterEntryRow> findOriginPlaceEntries(@Param("placeIds") List<Long> placeIds);
 
     @Query("""
-        SELECT new de.uniwue.dachs.haeuserbuch_backend.DTO.Register.PlaceEntryRow(place.id, person.id, person.fullName)
+        SELECT new de.uniwue.dachs.haeuserbuch_backend.DTO.Register.RegisterEntryRow(place.id, person.id, person.fullName)
         FROM Person person
         JOIN person.emigration.place place
         WHERE place.id IN :placeIds
     """)
-    List<PlaceEntryRow> findEmigrationPlaceEntries(@Param("placeIds") List<Long> placeIds);
+    List<RegisterEntryRow> findEmigrationPlaceEntries(@Param("placeIds") List<Long> placeIds);
 }

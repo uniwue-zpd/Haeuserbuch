@@ -3,24 +3,20 @@ package de.uniwue.dachs.haeuserbuch_backend.service;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PlaceDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.CitizenshipPreviewDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.PersonPreviewDTO;
-import de.uniwue.dachs.haeuserbuch_backend.DTO.Register.CitizenshipPersonRow;
-import de.uniwue.dachs.haeuserbuch_backend.DTO.Register.PlaceEntryRow;
-import de.uniwue.dachs.haeuserbuch_backend.DTO.Register.PlaceRegisterDTO;
-import de.uniwue.dachs.haeuserbuch_backend.DTO.Register.PlaceRegisterRow;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.Register.RegisterDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.Register.RegisterEntryRow;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.Register.RegisterRow;
 import de.uniwue.dachs.haeuserbuch_backend.model.Place;
-import de.uniwue.dachs.haeuserbuch_backend.repository.CitizenshipRepository;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PlaceRepository;
 import de.uniwue.dachs.haeuserbuch_backend.search.SearchIndexAffecting;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.FeatureCollection;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PlaceProperties;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PointGeometry;
-import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.CitizenshipMapper;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PersonMapper;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PlaceMapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -30,25 +26,23 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.*;
+import static de.uniwue.dachs.haeuserbuch_backend.utils.RegisterUtils.*;
 
 @Service
 public class PlaceService {
     private final PlaceRepository placeRepository;
     private final PlaceMapper placeMapper;
     private final PersonMapper personMapper;
-    private final CitizenshipRepository citizenshipRepository;
-    private final CitizenshipMapper citizenshipMapper;
+    private final CitizenshipService citizenshipService;
 
     public PlaceService(PlaceRepository placeRepository,
                         PlaceMapper placeMapper,
                         PersonMapper personMapper,
-                        CitizenshipRepository citizenshipRepository,
-                        CitizenshipMapper citizenshipMapper) {
+                        CitizenshipService citizenshipService) {
         this.placeRepository = placeRepository;
         this.placeMapper = placeMapper;
         this.personMapper = personMapper;
-        this.citizenshipRepository = citizenshipRepository;
-        this.citizenshipMapper = citizenshipMapper;
+        this.citizenshipService = citizenshipService;
     }
 
     // GET all places as feature collection
@@ -132,24 +126,10 @@ public class PlaceService {
      * Places are sorted by name and filtered by real or alternative name.
      */
     @Transactional(readOnly = true)
-    public Page<PlaceRegisterDTO<PersonPreviewDTO>> getPersonRegister(String name, Pageable pageable) {
-        Page<PlaceRegisterRow> places = placeRepository.findPersonRegisterPlaces(normalizeName(name), unsorted(pageable));
-
-        // placeId -> personId -> person; a person can be origin and emigration of the same place
-        Map<Long, Map<Long, PersonPreviewDTO>> personsByPlace = new HashMap<>();
-        personRows(places).forEach(row -> personsByPlace
-                .computeIfAbsent(row.placeId(), id -> new HashMap<>())
-                .putIfAbsent(row.entryId(), personMapper.PlaceEntryRowToPreviewDTO(row)));
-
-        return places.map(place -> new PlaceRegisterDTO<>(
-                place.id(),
-                place.realName(),
-                personsByPlace.getOrDefault(place.id(), Map.of()).values().stream()
-                        .sorted(Comparator.comparing(
-                                PersonPreviewDTO::getFullName,
-                                Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)))
-                        .toList()
-        ));
+    public Page<RegisterDTO<PersonPreviewDTO>> getPersonRegister(String name, Pageable pageable) {
+        Page<RegisterRow> places = placeRepository.findPersonRegisterPlaces(normalizeName(name), unsorted(pageable));
+        Map<Long, List<PersonPreviewDTO>> persons = personsByGroup(personRows(places), personMapper::RegisterEntryRowToPreviewDTO);
+        return places.map(place -> new RegisterDTO<>(place.id(), place.name(), persons.getOrDefault(place.id(), List.of())));
     }
 
     /**
@@ -158,64 +138,16 @@ public class PlaceService {
      * Places are sorted by name and filtered by real or alternative name.
      */
     @Transactional(readOnly = true)
-    public Page<PlaceRegisterDTO<CitizenshipPreviewDTO>> getCitizenshipRegister(String name, Pageable pageable) {
-        Page<PlaceRegisterRow> places = placeRepository.findCitizenshipRegisterPlaces(normalizeName(name), unsorted(pageable));
-
-        // placeId -> personIds of persons with this place as origin or emigration place
-        Map<Long, Set<Long>> personIdsByPlace = new HashMap<>();
-        personRows(places).forEach(row -> personIdsByPlace
-                .computeIfAbsent(row.placeId(), id -> new HashSet<>())
-                .add(row.entryId()));
-
-        Set<Long> personIds = new HashSet<>();
-        personIdsByPlace.values().forEach(personIds::addAll);
-
-        // personId -> citizenships in which the person is citizen, guarantor or mentioned person
-        Map<Long, List<CitizenshipPersonRow>> citizenshipsByPerson = new HashMap<>();
-        if (!personIds.isEmpty()) {
-            Stream.of(
-                    citizenshipRepository.findByCitizenIds(personIds),
-                    citizenshipRepository.findByGuarantorIds(personIds),
-                    citizenshipRepository.findByMentionedPersonIds(personIds)
-            ).flatMap(List::stream).forEach(row -> citizenshipsByPerson
-                    .computeIfAbsent(row.personId(), id -> new ArrayList<>())
-                    .add(row));
-        }
-
-        return places.map(place -> {
-            // citizenshipId -> citizenship; several persons of a place can appear in the same citizenship
-            Map<Long, CitizenshipPreviewDTO> citizenships = new HashMap<>();
-            personIdsByPlace.getOrDefault(place.id(), Set.of()).stream()
-                    .flatMap(personId -> citizenshipsByPerson.getOrDefault(personId, List.of()).stream())
-                    .forEach(row -> citizenships.putIfAbsent(
-                            row.citizenshipId(),
-                            citizenshipMapper.CitizenshipPersonRowToPreviewDTO(row)));
-
-            return new PlaceRegisterDTO<>(
-                    place.id(),
-                    place.realName(),
-                    citizenships.values().stream()
-                            .sorted(Comparator.comparing(
-                                            CitizenshipPreviewDTO::getSignature,
-                                            Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER))
-                                    .thenComparing(CitizenshipPreviewDTO::getId))
-                            .toList()
-            );
-        });
-    }
-
-    private static String normalizeName(String name) {
-        return name == null ? "" : name.trim();
-    }
-
-    /** Register order is fixed in the query, so a client {@code sort} must not be appended */
-    private static Pageable unsorted(Pageable pageable) {
-        return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+    public Page<RegisterDTO<CitizenshipPreviewDTO>> getCitizenshipRegister(String name, Pageable pageable) {
+        Page<RegisterRow> places = placeRepository.findCitizenshipRegisterPlaces(normalizeName(name), unsorted(pageable));
+        Map<Long, List<CitizenshipPreviewDTO>> citizenships =
+                citizenshipService.getPreviewsByPersonGroups(personIdsByGroup(personRows(places)));
+        return places.map(place -> new RegisterDTO<>(place.id(), place.name(), citizenships.getOrDefault(place.id(), List.of())));
     }
 
     /** Persons with one of the given places as origin or emigration place */
-    private Stream<PlaceEntryRow> personRows(Page<PlaceRegisterRow> places) {
-        List<Long> placeIds = places.map(PlaceRegisterRow::id).toList();
+    private Stream<RegisterEntryRow> personRows(Page<RegisterRow> places) {
+        List<Long> placeIds = places.map(RegisterRow::id).toList();
         if (placeIds.isEmpty()) return Stream.empty();
         return Stream.concat(
                 placeRepository.findOriginPlaceEntries(placeIds).stream(),

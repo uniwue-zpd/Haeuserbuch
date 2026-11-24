@@ -3,6 +3,7 @@ package de.uniwue.dachs.haeuserbuch_backend.service;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.CitizenshipDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.FullTextSearch.CitizenshipFullTextSearchResult;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.CitizenshipPreviewDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.Register.CitizenshipPersonRow;
 import de.uniwue.dachs.haeuserbuch_backend.model.*;
 import de.uniwue.dachs.haeuserbuch_backend.repository.CitizenshipRepository;
 import de.uniwue.dachs.haeuserbuch_backend.search.SearchIndexAffecting;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 @Service
 public class CitizenshipService {
@@ -176,5 +178,46 @@ public class CitizenshipService {
         String normalizedQuery = query.trim();
         return citizenshipRepository.searchFullText(normalizedQuery, fuzzy,
                 SearchMatching.literalPattern(normalizedQuery), SearchMatching.highlightPattern(normalizedQuery), pageable);
+    }
+
+    /**
+     * Citizenships of groups of persons, e.g. for a register: for each group, all citizenships in which one of its
+     * persons appears as citizen, guarantor or mentioned person.
+     * @param personIdsByGroup groupId -> person IDs of that group
+     * @return groupId -> citizenship previews, deduplicated and sorted by signature and ID
+     */
+    @Transactional(readOnly = true)
+    public Map<Long, List<CitizenshipPreviewDTO>> getPreviewsByPersonGroups(Map<Long, Set<Long>> personIdsByGroup) {
+        Set<Long> personIds = new HashSet<>();
+        personIdsByGroup.values().forEach(personIds::addAll);
+        if (personIds.isEmpty()) return Map.of();
+
+        // personId -> citizenships in which the person is citizen, guarantor or mentioned person
+        Map<Long, List<CitizenshipPersonRow>> citizenshipsByPerson = new HashMap<>();
+        Stream.of(
+                citizenshipRepository.findByCitizenIds(personIds),
+                citizenshipRepository.findByGuarantorIds(personIds),
+                citizenshipRepository.findByMentionedPersonIds(personIds)
+        ).flatMap(List::stream).forEach(row -> citizenshipsByPerson
+                .computeIfAbsent(row.personId(), id -> new ArrayList<>())
+                .add(row));
+
+        Map<Long, List<CitizenshipPreviewDTO>> result = new HashMap<>();
+        personIdsByGroup.forEach((groupId, groupPersonIds) -> {
+            // citizenshipId -> citizenship; several persons of a group can appear in the same citizenship
+            Map<Long, CitizenshipPreviewDTO> citizenships = new HashMap<>();
+            groupPersonIds.stream()
+                    .flatMap(personId -> citizenshipsByPerson.getOrDefault(personId, List.of()).stream())
+                    .forEach(row -> citizenships.putIfAbsent(
+                            row.citizenshipId(),
+                            citizenshipMapper.CitizenshipPersonRowToPreviewDTO(row)));
+            result.put(groupId, citizenships.values().stream()
+                    .sorted(Comparator.comparing(
+                                    CitizenshipPreviewDTO::getSignature,
+                                    Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER))
+                            .thenComparing(CitizenshipPreviewDTO::getId))
+                    .toList());
+        });
+        return result;
     }
 }
