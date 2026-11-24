@@ -2,10 +2,6 @@
 import FetchError from "~/components/UI/FetchError.vue";
 import UniversalSkeleton from "~/components/UI/skeletons/UniversalSkeleton.vue";
 
-/**
- * Paged, filterable list of the groups of a register (places, occupations, ...). Each group can be expanded to show
- * its related persons (`type="persons"`) or citizenship entries (`type="citizenships"`).
- */
 const props = defineProps<{
   register: "places" | "occupations";
   type: "persons" | "citizenships";
@@ -47,51 +43,74 @@ const config = configs[props.register];
 const page = ref(0);
 const rowsPerPage = ref(10);
 const rowsPerPageOptions = [10, 25, 50];
-const nameFilter = ref("");
-const debouncedName = ref("");
 
-const updateDebouncedName = debounce((value: string) => {
-  debouncedName.value = value.trim();
-}, 400);
-watch(nameFilter, (value) => updateDebouncedName(value));
-watch([debouncedName, rowsPerPage], () => {
-  page.value = 0;
+const filterValues = reactive({
+  name: "",
 });
 
-const { data: register, pending: isLoading, error: hasError } = await useAsyncData(
+const resetFilters = () => {
+  Object.assign(filterValues, {
+    name: "",
+  });
+  rowsPerPage.value = 10;
+  page.value = 0;
+  debouncedLoadData();
+};
+
+const { data: register, pending: loading, error, refresh: loadData } = await useAsyncData(
   `${config.key}-register-${props.type}`,
   () => config.fetch({
     type: props.type,
-    name: debouncedName.value || undefined,
+    name: filterValues.name.trim() || undefined,
     page: page.value,
     size: rowsPerPage.value,
   }),
-  { watch: [page, rowsPerPage, debouncedName] },
 );
 
 const groups = computed(() => register.value?.content ?? []);
-/** Total number of groups matching the filter; used for the pagination only */
-const totalGroups = computed(() => register.value?.totalElements ?? 0);
+const totalRecords = computed(() => register.value?.totalElements ?? 0);
 
-function onPageChange(nextPage: number) {
+const debouncedLoadData = debounce(() => {
+  loadData();
+}, 400);
+
+const onPageChange = (nextPage: number) => {
   page.value = nextPage - 1;
-}
+  loadData();
+};
+
+const onRowsPerPageChange = () => {
+  page.value = 0;
+  loadData();
+};
+
+watch(
+  filterValues,
+  () => {
+    page.value = 0;
+    debouncedLoadData();
+  },
+  { deep: true },
+);
 </script>
 
 <template>
-  <FetchError v-if="hasError" :error="hasError" />
+  <FetchError v-if="error" :error="error" />
   <div v-else class="flex flex-col gap-4">
-    <UInput
-        v-model="nameFilter"
-        icon="i-lucide-search"
-        :placeholder="config.placeholder"
-        class="w-full sm:max-w-sm"
-    />
-    <UniversalSkeleton v-if="isLoading && !register" />
+    <div class="flex items-center justify-between gap-2">
+      <UInput
+          v-model="filterValues.name"
+          icon="i-lucide-search"
+          :placeholder="config.placeholder"
+          class="w-full sm:max-w-sm"
+      />
+      <UButton color="neutral" variant="ghost" size="sm" icon="i-lucide-rotate-ccw" label="Zurücksetzen" @click="resetFilters" />
+    </div>
+    <UniversalSkeleton v-if="loading && !register" />
     <ul
       v-else
       class="divide-y divide-muted rounded-md border border-default bg-default shadow-md transition-opacity"
-      :class="{ 'opacity-60': isLoading }"
+      :class="{ 'opacity-60': loading }"
     >
       <li v-for="group in groups" :key="group.id" class="flex items-start gap-1 p-2">
         <UCollapsible class="min-w-0 flex-1">
@@ -136,11 +155,12 @@ function onPageChange(nextPage: number) {
         v-model="rowsPerPage"
         :items="rowsPerPageOptions"
         class="w-24"
+        @update:model-value="onRowsPerPageChange"
       />
       <UPagination
         :page="page + 1"
         :items-per-page="rowsPerPage"
-        :total="totalGroups"
+        :total="totalRecords"
         @update:page="onPageChange"
       />
     </div>
