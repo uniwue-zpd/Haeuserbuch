@@ -2,6 +2,7 @@ package de.uniwue.dachs.haeuserbuch_backend.utils.Mappers;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PersonDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.PersonPreviewDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.Register.PlaceEntryRow;
 import de.uniwue.dachs.haeuserbuch_backend.model.Person;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PersonRepository;
 import org.springframework.stereotype.Component;
@@ -111,5 +112,13 @@ public class PersonMapper {
 
     public Set<PersonPreviewDTO> PersonsToPreviewDTOs(Set<Person> persons) {
         return persons.stream().map(this::PersonToPreviewDTO).collect(Collectors.toSet());
+    }
+
+    public PersonPreviewDTO PlaceEntryRowToPreviewDTO(PlaceEntryRow row) {
+        if (row == null) return null;
+        PersonPreviewDTO previewDTO = new PersonPreviewDTO();
+        previewDTO.setId(row.entryId());
+        previewDTO.setFullName(row.entryName());
+        return previewDTO;
     }
 }

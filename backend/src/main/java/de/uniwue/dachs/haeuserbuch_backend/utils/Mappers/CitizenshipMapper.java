@@ -2,6 +2,7 @@ package de.uniwue.dachs.haeuserbuch_backend.utils.Mappers;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.CitizenshipDTO;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.CitizenshipPreviewDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.Register.CitizenshipPersonRow;
 import de.uniwue.dachs.haeuserbuch_backend.model.Citizenship;
 import org.springframework.stereotype.Component;
 
@@ -63,6 +64,15 @@ public class CitizenshipMapper {
         citizenshipPreviewDTO.setId(citizenship.getId());
         citizenshipPreviewDTO.setSignature(citizenship.getSignature());
         citizenshipPreviewDTO.setRefNumber(citizenship.getRefNumber());
+        return citizenshipPreviewDTO;
+    }
+
+    public CitizenshipPreviewDTO CitizenshipPersonRowToPreviewDTO(CitizenshipPersonRow row) {
+        if (row == null) return null;
+        CitizenshipPreviewDTO citizenshipPreviewDTO = new CitizenshipPreviewDTO();
+        citizenshipPreviewDTO.setId(row.citizenshipId());
+        citizenshipPreviewDTO.setSignature(row.signature());
+        citizenshipPreviewDTO.setRefNumber(row.refNumber());
         return citizenshipPreviewDTO;
     }
 }

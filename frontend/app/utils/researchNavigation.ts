@@ -45,6 +45,12 @@ export const researchNavigation: readonly ResearchNavigationItem[] = [
     descriptionToLabel: 'Methodik & Editionsrichtlininen'
   },
   {
+    label: 'Register',
+    description: 'Alle Register an einem Ort',
+    icon: 'i-lucide-list-tree',
+    to: '/register',
+  },
+  {
     label: 'Eigentumsverhältnisse',
     description: 'Historische Besitzfolgen – in Vorbereitung.',
     icon: 'i-lucide-book-open',

@@ -304,7 +304,7 @@ const periodLabel = (name: BuildingNameDTO): string =>
       <h2 :id="`${headingPrefix}-relations`" :class="ui.heading">
         Beziehungen zu anderen Entitäten
       </h2>
-      <PersonsList title="Personen" :persons="associatedPeople ?? []">
+      <UIEntityList type="persons" title="Personen" :entries="associatedPeople ?? []">
         <template v-if="associatedPeoplePending || associatedPeopleError" #default>
           <div
             v-if="associatedPeoplePending"
@@ -333,7 +333,7 @@ const periodLabel = (name: BuildingNameDTO): string =>
             />
           </div>
         </template>
-      </PersonsList>
+      </UIEntityList>
     </section>
 
     <section

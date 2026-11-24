@@ -95,6 +95,21 @@ export interface CitizenshipPreviewDTO {
     refNumber: string | null;
 }
 
+/** A place of the place register with its related entries (persons or citizenship entries) */
+export interface PlaceRegisterEntry<T> {
+    id: number;
+    realName: string | null;
+    entries: T[];
+}
+
+/** Query parameters of the place register */
+export interface FilterPlaceRegister {
+    type: "persons" | "citizenships";
+    name?: string;
+    page?: number;
+    size?: number;
+}
+
 /** Represents an object describing available citizenship filtering options */
 export interface FilterCitizenship {
     page?: number;

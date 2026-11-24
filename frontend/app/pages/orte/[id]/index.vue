@@ -156,15 +156,17 @@ onBeforeUnmount(() => {
           class="grid grid-cols-1 gap-4"
           :class="{ 'md:grid-cols-2': originPeople.length > 0 && emigrationPeople.length > 0 }"
         >
-          <PersonsList
+          <UIEntityList
             v-if="originPeople.length > 0"
             title="Möglicher Herkunftsort von"
-            :persons="originPeople"
+            type="persons"
+            :entries="originPeople"
           />
-          <PersonsList
+          <UIEntityList
             v-if="emigrationPeople.length > 0"
             title="Wegzugsort von"
-            :persons="emigrationPeople"
+            type="persons"
+            :entries="emigrationPeople"
           />
         </div>
       </section>
