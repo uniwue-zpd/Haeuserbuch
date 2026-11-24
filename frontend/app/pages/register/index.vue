@@ -1,30 +1,26 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from "@nuxt/ui";
-import UniversalSkeleton from "~/components/UI/skeletons/UniversalSkeleton.vue";
 
 useHead({ title: "Register" });
 
-type RegisterKey = "berufe" | "orte";
+type RegisterKey = "occupations" | "places";
 
 const route = useRoute();
 
-/** Available registers, shown in the side menu; add new registers here and render their component below */
-const registers: { key: RegisterKey; label: string; icon: string }[] = [
-  { key: "berufe", label: "Register der Berufe", icon: "i-lucide-briefcase" },
-  { key: "orte", label: "Register der Orte", icon: "i-lucide-map-pin" },
+const registers: { key: RegisterKey; slug: string; label: string; icon: string }[] = [
+  { key: "occupations", slug: "berufe", label: "Register der Berufe", icon: "i-lucide-briefcase" },
+  { key: "places", slug: "orte", label: "Register der Orte", icon: "i-lucide-map-pin" },
 ];
 
-/** Selected register from `?type=`; the first register by default */
-const activeRegister = computed<RegisterKey>(() =>
-  registers.find((register) => register.key === route.query.type)?.key ?? registers[0]!.key,
+const activeRegister = computed(() =>
+  registers.find((register) => register.slug === route.query.type) ?? registers[0]!,
 );
 
-/** Without a valid `?type=` (e.g. plain `/register`), write the selected register into the URL */
 watch(
   () => route.query.type,
   (type) => {
-    if (type !== activeRegister.value) {
-      navigateTo({ query: { ...route.query, type: activeRegister.value } }, { replace: true });
+    if (type !== activeRegister.value.slug) {
+      navigateTo({ query: { ...route.query, type: activeRegister.value.slug } }, { replace: true });
     }
   },
   { immediate: true },
@@ -34,8 +30,8 @@ const menuItems = computed<NavigationMenuItem[]>(() =>
   registers.map((register) => ({
     label: register.label,
     icon: register.icon,
-    to: { query: { type: register.key } },
-    active: register.key === activeRegister.value,
+    to: { query: { type: register.slug } },
+    active: register.key === activeRegister.value.key,
   })),
 );
 </script>
@@ -49,8 +45,8 @@ const menuItems = computed<NavigationMenuItem[]>(() =>
       </div>
     </aside>
     <div class="min-w-0 lg:col-span-9">
-      <UniversalSkeleton v-if="activeRegister === 'berufe'" />
-      <RegisterPlaces v-if="activeRegister === 'orte'" />
+      <RegisterJobs v-if="activeRegister.key === 'occupations'" />
+      <RegisterPlaces v-if="activeRegister.key === 'places'" />
     </div>
   </div>
 </template>

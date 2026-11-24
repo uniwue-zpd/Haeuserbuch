@@ -50,8 +50,8 @@ export const usePlaces = () => {
      * @param params Register type, name filter and paging.
      * @returns A page of places with their entries.
      */
-    const getPlaceRegister = async <T>(params: FilterPlaceRegister): Promise<Page<PlaceRegisterEntry<T>>> => {
-        return await $fetch<Page<PlaceRegisterEntry<T>>>("/api/places/register", { query: params });
+    const getPlaceRegister = async <T>(params: FilterRegister): Promise<Page<RegisterEntry<T>>> => {
+        return await $fetch<Page<RegisterEntry<T>>>("/api/places/register", { query: params });
     };
 
     return {

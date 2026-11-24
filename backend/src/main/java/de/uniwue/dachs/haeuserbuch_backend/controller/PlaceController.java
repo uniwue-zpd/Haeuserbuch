@@ -1,7 +1,7 @@
 package de.uniwue.dachs.haeuserbuch_backend.controller;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PlaceDTO;
-import de.uniwue.dachs.haeuserbuch_backend.DTO.Register.PlaceRegisterDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.Register.RegisterDTO;
 import de.uniwue.dachs.haeuserbuch_backend.service.PlaceService;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.FeatureCollection;
@@ -74,7 +74,7 @@ public class PlaceController {
      * {@code type} is either "persons" (origin/emigration places of persons) or "citizenships" (citizenships whose citizen, guarantor or mentioned person has the place as origin/emigration place).
      */
     @GetMapping("/register")
-    public ResponseEntity<Page<? extends PlaceRegisterDTO<?>>> getRegister(
+    public ResponseEntity<Page<? extends RegisterDTO<?>>> getRegister(
             @RequestParam(name = "type") String type,
             @RequestParam(name = "name", required = false) String name,
             Pageable pageable

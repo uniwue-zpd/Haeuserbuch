@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import PlaceRegister from "~/components/register/PlaceRegister.vue";
+import EntityRegister from "~/components/register/EntityRegister.vue";
 
 /**
  * Place register with the tabs "Personen" and "Bürgermatrikel", embedded in the register page.
@@ -34,10 +34,10 @@ const activeTab = computed<RegisterTab>({
     </div>
     <UTabs v-model="activeTab" :items="tabs" variant="link" class="w-full">
       <template #persons>
-        <PlaceRegister type="persons" class="pt-4" />
+        <EntityRegister register="places" type="persons" class="pt-4" />
       </template>
       <template #citizenship_entries>
-        <PlaceRegister type="citizenships" class="pt-4" />
+        <EntityRegister register="places" type="citizenships" class="pt-4" />
       </template>
     </UTabs>
   </div>

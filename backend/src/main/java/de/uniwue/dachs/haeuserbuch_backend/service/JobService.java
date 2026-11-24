@@ -1,26 +1,45 @@
 package de.uniwue.dachs.haeuserbuch_backend.service;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.JobDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.CitizenshipPreviewDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.PersonPreviewDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.Register.RegisterDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.Register.RegisterEntryRow;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.Register.RegisterRow;
 import de.uniwue.dachs.haeuserbuch_backend.model.Job;
 import de.uniwue.dachs.haeuserbuch_backend.repository.JobRepository;
 import de.uniwue.dachs.haeuserbuch_backend.search.SearchIndexAffecting;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.JobMapper;
+import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PersonMapper;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
+
+import static de.uniwue.dachs.haeuserbuch_backend.utils.RegisterUtils.*;
 
 @Service
 public class JobService {
     private final JobRepository jobRepository;
     private final JobMapper jobMapper;
+    private final PersonMapper personMapper;
+    private final CitizenshipService citizenshipService;
 
-    public JobService(JobRepository jobRepository, JobMapper jobMapper) {
+    public JobService(JobRepository jobRepository,
+                      JobMapper jobMapper,
+                      PersonMapper personMapper,
+                      CitizenshipService citizenshipService) {
         this.jobRepository = jobRepository;
         this.jobMapper = jobMapper;
+        this.personMapper = personMapper;
+        this.citizenshipService = citizenshipService;
     }
 
     /**
@@ -91,5 +110,35 @@ public class JobService {
                 .map(jobMapper::JobToDTO)
                 .filter(Objects::nonNull)
                 .toList();
+    }
+
+    /**
+     * Page of occupations of at least one person, each with its persons.
+     * Occupations are sorted by name and filtered by name or alternative name.
+     */
+    @Transactional(readOnly = true)
+    public Page<RegisterDTO<PersonPreviewDTO>> getPersonRegister(String name, Pageable pageable) {
+        Page<RegisterRow> jobs = jobRepository.findPersonRegisterJobs(normalizeName(name), unsorted(pageable));
+        Map<Long, List<PersonPreviewDTO>> persons = personsByGroup(personRows(jobs), personMapper::RegisterEntryRowToPreviewDTO);
+        return jobs.map(job -> new RegisterDTO<>(job.id(), job.name(), persons.getOrDefault(job.id(), List.of())));
+    }
+
+    /**
+     * Page of occupations of a citizen, guarantor or mentioned person of at least one citizenship,
+     * each with these citizenships. Occupations are sorted by name and filtered by name or alternative name.
+     */
+    @Transactional(readOnly = true)
+    public Page<RegisterDTO<CitizenshipPreviewDTO>> getCitizenshipRegister(String name, Pageable pageable) {
+        Page<RegisterRow> jobs = jobRepository.findCitizenshipRegisterJobs(normalizeName(name), unsorted(pageable));
+        Map<Long, List<CitizenshipPreviewDTO>> citizenships =
+                citizenshipService.getPreviewsByPersonGroups(personIdsByGroup(personRows(jobs)));
+        return jobs.map(job -> new RegisterDTO<>(job.id(), job.name(), citizenships.getOrDefault(job.id(), List.of())));
+    }
+
+    /** Persons with one of the given occupations */
+    private Stream<RegisterEntryRow> personRows(Page<RegisterRow> jobs) {
+        List<Long> jobIds = jobs.map(RegisterRow::id).toList();
+        if (jobIds.isEmpty()) return Stream.empty();
+        return jobRepository.findPersonEntries(jobIds).stream();
     }
 }
