@@ -1,6 +1,9 @@
 package de.uniwue.dachs.haeuserbuch_backend.service;
 
 import de.uniwue.dachs.haeuserbuch_backend.DTO.PlaceDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.PreviewDTO.PersonPreviewDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.Register.PlaceRegisterDTO;
+import de.uniwue.dachs.haeuserbuch_backend.DTO.Register.PlaceRegisterRow;
 import de.uniwue.dachs.haeuserbuch_backend.model.Place;
 import de.uniwue.dachs.haeuserbuch_backend.repository.PlaceRepository;
 import de.uniwue.dachs.haeuserbuch_backend.search.SearchIndexAffecting;
@@ -8,13 +11,18 @@ import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.Feature;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.FeatureCollection;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PlaceProperties;
 import de.uniwue.dachs.haeuserbuch_backend.DTO.GeoJsonDTO.PointGeometry;
+import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PersonMapper;
 import de.uniwue.dachs.haeuserbuch_backend.utils.Mappers.PlaceMapper;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.*;
 
@@ -22,11 +30,14 @@ import static de.uniwue.dachs.haeuserbuch_backend.utils.PostGIS.GeometryUtils.*;
 public class PlaceService {
     private final PlaceRepository placeRepository;
     private final PlaceMapper placeMapper;
+    private final PersonMapper personMapper;
 
     public PlaceService(PlaceRepository placeRepository,
-                        PlaceMapper placeMapper) {
+                        PlaceMapper placeMapper,
+                        PersonMapper personMapper) {
         this.placeRepository = placeRepository;
         this.placeMapper = placeMapper;
+        this.personMapper = personMapper;
     }
 
     // GET all places as feature collection
@@ -103,5 +114,38 @@ public class PlaceService {
         return placeRepository.searchPlaces(query).stream()
                 .map(placeMapper::PlaceToDTO)
                 .toList();
+    }
+
+    /**
+     * Page of places that are the origin or emigration place of at least one person, each with its persons.
+     * Places are sorted by name and filtered by real or alternative name.
+     */
+    @Transactional(readOnly = true)
+    public Page<PlaceRegisterDTO<PersonPreviewDTO>> getPersonRegister(String name, Pageable pageable) {
+        Page<PlaceRegisterRow> places = placeRepository.findPersonRegisterPlaces(
+                name == null ? "" : name.trim(),
+                PageRequest.of(pageable.getPageNumber(), pageable.getPageSize())
+        );
+        List<Long> placeIds = places.map(PlaceRegisterRow::id).toList();
+
+        Map<Long, Map<Long, PersonPreviewDTO>> personsByPlace = new HashMap<>();
+        if (!placeIds.isEmpty()) {
+            Stream.concat(
+                    placeRepository.findOriginPlaceEntries(placeIds).stream(),
+                    placeRepository.findEmigrationPlaceEntries(placeIds).stream()
+            ).forEach(row -> personsByPlace
+                    .computeIfAbsent(row.placeId(), id -> new HashMap<>())
+                    .putIfAbsent(row.entryId(), personMapper.PlaceEntryRowToPreviewDTO(row)));
+        }
+
+        return places.map(place -> new PlaceRegisterDTO<>(
+                place.id(),
+                place.realName(),
+                personsByPlace.getOrDefault(place.id(), Map.of()).values().stream()
+                        .sorted(Comparator.comparing(
+                                PersonPreviewDTO::getFullName,
+                                Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)))
+                        .toList()
+        ));
     }
 }
