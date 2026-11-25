@@ -1,8 +1,3 @@
-import type { WeaponDTO } from "~/utils/types/weapon";
-import type { ReligionDTO } from "~/utils/types/religion";
-import type { JobDTO } from "~/utils/types/job";
-import type { Pageable } from "~/utils/types/data_fetching";
-
 /**
  * Represents a DTO of a person object mentioned in the sources.
  */

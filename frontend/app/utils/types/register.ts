@@ -1,5 +1,3 @@
-import type { Pageable } from "~/utils/types/data_fetching";
-
 /**
  * A group of a register (e.g. a place or an occupation) with its related entries (persons or citizenship entries)
  */

@@ -6,7 +6,6 @@ import maplibregl, { type MapMouseEvent, type RasterLayerSpecification, type Ras
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { computed, onMounted, ref, watch } from 'vue';
 import { initMap } from '~/service/map_init';
-import type { BuildingFeature } from '~/utils/types/GeoJsonTypes';
 
 type Position = [number, number];
 

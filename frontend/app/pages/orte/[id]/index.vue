@@ -6,7 +6,6 @@ import maplibregl, {
 } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { DEFAULT_MAP_CENTER } from "~/utils/constant_values";
-import type { Feature } from "~/utils/types/GeoJsonTypes";
 import { initMap } from "~/service/map_init";
 import TaskBar from "~/components/UI/page_actions/TaskBar.vue";
 import UniversalSkeleton from "~/components/UI/skeletons/UniversalSkeleton.vue";

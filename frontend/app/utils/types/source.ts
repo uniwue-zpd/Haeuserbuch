@@ -1,5 +1,3 @@
-import type { Auditable } from "~/utils/types/base_entity";
-
 /**
  * Represents an item from the project's bibliography
  */

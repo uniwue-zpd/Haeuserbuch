@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { isBuildingFeature, type BuildingFeature } from "~/utils/types/GeoJsonTypes";
 import BuildingSkeleton from "~/components/UI/skeletons/BuildingSkeleton.vue";
 import FetchError from "~/components/UI/FetchError.vue";
 

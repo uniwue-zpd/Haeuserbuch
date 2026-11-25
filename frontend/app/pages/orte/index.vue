@@ -11,12 +11,6 @@ import { getPaginationRowModel } from "@tanstack/vue-table";
 import { initMap } from "~/service/map_init";
 import UniversalSkeleton from "~/components/UI/skeletons/UniversalSkeleton.vue";
 import ErrorComponent from "~/components/UI/FetchError.vue";
-import type {
-  Feature,
-  FeatureCollection,
-  PlaceProperties,
-  Point,
-} from "~/utils/types/GeoJsonTypes";
 
 const placeApi = usePlaces();
 const UButton = resolveComponent("UButton");

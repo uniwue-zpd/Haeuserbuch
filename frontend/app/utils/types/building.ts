@@ -1,7 +1,3 @@
-import type { Auditable } from "~/utils/types/base_entity";
-import type { SourceDTO } from "~/utils/types/source";
-import type { Street, StreetDTO } from "~/utils/types/street";
-
 /**
  * Represents a preview DTO of a building.
  */

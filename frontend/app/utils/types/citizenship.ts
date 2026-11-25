@@ -1,8 +1,3 @@
-import type { PersonDTO, PersonPreviewDTO} from "~/utils/types/person";
-import type { Pageable } from "~/utils/types/data_fetching";
-import type { Auditable } from "~/utils/types/base_entity";
-import type { SourceDTO } from "~/utils/types/source";
-
 /**
  * Represents a naturalization event listed in the citizen register
  */
