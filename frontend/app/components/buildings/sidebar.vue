@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import { useVirtualizer } from "@tanstack/vue-virtual";
-import { computed, nextTick, ref, watch } from "vue";
-import type { BuildingFeature } from "~/utils/GeoJsonTypes";
-import type { PersonPreviewDTO } from "~/utils/types";
 
 const props = withDefaults(
   defineProps<{

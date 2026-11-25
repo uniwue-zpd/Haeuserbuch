@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { isBuildingFeature, type BuildingFeature } from "~/utils/GeoJsonTypes";
-import type { FilterBuilding } from "~/utils/types";
 import { debounce } from "~/utils/debounce";
 
 definePageMeta({ layout: "map" });

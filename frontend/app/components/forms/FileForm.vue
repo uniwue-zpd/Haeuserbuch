@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import { useToast as useNuxtToast } from "@nuxt/ui/composables";
-import type { FileDTO, FileMetadata } from "~/utils/types";
-import { DOCUMENT_TYPES } from "~/utils/types";
-import { UPLOAD_ACCEPT } from "~/utils/constant_values";
 
 const props = withDefaults(
   defineProps<{

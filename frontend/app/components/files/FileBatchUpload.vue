@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useToast as useNuxtToast } from "@nuxt/ui/composables";
-import type { FileDTO } from "~/utils/types";
 import { formatFileSize } from "~/utils/helpers";
 import { ALLOWED_UPLOAD_TYPES, MAX_UPLOAD_FILE_SIZE, UPLOAD_ACCEPT } from "~/utils/constant_values";
 

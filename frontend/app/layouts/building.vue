@@ -5,7 +5,7 @@ import {
   type BuildingFeature,
   type Feature,
   type FeatureCollection,
-} from "~/utils/GeoJsonTypes";
+} from "~/utils/types/GeoJsonTypes";
 
 const route = useRoute();
 const buildingApi = useBuildings();

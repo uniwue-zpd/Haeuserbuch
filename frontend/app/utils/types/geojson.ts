@@ -1,12 +1,6 @@
-import type {
-    AddressDTO,
-    BuildingNameDTO,
-    DistrictDTO,
-    QuarterDTO,
-    SourceDTO,
-} from "~/utils/types";
-
-/* GeoJSON `Feature` */
+/**
+ * GeoJSON `Feature`
+ */
 export interface Feature {
     type: 'Feature';
     id?: number;
@@ -14,13 +8,17 @@ export interface Feature {
     geometry: GeometryType | null;
 }
 
-/* GeoJSON `FeatureCollection` */
+/**
+ * GeoJSON `FeatureCollection`
+ */
 export interface FeatureCollection {
     type: 'FeatureCollection';
     features: Feature[];
 }
 
-/** A fully identified building returned by the buildings GeoJSON endpoints. */
+/**
+ * A fully identified building returned by the buildings GeoJSON endpoints.
+ */
 export interface BuildingFeature {
     type: 'Feature';
     id: number;
@@ -28,44 +26,60 @@ export interface BuildingFeature {
     geometry: GeometryType | null;
 }
 
-/** Narrows a generic GeoJSON feature to a building feature. */
+/**
+ * Narrows a generic GeoJSON feature to a building feature.
+ */
 export function isBuildingFeature(feature: Feature): feature is BuildingFeature {
     return typeof feature.id === 'number'
         && feature.properties !== null
         && 'districtPropertyNumber' in feature.properties;
 }
 
-/* GeoJSON `geometry` types */
+/**
+ * GeoJSON `geometry` types
+ */
 export type GeometryType = Point | Polygon | LineString | MultiPolygon;
 
-/* GeoJSON `properties` types */
+/**
+ * GeoJSON `properties` types
+ */
 export type PropertiesType = BuildingProperties | PlaceProperties;
 
-/* GeoJSON `Point` */
+/**
+ * GeoJSON `Point`
+ */
 export interface Point {
     type: 'Point';
     coordinates: [number, number];
 }
 
-/* GeoJSON `Polygon` */
+/**
+ * GeoJSON `Polygon`
+ */
 export interface Polygon {
     type: 'Polygon';
     coordinates: [number, number][][];
 }
 
-/* GeoJSON `LineString` */
+/**
+ * GeoJSON `LineString`
+ */
 export interface LineString {
     type: 'LineString';
     coordinates: [number, number][];
 }
 
-/* GeoJSON MultiPolygon */
+/**
+ * GeoJSON MultiPolygon
+ */
 export interface MultiPolygon {
     type: 'MultiPolygon';
     coordinates: [number, number][][][];
 }
 
-/* GeoJSON `properties` for a building feature */
+/**
+ * GeoJSON `properties` for a building feature
+ */
 export interface BuildingProperties {
     type: string | null;
     year: number | null;
@@ -90,7 +104,9 @@ export interface BuildingProperties {
     lastModifiedBy: string | null;
 }
 
-/* GeoJSON `properties` for a place feature */
+/**
+ * GeoJSON `properties` for a place feature
+ */
 export interface PlaceProperties {
     type: string | null;
     realName: string | null;

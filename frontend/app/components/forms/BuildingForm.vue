@@ -1,20 +1,11 @@
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
-import maplibregl, {
-  type RasterLayerSpecification,
-  type RasterSourceSpecification,
-} from "maplibre-gl";
+import maplibregl, { type RasterLayerSpecification, type RasterSourceSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { initMap } from "~/service/map_init";
-import {
-  MaplibreTerradrawControl,
-  roundFeatureCoordinates,
-} from "@watergis/maplibre-gl-terradraw";
+import { MaplibreTerradrawControl, roundFeatureCoordinates } from "@watergis/maplibre-gl-terradraw";
 import "@watergis/maplibre-gl-terradraw/dist/maplibre-gl-terradraw.css";
 import type { Position } from "geojson";
 import type { GeoJSONStoreGeometries } from "terra-draw";
-import type { Feature } from "~/utils/GeoJsonTypes";
-import type { BuildingNameDTO, BuildingNameSource } from "~/utils/types";
 import { useToast as useNuxtToast } from "@nuxt/ui/composables";
 import { formatFileSize } from "~/utils/helpers";
 import { MAX_UPLOAD_FILE_SIZE, UPLOAD_ACCEPT } from "~/utils/constant_values";

@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { computed, useId } from "vue";
-import type { BuildingFeature } from "~/utils/GeoJsonTypes";
-import type { BuildingNameDTO, PersonPreviewDTO } from "~/utils/types";
 import { title_shortener } from "~/utils/helpers";
 import FileList from "~/components/files/FileList.vue";
 

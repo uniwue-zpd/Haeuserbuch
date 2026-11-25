@@ -6,7 +6,7 @@ import maplibregl, {
 import "maplibre-gl/dist/maplibre-gl.css";
 import { initMap } from "~/service/map_init";
 import "@watergis/maplibre-gl-terradraw/dist/maplibre-gl-terradraw.css";
-import type { Feature } from "~/utils/GeoJsonTypes";
+import type { Feature } from "~/utils/types/GeoJsonTypes";
 import { computed } from "vue";
 import { useToast as useNuxtToast } from "@nuxt/ui/composables";
 

@@ -16,7 +16,7 @@ import type {
   FeatureCollection,
   PlaceProperties,
   Point,
-} from "~/utils/GeoJsonTypes";
+} from "~/utils/types/GeoJsonTypes";
 
 const placeApi = usePlaces();
 const UButton = resolveComponent("UButton");

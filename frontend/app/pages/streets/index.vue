@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import type { TableColumn } from "@nuxt/ui";
 import { getPaginationRowModel } from "@tanstack/vue-table";
-import type { Street } from "~/utils/types";
 
 const streetApi = useStreets();
 

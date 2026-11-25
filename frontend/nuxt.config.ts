@@ -82,6 +82,9 @@ export default defineNuxtConfig({
       scan: true,
     }
   },
+  imports: {
+    dirs: ['utils/types'],
+  },
   css: ['~/assets/css/main.css'],
   vite: {
     plugins: [tailwindcss()],

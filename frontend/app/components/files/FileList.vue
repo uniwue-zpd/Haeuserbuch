@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { FileDTO, FilePreviewDTO, Pageable } from "~/utils/types";
-import { DOCUMENT_TYPES } from "~/utils/types";
 import { formatFileSize } from "~/utils/helpers";
 import FileForm from "~/components/forms/FileForm.vue";
 
