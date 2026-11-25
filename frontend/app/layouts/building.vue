@@ -1,12 +1,4 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import {
-  isBuildingFeature,
-  type BuildingFeature,
-  type Feature,
-  type FeatureCollection,
-} from "~/utils/types/GeoJsonTypes";
-
 const route = useRoute();
 const buildingApi = useBuildings();
 
